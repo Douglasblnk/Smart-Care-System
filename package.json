@@ -1,0 +1,24 @@
+{
+  "name": "duas-rodas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "app": "npm run serve --prefix app",
+    "api": "npm run start --prefix API",
+    "ms": "npm run start --prefix microservices/activity",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.20.1",
+    "moment": "^2.24.0",
+    "vuex": "^3.1.2"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-plugin-vue": "^6.2.0"
+  }
+}
