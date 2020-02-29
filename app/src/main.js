@@ -23,21 +23,20 @@ Vue.use(BootstrapVue);
 Vue.use(VueSweetalert2);
 Vue.use(Vuex);
 
+const http = new Http()
 
 Vue.config.productionTip = false;
 
-const http = new Http()
+Vue.prototype.$apiUrl = router.options.apiUrl;
+Vue.prototype.$setActivity = http.setActivity;
+Vue.prototype.$moment = moment;
+Vue.prototype.$_ = Lodash;
+Vue.prototype.$http = http;
 
 new Vue({
   router,
   store,
   async beforeMount() {
-    Vue.prototype.$apiUrl = router.options.apiUrl;
-    Vue.prototype.$setActivity = http.setActivity;
-    Vue.prototype.$moment = moment;
-    Vue.prototype.$_ = Lodash;
-    Vue.prototype.$http = http;
-
     try {
       if (router.currentRoute.name === 'login' || router.currentRoute.name === '404') return;
 

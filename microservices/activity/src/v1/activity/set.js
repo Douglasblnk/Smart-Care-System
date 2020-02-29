@@ -8,7 +8,7 @@ const getParameters = req => ({
   email: req.body.activity.email || '',
   date: req.body.activity.date || '',
   activityId: req.body.activityId || '',
-  description: req.body.activity.description || '',
+  descricao: req.body.activity.descricao || '',
 });
 
 const checkParameters = ({
@@ -31,7 +31,6 @@ const checkParameters = ({
 
 const run = async req => {
   try {
-    console.log('req :', req);
     const parameters = getParameters(req);
 
     const errs = checkParameters(parameters);
@@ -41,7 +40,7 @@ const run = async req => {
 
     return response;
   } catch (err) {
-    console.log('err :', err);
+    console.log('err set => ', err);
     throw err;
   }
 };
