@@ -16,7 +16,7 @@ import CadastroCausaSintoma from '../views/Cadastros/CadastroCausaSintoma.vue'
 import CadastroComponente from '../views/Cadastros/CadastroComponente'
 import CadastroOrdemManutencao from '../views/Cadastros/CadastroOrdemManutencao'
 
-import validate from '../utils/token-validation';
+import { validate } from '../utils/token-validation';
 import Swal from 'sweetalert2'
 
 Vue.use(VueRouter)

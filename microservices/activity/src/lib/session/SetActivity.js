@@ -13,7 +13,7 @@ module.exports = class SetActivity {
     email,
     date,
     activityId,
-    description = '',
+    descricao = '',
   } = {}) {
     this._auth = auth;
     this._origin = origin;
@@ -22,7 +22,7 @@ module.exports = class SetActivity {
     this._email = email;
     this._date = date;
     this._activityId = activityId;
-    this._description = description;
+    this._descricao = descricao;
 
     this._integrationAuthJwt = new GetUserAutentication();
 
@@ -52,7 +52,7 @@ module.exports = class SetActivity {
         this._email,
         this._date,
         this._activityId,
-        this._description,
+        this._descricao,
       ).setActivity();
 
       return activityResponse;
@@ -65,11 +65,11 @@ module.exports = class SetActivity {
     try {
       if (this._auth === 'unnecessaryToken' && this._origin === RESOURCE_ORIGIN) return;
 
-      const res = this._integrationAuthJwt.validateSession({
+      const res = await this._integrationAuthJwt.validateSession({
         token: this._auth,
       });
-
-      console.log('validateSession :', res);
+      
+      if (!res || res.status !== 200) throw 'could not validate session';
     } catch (err) {
       throw err;
     }
@@ -85,7 +85,7 @@ module.exports = class SetActivity {
       if (!this._date) throw (400, { date: 'undefined' });
       if (!this._activityId) throw (400, { activityId: 'undefined' });
     } catch (err) {
-      console.log('err :', err);
+      console.log('err setActivity => ', err);
       throw err;
     }
   }

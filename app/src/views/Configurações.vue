@@ -171,7 +171,15 @@ export default {
             confirmButtonColor: '#F34336',
           });
           
-          this.$setActivity('registerUser', { ...this.$store.state.user, date: this.$moment().format('DD-MM-YYYY HH-mm')} , getLocalStorageToken())
+          this.$setActivity(
+            'registerUser',
+            {
+              ...this.$store.state.user,
+              date: this.$moment().format('DD-MM-YYYY HH-mm'),
+              descricao: `${this.$store.state.user.nome} cadastrou o usuário ${this.userInputValues.numeroCracha} - ${this.userInputValues.nome}`,
+            },
+            getLocalStorageToken(),
+          );
 
           this.$swal({
             type: 'success',
@@ -200,6 +208,17 @@ export default {
             title: res.err,
             confirmButtonColor: '#F34336',
           })
+
+          this.$setActivity(
+            'editUser',
+            {
+              ...this.$store.state.user,
+              date: this.$moment().format('DD-MM-YYYY HH-mm'),
+              descricao: `${this.$store.state.user.nome} editou o usuário ${this.userInputValues.numeroCracha} - ${this.userInputValues.nome}`,
+            },
+            getLocalStorageToken(),
+          );
+
           this.$swal({
             type: 'success',
             title: res.result
@@ -225,7 +244,18 @@ export default {
                 type: 'warning',
                 title: json.err,
                 confirmButtonColor: '#F34336',
-              })
+              });
+
+              this.$setActivity(
+                'deleteUser',
+                {
+                  ...this.$store.state.user,
+                  date: this.$moment().format('DD-MM-YYYY HH-mm'),
+                  descricao: `${this.$store.state.user.nome} removeu o usuário ${user.numeroCracha} - ${user.nome}`,
+                },
+                getLocalStorageToken(),
+              );
+
               this.$swal({
                 type: 'success',
                 title: json.result,

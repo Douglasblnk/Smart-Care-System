@@ -3,13 +3,13 @@ const mysql = require('mysql');
 const ACTIVITY_TABLE = 'atividades';
 
 module.exports = class SetActivityData {
-  constructor(nome, cracha, email, date, activityId, description) {
+  constructor(nome, cracha, email, date, activityId, descricao) {
     this._nome = nome;
     this._cracha = cracha;
     this._email = email;
     this._date = date;
     this._activityId = activityId;
-    this._description = description;
+    this._descricao = descricao;
 
     this.validateParameters();
   }
@@ -43,7 +43,7 @@ module.exports = class SetActivityData {
       cracha: this._cracha,
       email: this._email,
       data: this._date,
-      descricao: this._description,
+      descricao: this._descricao,
     };
   }
 

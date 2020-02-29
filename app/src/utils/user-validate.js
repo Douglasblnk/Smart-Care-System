@@ -8,7 +8,6 @@ export const validate = apiUrl => {
       },
     }).then(res => res.json())
       .then(json => {
-        console.log(json);
         if (json.authorized) return resolve('Autenticado!')
         return reject(json)
       })
