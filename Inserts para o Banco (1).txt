@@ -1,0 +1,38 @@
+insert into Usuario(numeroCracha,nome,senha,email,nivelAcesso,funcao) values(12035,"Fernando Marques Candido","123","fernando@gmail.com","1","Mecanico");
+insert into Usuario(numeroCracha,nome,senha,email,nivelAcesso,funcao) values(10192,"","12345","","2","Operador");
+insert into Usuario(numeroCracha,nome,senha,email,nivelAcesso,funcao) values(10195,"","123456","","2","Operador");
+
+insert into Setor(nome) values("Condimentos");
+insert into Setor(nome) values("Essência");
+insert into Setor(nome) values("Flocos");
+insert into Setor(nome) values("Spray");
+
+insert into Equipamento(descricao,equipamento,equipamentoSuperior,Setor_idSetor) values("Maquina de Flocos","maquina001","maquina002Sup",1);
+
+insert into Prioridade(descricaoPrioridade) values("Baixa");
+insert into Prioridade(descricaoPrioridade) values("Média");
+insert into Prioridade(descricaoPrioridade) values("Alta");
+insert into Prioridade(descricaoPrioridade) values("Muito Alta");
+
+insert into Status(tipoStatus) values("Aberto");
+insert into Status(tipoStatus) values("Em Andamento");
+insert into Status(tipoStatus) values("Encerrada");
+
+insert into tipoManutencao(tipoManutencao) values("Corretiva");
+insert into tipoManutencao(tipoManutencao) values("Preventiva");
+
+insert into ordemServico(resumo,descricao,tipoManutencao_idtipoManutencao, inicioPlanejado, fimPlanejado, Prioridade_idPrioridade,Status_idStatus,requerParada,Setor_idSetor) 
+values("Maquina de Flocos estragou", "A máquina estava funcionando normalmente no dia anterior, porém ao chegar ao ambiente de trabalho, ela não ligava",1,'2019-05-22', '2019-05-27', 3,1,1,3);
+
+insert into ordemServico_has_Usuario(ordemServico_idOrdemServico, Usuario_idUsuario) values(1,1);
+
+insert into ordemServico(resumo,descricao,tipoManutencao_idtipoManutencao, inicioPlanejado, fimPlanejado, Prioridade_idPrioridade,Status_idStatus,requerParada,Setor_idSetor) 
+values("Maquina do setor de Spray estragou", "A maquina não liga",1,'2019-05-22', '2019-05-27', 4,1,1,4);
+
+
+insert into ordemServico_has_Usuario(ordemServico_idOrdemServico, Usuario_idUsuario) values(2,1);
+
+select ordemServico.resumo,ordemServico.inicioPlanejado,ordemServico.fimPlanejado,Status.tipoStatus from
+ ordemServico INNER JOIN Status ON ordemServico.Status_idStatus = Status.idStatus;
+
+ select ordemServico.resumo,ordemServico.descricao,ordemServico.tipoManutencao,ordemServico.requerParada,ordemServico.inicioPlanejado,ordemServico.fimPlanejado,Equipamento.numeroPatrimonio,Setor.nome,Status.tipoStatus from ordemServico INNER JOIN Status ON ordemServico.Status_idStatus = Status.idStatus INNER JOIN Setor ON ordemServico.Setor_idSetor = Setor.idSetor LEFT JOIN Equipamento ON ordemServico.Equipamento_numeroPatrimonio = Equipamento.numeroPatrimonio  where ordemServico.idOrdemServico =\'2\''
