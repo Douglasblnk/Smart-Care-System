@@ -21,12 +21,8 @@
 </template>
 
 <script>
-import saveButton from '../components/button/save-button'
-
 export default {
-  components: {
-    'save-button': saveButton
-  }
+
 }
 </script>
 

@@ -1,6 +1,6 @@
 <template>
 	<div class="root-card-option-component">
-		<div class="card-option shadow">
+		<div class="card-option shadow" :class="size ? 'small' : ''">
 			<router-link class="text-decoration-none text-muted" :to="route">
 				<div class="card-wrapper">
 					<div class="icon-card">
@@ -20,7 +20,8 @@ export default {
 	props:{
 		title: { type: String, default: '' },
 		icon: { type: String, default: '' },
-		route: { type: String, default: '' }
+		route: { type: String, default: '' },
+		size: { type: String, default: '' },
 	}
 }
 </script>
@@ -58,11 +59,16 @@ export default {
 			}
 		}
 	}
+	.small {
+		width: 150px !important;
+		height: 120px !important;
+	}
 
 	@media screen and (max-width: 1366px) {
 		.card-option {
 			width: 200px;
 			height: 150px;
+			margin: 15px;
 		}
 	}
 }

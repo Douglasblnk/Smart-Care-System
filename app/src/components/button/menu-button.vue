@@ -2,7 +2,7 @@
   <div class="root-menu-button">
     <div class="btn w-100 mb-3 p-0 d-flex">
       <button :class="{'active' : active}" class="w-100">
-        <i :class="icon" class="fas fa-lg" />
+        <i :class="icon" class="fa-lg" />
         <span>
           {{ label }}
         </span>

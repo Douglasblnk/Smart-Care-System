@@ -47,10 +47,13 @@
 
 <script>
 import { getLocalStorageToken } from '../utils/utils'
+
 export default {
-  data: () => ({
-    maintenainceOrders: []
-  }),
+  data() {
+    return {
+      maintenainceOrders: []
+    };
+  },
 
   mounted() {
     this.getOrderMaintence();
