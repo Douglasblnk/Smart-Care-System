@@ -8,11 +8,13 @@
     <div class="items-wrapper p-3 w-100 d-flex flex-column justify-content-center">
       <div v-for="(routes, index) in dashboard" :key="`routes-${index}`" class="button-wrapper">
         <router-link :to="routes.link ? routes.link : '/'">
-          <menu-button
-            :label="routes.name"
-            :active="currentRoute(routes.name)"
-            :icon="routes.icon"
-          />
+          <div v-if="routes.web">
+            <menu-button
+              :label="routes.name"
+              :active="currentRoute(routes.name, $route)"
+              :icon="routes.icon"
+            />
+          </div>
         </router-link>
       </div>
     </div>
@@ -20,25 +22,19 @@
 </template>
 
 <script>
-import menuButton from '../button/menu-button';
 import dashboard from "../../utils/dashboard-module";
 
 export default {
-  components: {
-    'menu-button': menuButton,
+
+  data() {
+    return {
+      dashboard
+    }
   },
 
-  data: () => ({
-    dashboard
-  }),
-
-  // created() {
-  //   console.log(this.$route.name);
-  // },
-
   methods: {
-    currentRoute(routes) {
-      return routes.toLowerCase() === this.$route.matched[0].name.toLowerCase();
+    currentRoute(routes, router) {
+      return routes.toLowerCase() === router.name.toLowerCase();
     }
   },
 }

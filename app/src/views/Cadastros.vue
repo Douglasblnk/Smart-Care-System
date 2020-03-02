@@ -7,7 +7,7 @@
         </div>
         <div class="card-wrapper d-flex justify-content-center align-items-center flex-wrap">
           <div v-for="(card, index) in cards" :key="`card-${index}`">
-            <card-input :title="card.title" :icon="card.icon" :route="card.route" />
+            <card-option :title="card.title" :icon="card.icon" :route="card.route" />
           </div>
         </div>
       </div>
@@ -17,57 +17,60 @@
 </template>
 
 <script>
-import card from "../components/card/card-option.vue";
 
 export default {
-  components: {
-    "card-input": card
+
+  data() {
+    return {
+      cards: [
+        {
+          title: 'Ordem de Manutenção',
+          icon: 'fas fa-file-signature',
+          route: 'cadastros/cadastro-ordem-manutencao'
+        },
+        {
+          title: 'Equipamento',
+          icon: 'fas fa-tools',
+          route: 'cadastros/cadastro-equipamento'
+        },
+        {
+          title: 'Local de instalção',
+          icon: 'fas fa-map-marker-alt',
+          route: 'cadastros/cadastro-local-instalacao'
+        },
+        {
+          title: 'Centro de Trabalho',
+          icon: 'fas fa-map-pin',
+          route: 'cadastros/cadastro-centro-trabalho'
+        },
+        {
+          title: 'Tipo de Ordem',
+          icon: 'fas fa-file',
+          route: 'cadastros/cadastro-tipo-ordem'
+        },
+        {
+          title: 'Causa e sintoma',
+          icon: 'fas fa-exclamation-triangle',
+          route: 'cadastros/cadastro-causa-sintoma'
+        },
+        {
+          title: 'EPI',
+          icon: 'fas fa-hard-hat',
+          route: ''
+        },
+        {
+          title: 'Componente',
+          icon: 'fas fa-puzzle-piece',
+          route: 'cadastros/cadastro-componente'
+        }
+      ]
+    };
   },
 
-  data: () => ({
-    cards: [
-      {
-        title: 'Ordem de Manutenção',
-        icon: 'fas fa-file-signature',
-        route: 'cadastros/cadastro-ordem-manutencao'
-      },
-      {
-        title: 'Equipamento',
-        icon: 'fas fa-tools',
-        route: 'cadastros/cadastro-equipamento'
-      },
-      {
-        title: 'Local de instalção',
-        icon: 'fas fa-map-marker-alt',
-        route: 'cadastros/cadastro-local-instalacao'
-      },
-      {
-        title: 'Centro de Trabalho',
-        icon: 'fas fa-map-pin',
-        route: 'cadastros/cadastro-centro-trabalho'
-      },
-      {
-        title: 'Tipo de Ordem',
-        icon: 'fas fa-file',
-        route: 'cadastros/cadastro-tipo-ordem'
-      },
-      {
-        title: 'Causa e sintoma',
-        icon: 'fas fa-exclamation-triangle',
-        route: 'cadastros/cadastro-causa-sintoma'
-      },
-      {
-        title: 'EPI',
-        icon: 'fas fa-hard-hat',
-        route: ''
-      },
-      {
-        title: 'Componente',
-        icon: 'fas fa-puzzle-piece',
-        route: 'cadastros/cadastro-componente'
-      }
-    ]
-  }),
+  created() {
+    if (window.innerWidth <= '600') this.$router.replace('/dashboard');
+    return;
+  }
 };
 </script>
 

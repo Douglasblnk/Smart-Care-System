@@ -1,13 +1,16 @@
 <template>
   <div id="app">
     <div v-if="routes" class="content">
-      <div class="sidebar-content shadow">
+      <div v-if="!isMobile" class="sidebar-content shadow">
         <sidebar />
       </div>
 
       <div class="wrapper">
-        <div class="topbar-content">
+        <div v-if="!isMobile" class="topbar-content">
           <topbar />
+        </div>
+        <div v-else class="mobile-topbar-content">
+          <mobile-topbar />
         </div>
 
         <div class="router-content">
@@ -45,7 +48,12 @@ export default {
       if (this.$route.name === 'login') return false
       if (this.$route.name === '404') return false
       return true;
-    }
+    },
+
+    isMobile() {
+      if (window.innerWidth <= '600') return true;
+      return false;
+    },
   }
 }
 
@@ -57,6 +65,7 @@ export default {
   --duas-rodas-soft: #E66E6D;
   --shadow-gray: rgb(160, 160, 160);
   --gray: rgb(92, 92, 92);
+  --button-gray: #eee;
 }
 
 body {
@@ -76,6 +85,9 @@ body {
     .topbar-content {
       width: 100%;
       padding: 20px;
+    }
+    .mobile-topbar-content{
+      width: 100%;
     }
     .router-content {
       box-sizing: border-box;

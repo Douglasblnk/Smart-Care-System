@@ -144,32 +144,24 @@
 
 <script>
 import { getLocalStorageToken } from '../../utils/utils'
-import simpleInput from '../../components/inputs/simple-input';
-import select from '../../components/inputs/custom-select'
-import saveButton from '../../components/button/save-button'
-import cancelButton from '../../components/button/cancel-button'
 
 export default {
-  components: {
-    'simple-input': simpleInput,
-    'custom-select': select,
-    'save-button': saveButton,
-    'cancel-button': cancelButton,
-  },
 
-  data: () => ({
-    selectValue: '',
-    inputValuesCause: {
-      descricaoCausa: '',
-    },
-    inputValuesSymptom: {
-      descricaoSintomas: '',
-    },
-    causes: [],
-    symptons: [],
-    switchListRegister: 'list',
-    isEditing: false,
-  }),
+  data() {
+    return {
+      selectValue: '',
+      inputValuesCause: {
+        descricaoCausa: '',
+      },
+      inputValuesSymptom: {
+        descricaoSintomas: '',
+      },
+      causes: [],
+      symptons: [],
+      switchListRegister: 'list',
+      isEditing: false,
+    };
+  },
 
   watch: {
     selectValue: {

@@ -17,11 +17,15 @@ import 'sweetalert2/dist/sweetalert2.min.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
+import importedComponents from './plugins/importedComponents';
+
 Vue.use(Fontawesome);
 Vue.use(Lodash);
 Vue.use(BootstrapVue);
 Vue.use(VueSweetalert2);
 Vue.use(Vuex);
+
+Vue.use(importedComponents)
 
 const http = new Http()
 

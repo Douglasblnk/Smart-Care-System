@@ -45,22 +45,22 @@
               <form @submit.prevent="updateUser">
                 <div class="accordion-content bg-white mt-3 p-3 d-flex flex-wrap">
                   <div class="p-2 m-2 w-25">
-                    <simples-input v-model="userInputValues.nome" label="Nome" type="text"></simples-input>
+                    <simple-input v-model="userInputValues.nome" label="Nome" type="text"></simple-input>
                   </div>
                   <div class="p-2 m-2 w-25">
-                    <simples-input v-model="userInputValues.numeroCracha" label="Cracha" type="number"></simples-input>
+                    <simple-input v-model="userInputValues.numeroCracha" label="Cracha" type="number"></simple-input>
                   </div>
                   <div class="p-2 m-2 w-25">
-                    <simples-input v-model="userInputValues.funcao" label="Função" type="text"></simples-input>
+                    <simple-input v-model="userInputValues.funcao" label="Função" type="text"></simple-input>
                   </div>
                   <div class="p-2 m-2 w-25">
-                    <simples-input v-model="userInputValues.nivelAcesso" label="Nível de acesso" type="number"></simples-input>
+                    <simple-input v-model="userInputValues.nivelAcesso" label="Nível de acesso" type="number"></simple-input>
                   </div>
                   <div class="p-2 m-2 w-25">
-                    <simples-input v-model="userInputValues.email" label="E-mail" type="email"></simples-input>
+                    <simple-input v-model="userInputValues.email" label="E-mail" type="email"></simple-input>
                   </div>
                   <div class="p-2 m-2 w-25">
-                    <simples-input v-model="userInputValues.senha" label="Senha" type="password"></simples-input>
+                    <simple-input v-model="userInputValues.senha" label="Senha" type="password"></simple-input>
                   </div>
                 </div>
                 <div class="save d-flex justify-content-center">
@@ -78,22 +78,22 @@
           <form @submit.prevent="register">
             <div class="accordion-content bg-white mt-3 p-3 d-flex flex-wrap">
               <div class="p-2 m-2">
-                <simples-input v-model="userInputValues.nome" label="Nome" type="text"></simples-input>
+                <simple-input v-model="userInputValues.nome" label="Nome" type="text"></simple-input>
               </div>
               <div class="p-2 m-2">
-                <simples-input v-model="userInputValues.numeroCracha" label="Cracha" type="number"></simples-input>
+                <simple-input v-model="userInputValues.numeroCracha" label="Cracha" type="number"></simple-input>
               </div>
               <div class="p-2 m-2">
-                <simples-input v-model="userInputValues.funcao" label="Função" type="text"></simples-input>
+                <simple-input v-model="userInputValues.funcao" label="Função" type="text"></simple-input>
               </div>
               <div class="p-2 m-2">
-                <simples-input v-model="userInputValues.nivelAcesso" label="Nível de acesso" type="number"></simples-input>
+                <simple-input v-model="userInputValues.nivelAcesso" label="Nível de acesso" type="number"></simple-input>
               </div>
               <div class="p-2 m-2">
-                <simples-input v-model="userInputValues.email" label="E-mail" type="email"></simples-input>
+                <simple-input v-model="userInputValues.email" label="E-mail" type="email"></simple-input>
               </div>
               <div class="p-2 m-2">
-                <simples-input v-model="userInputValues.senha" label="Senha" type="password"></simples-input>
+                <simple-input v-model="userInputValues.senha" label="Senha" type="password"></simple-input>
               </div>
             </div>
             <div class="save">
@@ -109,21 +109,9 @@
 
 <script>
 import { getLocalStorageToken } from '../utils/utils';
-import accordion from '../components/accordion/accordion';
-import simpleInput from '../components/inputs/simple-input';
-import saveButton from '../components/button/save-button';
-import cancelButton from '../components/button/cancel-button';
-//import table from '../components/table/table';
 
 export default {
-  components: {
-    accordion,
-    'simples-input': simpleInput,
-    'save-button': saveButton,
-    'cancel-button': cancelButton,
-    //'custom-table': table,
-  },
-
+  
   data() {
     return {
       token: '',
