@@ -91,6 +91,7 @@ export default {
         selects: []
       },
       selectsStats: {
+        // valor selecionado
         select: "",
         selects: []
       },
@@ -180,6 +181,7 @@ export default {
               this.selectsTypeMaintenance.selects[index].value = res.result[index].idtipoManutencao;
               this.selectsTypeMaintenance.selects[index].label = res.result[index].tipoManutencao;
             }
+
           }          
         })
     },
@@ -236,6 +238,7 @@ export default {
               this.selectsSector.selects[index].value = res.result[index].idSetor;
               this.selectsSector.selects[index].label = res.result[index].nome;
             }
+            
           }          
         })
     },
@@ -277,22 +280,22 @@ export default {
           if (res.result.length === undefined) 
           this.stats.push(res.result)
           else this.stats = [ ...res.result ]
-          // console.log("-------0000111")
-          // console.log(res.result)
-          // if (res.result.length === undefined) {
-          //   this.selects.selects.map(select => {
-          //     Object.entries(select).forEach(([key, value]) => {
-          //       console.log(key, value);
-          //     })
-          //   })
-          // } // this.selects.selects.push(res.result)
-          // else {
-          //   for (let index = 0; index < res.result.length; index++) {
-          //     this.selectsStats.selects.push(res.result[index]);
-          //     this.selectsStats.selects[index].value = res.result[index].idStatus;
-          //     this.selectsStats.selects[index].label = res.result[index].tipoStatus;
-          //   }
-          // }
+          console.log("-------0000111")
+          console.log(res.result)
+          if (res.result.length === undefined) {
+            this.selects.selects.map(select => {
+              Object.entries(select).forEach(([key, value]) => {
+                console.log(key, value);
+              })
+            })
+          } // this.selects.selects.push(res.result)
+          else {
+            for (let index = 0; index < res.result.length; index++) {
+              this.selectsStats.selects.push(res.result[index]);
+              this.selectsStats.selects[index].value = res.result[index].idStatus;
+              this.selectsStats.selects[index].label = res.result[index].tipoStatus;
+            }
+          }
       })
     }
   },

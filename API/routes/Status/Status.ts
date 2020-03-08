@@ -12,13 +12,13 @@ const jwt = new Auth();
 
 router.get('/get', async (req: any, res: any) => {
   try {
+    console.log("Status ponto 1")
     await jwt.jwtVerify(req)
     const response = await getStatsValidate.run(req);
-
+    
     res.status(200).send(response);
   } catch (err) {
     console.log('deu erro mesmo', err);
-
     res.status(404).send(err);
   }
 });

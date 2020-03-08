@@ -4,11 +4,11 @@
       <form @submit.prevent="registerEquipment()" class="formPosition">
         <div class="cadCard">
           <div class="inputs">
-            <custom-select v-model="inputValues.equipamento_id" :selectOptions="['Causa', 'Sintoma']"></custom-select>     
+            <tranfer-select v-model="inputValues.equipamento_id" :selects="selectsEquipament" :label="'Máquina'" ></tranfer-select>     
           </div>
           <div class="sideInput">
             <div class="inputsSidePosition">
-              <simple-input v-model="inputValues.description" :label="'Descricao Componente:'" :type="'text'" />
+              <description v-model="inputValues.description" :label="'Descricao Componente:'" :type="'text'" />
             </div>  
           </div>
         </div>
@@ -22,20 +22,27 @@
 
 <script>
 import simpleInput from "../../components/inputs/simple-input";
-import select from '../../components/inputs/custom-select'
-//import description from "../components/inputs/description";
-
+// import select from '../../components/inputs/custom-select'
+import description from "../../components/inputs/description";
+import selectId from "../../components/inputs/tranfer-select";
 export default {
   components: {
     "simple-input": simpleInput,
-    'custom-select': select
-    //description: description
+    // 'custom-select': select
+    "tranfer-select": selectId,
+    description: description
   },
   data() {
     return {
       inputValues: {
         description: "",
-        equipamento_id: ""
+        equipamento_id: 0,
+        // equipamento_name:"",
+
+      },
+      selectsEquipament:{
+        select: "",
+        selects: []
       },
       equipamentos:[
       {
@@ -47,8 +54,13 @@ export default {
       ]
     };
   },
+  mounted(){
+    this.getEquipment();
+  },
   methods: {
     registerEquipment(){
+      this.inputValues.equipamento_id = this.selectsEquipament.select;
+
       const token = localStorage.getItem('token')
        fetch(`${this.$apiUrl}/componente`, {
         method: 'post',
@@ -69,30 +81,49 @@ export default {
             title: `${json.result}`,
             confirmButtonColor: '#F34336',
           })
+          
         })
     },
     getEquipment()
     {
       const token = localStorage.getItem('token')
-      fetch(`${this.$apiUrl}/equipamento`, {
-        method: 'post',
+      fetch(`${this.$apiUrl}/equipamento/get`, {
+        method: 'get',
         headers: {
           'Content-Type': 'application/json',
           'authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(this.inputValues)
+       
       }).then(res => res.json())
         .then(json => {
+          // console.log(json)
           if (json.status !== 200) return this.$swal({
             type: 'error',
             title: `Ops! ${json.err}`,
             confirmButtonColor: '#F34336',
           })
-          this.$swal({
-            type: 'success',
-            title: `${json.result}`,
-            confirmButtonColor: '#F34336',
-          })
+          if(json.result.length === undefined){
+            console.log("talvez entre aki");
+            this.selects.selects.map(select => {
+              Object.entries(select).forEach(([key, value]) =>{
+                console.log("eu aki");
+                console.log(key, value);
+              })
+            })
+          }
+          else {
+            console.log("ta chegando aqui galera");
+            for (let index = 0; index < json.result.length; index++){
+              this.selectsEquipament.selects.push(json.result[index]);
+              this.selectsEquipament.selects[index].value = json.result[index].idEquipamento;
+              this.selectsEquipament.selects[index].label = json.result[index].descricao;
+            }
+          }
+          // this.$swal({
+          //   type: 'success',
+          //   title: `${json.result}`,
+          //   confirmButtonColor: '#F34336',
+          // })
         })
 
     }
