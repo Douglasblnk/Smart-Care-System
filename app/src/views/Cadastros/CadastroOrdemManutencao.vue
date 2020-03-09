@@ -21,12 +21,6 @@
             <div>
               <tranfer-select v-model="inputValues.stats" :selects="selectsStats" :label="'Status'"/>
             </div>
-            <div>
-              <custom-select v-model="inputValues.customSelect" :selects="getStatsSelect()" :label="'TESTE'"/>
-            </div>
-            <div>
-              <custom-select v-model="inputValues.customSelect2" :selects="getPrioritySelect" :label="'TESTE'"/>
-            </div>
             <!-- {{stats}} -->
           </div>
         <div class="qualquer"></div>
@@ -72,8 +66,6 @@ export default {
         customSelect2: '',
       },
       stats: [],
-
-
       selects: {
         select: "",
         selects: []
@@ -91,7 +83,6 @@ export default {
         selects: []
       },
       selectsStats: {
-        // valor selecionado
         select: "",
         selects: []
       },
@@ -181,7 +172,6 @@ export default {
               this.selectsTypeMaintenance.selects[index].value = res.result[index].idtipoManutencao;
               this.selectsTypeMaintenance.selects[index].label = res.result[index].tipoManutencao;
             }
-
           }          
         })
     },
@@ -238,7 +228,6 @@ export default {
               this.selectsSector.selects[index].value = res.result[index].idSetor;
               this.selectsSector.selects[index].label = res.result[index].nome;
             }
-            
           }          
         })
     },
@@ -280,7 +269,7 @@ export default {
           if (res.result.length === undefined) 
           this.stats.push(res.result)
           else this.stats = [ ...res.result ]
-          console.log("-------0000111")
+          console.log("-------")
           console.log(res.result)
           if (res.result.length === undefined) {
             this.selects.selects.map(select => {

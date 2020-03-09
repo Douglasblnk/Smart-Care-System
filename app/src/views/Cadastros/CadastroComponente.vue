@@ -96,13 +96,13 @@ export default {
        
       }).then(res => res.json())
         .then(json => {
-          // console.log(json)
+          console.log(json)
           if (json.status !== 200) return this.$swal({
             type: 'error',
             title: `Ops! ${json.err}`,
             confirmButtonColor: '#F34336',
-          })
-          if(json.result.length === undefined){
+          }, console.log("aqui"))
+          if(json.result.length === undefined && json.result.length === null ){
             console.log("talvez entre aki");
             this.selects.selects.map(select => {
               Object.entries(select).forEach(([key, value]) =>{
