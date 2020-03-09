@@ -52,14 +52,12 @@ export default {
       },
     };
   },
-
   computed: {
     isMobile() {
       if (window.innerWidth <= '600') return true;
       return false;
     },
   },
-
   methods: {
     loginValidation() {
       this.$http.methodPost('users', localStorage.getItem('token'), this.inputValues)
@@ -84,7 +82,6 @@ export default {
             this.$store.commit('addUser', { email: json.email, nome: json.nome, nivelAcesso: json.nivelAcesso, cracha: json.numeroCracha });
             
             await this.setTokenLocalStorage(json.token);
-
             this.$swal({
               position: 'top',
               type: 'success',
@@ -112,7 +109,6 @@ export default {
           })
       })
     },
-
     setTokenLocalStorage(token) {    
       console.log(token);  
       return new Promise((resolve, reject) => {
@@ -121,11 +117,9 @@ export default {
         resolve();
       })
     },
-
     testingDevelopmentRoutes() {
       this.$router.push('dashboard')
     }
-
   },
 };
 </script>
@@ -137,26 +131,22 @@ export default {
     justify-content: center;
     align-items: center;
   }
-
   .login-wrapper {
     min-width: 20vw;
     min-height: 100px;
     padding: 10px;
   }
-
   @media screen and (max-width: 1366px) {
     .login-wrapper {
       min-width: 30vw;
     }
   }
-
   @media screen and (max-width: 600px) {
     .hold-login {
       border-radius: 10px !important;
       box-shadow: 1px 1px 10px -2px rgb(75, 75, 75) !important;
     }
   }
-
   .login-text {
     h4 {
       color: #777777;
@@ -165,7 +155,6 @@ export default {
     width: 100%;
   }
 }
-
 @media screen and (max-width: 600px) {
   .root-login-view {
     width: 100%;
@@ -179,6 +168,4 @@ export default {
     width: 90%;
   }
 }
-
-
 </style>
