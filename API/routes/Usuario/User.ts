@@ -5,6 +5,8 @@ import GetUsersValidate from '../../controller/user/getUsersValidate'
 import DeleteUserValidate from '../../controller/user/deleteUserValidate'
 import UpdateUserValidate from '../../controller/user/updateUserValidate'
 import Auth from '../../auth/auth'
+const  RateLimit  = require("express-rate-limit");
+//import RateLimit from '../../node_modules/express-rate-limit';
 
 const router = Router();
 const login = new LoginValidate();
@@ -13,12 +15,26 @@ const getUser = new GetUsersValidate();
 const deleteUser = new DeleteUserValidate();
 const updateUser = new UpdateUserValidate();
 const jwt = new Auth();
+/*
+const apiLimiter = new RateLimit({
+  windowMs: 15*60*1000, // 15 minutes 
+  max: 100,
+  delayMs: 0 // disabled 
+});
+*/
+
+const createAccountLimiter = new RateLimit({
+  windowMs: 60*60*10, // 1 hour window 
+  max: 5, // start blocking after 5 requests 
+  message: "Too many accounts created from this IP, please try again after an hour"
+  
+});
 
 /** 
  *  ROTA DE VALIDAÇÃO DE LOGIN
  * */ 
 
-router.post('/', async (req: any, res: any) => {
+router.post('/', createAccountLimiter ,  async  (req: any, res: any) => {
   try {
     const response : any = await login.run(req);
     console.log('LOGIN RESPONSE', response);

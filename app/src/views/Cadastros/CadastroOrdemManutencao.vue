@@ -21,12 +21,6 @@
             <div>
               <tranfer-select v-model="inputValues.stats" :selects="selectsStats" :label="'Status'"/>
             </div>
-            <div>
-              <custom-select v-model="inputValues.customSelect" :selects="getStatsSelect()" :label="'TESTE'"/>
-            </div>
-            <div>
-              <custom-select v-model="inputValues.customSelect2" :selects="getPrioritySelect" :label="'TESTE'"/>
-            </div>
             <!-- {{stats}} -->
           </div>
         <div class="qualquer"></div>
@@ -72,8 +66,6 @@ export default {
         customSelect2: '',
       },
       stats: [],
-
-
       selects: {
         select: "",
         selects: []
@@ -277,22 +269,22 @@ export default {
           if (res.result.length === undefined) 
           this.stats.push(res.result)
           else this.stats = [ ...res.result ]
-          // console.log("-------0000111")
-          // console.log(res.result)
-          // if (res.result.length === undefined) {
-          //   this.selects.selects.map(select => {
-          //     Object.entries(select).forEach(([key, value]) => {
-          //       console.log(key, value);
-          //     })
-          //   })
-          // } // this.selects.selects.push(res.result)
-          // else {
-          //   for (let index = 0; index < res.result.length; index++) {
-          //     this.selectsStats.selects.push(res.result[index]);
-          //     this.selectsStats.selects[index].value = res.result[index].idStatus;
-          //     this.selectsStats.selects[index].label = res.result[index].tipoStatus;
-          //   }
-          // }
+          console.log("-------")
+          console.log(res.result)
+          if (res.result.length === undefined) {
+            this.selects.selects.map(select => {
+              Object.entries(select).forEach(([key, value]) => {
+                console.log(key, value);
+              })
+            })
+          } // this.selects.selects.push(res.result)
+          else {
+            for (let index = 0; index < res.result.length; index++) {
+              this.selectsStats.selects.push(res.result[index]);
+              this.selectsStats.selects[index].value = res.result[index].idStatus;
+              this.selectsStats.selects[index].label = res.result[index].tipoStatus;
+            }
+          }
       })
     }
   },

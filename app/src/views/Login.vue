@@ -40,62 +40,67 @@ export default {
     return {
       inputValues: {
         numeroCracha: '',
-        senha: ''
+        senha: '',
+        aux: 0
       }
     };
   },
 
   methods: {
     loginValidation() {
-      this.$http.methodPost('users', localStorage.getItem('token'), this.inputValues)
-        .then(async json => {
-          if (json.status !== 200) return this.$swal({
-            type: 'error',
-            title: `${json.err}`,
-            confirmButtonColor: '#F34336',
-          })
-          try {
-            this.$setActivity(
-              'login',
-              {
-                nome: json.nome,
-                email: json.email,
-                cracha: json.numeroCracha,
-                date: this.$moment().format('DD-MM-YYYY HH-mm')
-              },
-              'unnecessaryToken'
-            );
-            
-            this.$store.commit('addUser', { email: json.email, nome: json.nome, nivelAcesso: json.nivelAcesso, cracha: json.numeroCracha });
-            
-            await this.setTokenLocalStorage(json.token);
-
-            this.$swal({
-              position: 'top',
-              type: 'success',
-              toast: 'true',
-              title: 'Autenticado com sucesso!',
-              showConfirmButton: false,
-              timer: 1500
-            }).then(() => {
-              console.log('statre :', this.$store.state.user);
-              this.$router.replace('dashboard')
-            });
-          } catch (err) {
-            this.$swal({
-              position: 'top',
+        this.$http.methodPost('users', localStorage.getItem('token'), this.inputValues)
+          .then(async json => {
+            this.aux = 1;
+            console.log("Ponto 1")
+            if (json.status !== 200) return this.$swal({
               type: 'error',
-              toast: 'true',
-              title: `Ocorreu um erro!`,
+              title: `${json.err}`,
+              confirmButtonColor: '#F34336',
             })
-          }
-        }).catch(err => {
-          console.log(err);
+            if (json.status == 429) return this.$swal({
+                position: 'top',
+                type: 'error',
+                toast: 'true',
+                title: `Houve um excesso de tentativas!`,
+            })
+            try {
+              await this.setTokenLocalStorage(json.token);
+              this.$swal({
+                position: 'top',
+                type: 'success',
+                toast: 'true',
+                title: 'Autenticado com sucesso!',
+                showConfirmButton: false,
+                timer: 1500
+              }).then(() => {
+                this.$router.replace('dashboard')
+                console.log("Algo deu errado eu acho!")
+              });
+            } catch (err) {
+              this.$swal({
+                position: 'top',
+                type: 'error',
+                toast: 'true',
+                title: `Ocorreu um erro!`,
+              })
+            }
+          }).catch(err => {
+            this.aux = 1;
+            console.log(err);
+            this.$swal({
+              type: 'error',
+              title: `Algo deu errado! Falha na requisição!`,
+            })
+        })
+        if (this.aux == 0){ 
           this.$swal({
             type: 'error',
-            title: `Algo deu errado! Falha na requisição!`,
+            title: `Houve um excesso de tentativas!`,
+            html: `<b>Tente novamente em 5 minutos!</b>`,
+            confirmButtonColor: '#F34336',
           })
-      })
+        }
+      this.aux = 0;
     },
 
     setTokenLocalStorage(token) {    

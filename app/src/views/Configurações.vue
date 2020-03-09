@@ -169,10 +169,7 @@ export default {
             type: 'error',
             title: `Ops! ${json.err}`,
             confirmButtonColor: '#F34336',
-          });
-          
-          this.$setActivity('registerUser', { ...this.$store.state.user, date: this.$moment().format('DD-MM-YYYY HH-mm')} , getLocalStorageToken())
-
+          })
           this.$swal({
             type: 'success',
             title: `${json.result}`,
