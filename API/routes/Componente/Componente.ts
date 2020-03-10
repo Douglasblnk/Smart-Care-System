@@ -1,11 +1,14 @@
 const { Router } = require("express");
-import RegisterComponent from '../../controller/registerComponent/registerComponent'
+import RegisterComponent from '../../controller/registerComponent/registerComponent';
 import GetComponentValidate from '../../controller/registerComponent/getComponentValidate';
-import Auth from '../../auth/auth'
+import  DeleteComponentValidate  from '../../controller/registerComponent/deleteComponentValidate';
+import Auth from '../../auth/auth';
+import UpdateComponentValidate from '../../controller/registerComponent/updateComponentValidate';
 
 const router = Router();
 const registerComponent = new RegisterComponent();
 const getComponentValidate = new GetComponentValidate();
+const deleteComponentValidate = new DeleteComponentValidate();
 const jwt = new Auth();
 
 /** 
@@ -37,4 +40,26 @@ router.get('/get' , async(req: any, res: any) => {
 
   }
 });
+router.delete('/:id', async(req: any, res: any) => {
+  try {
+    await jwt.jwtVerify(req)
+    const response = await deleteComponentValidate.run(req);
+    res.status(200).send(response);
+  } catch(err){
+    res.status(404).send(err);
+  }
+})
+router.put('/:id', async(req: any, res: any) => {
+  try {
+    await jwt.jwtVerify(req);
+    
+    const response = await UpdateComponentValidate.arguments(req);
+    res.status(200).send(response);
+  
+
+  } catch(err) {
+    res.status(404).end(err);
+  }
+})
+
 module.exports = router;

@@ -66,6 +66,7 @@ export default {
         customSelect2: '',
       },
       stats: [],
+      workEquipment: [],
       selects: {
         select: "",
         selects: []
@@ -183,20 +184,18 @@ export default {
             title: `Ops! ${res.err}`,
             confirmButtonColor: '#F34336',
           })
-          console.log('aaaaaaaaaaaaa',res.result)
-          if (res.result.length === undefined) {
-            this.selects.selects.map(select => {
-              Object.entries(select).forEach(([key, value]) => {
-                console.log(key, value);
-              })
-            })
-          } // this.selects.selects.push(res.result)
-          else {
-            this.selects.selects.map((select, index) => {
-              console.log(index);
-            })
-            console.log("----")
-            console.log(res.result)
+
+         if (res.result.length === undefined ) {
+
+              this.workEquipment.push(res.result)
+            console.log(this.workEquipment);
+            this.selects.selects.push(this.workEquipment);
+             this.selects.selects[0].value = this.workEquipment[0].idEquipamento;
+             this.selects.selects[0].label = this.workEquipment[0].equipamento;
+
+            }else {
+            // console.log("----")
+            // console.log(res.result)
             for (let index = 0; index < res.result.length; index++) {
               this.selects.selects.push(res.result[index]);
               this.selects.selects[index].value = res.result[index].idEquipamento;
@@ -215,14 +214,7 @@ export default {
           })
           console.log("-------")
           console.log(res.result)
-          if (res.result.length === undefined) {
-            this.selects.selects.map(select => {
-              Object.entries(select).forEach(([key, value]) => {
-                console.log(key, value);
-              })
-            })
-          } // this.selects.selects.push(res.result)
-          else {
+          if (res.result.length != undefined) {
             for (let index = 0; index < res.result.length; index++) {
               this.selectsSector.selects.push(res.result[index]);
               this.selectsSector.selects[index].value = res.result[index].idSetor;
