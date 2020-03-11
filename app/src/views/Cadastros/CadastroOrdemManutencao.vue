@@ -1,5 +1,21 @@
 <template>
   <div class="equipmentBackground">
+      
+    <form-wizard @on-complete="onComplete">
+     <tab-content title="Personal details"
+                  icon="ti-user">
+       My first tab content
+     </tab-content>
+     <tab-content title="Additional Info"
+                  icon="ti-settings">
+       My second tab content
+      </tab-content>
+      <tab-content title="Last step"
+                  icon="ti-check">
+       Yuhuuu! This seems pretty damn simple
+      </tab-content>
+      </form-wizard>
+
       <form @submit.prevent="registerOrderMaintenance()">
           <div class="cadCard">
             <div><simple-input v-model="inputValues.title" :label="'Título:'" :type="'text'"/></div>
@@ -11,7 +27,8 @@
             <div><simple-input v-model="inputValues.beginData" :label="'Data emissão'" :type="'date'" /></div>
             <div><tranfer-select v-model="inputValues.equipment" :selects="selects" :label="'Equipamento'"/></div>
             <div>
-              <tranfer-select v-model="inputValues.typeMaintenance" :selects="selectsTypeMaintenance" :label="'Tipo Manutenção'"/></div>
+              <tranfer-select v-model="inputValues.typeMaintenance" :selects="selectsTypeMaintenance" :label="'Tipo Manutenção'"/>
+            </div>
             <div>
               <tranfer-select v-model="inputValues.sector" :selects="selectsSector" :label="'Setor'"/>
             </div>
@@ -38,6 +55,7 @@ import description from "../../components/inputs/description";
 import selectId from "../../components/inputs/tranfer-select";
 import saveButton from '../../components/button/save-button'
 import select from '../../components/inputs/custom-select'
+import {FormWizard, TabContent} from 'vue-form-wizard'
 
 export default {
   components: {
@@ -46,6 +64,7 @@ export default {
     "save-button": saveButton,
     description: description,
     'custom-select': select,
+    FormWizard
   },
   data() {
     return {
