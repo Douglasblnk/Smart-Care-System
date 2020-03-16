@@ -12,6 +12,7 @@ import router from './routes';
 import Http from './utils/http';
 import { validate } from './utils/user-validate';
 import VueFormWizard from 'vue-form-wizard'
+import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 
 import 'sweetalert2/dist/sweetalert2.min.css';
 
