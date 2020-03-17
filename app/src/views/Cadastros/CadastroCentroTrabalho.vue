@@ -130,6 +130,7 @@ export default {
     },
 
     deleteWorkCenter(workCenter, index) {
+
       this.$swal({
         type: 'question',
         title: `Deseja mesmo remover o centro de trabalho ${workCenter.descricao_centro_trabalho}?`,

@@ -2,14 +2,14 @@ import Delete from '../../dao/Delete';
 
 const comitData = new Delete();
 
-const TABLE = 'equipamento';
+const TABLE = 'Componente';
 
 export default class DeleteComponentValidate {
 
 
     async run(event: any){
         try {
-            const data = this.getQuery(event);
+            const data = this.getData(event);
 
             this.validateData(data);
 
@@ -36,8 +36,8 @@ export default class DeleteComponentValidate {
     }
     getQuery(data: any) {
         const post = [data];
-
-        const query = `DELETE from ${TABLE} WHERE ${TABLE}.idComponente = ?`;
+        
+        const query = `DELETE FROM ${TABLE} WHERE ${TABLE}.idComponente = ?`;
 
         const dataQuery = { query, post, type: 'Componente'};
 
