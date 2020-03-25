@@ -1,20 +1,23 @@
 <template>
   <div class="equipmentBackground">
-    <form @submit.prevent="registerOrderMaintenance()">
       <div class="cadCard">
-        <form-wizard @on-complete="onComplete" class="stepByStep" title="Cadastro de Ordem de serviço" subtitle="">
-          <tab-content title="Causa Manutenção" icon="fas fa-user">
-            <div>
+        <form-wizard @on-complete="registerOrderMaintenance()" class="stepByStep" title="Cadastro de Ordem de serviço" subtitle="" nextButtonText="Próximo" backButtonText="Voltar" finishButtonText="Finalizar">
+          <tab-content title="Causa Manutenção" icon="fas fa-user" class="maintenanceCause">
+            <div class="firstInput">
               <simple-input v-model="inputValues.title" :label="'Título:'" :type="'text'" />
             </div>
-            <div>
+            <div class="secondInput">
               <simple-input v-model="inputValues.summary" :label="'Resumo'" :type="'text'" />
             </div>
+            <div class="inputMaintenance">
             <div>
-              <simple-input v-model="inputValues.description" :label="'Descrição:'" :type="'text'" />
+              <label class="text-muted">Descrição</label>
+            </div>
+              <textarea class="rounded descriptionInput" rows="3" v-model="inputValues.description" name="comment" form="usrform"></textarea>
+              <!-- <simple-input v-model="inputValues.description" :label="'Descrição:'" :type="'text'" />-->
             </div>
           </tab-content>
-          <tab-content title="Datas" icon="fa fa-cog">
+          <tab-content title="Datas" icon="fa fa-cog" class="maintenanceCause">
             <div>
               <simple-input
                 v-model="inputValues.plannedStart"
@@ -30,17 +33,10 @@
               />
             </div>
             <div>
-              <tranfer-select
-                v-model="inputValues.requireStop"
-                :selects="selectsRequireStop"
-                :label="'Requer Parada'"
-              />
-            </div>
-            <div>
               <simple-input v-model="inputValues.beginData" :label="'Data emissão'" :type="'date'" />
             </div>
           </tab-content>
-          <tab-content title="Confirmação" icon="fas fa-check">
+          <tab-content title="Informações Gerais" icon="fas fa-check" class="maintenanceCause">
             <div>
               <tranfer-select
                 v-model="inputValues.equipment"
@@ -71,6 +67,13 @@
             </div>
             <div>
               <tranfer-select
+                v-model="inputValues.requireStop"
+                :selects="selectsRequireStop"
+                :label="'Requer Parada'"
+              />
+            </div>
+            <div>
+              <tranfer-select
                 v-model="inputValues.stats"
                 :selects="selectsStats"
                 :label="'Status'"
@@ -81,11 +84,6 @@
 
         <!-- {{stats}} -->
       </div>
-      <div class="qualquer"></div>
-      <div class="d-flex justify-content-center m-3">
-        <save-button label="Cadastrar" />
-      </div>
-    </form>
   </div>
 </template>
 
@@ -360,25 +358,39 @@ export default {
 <style lang="scss" scoped>
 .equipmentBackground {
   width: 100vw;
-  height: 100vh;
-  padding: 70px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   .cadCard {
-    display: grid;
-    grid-column-start: 1;
-    grid-column-end: 3;
-    grid-row-start: 1;
-    grid-row-end: 4;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr;
-    grid-gap: 25px;
+    width:75%;
     background-color: #ffffff;
     border-radius: 10px;
     padding: 25px;
-    align-items: start;
-    flex-wrap: wrap;
+    margin-top:6%;
     .stepByStep{
-      margin-left:50px;
-      width:800px;
+      width:100%;
+      .maintenanceCause{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        .inputMaintenance{
+          grid-column-start: 1;
+          grid-column-end: 3;
+          .descriptionInput{
+            margin-left:1%;
+            width:98%;
+          }
+        }
+        .firstInput{
+          grid-column-start:1;
+          grid-column-end:1;
+        }
+        .secondInput{
+          grid-column-start:2;
+          grid-column-end:2;
+        }
+      }
     }
   }
 }
