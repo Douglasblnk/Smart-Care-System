@@ -36,3 +36,7 @@ select ordemServico.resumo,ordemServico.inicioPlanejado,ordemServico.fimPlanejad
  ordemServico INNER JOIN Status ON ordemServico.Status_idStatus = Status.idStatus;
 
  select ordemServico.resumo,ordemServico.descricao,ordemServico.tipoManutencao,ordemServico.requerParada,ordemServico.inicioPlanejado,ordemServico.fimPlanejado,Equipamento.numeroPatrimonio,Setor.nome,Status.tipoStatus from ordemServico INNER JOIN Status ON ordemServico.Status_idStatus = Status.idStatus INNER JOIN Setor ON ordemServico.Setor_idSetor = Setor.idSetor LEFT JOIN Equipamento ON ordemServico.Equipamento_numeroPatrimonio = Equipamento.numeroPatrimonio  where ordemServico.idOrdemServico =\'2\''
+
+ select Status_idStatus, Prioridade_idPrioridade,Setor_idSetor,tipoManutencao_idTipoManutencao, dadosOperacoes_idDadoOperacao from ordemservico; 
+
+ select Status_idStatus, Prioridade_idPrioridade,Setor_idSetor,tipoManutencao_idTipoManutencao, dadosOperacoes_idDadoOperacao,Equipamento_idEquipamento from ordemservico;

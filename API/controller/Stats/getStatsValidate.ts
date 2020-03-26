@@ -8,9 +8,11 @@ export default class GetEquipmentValidate {
 
   async run(event: any) {
     try {
+      console.log("Super certo 1")
       const getQuery = this.getQuery()
-
+      console.log("Super certo 2")
       const result = await commitData.run(getQuery);
+      console.log("Super certo 3")
       console.log('cheguei até aqui');
       return result;
     } catch (err) {

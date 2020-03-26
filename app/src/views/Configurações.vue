@@ -1,3 +1,4 @@
+  
 <template>
   <div class="root-configuracoes-view">
     <div class="wrapper-configuration p-3">
@@ -109,7 +110,6 @@
 
 <script>
 import { getLocalStorageToken } from '../utils/utils';
-
 export default {
   
   data() {
@@ -127,11 +127,9 @@ export default {
       isEditing: false,
     };
   },
-
   mounted() {
     this.getUsers()
   },
-
   methods: {
     getUsers() {
       console.log('hereee');
@@ -149,7 +147,6 @@ export default {
       })
       
     },
-
     register() {
       this.$http.methodPost('users/register', getLocalStorageToken(), this.userInputValues)
         .then(async json => {
@@ -168,7 +165,6 @@ export default {
             },
             getLocalStorageToken(),
           );
-
           this.$swal({
             type: 'success',
             title: `${json.result}`,
@@ -180,14 +176,12 @@ export default {
           })
         })
     },
-
     editUser(user) {
       console.log(user);
       this.userInputValues = { ...user }
       console.log(this.userInputValues);
       this.isEditing = true;
     },
-
     updateUser() {
       this.$http.methodUpdate('users', getLocalStorageToken(), this.userInputValues, this.userInputValues.numeroCracha)
         .then(res => {
@@ -196,7 +190,6 @@ export default {
             title: res.err,
             confirmButtonColor: '#F34336',
           })
-
           this.$setActivity(
             'editUser',
             {
@@ -206,7 +199,6 @@ export default {
             },
             getLocalStorageToken(),
           );
-
           this.$swal({
             type: 'success',
             title: res.result
@@ -217,7 +209,6 @@ export default {
           })
         })
     },
-
     deleteUser(user, index) {
       console.log(user);
       this.$swal({
@@ -233,7 +224,6 @@ export default {
                 title: json.err,
                 confirmButtonColor: '#F34336',
               });
-
               this.$setActivity(
                 'deleteUser',
                 {
@@ -243,7 +233,6 @@ export default {
                 },
                 getLocalStorageToken(),
               );
-
               this.$swal({
                 type: 'success',
                 title: json.result,
@@ -256,12 +245,10 @@ export default {
         }
       })
     },
-
     closeEditingUser() {
       this.isEditing = false;
       this.resetModel();
     },
-
     resetModel() {
       this.userInputValues = {}
     }
@@ -322,7 +309,6 @@ export default {
     }
   }
 }
-
 .slide-fade-enter-active {
   transition: all 0.1s ease;
 }
