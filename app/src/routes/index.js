@@ -5,6 +5,7 @@ import Dashboard from '../views/Dashboard'
 import Cadastros from '../views/Cadastros'
 import Login from '../views/Login'
 import Configurações from '../views/Configurações.vue'
+import Verificacao from '../views/Verificacao.vue'
 import Detalhamento from '../views/Detalhamento.vue'
 import Consulta from '../views/Consulta.vue'
 
@@ -119,6 +120,12 @@ const routes = [
     path: '/configuracoes',
     name: 'Configurações',
     component: Configurações,
+    meta: { requireAuth: true }
+  },
+  {
+    path: '/verificacao',
+    name: 'verificacao',
+    component: Verificacao,
     meta: { requireAuth: true }
   },
   {
