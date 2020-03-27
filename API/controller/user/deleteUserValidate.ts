@@ -2,7 +2,7 @@ import Delete from '../../dao/Delete';
 
 const commitData = new Delete();
 
-const TABLE = 'usuario';
+const TABLE = 'Usuario';
 
 export default class DeleteUserValidate {
 

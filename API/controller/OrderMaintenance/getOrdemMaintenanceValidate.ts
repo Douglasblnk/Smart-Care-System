@@ -2,7 +2,7 @@ import Get from '../../dao/Get';
 
 const commitData = new Get();
 
-const TABLE = 'ordemservico';
+const TABLE = 'ordemServico';
 
 export default class GetOrderMaintenanceValidate {
 

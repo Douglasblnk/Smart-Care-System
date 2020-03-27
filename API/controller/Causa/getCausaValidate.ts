@@ -2,7 +2,7 @@ import Get from '../../dao/Get';
 
 const commitData = new Get();
 
-const TABLE = 'causa';
+const TABLE = 'Causa';
 
 export default class GetCausaValidate {
 

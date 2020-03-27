@@ -1,5 +1,5 @@
 import { Mysql } from '../database/mysql'
-const connection = new Mysql('localhost', 'root', '', 'duasrodas').createConnection()
+const connection = new Mysql('duasrodasdb.cjh4gc3id4wo.sa-east-1.rds.amazonaws.com', 'adminDuasRodas', 'twowheels2020', 'duasrodas').createConnection()
 
 export default class Get {
 
