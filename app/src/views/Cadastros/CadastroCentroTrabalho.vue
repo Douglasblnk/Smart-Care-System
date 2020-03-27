@@ -102,7 +102,7 @@ export default {
           })
           console.log('centro work', res);
           if (res.result.length === undefined) 
-          this.workCenters.push(res.result)
+            this.workCenters.push(res.result)
           else this.workCenters = [ ...res.result ]
           console.log('im the centro de trabalho', this.workCenters);
         })

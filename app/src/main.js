@@ -12,6 +12,8 @@ import App from './App.vue';
 import router from './routes';
 import Http from './utils/http';
 import { validate } from './utils/user-validate';
+import VueFormWizard from 'vue-form-wizard'
+import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 
 import 'sweetalert2/dist/sweetalert2.min.css';
 
@@ -26,6 +28,7 @@ Vue.use(BootstrapVue);
 Vue.use(VueSweetalert2);
 Vue.use(Vuex);
 Vue.use(ClientTable);
+Vue.use(VueFormWizard)
 
 Vue.use(importedComponents)
 
