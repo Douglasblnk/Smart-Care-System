@@ -73,6 +73,21 @@ body {
   box-sizing: border-box;
 }
 
+span, p, strong {
+  color: var(--gray)
+}
+
+@font-face {
+  font-family: "roboto";
+  src: url("./assets/fonts/Roboto-Light.ttf");
+  src: url("./assets/fonts/Roboto-Regular.ttf");
+}
+
+@font-face {
+  font-family: "roboto-thin";
+  src: url("./assets/fonts/Roboto-Light.ttf");
+}
+
 .content {
   width: 100vw;
   height: 100vh;
@@ -110,6 +125,17 @@ body {
     min-width: 16rem;
   }
 }
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.link {
+  cursor: pointer;
+  text-decoration: underline;
+  color: rgb(60, 70, 131)
+}
+
 .slide-fade-enter-active {
   transition: all 0.1s ease;
 }
@@ -119,6 +145,30 @@ body {
 .slide-fade-enter,
 .slide-fade-leave-to {
   transform: translateY(10px);
+  opacity: 0;
+}
+
+.slide-down-enter-active {
+  transition: all 0.2s ease;
+}
+.slide-down-leave-active {
+  transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1);
+}
+.slide-down-enter,
+.slide-down-leave-to {
+  transform: translateY(-10px);
+  opacity: 0;
+}
+
+.slide-side-enter-active {
+  transition: all 0.2s ease;
+}
+.slide-side-leave-active {
+  transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1);
+}
+.slide-side-enter,
+.slide-side-leave-to {
+  transform: translateX(10px);
   opacity: 0;
 }
 

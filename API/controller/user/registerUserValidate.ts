@@ -5,7 +5,7 @@ const _ = require('lodash');
 const commitData = new Dao();
 const isEmpty = new SSUtils();
 
-const TABLE = 'usuario';
+const TABLE = 'Usuario';
 
 export default class RegisterUserValidate {
 
