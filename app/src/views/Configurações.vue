@@ -97,7 +97,7 @@
                 <simple-input v-model="userInputValues.senha" label="Senha" type="password"></simple-input>
               </div>
             </div>
-            <div class="save">
+            <div class="save d-flex justify-content-center">
               <save-button label="Cadastrar" />
             </div>
           </form>

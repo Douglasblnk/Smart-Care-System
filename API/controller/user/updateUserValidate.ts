@@ -5,7 +5,7 @@ const _ = require('lodash');
 const commitData = new Update();
 const isEmpty = new SSUtils();
 
-const TABLE = 'usuario';
+const TABLE = 'Usuario';
 
 export default class UpdateUserValidate {
 

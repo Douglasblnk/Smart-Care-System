@@ -16,9 +16,9 @@ export default {
   props: {
     label: { type: String, default: '' },
     active: { type: Boolean, default: false },
-    icon: { type: String, default: '' }
-  }
-}
+    icon: { type: String, default: '' },
+  },
+};
 </script>
 
 <style lang="scss">
@@ -39,9 +39,14 @@ export default {
         margin: 0 20px;
         color: #b3b3b3
       }
+      span {
+        color: black;
+      }
     }
     .active {
-      color: white;
+      span {
+        color: white !important;
+      }
       box-shadow: 1px 1px 5px -3px black;
       background-color: var(--duas-rodas);
       &:hover {

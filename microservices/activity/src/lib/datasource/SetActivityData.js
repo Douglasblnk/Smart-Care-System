@@ -1,6 +1,6 @@
 const mysql = require('mysql');
 
-const ACTIVITY_TABLE = 'atividades';
+const ACTIVITY_TABLE = 'Atividades';
 
 module.exports = class SetActivityData {
   constructor(nome, cracha, email, date, activityId, descricao) {
@@ -50,9 +50,9 @@ module.exports = class SetActivityData {
   async createConnection() {
     try {
       const connection = mysql.createConnection({
-        host: 'localhost',
-        user: 'root',
-        password: '',
+        host: 'duasrodasdb.cjh4gc3id4wo.sa-east-1.rds.amazonaws.com',
+        user: 'adminDuasRodas',
+        password: 'twowheels2020',
         database: 'duasrodas',
       });
 
