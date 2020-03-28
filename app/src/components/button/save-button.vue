@@ -1,10 +1,16 @@
 <template>
   <div class="root-save-button-componenet">
-    <div class="d-flex justify-content-center">
-      <button type="submit" value="send" class="save-button m-3">
-        {{ label }}
-      </button>
-    </div>
+    <button
+      type="submit"
+      value="send"
+      class="save-button m-3"
+      :style="noMargin ? 'margin: 0 !important' : ''"
+    >
+      <div v-if="prefix">
+        <i class="fa mr-2" :class="prefix" />
+      </div>
+      {{ label }}
+    </button>
   </div>
 </template>
 
@@ -12,17 +18,18 @@
 export default {
   props: {
     label: { type: String, default: '' },
+    prefix: { type: String, default: '' },
+    noMargin: { type: String, default: '' },
   },
 
-  data: () => ({
-
-  })
-}
+  data: () => ({}),
+};
 </script>
 
 <style lang="scss" scoped>
 .root-save-button-componenet {
   .save-button {
+    display: flex;
     padding: 10px 30px;
     background-color: var(--duas-rodas-soft);
     color: white;

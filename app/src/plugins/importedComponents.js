@@ -3,6 +3,7 @@ const importComponent = path => () => import(/* webpackChunkName: "component_" *
 export default {
   install(Vue, options) {
     Vue.component('save-button', importComponent('button/save-button'));
+    Vue.component('simple-button', importComponent('button/simple-button'));
     Vue.component('cancel-button', importComponent('button/cancel-button'));
     Vue.component('mobile-save-button', importComponent('button/mobile-save-button'));
     Vue.component('menu-button', importComponent('button/menu-button'));

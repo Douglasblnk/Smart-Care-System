@@ -2,7 +2,7 @@ import Get from '../../dao/Get';
 
 const commitData = new Get();
 
-const TABLE = 'usuario';
+const TABLE = 'Usuario';
 
 export default class GetUsersValidate {
 

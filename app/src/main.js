@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import Fontawesome from '@fortawesome/fontawesome-free/css/all.css';
 import BootstrapVue from 'bootstrap-vue';
 import VueSweetalert2 from 'vue-sweetalert2';
+import { ClientTable } from 'vue-tables-2';
 import Swal from 'sweetalert2';
 import Lodash from 'lodash';
 import store from './store/index'
@@ -11,6 +12,8 @@ import App from './App.vue';
 import router from './routes';
 import Http from './utils/http';
 import { validate } from './utils/user-validate';
+import VueFormWizard from 'vue-form-wizard'
+import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 
 import 'sweetalert2/dist/sweetalert2.min.css';
 
@@ -24,6 +27,8 @@ Vue.use(Lodash);
 Vue.use(BootstrapVue);
 Vue.use(VueSweetalert2);
 Vue.use(Vuex);
+Vue.use(ClientTable);
+Vue.use(VueFormWizard)
 
 Vue.use(importedComponents)
 
@@ -41,6 +46,8 @@ new Vue({
   router,
   store,
   async beforeMount() {
+    moment.locale('pt-BR');
+    
     try {
       if (router.currentRoute.name === 'login' || router.currentRoute.name === '404') return;
 
