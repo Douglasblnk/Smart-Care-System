@@ -102,8 +102,12 @@ router.get('/get', async (req: any, res: any) => {
   try {
     await jwt.jwtVerify(req)
     console.log('DEU CERTO');
-    const response = await getUser.run(req);
-
+    const response : any = await getUser.run(req);
+    
+    response.result.forEach((user : any) => {
+      delete user.senha;
+    })
+    
     console.log('user response', response);
     
     res.status(200).send(response);
@@ -121,9 +125,11 @@ router.get('/get', async (req: any, res: any) => {
 router.post('/token', async (req: any, res: any) => {
   try {
     const response = await jwt.jwtVerify(req)
-    await login.run(response)
+    const user : any = await login.run(response)
 
-    res.status(200).send({ authorized: true })
+    delete user.result.senha;
+
+    res.status(200).send({ authorized: true, user: user.result })
   } catch (err) {
     console.log('Deu erro mesmo', err);
 

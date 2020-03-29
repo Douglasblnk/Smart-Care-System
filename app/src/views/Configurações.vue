@@ -33,7 +33,7 @@
                           <div class="d-flex table-action">
                             <i class="fas fa-edit text-muted" @click="editUser(user)"></i>
                             <i class="fas fa-trash text-muted" @click="deleteUser(user, index)"></i>
-                          </div> 
+                          </div>
                         </td>
                       </tr>
                     </tbody>
@@ -121,14 +121,16 @@ export default {
         funcao: '',
         email: '',
         senha: '',  
-        nivelAcesso: ''
+        nivelAcesso: '',
       },
       users: [],
       isEditing: false,
     };
   },
   mounted() {
-    this.getUsers()
+    this.$store.commit('addPageName', 'Configurações');
+
+    this.getUsers();
   },
   methods: {
     getUsers() {
@@ -271,7 +273,7 @@ export default {
   }
   .label-text {
     span {
-      font-family: 'Montserrat';
+      font-family: 'roboto';
       font-size: 20px;
     }
   }

@@ -22,22 +22,22 @@
 </template>
 
 <script>
-import dashboard from "../../utils/dashboard-module";
+import dashboard from '../../utils/dashboard-module';
 
 export default {
 
   data() {
     return {
-      dashboard
-    }
+      dashboard,
+    };
   },
 
   methods: {
     currentRoute(routes, router) {
-      return routes.toLowerCase() === router.name.toLowerCase();
-    }
+      return routes === router.name;
+    },
   },
-}
+};
 </script>
 
 <style lang="scss" scoped>

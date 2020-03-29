@@ -158,7 +158,6 @@
                       label="Detalhar"
                       @click.native="openOrder(order)"
                     />
-
                     <simple-button
                       prefix="fa-eye"
                       label="Resumo"
@@ -225,6 +224,8 @@ export default {
   },
 
   mounted() {
+    this.$store.commit('addPageName', 'Consultas');
+
     this.getOrderMaintence();
     this.getStatus();
     this.getPriority();
@@ -320,10 +321,13 @@ export default {
       });
     },
     openOrder(order) {
+      this.$store.commit('addPageName', `Consultas | ${order.idOrdemServico}`);
+
       this.$set(this.state, 'view', 'detail');
       this.$set(this.detail, 'order', order);
     },
     closeDetail() {
+      this.$store.commit('addPageName', 'Consultas');
       this.$set(this.state, 'view', 'list');
     },
     getOrderMaintence() {
