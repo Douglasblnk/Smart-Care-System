@@ -1,19 +1,19 @@
 import Vue from 'vue';
-import Vuex from 'vuex'
+import Vuex from 'vuex';
 import Fontawesome from '@fortawesome/fontawesome-free/css/all.css';
 import BootstrapVue from 'bootstrap-vue';
 import VueSweetalert2 from 'vue-sweetalert2';
 import { ClientTable } from 'vue-tables-2';
 import Swal from 'sweetalert2';
 import Lodash from 'lodash';
-import store from './store/index'
+import store from './store/index';
 import moment from 'moment';
 import App from './App.vue';
 import router from './routes';
 import Http from './utils/http';
 import { validate } from './utils/user-validate';
-import VueFormWizard from 'vue-form-wizard'
-import 'vue-form-wizard/dist/vue-form-wizard.min.css'
+import VueFormWizard from 'vue-form-wizard';
+import 'vue-form-wizard/dist/vue-form-wizard.min.css';
 
 import 'sweetalert2/dist/sweetalert2.min.css';
 
@@ -28,11 +28,11 @@ Vue.use(BootstrapVue);
 Vue.use(VueSweetalert2);
 Vue.use(Vuex);
 Vue.use(ClientTable);
-Vue.use(VueFormWizard)
+Vue.use(VueFormWizard);
 
-Vue.use(importedComponents)
+Vue.use(importedComponents);
 
-const http = new Http()
+const http = new Http();
 
 Vue.config.productionTip = false;
 

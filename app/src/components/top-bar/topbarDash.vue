@@ -2,17 +2,14 @@
   <div class="root-topbar">
     <div class="container-wrapper">
       <div class="tituloTop">
-        <span v-if="$route.matched.length > 1">
-          {{ $route.matched[0].name }} |
-        </span>
-        <span :class="{'small-text' : $route.matched.length > 1}">
-          {{ $route.name }}
+        <span>
+          {{ getPageName }}
         </span>
       </div>
 
       <div class="name-notification">
         <i class="fas fa-bell" />
-        <span>|</span>
+        <div class="pipe" />
 
         <b-dropdown size="lg" right variant="link" toggle-class="text-decoration-none p-0" no-caret>
           <template v-slot:button-content>
@@ -33,13 +30,14 @@
             </span>
           </b-dropdown-item>
         </b-dropdown>
-        <!-- <div class="UserLogin">
-          <ul>
-            <li class="UserNameStyle">Ronei Roteski</li>
-            <li class="text-danger">Administrador</li>
-          </ul>
-        </div> -->
-        
+        <div class="user-login">
+          <span class="text-muted">
+            {{ $store.state.user.nome }}
+          </span>
+          <small class="text-danger">
+            {{ $store.state.user.funcao}}
+          </small>
+        </div>
       </div>
     </div>
   </div>
@@ -52,12 +50,14 @@ export default {
   },
   data() {
     return {
-      // route: this.$route.name,
-    }
+
+    };
   },
 
-  mounted() {
-    console.log(this.$route);
+  computed: {
+    getPageName() {
+      return this.$store.state.page;
+    },
   },
 
   methods: {
@@ -69,16 +69,16 @@ export default {
         showCancelButton: true,
         cancelButtonText: 'Não!',
         confirmButtonText: 'Sim!',
-        confirmButtonColor: '#F34336'
+        confirmButtonColor: '#F34336',
       }).then(res => {
         if (res.value) {
           localStorage.removeItem('token');
-          this.$router.replace('/')
+          this.$router.replace('/');
         }
-      })
-    }
-  }
-}
+      });
+    },
+  },
+};
 </script>
 
 
@@ -97,7 +97,7 @@ export default {
       margin: 0 10px;
       span {
         font-size: 20px;
-        font-family: 'Montserrat';
+        font-family: 'roboto';
         color: #979797
       }
       .small-text {
@@ -107,15 +107,16 @@ export default {
     .name-notification {
       display: flex;
       align-items: center;
-      .UserLogin{
-        ul{
-          padding-left:0px;
-          padding-right:30px;
-          margin:0px;
-          list-style-type: none;
-          .UserNameStyle{
-            color:rgb(160, 160, 160);
-          }
+      .pipe {
+        height: 100%;
+        border-right: 1px solid #dddddd;
+      }
+      .user-login{
+        display: flex;
+        flex-direction: column;
+        span, small {
+          font-family: 'roboto';
+          line-height: 1;
         }
       }
       .fa-user {

@@ -48,7 +48,7 @@ export default {
     return {
       inputValues: {
         numeroCracha: '',
-        senha: ''
+        senha: '',
       },
     };
   },
@@ -66,7 +66,7 @@ export default {
             type: 'error',
             title: `${json.err}`,
             confirmButtonColor: '#F34336',
-          })
+          });
           try {
             this.$setActivity(
               'login',
@@ -74,12 +74,18 @@ export default {
                 nome: json.nome,
                 email: json.email,
                 cracha: json.numeroCracha,
-                date: this.$moment().format('DD-MM-YYYY HH-mm')
+                date: this.$moment().format('DD-MM-YYYY HH-mm'),
               },
               'unnecessaryToken'
             );
             
-            this.$store.commit('addUser', { email: json.email, nome: json.nome, nivelAcesso: json.nivelAcesso, cracha: json.numeroCracha });
+            this.$store.commit('addUser', {
+              mail: json.email,
+              nome: json.nome,
+              nivelAcesso: json.nivelAcesso,
+              funcao: json.funcao,
+              cracha: json.numeroCracha,
+            });
             
             await this.setTokenLocalStorage(json.token);
             this.$swal({
@@ -88,38 +94,36 @@ export default {
               toast: 'true',
               title: 'Autenticado com sucesso!',
               showConfirmButton: false,
-              timer: 1500
+              timer: 1500,
             }).then(() => {
-              console.log('statre :', this.$store.state.user);
-              this.$router.replace('dashboard')
+              this.$router.replace('dashboard');
             });
           } catch (err) {
             this.$swal({
               position: 'top',
               type: 'error',
               toast: 'true',
-              title: `Ocorreu um erro!`,
-            })
+              title: 'Ocorreu um erro!',
+            });
           }
         }).catch(err => {
           console.log(err);
           this.$swal({
             type: 'error',
-            title: `Algo deu errado! Falha na requisição!`,
-          })
-      })
+            title: 'Algo deu errado! Falha na requisição!',
+          });
+      });
     },
-    setTokenLocalStorage(token) {    
-      console.log(token);  
+    setTokenLocalStorage(token) {
       return new Promise((resolve, reject) => {
         if (this.$_.isEmpty(token)) reject();
-        localStorage.setItem('token', token)
+        localStorage.setItem('token', token);
         resolve();
-      })
+      });
     },
     testingDevelopmentRoutes() {
-      this.$router.push('dashboard')
-    }
+      this.$router.push('dashboard');
+    },
   },
 };
 </script>

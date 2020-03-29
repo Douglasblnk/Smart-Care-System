@@ -16,6 +16,10 @@ export default {
     };
   },
 
+  mounted () {
+    this.$store.commit('addPageName', 'Dashboard');
+  },
+
   computed: {
     isMobile() {
       if (window.innerWidth <= '600') return true;

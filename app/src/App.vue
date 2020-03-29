@@ -28,8 +28,8 @@
 </template>
 
 <script>
-import sidebar from './components/side-bar/sidebar.vue'
-import topbar from './components/top-bar/topbarDash.vue'
+import sidebar from './components/side-bar/sidebar.vue';
+import topbar from './components/top-bar/topbarDash.vue';
 
 export default {
   components: {
@@ -45,8 +45,8 @@ export default {
 
   computed: {
     routes() {
-      if (this.$route.name === 'login') return false
-      if (this.$route.name === '404') return false
+      if (this.$route.name === 'login') return false;
+      if (this.$route.name === '404') return false;
       return true;
     },
 
@@ -54,8 +54,8 @@ export default {
       if (window.innerWidth <= '600') return true;
       return false;
     },
-  }
-}
+  },
+};
 
 </script>
 
