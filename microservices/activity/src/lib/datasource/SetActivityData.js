@@ -12,24 +12,23 @@ module.exports = class SetActivityData {
     this._descricao = descricao;
 
     this.validateParameters();
+
+    this.mysql = '';
+    this.createConnection();
   }
 
   async setActivity() {
     try {
-      const con = await this.createConnection();
-  
       const values = this.getValuesMapped();
       
-      new Promise((resolve, reject) => {
-        con.query(/* sql */ `
+      return new Promise((resolve, reject) => {
+        this.mysql.query(/* sql */ `
           INSERT INTO ${ACTIVITY_TABLE} SET ?
         `, values, (err, res) => {
-          if (err) reject(err);
-          resolve(res);
+          if (err) return reject(err);
+          return resolve(res);
         });
       });
-      con.end();
-      return;
     } catch (err) {
       console.log('err :', err);
       throw err;
@@ -60,7 +59,7 @@ module.exports = class SetActivityData {
         if (err) throw err;
       });
 
-      return connection;
+      this.mysql = connection;
     } catch (err) {
       throw err;
     }
@@ -77,5 +76,9 @@ module.exports = class SetActivityData {
       console.log('err :', err);
       throw err;
     }
+  }
+
+  closeConnection() {
+    this.mysql.end();
   }
 };

@@ -60,7 +60,7 @@ export default {
 </script>
 
 <style lang="scss">
-:root{
+:root {
   --duas-rodas: #F34336;
   --duas-rodas-soft: #E66E6D;
   --shadow-gray: rgb(160, 160, 160);

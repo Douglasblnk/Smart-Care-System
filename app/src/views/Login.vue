@@ -80,7 +80,7 @@ export default {
             );
             
             this.$store.commit('addUser', {
-              mail: json.email,
+              email: json.email,
               nome: json.nome,
               nivelAcesso: json.nivelAcesso,
               funcao: json.funcao,
