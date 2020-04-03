@@ -140,7 +140,7 @@
                 </div>
 
                 <div class="col-md-1">
-                  {{ order.Prioridade_idPrioridade }}
+                  {{ order.prioridade }}
                 </div>
 
                 <div class="col-md-2">
@@ -148,7 +148,7 @@
                 </div>
 
                 <div class="col-md-1">
-                  {{ order.Status_idStatus }}
+                  {{ order.status }}
                 </div>
 
                 <div class="col-md-2 m-2">

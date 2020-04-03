@@ -37,7 +37,8 @@ const http = new Http();
 Vue.config.productionTip = false;
 
 Vue.prototype.$apiUrl = router.options.apiUrl;
-Vue.prototype.$setActivity = http.setActivity;
+Vue.prototype.$setActivity = http.microservicesResquest.setActivity;
+Vue.prototype.$ms = http.microservicesResquest;
 Vue.prototype.$moment = moment;
 Vue.prototype.$_ = Lodash;
 Vue.prototype.$http = http;

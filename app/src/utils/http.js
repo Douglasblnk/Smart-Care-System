@@ -73,19 +73,6 @@ export default class Http {
         });
     });
   }
-
-  setActivity(activityId, activity, token) {
-    fetch('http://localhost:3010/activity/set', {
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/json',
-        'authorization': `${token}`,
-      },
-      body: JSON.stringify({ activityId, activity }),
-    }).then(res => res.json())
-      .then(json => console.log('json :', json))
-      .catch(err => console.log('err :', err));
-  }
   
   verifyData(json) {
     if (json.status !== 200) {
@@ -99,6 +86,38 @@ export default class Http {
       });
       router.replace('/');
     }
+  }
+
+  microservicesResquest = {
+    setActivity(activityId, activity, token) {
+      fetch('http://localhost:3010/activity/set', {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+          'authorization': `${token}`,
+        },
+        body: JSON.stringify({ activityId, activity }),
+      }).then(res => res.json())
+        .then(json => console.log('json :', json))
+        .catch(err => console.log('err :', err));
+    },
+
+    async microserviceAnalisis(url, token) {
+      try {
+        const response = await fetch(`http://localhost:3020/${url}`, {
+          method: 'get',
+          headers: {
+            'Content-Type': 'application/json',
+            'authorization': `${token}`,
+          },
+        });
+        if (response.status !== 200) throw new Error('Error ao carregar dados das ordens.')
+        return response.json();
+      } catch (err) {
+        console.log('err analisis => :', err);
+        throw err;
+      }
+    },
   }
 }
 

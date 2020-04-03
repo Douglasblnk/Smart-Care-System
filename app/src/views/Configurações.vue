@@ -192,6 +192,7 @@ export default {
             title: res.err,
             confirmButtonColor: '#F34336',
           })
+
           this.$setActivity(
             'editUser',
             {
@@ -201,6 +202,7 @@ export default {
             },
             getLocalStorageToken(),
           );
+
           this.$swal({
             type: 'success',
             title: res.result
