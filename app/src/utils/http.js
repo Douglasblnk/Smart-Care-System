@@ -36,6 +36,23 @@ export default class Http {
         });
     });
   }
+  methodPostNotVerified(endpoint, token = '', data) {
+    console.log(endpoint, token, data);
+    return new Promise((resolve) => {
+      fetch(`${router.options.apiUrl}/${endpoint}`, {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+          'authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      }).then(res => res.json())
+        .then(json => {
+
+          return resolve(json);
+        });
+    });
+  }
 
   methodDelete(endpoint, token = '', id) {
     console.log(endpoint, token, id);
@@ -95,7 +112,7 @@ export default class Http {
 
       Swal.fire({
         type: 'warning',
-        title: `Erro ao autentizar! ${error}`,
+        title: `Erro ao autenticar! ${error}`,
       });
       router.replace('/');
     }

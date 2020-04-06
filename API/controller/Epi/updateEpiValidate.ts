@@ -30,7 +30,7 @@ export default class UpdateEpiValidate {
         return data;
     }
     validate(data: any){
-        if(_.isEmpty === '') throw {
+        if(_.isEmpty(data)) throw {
             status: 404,
             err: 'Não existem dados',
         }

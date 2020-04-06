@@ -67,15 +67,15 @@ import cancelButton from '../../components/button/cancel-button';
 
 export default {
   components: {
-        "simple-input": simpleInput,
-        "save-button": saveButton,
-        "cancel-button": cancelButton,
+        'simple-input': simpleInput,
+        'save-button': saveButton,
+        'cancel-button': cancelButton,
 
   },
   data(){
     return {
         inputValues: {
-            descricaoEpi:''
+            descricaoEpi:'',
         },
         switchListRegister: 'list',
         isEditing: false,
@@ -159,7 +159,7 @@ export default {
                         type: 'error',
                         title: `Ops! ${res.err}`,
                         text: res.detailErr || '',
-                        confirmButtonColor: '#F34336'
+                        confirmButtonColor: '#F34336',
                     })
                     this.$swal({
                         type: 'success',
