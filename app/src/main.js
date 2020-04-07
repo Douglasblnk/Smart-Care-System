@@ -14,6 +14,7 @@ import Http from './utils/http';
 import { validate } from './utils/user-validate';
 import VueFormWizard from 'vue-form-wizard'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
+import ToggleButton from 'vue-js-toggle-button'
 
 import 'sweetalert2/dist/sweetalert2.min.css';
 
@@ -22,6 +23,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 import importedComponents from './plugins/importedComponents';
 
+Vue.use(ToggleButton)
 Vue.use(Fontawesome);
 Vue.use(Lodash);
 Vue.use(BootstrapVue);

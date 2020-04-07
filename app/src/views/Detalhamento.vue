@@ -1,109 +1,130 @@
 <template>
   <div class="root-detalhamento-view">
-    <div class="detail-content">
-      <div class="my-3">
-        <simple-button
-          :no-margin="true"
-          label="Voltar"
-          prefix="fa-arrow-left"
-          @click.native="() => $emit('state-list')"
+    <transition name="slide-side" mode="out-in">
+      <div class="detail-content" v-if="state.view === 'detail'">
+        <div class="my-3">
+          <simple-button
+            :no-margin="true"
+            label="Voltar"
+            prefix="fa-arrow-left"
+            @click.native="() => $emit('state-list')"
+          />
+        </div>
+        <div class="detail-container bg-white p-3 d-flex">
+          <div class="col-md-6">
+            <div class="order-title">
+              <span>Resumo: {{ order.resumo }}</span>
+            </div>
+            <div class="my-3">
+              <span>Descrição: {{ order.descricao }}</span>
+            </div>
+            <div class="my-3">
+              <div class="my-3 d-flex align-items-center">
+                <i class="fa fa-map-marker-alt mr-2" />
+                <span>Setor: {{ order.Setor_idSetor }}</span>
+              </div>
+              <div class="my-3 d-flex align-items-center">
+                <i class="fa fa-ban mr-2" />
+                <span>Requer parada: {{ order.requerParada }}</span>
+              </div>
+              <div class="my-3 d-flex align-items-center">
+                <i class="fa fa-exclamation-triangle mr-2" :class="getPriorityClass()" />
+                <span>Prioridade: {{ order.Prioridade_idPrioridade }}</span>
+              </div>
+              <div class="my-3 d-flex align-items-center">
+                <i class="fa fa-laptop mr-2" />
+                <span>Equipamento: {{ order.Equipamento_idEquipamento }}</span>
+              </div>
+              <div class="my-3 d-flex align-items-center">
+                <i class="fa fa-tools mr-2" />
+                <span>Tipo de Manutenção: {{ order.tipoManutencao_idtipoManutencao }}</span>
+              </div>
+              <div class="my-3 d-flex align-items-center">
+                <i class="fa fa-calendar-alt mr-2" />
+                <div class="d-flex flex-column">
+                  <span>
+                    Inicio planejado:
+                    {{ this.$moment(order.inicioPlanejado).format('DD-MM-YYYY') }}
+                  </span>
+                  <span>
+                    Fim planejado:
+                    {{ this.$moment(order.fimPlanejado).format('DD-MM-YYYY') }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="col-md-12 text-center">
+              <span style="font-size: 20px">Ações</span>
+            </div>
+            <div class="d-flex justify-content-center">
+              <div class="options-wrapper">
+                <div class="options">
+                  <i class="fa fa-play fa-lg mb-2" />
+                  <span>Iniciar</span>
+                </div>
+                <div class="options">
+                  <i class="fa fa-hand-point-right fa-lg mb-2" />
+                  <span>Iniciar</span>
+                </div>
+                <div class="options">
+                  <i class="fa fa-users fa-lg mb-2" />
+                  <span>Iniciar</span>
+                </div>
+                <div class="options">
+                  <i class="fa fa-file-signature fa-lg mb-2" />
+                  <span>Iniciar</span>
+                </div>
+                <div class="options">
+                  <i class="fa fa-check-double fa-lg mb-2" />
+                  <span>Iniciar</span>
+                </div>
+                <div class="options" @click="openOrder(order)">
+                  <i class="fa fa-clipboard-check fa-lg mb-2" />
+                  <span>Verificação</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div v-if="state.view === 'Verification'" key="Verification">
+        <Verificacao
+          :order="order"
+          @state-list="closeDetail"
         />
       </div>
-      <div class="detail-container bg-white p-3 d-flex">
-        <div class="col-md-6">
-          <div class="order-title">
-            <span>Resumo: {{ order.resumo }}</span>
-          </div>
-          <div class="my-3">
-            <span>Descrição: {{ order.descricao }}</span>
-          </div>
-          <div class="my-3">
-            <div class="my-3 d-flex align-items-center">
-              <i class="fa fa-map-marker-alt mr-2" />
-              <span>Setor: {{ order.Setor_idSetor }}</span>
-            </div>
-            <div class="my-3 d-flex align-items-center">
-              <i class="fa fa-ban mr-2" />
-              <span>Requer parada: {{ order.requerParada }}</span>
-            </div>
-            <div class="my-3 d-flex align-items-center">
-              <i class="fa fa-exclamation-triangle mr-2" :class="getPriorityClass()" />
-              <span>Prioridade: {{ order.Prioridade_idPrioridade }}</span>
-            </div>
-            <div class="my-3 d-flex align-items-center">
-              <i class="fa fa-laptop mr-2" />
-              <span>Equipamento: {{ order.Equipamento_idEquipamento }}</span>
-            </div>
-            <div class="my-3 d-flex align-items-center">
-              <i class="fa fa-tools mr-2" />
-              <span>Tipo de Manutenção: {{ order.tipoManutencao_idtipoManutencao }}</span>
-            </div>
-            <div class="my-3 d-flex align-items-center">
-              <i class="fa fa-calendar-alt mr-2" />
-              <div class="d-flex flex-column">
-                <span>
-                  Inicio planejado:
-                  {{ this.$moment(order.inicioPlanejado).format('DD-MM-YYYY') }}
-                </span>
-                <span>
-                  Fim planejado:
-                  {{ this.$moment(order.fimPlanejado).format('DD-MM-YYYY') }}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-6">
-          <div class="col-md-12 text-center">
-            <span style="font-size: 20px">Ações</span>
-          </div>
-          <div class="d-flex justify-content-center">
-            <div class="options-wrapper">
-              <div class="options">
-                <i class="fa fa-play fa-lg mb-2" />
-                <span>Iniciar</span>
-              </div>
-              <div class="options">
-                <i class="fa fa-hand-point-right fa-lg mb-2" />
-                <span>Iniciar</span>
-              </div>
-              <div class="options">
-                <i class="fa fa-users fa-lg mb-2" />
-                <span>Iniciar</span>
-              </div>
-              <div class="options">
-                <i class="fa fa-file-signature fa-lg mb-2" />
-                <span>Iniciar</span>
-              </div>
-              <div class="options">
-                <i class="fa fa-check-double fa-lg mb-2" />
-                <span>Iniciar</span>
-              </div>
-              <div class="options">
-                <i class="fa fa-clipboard-check fa-lg mb-2" />
-                <span>Iniciar</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    </transition>
   </div>
 </template>
 
 <script>
+import Verificacao from './Verificacao.vue';
 export default {
   name: 'Detalhamento',
   
+  components: {
+    Verificacao,
+  },
+
   props: {
     order: { type: Object, default: () => ({}) },
   },
 
   data() {
     return {
-
+      state: {
+        view: 'detail',
+      }
+      
     };
+  },
+
+  mounted() {
+    console.log("Order: ")
+    console.log(this.order)
   },
 
   methods: {
@@ -114,6 +135,14 @@ export default {
       if (this.order.Prioridade_idPrioridade === 3) return 'high-priority';
       if (this.order.Prioridade_idPrioridade === 4) return 'very-high-priority';
     },
+    openOrder(order) {
+      console.log("Super Teste")
+      this.$set(this.state, 'view', 'Verification');
+      //this.$set(this.detail, 'order', order);
+    },
+    closeDetail() {
+      this.$set(this.state, 'view', 'detail');
+    }
   },
 };
 </script>

@@ -1,62 +1,28 @@
 <template>
-  <div class="root-tipo-ordem-view">
-    <div class="list-option">
-        <div class="d-flex justify-content-between">
-          <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'list'">
-            <i class="fas fa-list-alt" />
-            <span>Listar</span>
-          </div>
-          <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'register'">
-            <i class="fas fa-edit" />
-            <span>Cadastrar</span>
-          </div>
-        </div>
+  <div class="root-verification-view">
+    <div class="verification-content p-3 d-flex">
+      <div class="verification-title">
+        <h3>Verificação </h3>
       </div>
-
-      <transition name="slide-fade" mode="out-in">
-        <template v-if="switchListRegister === 'list'">
-          <div class="d-flex w-100 justify-content-center">
-            <div class="table-content bg-white p-4 w-100">
-              <div class="table-responsive">
-                <table class="table table table-striped table-borderless table-hover" cellspacing="0">
-                  <thead class="table-head">
-                    <tr>
-                      <th scope="col">Tipo de manutenção</th>
-                      <th scope="col">Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody class="table-body">
-                    <tr v-for="(order, index) in orderTypes" :key="`order-${index}`">
-                      <td>{{ order.tipoManutencao }}</td>
-                      <td style="width: 50px">
-                        <div class="d-flex table-action">
-                          <i class="fas fa-edit text-muted" @click="startEdition(order)"></i>
-                          <i class="fas fa-trash text-muted" @click="deleteOrderType(order, index)"></i>
-                        </div> 
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </template>
-
-        <template v-if="switchListRegister === 'register'">
-          <form @submit.prevent="registerOrderType()" class="formPosition">
-            <div class="cadCard">
-              <div class="w-100">
-                <simple-input v-model="inputValues.tipoManutencao" :label="'Tipo de Ordem:'" :type="'text'" />
-              </div>
-            </div>
-            <div class="d-flex justify-content-center m-3">
-              <save-button :label="getSaveButtonText()" />
-              <cancel-button v-if="isEditing" @click.native="closeEditing" label="Cancelar" />
-            </div>
-          </form>
-        </template>
-      </transition>
+      <div class="verification-separetor">
+      </div>
+      <div class="form-verification">
+        <div class="text-solution-verification">
+          <simple-input v-model="solution" :label="'Solução Realizada:'" :type="'text'" />
+        </div>
+        <div class="form-verification-option">
+          <label>O problema foi resolvido?</label>
+          <toggle-button :value="true"
+                  :labels="{checked: 'Sim', unchecked: 'Não'}" :width="70" :height="30" :font-size="14"/>
+        </div>
+      </div>    
     </div>
+    <form @submit.prevent="maintenanceOrderCheck()" class="formPosition">
+      <div class="d-flex justify-content-center m-3">
+        <save-button label="Verificar"/>
+      </div>
+    </form>
+  </div>
 </template>
 
 <script>
@@ -64,109 +30,71 @@ import { getLocalStorageToken } from '../utils/utils';
 import simpleInput from '../components/inputs/simple-input';
 import saveButton from '../components/button/save-button';
 import cancelButton from '../components/button/cancel-button';
+import { ToggleButton } from 'vue-js-toggle-button'
 
 export default {
   components: {
     'simple-input': simpleInput,
     'save-button': saveButton,
     'cancel-button': cancelButton,
+    'toggle-button': ToggleButton
   },
+
+  props: {
+    order: { type: Object, default: () => ({}) },
+  },
+
   data() {
     return {
-      
+      solution: ""
     };
   },
 
   mounted() {
+    console.log(this.order)
   },
   
   methods: {
+    maintenanceOrderCheck(){
+
+    }
   },
 
 };
 </script>
 
 <style lang="scss" scoped>
-.root-tipo-ordem-view {
-  width: 70%;
-  .list-option {
-    display: flex;
-    justify-content: flex-start;
-    .option {
-      cursor: pointer;
-      color: var(--duas-rodas-soft);
-      transition: .2s;
-      &:hover {
-        transform: scale(1.2)
-      }
-      &:active {
-        transform: scale(1)
-      }
-      i {
-        
-        cursor: pointer;
-        font-size: 1.4rem;
-        margin: 0 5px;
-      }
-    }
-  }
-  .formPosition{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    .cadCard {
-      width: 80%;
-      padding: 20px;
-      display: flex;
-      flex-wrap: wrap;
-      border-radius: 10px;
-      background-color: #ffffff;
-    }
-  }
-  .table-content {
+.root-verification-view{
+  margin: 30px;
+  .verification-content {
+    width: 60vw;
+    background-color:#fff;
     border-radius: 10px;
-    table {
-      overflow:hidden;
-      border-collapse:separate;
-      border-radius: 10px;
+    flex-wrap: wrap;
+    .verification-title{
+      margin-left: 15px;
     }
-    .table-head {
-      background-color: var(--duas-rodas);
-      color: white;
-      th {
-        padding: 20px;
+    .verification-separetor{
+      width:95%;
+      height:3px;
+      background-color:#F34336;
+    }
+    .form-verification{
+      margin-left:15px;
+      display:flex;
+      width:100%;
+      height:10%;
+      flex-direction: row;
+      align-items: center;
+      .text-solution-verification{
+        width:40%;
+      }
+      .form-verification-option{
+        display:flex;
+        flex-direction: column;
+        margin-left:30px;
       }
     }
-    .table-body {
-      td {
-        padding: 20px;
-      }
-    }
-    .table-action {
-      i {
-        margin: 0 10px;
-        cursor: pointer;
-        transition: .1s;
-        &:hover {
-          transform: scale(1.3);
-        }
-        &:active {
-          transform: scale(1);
-        }
-      }
-    }
-  }
-
-  .slide-fade-enter-active {
-    transition: all 0.1s ease;
-  }
-  .slide-fade-leave-active {
-    transition: all 0.1s cubic-bezier(1, 0.5, 0.8, 1);
-  }
-  .slide-fade-enter,
-  .slide-fade-leave-to {
-    transform: translateX(10px);
-    opacity: 0;
   }
 }
 </style>
