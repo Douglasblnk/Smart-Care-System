@@ -12,16 +12,20 @@ import App from './App.vue';
 import router from './routes';
 import Http from './utils/http';
 import { validate } from './utils/user-validate';
-import VueFormWizard from 'vue-form-wizard'
-import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 import ToggleButton from 'vue-js-toggle-button'
-
+import VueFormWizard from 'vue-form-wizard';
+import 'vue-form-wizard/dist/vue-form-wizard.min.css';
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
 import 'sweetalert2/dist/sweetalert2.min.css';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 import importedComponents from './plugins/importedComponents';
+import locale from 'element-ui/lib/locale/lang/pt-br';
+
+Vue.use(ElementUI, { locale });
 
 Vue.use(ToggleButton)
 Vue.use(Fontawesome);
@@ -30,9 +34,10 @@ Vue.use(BootstrapVue);
 Vue.use(VueSweetalert2);
 Vue.use(Vuex);
 Vue.use(ClientTable);
-Vue.use(VueFormWizard)
+Vue.use(VueFormWizard);
 
-Vue.use(importedComponents)
+
+Vue.use(importedComponents);
 
 const http = new Http()
 

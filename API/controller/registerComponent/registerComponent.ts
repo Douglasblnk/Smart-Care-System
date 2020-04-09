@@ -40,7 +40,7 @@ export default class RegisterEquipmentValidate {
       err: 'Não existem dados!',
     };
     
-    isEmpty.verify(data,  ['description', 'equipamento_id'], '');
+    isEmpty.verify(data,  ['DescricaoComponente', 'Equipamento_idEquipamento'], '');
     
     if (data.sector === '') throw {
       status: 404,
@@ -54,7 +54,7 @@ export default class RegisterEquipmentValidate {
   }
 
   getQuery(data: any) {
-    const post = { Equipamento_idEquipamento: data.equipamento_id, DescricaoComponente: data.description};
+    const post = { Equipamento_idEquipamento: data.Equipamento_idEquipamento, DescricaoComponente: data.DescricaoComponente};
     const query = /*sql*/`INSERT INTO ${TABLE} SET ?;`;
 
     const dataQuery = { query, post, type: 'Equipamento' };

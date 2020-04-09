@@ -22,6 +22,8 @@ const ordemManutencao = require("./routes/OrdemManutencao/OrdemManutencao");
 const tipoManutencao = require("./routes/TipoOrdem/TipoOrdem");
 const prioridade = require("./routes/Prioridade/Prioridade");
 const status = require("./routes/Status/Status");
+const epi = require("./routes/Epi/Epi");
+const detalhamento = require('./routes/Detalhamento/Detalhamento');
 
 app.use("/users", user);
 app.use("/equipamento", equipamento)
@@ -35,6 +37,8 @@ app.use("/ordem-manutencao", ordemManutencao)
 app.use("/tipo-manutencao", tipoManutencao)
 app.use("/prioridade", prioridade)
 app.use("/status", status)
+app.use("/epi", epi)
+app.use("/detalhamento", detalhamento)
 
 app.get("/", (req: any, res: any) => {
   res.send("deu boa");

@@ -56,7 +56,7 @@ export default {
         {
           title: 'EPI',
           icon: 'fas fa-hard-hat',
-          route: ''
+          route: 'cadastros/cadastro-epi'
         },
         {
           title: 'Componente',

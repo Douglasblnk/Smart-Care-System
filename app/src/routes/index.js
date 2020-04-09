@@ -16,6 +16,7 @@ import CadastroTipoOrdem from '../views/Cadastros/CadastroTipoOrdem'
 import CadastroCausaSintoma from '../views/Cadastros/CadastroCausaSintoma.vue'
 import CadastroComponente from '../views/Cadastros/CadastroComponente'
 import CadastroOrdemManutencao from '../views/Cadastros/CadastroOrdemManutencao'
+import CadastroEpi from '../views/Cadastros/CadastroEpi'
 
 import { validate } from '../utils/token-validation';
 import Swal from 'sweetalert2'
@@ -83,6 +84,12 @@ const routes = [
         path: 'cadastro-ordem-manutencao',
         name: 'Ordem de Manutenção',
         component: CadastroOrdemManutencao,
+        meta: { requireAuth: true }
+      },
+      {
+        path: 'cadastro-epi',
+        name: 'epi',
+        component: CadastroEpi,
         meta: { requireAuth: true }
       }
 

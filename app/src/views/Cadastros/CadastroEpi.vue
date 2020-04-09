@@ -1,5 +1,5 @@
 <template>
-  <div class="root-centro-trabalho-view">
+  <div class="root-epi-view">
     <div class="list-option">
       <div class="d-flex justify-content-between">
         <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'list'">
@@ -21,17 +21,17 @@
               <table class="table table table-striped table-borderless table-hover" cellspacing="0">
                 <thead class="table-head">
                   <tr>
-                    <th scope="col">Centro de trabalho</th>
+                    <th scope="col">Epi</th>
                     <th scope="col">Ações</th>
                   </tr>
                 </thead>
                 <tbody class="table-body">
-                  <tr v-for="(workCenter, index) in workCenters" :key="`workCenter-${index}`">
-                    <td>{{ workCenter.descricao_centro_trabalho}}</td>
+                  <tr v-for="(epi, index) in Epis" :key="`epi-${index}`">
+                    <td>{{ epi.descricaoEpi}}</td>
                     <td style="width: 50px">
                       <div class="d-flex table-action">
-                        <i class="fas fa-edit text-muted" @click="editWorkCenter(workCenter)"></i>
-                        <i class="fas fa-trash text-muted" @click="deleteWorkCenter(workCenter, index)"></i>
+                        <i class="fas fa-edit text-muted" @click="editEpi(epi)"></i>
+                        <i class="fas fa-trash text-muted" @click="deleteEpi(epi, index)"></i>
                       </div>
                     </td>
                   </tr>
@@ -43,10 +43,10 @@
       </template>
 
       <template v-if="switchListRegister === 'register'">
-        <form @submit.prevent="registerWorkCenter()" class="formPosition">
+        <form @submit.prevent="registerEpi()" class="formPosition">
           <div class="cadCard">
             <div class="inputs">
-              <simple-input v-model="inputValues.descricao_centro_trabalho" :label="'Centro de Trabalho:'" :type="'text'" />
+              <simple-input v-model="inputValues.descricaoEpi" :label="'Epi:'" :type="'text'" />
             </div>
           </div>
           <div class="d-flex justify-content-center m-3">
@@ -57,8 +57,8 @@
       </template>
     </transition>
   </div>
+    
 </template>
-
 <script>
 import { getLocalStorageToken } from '../../utils/utils'
 import simpleInput from '../../components/inputs/simple-input';
@@ -67,142 +67,131 @@ import cancelButton from '../../components/button/cancel-button';
 
 export default {
   components: {
-    "simple-input": simpleInput,
-    "save-button": saveButton,
-    "cancel-button": cancelButton,
+        'simple-input': simpleInput,
+        'save-button': saveButton,
+        'cancel-button': cancelButton,
+
   },
-  data() {
+  data(){
     return {
-      inputValues: {
-        descricao_centro_trabalho: '',
-      },
-      switchListRegister: 'list',
-      isEditing: false,
-      workCenters: [],
+        inputValues: {
+            descricaoEpi:'',
+        },
+        switchListRegister: 'list',
+        isEditing: false,
+        Epis: [],
     };
-  },
 
-  mounted() {
-    this.getWorkCenter();
   },
-
+  mounted(){
+      this.getEpi();
+  },
   methods: {
-    getSaveButtonText() {
-      if (this.isEditing) return 'Alterar';
-      else return 'Cadastrar'
+    getSaveButtonText(){
+        if(this.isEditing) return 'Alterar';
+        else return 'Cadastro'
     },
+    getEpi(){
+        this.$http.methodGet('epi/get', getLocalStorageToken())
+        .then(res =>{
+            if(res.result.length === 0) this.$swal({
+                type:'warning',
+                title: 'Não foi encontrado nenhum Epi',
+                confirmButtonColor: '#F34336',
+            })
+            if(res.result.length === undefined)
+            this.Epis.push(res.result)
+            else this.Epis = [ ...res.result ]
 
-    getWorkCenter() {
-      this.$http.methodGet('centro-trabalho/get', getLocalStorageToken())
+        }
+        )
+    },
+    registerEpi() {
+        if(this.isEditing) return this.updateEpi();
+        this.$http.methodPost('epi', getLocalStorageToken(), this.inputValues)
         .then(res => {
-          if (res.result.length === 0) this.$swal({
-            type: 'warning',
-            title: 'Não foi encontrado nenhum centro de trabalho!',
-            confirmButtonColor: '#F34336',
-          })
-          console.log('centro work', res);
-          if (res.result.length === undefined) 
-            this.workCenters.push(res.result)
-          else this.workCenters = [ ...res.result ]
-          console.log('im the centro de trabalho', this.workCenters);
-        })
-    },
-
-    registerWorkCenter() {
-      if (this.isEditing) return this.updateWorkCenter();
-      this.$http.methodPost('centro-trabalho', getLocalStorageToken(), this.inputValues)
-        .then(res => {
-          if (res.status !== 200) return this.$swal({
-            type: 'error',
-            title: `Ops! ${res.err}`,
-            confirmButtonColor: '#F34336',
-          })
-          this.$swal({
-            type: 'success',
-            title: `${res.result}`,
-            confirmButtonColor: '#F34336',
-          }).then(() => {
-            this.workCenters.push(this.inputValues);
-            console.log(this.instalationLocal);
-            this.resetModel();
-          })
-        })
-    },
-
-    deleteWorkCenter(workCenter, index) {
-
-      this.$swal({
-        type: 'question',
-        title: `Deseja mesmo remover o centro de trabalho ${workCenter.descricao_centro_trabalho}?`,
-        showCancelButton: true,
-        confirmButtonColor: '#F34336',
-        preConfirm: () => {
-          this.$http.methodDelete('centro-trabalho', getLocalStorageToken(), workCenter.idCentro_Trabalho)
-            .then(res => {
-
-              if (res.status !== 200) return this.$swal({
+            if(res.status !== 200) return this.$swal({
                 type: 'error',
                 title: `Ops! ${res.err}`,
-                text: res.detailErr || '',
                 confirmButtonColor: '#F34336',
-              })
-              this.$swal({
+            })
+            this.$swal({
+                type: 'success',
+                title:`${res.result}`,
+                confirmButtonColor: '#F34336',
+            }).then(() => {
+                this.Epis.push(this.inputValues);
+                this.resetModel();
+            })
+        })
+    },
+    updateEpi(epi) {
+        this.$http.methodUpdate('epi', getLocalStorageToken(), this.inputValues, this.inputValues.idEpi)
+        .then(res => {
+            if(res.status !== 200) return this.$swal({
+                type: 'error',
+                title: `Ops! ${res.err}`,
+                confirmButtonColor: '#F34336',
+            })
+            this.$swal({
                 type: 'success',
                 title: `${res.result}`,
                 confirmButtonColor: '#F34336',
-              }).then(() => {
-                              console.log('lalalalalalalalalalal')
-              console.log(res)
-                this.workCenters.splice(index, 1)
-              })
             })
-        }
-      });
-    },
+            .then(() => {
+                const index = this.Epis.indexOf(this.Epis.find(i => i.idEpi === this.inputValues.idEpi))
+                this.Epis.splice(index, 1, this.inputValues)
+                this.closeEditing()
+            })
+        })
 
-    editWorkCenter(workCenter) {
-      console.log(workCenter);
-      this.inputValues = { ...workCenter }
-      console.log(this.inputValues);
-      this.switchListRegister = 'register'
-      this.isEditing = true;
     },
-
-    updateWorkCenter(sector) {
-      this.$http.methodUpdate('centro-trabalho', getLocalStorageToken(), this.inputValues, this.inputValues.idCentro_Trabalho )
-        .then(res => {
-          if (res.status !== 200) return this.$swal({
-            type: 'error',
-            title: `Ops! ${res.err}`,
+    deleteEpi(epi, index){
+        this.$swal({
+            type: 'question',
+            title: `Deseja mesmo remover o Epi ${epi.descricaoEpi}`,
+            showCancelButton: true,
             confirmButtonColor: '#F34336',
-          })
-          this.$swal({
-            type: 'success',
-            title: `${res.result}`,
-            confirmButtonColor: '#F34336',
-          }).then(() => {
-            const index = this.workCenters.indexOf(this.workCenters.find(i => i.idCentro_Trabalho === this.inputValues.idCentro_Trabalho))
-            this.workCenters.splice(index, 1, this.inputValues)
-            this.closeEditing()
-          })
+            preConfirm: () => {
+                this.$http.methodDelete('epi', getLocalStorageToken(), epi.idEpi)
+                .then(res => {
+                    if(res.status !== 200) return this.$swal({
+                        type: 'error',
+                        title: `Ops! ${res.err}`,
+                        text: res.detailErr || '',
+                        confirmButtonColor: '#F34336',
+                    })
+                    this.$swal({
+                        type: 'success',
+                        title: `${res.result}`,
+                        confirmButtonColor: '#F34336'
+                    })
+                    .then(() => {
+                        this.Epis.splice(index, 1)
+                    })
+                })
+            }
         })
     },
-
+    editEpi(epi){
+        this.inputValues = { ...epi }
+        this.switchListRegister = 'register'
+        this.isEditing = true;
+    },
     closeEditing() {
       this.switchListRegister = 'list'
       this.isEditing = false;
       this.resetModel();
     },
-
     resetModel() {
-      this.inputValues = {}
-    },
-  },
-};
+        this.inputValues = {}
+    }
+ }
+    
+}
 </script>
-
 <style lang="scss" scoped>
-.root-centro-trabalho-view {
+.root-epi-view {
   width: 70%;
   .list-option {
     display: flex;
