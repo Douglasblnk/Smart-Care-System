@@ -140,7 +140,7 @@
                 </div>
 
                 <div class="col-md-1">
-                  {{ order.Prioridade_idPrioridade }}
+                  {{ order.prioridade }}
                 </div>
 
                 <div class="col-md-2">
@@ -148,7 +148,7 @@
                 </div>
 
                 <div class="col-md-1">
-                  {{ order.Status_idStatus }}
+                  {{ order.status }}
                 </div>
 
                 <div class="col-md-2 m-2">
@@ -158,7 +158,6 @@
                       label="Detalhar"
                       @click.native="openOrder(order)"
                     />
-
                     <simple-button
                       prefix="fa-eye"
                       label="Resumo"
@@ -183,7 +182,7 @@
 
 <script>
 import Detalhamento from './Detalhamento.vue';
-import { getLocalStorageToken } from '../utils/utils';
+import { getLocalStorageToken, getErrors } from '../utils/utils';
 
 export default {
   name: 'Consulta',
@@ -225,6 +224,8 @@ export default {
   },
 
   mounted() {
+    this.$store.commit('addPageName', 'Consultas');
+
     this.getOrderMaintence();
     this.getStatus();
     this.getPriority();
@@ -286,7 +287,6 @@ export default {
       this.filters.status = status;
     },
     setPriorityFilter(priority) {
-      console.log('priority :', priority);
       if (this.filters.priority.idPrioridade === priority.idPrioridade)
         return this.filters.priority = {};
       this.filters.priority = priority;
@@ -320,56 +320,80 @@ export default {
       });
     },
     openOrder(order) {
+      this.$store.commit('addPageName', `Consultas | ${order.idOrdemServico}`);
+
       this.$set(this.state, 'view', 'detail');
       this.$set(this.detail, 'order', order);
     },
     closeDetail() {
+      this.$store.commit('addPageName', 'Consultas');
       this.$set(this.state, 'view', 'list');
     },
-    getOrderMaintence() {
-      this.isLoading = true;
-      this.$http.methodGet('ordem-manutencao', getLocalStorageToken())
-        .then(res => {
-          if (res.result.length === 0) return;
+    async getOrderMaintence() {
+      try {
+        this.isLoading = true;
+        
+        const response = await this.$http.get('ordem-manutencao', getLocalStorageToken());
 
-          if (res.result.length === undefined)
-            this.maintenainceOrders.push(res.result);
-          else this.maintenainceOrders = [ ...res.result ];
+        if (response.result.length === 0) return;
 
-          this.isLoading = false;
+        if (response.result.length === undefined)
+          this.maintenainceOrders.push(response.result);
+        else this.maintenainceOrders = [ ...response.result ];
 
-          this.$setActivity(
-            'orderMaintanceQuery',
-            {
-              ...this.$store.state.user,
-              date: this.$moment().format('DD-MM-YYYY HH-mm'),
-              descricao: `${this.$store.state.user.nome} fez uma consulta de ordem de manutenção`,
-            },
-            getLocalStorageToken(),
-          );
+        this.isLoading = false;
+
+        this.$http.setActivity(
+          'orderMaintanceQuery',
+          {
+            ...this.$store.state.user,
+            date: this.$moment().format('DD-MM-YYYY HH-mm'),
+            descricao: `${this.$store.state.user.nome} fez uma consulta de ordem de manutenção`,
+          },
+          getLocalStorageToken(),
+        );
+      } catch (err) {
+        this.isLoading = false;
+        console.log('error getOrderMaintence =>', err.response);
+
+        this.$swal({
+          type: 'error',
+          text: getErrors(err),
+          confirmButtonColor: '#F34336',
         });
+      }
     },
     async getStatus() {
-      this.$http.methodGet('status/get', getLocalStorageToken())
-        .then(res => {
-          if (res.result.length === 0) return this.$swal({
-            type: 'warning',
-            title: 'Não foi possível carregar os status!',
-            confirmButtonColor: '#F34336',
-          });
-          return this.optionsData.status = res.result;
+      try {
+        const response = await this.$http.get('status/get', getLocalStorageToken());
+
+        if (response.result.length === 0) throw 'Não foi possível buscar os status ou não há nenhuma status cadastrado';
+
+        return this.optionsData.status = [...response.result];
+      } catch (err) {
+        console.log('error getStatus :', err.response || err);
+
+        this.$swal({
+          type: 'warning',
+          text: getErrors(err),
+          confirmButtonColor: '#F34336',
         });
+      }
     },
     async getPriority() {
-      this.$http.methodGet('prioridade/get', getLocalStorageToken())
-        .then(res => {
-          if (res.result.length === 0) return this.$swal({
-            type: 'warning',
-            title: 'Não foi possível carregar os status!',
-            confirmButtonColor: '#F34336',
-          });
-          return this.optionsData.priority = res.result;
+      try {
+        const response = await this.$http.get('prioridade/get', getLocalStorageToken());
+
+        return this.optionsData.priority = [...response.result];
+      } catch (err) {
+        console.log('err getPriority => :', err.response || err);
+
+        return this.$swal({
+          type: 'warning',
+          text: getErrors(err),
+          confirmButtonColor: '#F34336',
         });
+      }
     },
     clearFilters() {
       this.$set(this.filters, 'status', {});

@@ -6,7 +6,9 @@
   "scripts": {
     "app": "npm run serve --prefix app",
     "api": "npm run start --prefix API",
-    "ms": "npm run start --prefix microservices/activity",
+    "ms-activity": "npm run start --prefix microservices/activity",
+    "ms-analysis": "npm run start --prefix microservices/analysis",
+    "ms": "npm-run-all -l -p ms-activity ms-analysis",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -14,9 +16,7 @@
   "dependencies": {
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.20.1",
-    "express-rate-limit": "^5.1.1",
-    "save": "^2.4.0",
-    "vue-form-wizard": "^0.8.4"
+    "npm-run-all": "^4.1.5"
   },
   "devDependencies": {
     "eslint": "^6.8.0",

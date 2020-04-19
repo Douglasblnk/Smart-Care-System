@@ -47,7 +47,7 @@ const dashboard = [
         icon: 'fa fa-cog',
         mobile: false,
         web: true,
-    }
+    },
 ];
 
-export default dashboard
+export default dashboard;

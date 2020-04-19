@@ -19,7 +19,7 @@
               </div>
             </div>
             <div class="d-flex justify-content-center m-3">
-              <save-button label="Entrar" />
+              <save-button label="Entrar" :loading="isLoading" />
             </div>
           </form>
         </div>
@@ -48,8 +48,9 @@ export default {
     return {
       inputValues: {
         numeroCracha: '',
-        senha: ''
+        senha: '',
       },
+      isLoading: false,
     };
   },
   computed: {
@@ -59,67 +60,65 @@ export default {
     },
   },
   methods: {
-    loginValidation() {
-      this.$http.methodPost('users', localStorage.getItem('token'), this.inputValues)
-        .then(async json => {
-          if (json.status !== 200) return this.$swal({
-            type: 'error',
-            title: `${json.err}`,
-            confirmButtonColor: '#F34336',
-          })
-          try {
-            this.$setActivity(
-              'login',
-              {
-                nome: json.nome,
-                email: json.email,
-                cracha: json.numeroCracha,
-                date: this.$moment().format('DD-MM-YYYY HH-mm')
-              },
-              'unnecessaryToken'
-            );
-            
-            this.$store.commit('addUser', { email: json.email, nome: json.nome, nivelAcesso: json.nivelAcesso, cracha: json.numeroCracha });
-            
-            await this.setTokenLocalStorage(json.token);
-            this.$swal({
-              position: 'top',
-              type: 'success',
-              toast: 'true',
-              title: 'Autenticado com sucesso!',
-              showConfirmButton: false,
-              timer: 1500
-            }).then(() => {
-              console.log('statre :', this.$store.state.user);
-              this.$router.replace('dashboard')
-            });
-          } catch (err) {
-            this.$swal({
-              position: 'top',
-              type: 'error',
-              toast: 'true',
-              title: `Ocorreu um erro!`,
-            })
-          }
-        }).catch(err => {
-          console.log(err);
-          this.$swal({
-            type: 'error',
-            title: `Algo deu errado! Falha na requisição!`,
-          })
-      })
+    async loginValidation() {
+      try {
+        this.isLoading = true;
+
+        const response = await this.$http.post('users', localStorage.getItem('token'), this.inputValues);
+
+        this.$http.setActivity(
+          'login',
+          {
+            nome: response.nome,
+            email: response.email,
+            cracha: response.numeroCracha,
+            date: this.$moment().format('DD-MM-YYYY HH-mm'),
+          },
+          'unnecessaryToken'
+        );
+
+        this.$store.commit('addUser', {
+          email: response.email,
+          nome: response.nome,
+          nivelAcesso: response.nivelAcesso,
+          funcao: response.funcao,
+          cracha: response.numeroCracha,
+        });
+
+        this.setTokenLocalStorage(response.token);
+
+        this.$swal({
+          position: 'top',
+          type: 'success',
+          toast: 'true',
+          title: 'Autenticado com sucesso!',
+          showConfirmButton: false,
+          timer: 1500,
+        }).then(() => {
+          this.isLoading = false;
+          this.$router.replace('dashboard');
+        });
+      } catch (err) {
+        const { response } = err;
+
+        console.log('err login => :', response );
+
+        this.isLoading = false;
+
+        return this.$swal({
+          type: 'error',
+          title: 'Por favor, tente novamente mais tarde.',
+          text: 'Ocorreu um erro ao tentar realizar o login.',
+          confirmButtonColor: '#F34336',
+        });
+      }
     },
-    setTokenLocalStorage(token) {    
-      console.log(token);  
-      return new Promise((resolve, reject) => {
-        if (this.$_.isEmpty(token)) reject();
-        localStorage.setItem('token', token)
-        resolve();
-      })
+    setTokenLocalStorage(token) {
+      return localStorage.setItem('token', token);
     },
     testingDevelopmentRoutes() {
-      this.$router.push('dashboard')
-    }
+      this.$router.push('dashboard');
+    },
   },
 };
 </script>

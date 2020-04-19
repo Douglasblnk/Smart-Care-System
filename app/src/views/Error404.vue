@@ -10,7 +10,7 @@
         </div>
       </div>
       <div class="options">
-        <div class="button">
+        <div class="d-flex justify-content-center">
           <router-link to="/">
             <save-button label="Voltar para página inicial" :active="true"/>
           </router-link>

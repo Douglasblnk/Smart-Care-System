@@ -60,10 +60,10 @@
 </template>
 
 <script>
-import { getLocalStorageToken } from '../../utils/utils';
+import { getLocalStorageToken, getErrors } from '../../utils/utils';
 import saveButton from '../../components/button/save-button';
 import cancelButton from '../../components/button/cancel-button';
-import simpleInput from "../../components/inputs/simple-input";
+import simpleInput from '../../components/inputs/simple-input';
 
 export default {
   components: {
@@ -79,120 +79,132 @@ export default {
       },
       switchListRegister: 'list',
       isEditing: false,
-      instalationLocal: []
+      instalationLocal: [],
     };
   },
 
   mounted() {
-    this.getSector()
+    this.getSector();
   },
 
   methods: {
     getSaveButtonText() {
       if (this.isEditing) return 'Alterar';
-      else return 'Cadastrar'
+      else return 'Cadastrar';
     },
-
     editSector(sector) {
-      console.log(sector);
-      this.inputValues = { ...sector }
-      console.log(this.inputValues);
-      this.switchListRegister = 'register'
+      this.inputValues = { ...sector };
+      this.switchListRegister = 'register';
       this.isEditing = true;
     },
-    
-    getSector() {
-      this.$http.methodGet('local-instalacao/get', getLocalStorageToken())
-        .then(res => {
-          if (res.result.length === 0) this.$swal({
-            type: 'warning',
-            title: 'Não foi encontrado nenhum local de instalação!',
-            confirmButtonColor: '#F34336',
-          })
-          if (res.result.length === undefined) 
-            this.instalationLocal.push(res.result)
-          else this.instalationLocal = [ ...res.result ]
-            console.log('im the instalationLocal', this.instalationLocal);
-        })
-    },
+    async getSector() {
+      try {
+        const response = await this.$http.get('local-instalacao/get', getLocalStorageToken());
 
-    registerSector() {
+        if (response.result.length === undefined)
+          this.instalationLocal.push(response.result);
+          
+        else this.instalationLocal = [ ...response.result ];
+      } catch (err) {
+        console.log('err getSector => :', err.response || err);
+
+        return this.$swal({
+          type: 'warning',
+          text: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
+    async registerSector() {
       if (this.isEditing) return this.updateSector();
-      this.$http.methodPost('local-instalacao', getLocalStorageToken(), this.inputValues)
-        .then(res => {
-          if (res.status !== 200) return this.$swal({
-            type: 'error',
-            title: `Ops! ${res.err}`,
-            confirmButtonColor: '#F34336',
-          })
-          this.$swal({
-            type: 'success',
-            title: `${res.result}`,
-            confirmButtonColor: '#F34336',
-          }).then(() => {
-            this.instalationLocal.push(this.inputValues);
-            console.log(this.instalationLocal);
-            this.resetModel();
-          })
-        })
-    },
 
-    updateSector(sector) {
-      console.log(this.inputValues.idSetor);
-      this.$http.methodUpdate('local-instalacao', getLocalStorageToken(), this.inputValues, this.inputValues.idSetor)
-        .then(res => {
-          if (res.status !== 200) return this.$swal({
-            type: 'error',
-            title: `Ops! ${res.err}`,
-            confirmButtonColor: '#F34336',
-          })
-          this.$swal({
-            type: 'success',
-            title: `${res.result}`,
-            confirmButtonColor: '#F34336',
-          }).then(() => {
-            const index = this.instalationLocal.indexOf(this.instalationLocal.find(i => i.idSetor === this.inputValues.idSetor))
-            this.instalationLocal.splice(index, 1, this.inputValues)
-            this.closeEditing()
-          })
-        })
-    },
+      try {
+        const response = await this.$http.post('local-instalacao', getLocalStorageToken(), this.inputValues);
 
+        this.$swal({
+          type: 'success',
+          title: response.result,
+          confirmButtonColor: '#F34336',
+        }).then(() => {
+          this.instalationLocal.push(this.inputValues);
+
+          this.resetModel();
+        });
+      } catch (err) {
+        console.log('err registerSector => :', err.response || err);
+
+        return this.$swal({
+          type: 'warning',
+          text: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
+    async updateSector() {
+      try {
+        const response = await this.$http.update(
+          'local-instalacao', getLocalStorageToken(), this.inputValues, this.inputValues.idSetor,
+        );
+
+        this.$swal({
+          type: 'success',
+          title: response.result,
+          confirmButtonColor: '#F34336',
+        }).then(() => {
+          const index = this.instalationLocal.indexOf(
+            this.instalationLocal.find(i => i.idSetor === this.inputValues.idSetor)
+          );
+
+          this.instalationLocal.splice(index, 1, this.inputValues);
+
+          this.closeEditing();
+        });
+      } catch (err) {
+        console.log('err updateSector => :', err.response || err);
+
+        return this.$swal({
+          type: 'error',
+          text: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
     deleteSector(sector, index) {
       this.$swal({
         type: 'question',
         title: `Deseja mesmo remover o setor de ${sector.nome}?`,
         showCancelButton: true,
         confirmButtonColor: '#F34336',
-        preConfirm: () => {
-          this.$http.methodDelete('local-instalacao', getLocalStorageToken(), sector.idSetor)
-            .then(res => {
-              if (res.status !== 200) return this.$swal({
-                type: 'error',
-                title: `Ops! ${res.err}`,
-                text: res.detailErr || '',
-                confirmButtonColor: '#F34336',
-              })
-              this.$swal({
-                type: 'success',
-                title: `${res.result}`,
-                confirmButtonColor: '#F34336',
-              }).then(() => {
-                this.instalationLocal.splice(index, 1)
-              })
-            })
-        }
+        preConfirm: async () => {
+          try {
+            const response = await this.$http.delete('local-instalacao', getLocalStorageToken(), sector.idSetor);
+
+            return this.$swal({
+              type: 'success',
+              title: response.result,
+              confirmButtonColor: '#F34336',
+            }).then(() => {
+              this.instalationLocal.splice(index, 1);
+            });
+          } catch (err) {
+            console.log('err deleteSector => :', err.response || err);
+
+            return this.$swal({
+              type: 'error',
+              text: getErrors(err),
+              confirmButtonColor: '#F34336',
+            });
+          }
+        },
       });
     },
-
     closeEditing() {
-      this.switchListRegister = 'list'
+      this.switchListRegister = 'list';
       this.isEditing = false;
       this.resetModel();
     },
-
     resetModel() {
-      this.inputValues = {}
+      this.inputValues = {};
     },
   },
 };
