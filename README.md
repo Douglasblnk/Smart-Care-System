@@ -1,7 +1,7 @@
 # Smart Care System
-## Powered by Duas Rodas
+### Powered by Duas Rodas
 
-# COMO CONFIGURAR O SISTEMA:
+### COMO CONFIGURAR O SISTEMA:
 ---
 
 - Primeira faça um `git clone` do repositório https://github.com/senai-duasrodas/smart-solution.git
@@ -10,13 +10,13 @@
 
 Dependencias:
 
-1 - `npm i` na raiz do projeto
-2 - `cd api` e depois `npm i`
-3 - `cd app` e depois `npm i`
-4 - `cd .\microservices\activity` e depois `npm i`
+- `npm i` na raiz do projeto
+- `cd api` e depois `npm i`
+- `cd app` e depois `npm i`
+- `cd .\microservices\activity` e depois `npm i`
 
 Feito isso basta rodar o projeto com 3 comandos em 3 terminais diferentes: 
 
-1 - `npm run app`
-2 - `npm run ms`
-3 - `npm run api`
+- `npm run app`
+- `npm run ms`
+- `npm run api`
