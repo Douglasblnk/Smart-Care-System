@@ -197,7 +197,7 @@ export default {
     },
 
     getCause() {
-      this.$http.methodGet('causa', getLocalStorageToken())
+      this.$http.get('causa', getLocalStorageToken())
         .then(res => {
           if (res.status !== 200) return this.$swal({
             type: 'error',
@@ -212,7 +212,7 @@ export default {
     },
 
     getSymptom() {
-      this.$http.methodGet('sintoma', getLocalStorageToken())
+      this.$http.get('sintoma', getLocalStorageToken())
         .then(res => {
           if (res.status !== 200) return this.$swal({
             type: 'error',
@@ -228,7 +228,7 @@ export default {
 
     registerCause() {
       if (this.isEditing) return this.updateCause();
-      this.$http.methodPost('causa', getLocalStorageToken(), this.inputValuesCause)
+      this.$http.post('causa', getLocalStorageToken(), this.inputValuesCause)
         .then(res => {
           if (res.status !== 200) return this.$swal({
             type: 'error',
@@ -249,7 +249,7 @@ export default {
 
     registerSymptom() {
       if (this.isEditing) return this.updateSymptom();
-      this.$http.methodPost('sintoma', getLocalStorageToken(), this.inputValuesSymptom)
+      this.$http.post('sintoma', getLocalStorageToken(), this.inputValuesSymptom)
         .then(res => {
           if (res.status !== 200) return this.$swal({
             type: 'error',
@@ -276,7 +276,7 @@ export default {
         showCancelButton: true,
         confirmButtonColor: '#F34336',
         preConfirm: () => {
-          this.$http.methodDelete('causa', getLocalStorageToken(), cause.idCausa)
+          this.$http.delete('causa', getLocalStorageToken(), cause.idCausa)
             .then(res => {
               console.log(res);
               if (res.status !== 200) return this.$swal({
@@ -305,7 +305,7 @@ export default {
         showCancelButton: true,
         confirmButtonColor: '#F34336',
         preConfirm: () => {
-          this.$http.methodDelete('sintoma', getLocalStorageToken(), symptom.idSintomas)
+          this.$http.delete('sintoma', getLocalStorageToken(), symptom.idSintomas)
             .then(res => {
               console.log(res);
               if (res.status !== 200) return this.$swal({
@@ -327,7 +327,7 @@ export default {
     },
 
     updateCause() {
-      this.$http.methodUpdate('causa', getLocalStorageToken(), this.inputValuesCause, this.inputValuesCause.idCausa)
+      this.$http.update('causa', getLocalStorageToken(), this.inputValuesCause, this.inputValuesCause.idCausa)
         .then(res => {
           if (res.status !== 200) return this.$swal({
             type: 'error',
@@ -348,7 +348,7 @@ export default {
     },
 
     updateSymptom() {
-      this.$http.methodUpdate('sintoma', getLocalStorageToken(), this.inputValuesSymptom, this.inputValuesSymptom.idSintomas)
+      this.$http.update('sintoma', getLocalStorageToken(), this.inputValuesSymptom, this.inputValuesSymptom.idSintomas)
         .then(res => {
           if (res.status !== 200) return this.$swal({
             type: 'error',

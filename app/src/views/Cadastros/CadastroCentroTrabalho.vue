@@ -89,28 +89,27 @@ export default {
   methods: {
     getSaveButtonText() {
       if (this.isEditing) return 'Alterar';
-      else return 'Cadastrar'
+      return 'Cadastrar';
     },
 
     getWorkCenter() {
-      this.$http.methodGet('centro-trabalho/get', getLocalStorageToken())
+      this.$http.get('centro-trabalho/get', getLocalStorageToken())
         .then(res => {
           if (res.result.length === 0) this.$swal({
             type: 'warning',
             title: 'Não foi encontrado nenhum centro de trabalho!',
             confirmButtonColor: '#F34336',
-          })
-          console.log('centro work', res);
-          if (res.result.length === undefined) 
-            this.workCenters.push(res.result)
-          else this.workCenters = [ ...res.result ]
-          console.log('im the centro de trabalho', this.workCenters);
-        })
+          });
+
+          if (res.result.length === undefined)
+            this.workCenters.push(res.result);
+          else this.workCenters = [ ...res.result ];
+        });
     },
 
     registerWorkCenter() {
       if (this.isEditing) return this.updateWorkCenter();
-      this.$http.methodPost('centro-trabalho', getLocalStorageToken(), this.inputValues)
+      this.$http.post('centro-trabalho', getLocalStorageToken(), this.inputValues)
         .then(res => {
           if (res.status !== 200) return this.$swal({
             type: 'error',
@@ -136,7 +135,7 @@ export default {
         showCancelButton: true,
         confirmButtonColor: '#F34336',
         preConfirm: () => {
-          this.$http.methodDelete('centro-trabalho', getLocalStorageToken(), workCenter.idCentro_Trabalho)
+          this.$http.delete('centro-trabalho', getLocalStorageToken(), workCenter.idCentro_Trabalho)
             .then(res => {
               if (res.status !== 200) return this.$swal({
                 type: 'error',
@@ -165,7 +164,7 @@ export default {
     },
 
     updateWorkCenter(sector) {
-      this.$http.methodUpdate('centro-trabalho', getLocalStorageToken(), this.inputValues, this.inputValues.idCentro_Trabalho )
+      this.$http.update('centro-trabalho', getLocalStorageToken(), this.inputValues, this.inputValues.idCentro_Trabalho )
         .then(res => {
           if (res.status !== 200) return this.$swal({
             type: 'error',

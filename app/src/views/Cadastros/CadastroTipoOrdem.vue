@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { getLocalStorageToken } from '../../utils/utils';
+import { getLocalStorageToken, getErrors } from '../../utils/utils';
 import simpleInput from '../../components/inputs/simple-input';
 import saveButton from '../../components/button/save-button';
 import cancelButton from '../../components/button/cancel-button';
@@ -109,90 +109,108 @@ export default {
       this.isEditing = true;
     },
 
-    getOrderType() {
-      this.$http.methodGet('tipo-ordem/get', getLocalStorageToken())
-        .then(res => {
-          if (res.status !== 200) return this.$swal({
-            type: 'error',
-            title: `Ops! ${res.err}`,
-            confirmButtonColor: '#F34336',
-          });
-          if (res.result.length === undefined) 
-            this.orderTypes.push(res.result)
-          else this.orderTypes = [ ...res.result ]
-          console.log(this.orderTypes);
-        })
+    async getOrderType() {
+      try {
+        const response = await this.$http.get('tipo-ordem/get', getLocalStorageToken());
+
+        if (response.result.length === undefined)
+          this.orderTypes.push(response.result);
+        else this.orderTypes = [ ...response.result ];
+      } catch (err) {
+        console.log('err getOrderType => :', err.response || err);
+
+        return this.$swal({
+          type: 'warning',
+          text: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
     },
 
-    registerOrderType() {
+    async registerOrderType() {
       if (this.isEditing) return this.updateOrderType();
-      this.$http.methodPost('tipo-ordem', getLocalStorageToken(), this.inputValues)
-        .then(res => {
-          if (res.status !== 200) return this.$swal({
-            type: 'error',
-            title: `Ops! ${res.err}`,
-            confirmButtonColor: '#F34336',
-          })
-          this.$swal({
-            type: 'success',
-            title: `${res.result}`,
-            confirmButtonColor: '#F34336',
-          }).then(() => {
-            this.orderTypes.push(this.inputValues);
-            console.log(this.orderTypes);
-            this.resetModel();
-          })
-      })
+
+      try {
+        const response = await this.$http.post('tipo-ordem', getLocalStorageToken(), this.inputValues);
+        
+        this.$swal({
+          type: 'success',
+          title: response.result,
+          confirmButtonColor: '#F34336',
+        }).then(() => {
+          this.orderTypes.push(this.inputValues);
+
+          this.resetModel();
+        });
+      } catch (err) {
+        console.log('err registerOrderType => :', err.response || err);
+
+        return this.$swal({
+          type: 'warning',
+          text: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
     },
 
     deleteOrderType(order, index) {
-      console.log(order);
       this.$swal({
         type: 'question',
         title: `Deseja mesmo remover o tipo ${order.tipoManutencao}?`,
         showCancelButton: true,
         confirmButtonColor: '#F34336',
-        preConfirm: () => {
-          this.$http.methodDelete('tipo-ordem', getLocalStorageToken(), order.idtipoManutencao)
-            .then(res => {
-              console.log(res);
-              if (res.status !== 200) return this.$swal({
-                type: 'warning',
-                title: res.err,
-                confirmButtonColor: '#F34336',
-              })
-              this.$swal({
-                type: 'success',
-                title: res.result,
-                confirmButtonColor: '#F34336',
-              }).then(() => {
-                this.orderTypes.splice(index, 1)
-                console.log(this.orderTypes);
-              });
+        preConfirm: async () => {
+          try {
+            const response = await this.$http.delete('tipo-ordem', getLocalStorageToken(), order.idtipoManutencao);
+            
+            return this.$swal({
+              type: 'success',
+              title: response.result,
+              confirmButtonColor: '#F34336',
+            }).then(() => {
+              this.orderTypes.splice(index, 1);
             });
+          } catch (err) {
+            console.log('err deleteOrderType => :', err.response || err);
+
+            return this.$swal({
+              type: 'warning',
+              text: getErrors(err),
+              confirmButtonColor: '#F34336',
+            });
+          }
         },
       });
     },
 
-    updateOrderType() {
-      this.$http.methodUpdate('tipo-ordem', getLocalStorageToken(), this.inputValues, this.inputValues.idtipoManutencao)
-        .then(res => {
-          if (res.status !== 200) return this.$swal({
-            type: 'error',
-            title: 'Ops! Ocorreu um erro com a solicitação.',
-            text: res.err,
-            confirmButtonColor: '#F34336',
-          })
-          this.$swal({
-            type: 'success',
-            title: res.result,
-            confirmButtonColor: '#F34336',
-          }).then(() => {
-            const index = this.orderTypes.indexOf(this.orderTypes.find(i => i.idtipoManutencao === this.inputValues.idtipoManutencao))
-            this.orderTypes.splice(index, 1, this.inputValues)
-            this.closeEditing()
-          })
-        })
+    async updateOrderType() {
+      try {
+        const response = await this.$http.update(
+          'tipo-ordem', getLocalStorageToken(), this.inputValues, this.inputValues.idtipoManutencao
+        );
+
+        this.$swal({
+          type: 'success',
+          title: response.result,
+          confirmButtonColor: '#F34336',
+        }).then(() => {
+          const index = this.orderTypes.indexOf(
+            this.orderTypes.find(i => i.idtipoManutencao === this.inputValues.idtipoManutencao)
+          );
+
+          this.orderTypes.splice(index, 1, this.inputValues);
+
+          this.closeEditing();
+        });
+      } catch (err) {
+        console.log('err updateorderType => :', err.response || err);
+
+        return this.$swal({
+          type: 'warning',
+          text: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
     },
   },
 };

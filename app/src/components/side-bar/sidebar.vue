@@ -34,7 +34,11 @@ export default {
 
   methods: {
     currentRoute(routes, router) {
-      return routes === router.name;
+      return routes === this.getRouteName(router);
+    },
+    getRouteName(router) {
+      if (router.matched.length)
+        return router.matched[0].name;
     },
   },
 };

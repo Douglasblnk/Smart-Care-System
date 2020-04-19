@@ -212,7 +212,7 @@ export default {
     },
     getTypeMaintenance() {
       this.$http
-        .methodGet("tipo-manutencao/get", getLocalStorageToken())
+        .get("tipo-manutencao/get", getLocalStorageToken())
         .then(res => {
           if (res.status !== 200)
             return this.$swal({
@@ -242,7 +242,7 @@ export default {
     },
     getEquipments() {
       this.$http
-        .methodGet("equipamento/get", getLocalStorageToken())
+        .get("equipamento/get", getLocalStorageToken())
         .then(res => {
           if (res.status !== 200)
             return this.$swal({
@@ -271,7 +271,7 @@ export default {
     },
     getSector() {
       this.$http
-        .methodGet("local-instalacao/get", getLocalStorageToken())
+        .get("local-instalacao/get", getLocalStorageToken())
         .then(res => {
           if (res.status !== 200)
             return this.$swal({
@@ -294,7 +294,7 @@ export default {
     getPriority() {
       console.log("Qualquer coisa");
       this.$http
-        .methodGet("prioridade/get", getLocalStorageToken())
+        .get("prioridade/get", getLocalStorageToken())
         .then(res => {
           if (res.status !== 200)
             return this.$swal({
@@ -323,7 +323,7 @@ export default {
         });
     },
     getStats() {
-      this.$http.methodGet("status/get", getLocalStorageToken()).then(res => {
+      this.$http.get("status/get", getLocalStorageToken()).then(res => {
         if (res.status !== 200)
           return this.$swal({
             type: "error",

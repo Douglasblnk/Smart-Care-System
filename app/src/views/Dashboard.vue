@@ -58,13 +58,14 @@ export default {
       try {
         this.isLoading = true;
         
-        const orders = await this.$ms.microserviceAnalisis('analysis/order-summary', getLocalStorageToken());
+        const orders = await this.$http.microserviceAnalisis('analysis/order-summary', getLocalStorageToken());
 
         if (!orders || orders === undefined)
           return this.hasErrors = true;
         
         this.orders = orders;
       } catch (err) {
+        console.log('err dashboard => ', err);
         this.hasErrors = true;
       } finally {
         this.isLoading = false;
