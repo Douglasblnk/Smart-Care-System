@@ -11,6 +11,13 @@ export default class UpdateDetalheUser {
 
     async run(event: any) {
         try {
+            const data = this.getData(event);
+            this.validateData(data);
+            const getQuery = this.getQuery(data);
+
+            const result = await commitData.run(getQuery);
+
+            return result;
 
         } catch(err) {
             throw err;
@@ -32,19 +39,22 @@ export default class UpdateDetalheUser {
             status: 404,
             err: 'Não foi recebido Id'
         }
-        isEmpty.verify(data, ['StatusManutentor'], '');
+        isEmpty.verify(data, ['excluded'], '');
 
-        if(data.StatusManutentor === '') throw {
+        if(data.excluded === '') throw {
             status: 404,
             err: 'Nenhum dado encontrado'
         }
     }
     getQuery(data: any) {
-        const values = { StatusManutentor: data.StatusManutentor };
-        const where = data.id;
-        const query = `UPDATE ${TABLE} SET ? WHERE idos_has_user = ?;`;
+        console.log("narizinho");
+        // sempre dar uma olhada no obj pai
+        console.log(data);
+        const values = { excluded: data.excluded };
+        const where = [data.idOrdemServico];
+        const query = `UPDATE ${TABLE} SET ? WHERE ordemServico_has_Usuario.ordemServico_idOrdemServico = ? AND ordemServico_has_Usuario.Usuario_idUsuario = ${data.idUsuario};`;
 
-        const dataQuery = { query, values, where, type: 'idos_has_user'};
+        const dataQuery = { query, values, where, type: 'Manutentor'};
 
         return dataQuery;
 

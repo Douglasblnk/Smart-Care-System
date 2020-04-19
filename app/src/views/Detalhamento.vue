@@ -93,6 +93,7 @@
           :visible.sync="dialogVisible"
           width="40vw"
           :before-close="handleClose">
+          <p class="Span_lerta" v-show="visibleMessage">Usuario Já Está na ordem. Consulte lista dos usuarios da ordem</p>
             <el-tabs type="border-card" >
               <el-tab-pane label="Convidar">
                 <span slot="label">Convidar </span>
@@ -118,20 +119,17 @@
                       </template>
                       <template slot-scope="scope">
                         <el-popconfirm
-                          confirmButtonText='Sim'
-                          cancelButtonText='Não'
+                          confirmButtonText='Confirmar'
+                          cancelButtonText='Cancelar'
                           icon="el-icon-info"
                           iconColor="red"
-                        title="Tem certeza ?">
-                        <el-button
-                        slot="reference"
-                          size="mini"
-                          @click="addManutentor(scope.$index, scope.row)">Add</el-button>
-                          </el-popconfirm>
-                        <!-- <el-button
-                          size="mini"
-                          type="danger"
-                          @click="handleDelete(scope.$index, scope.row)">Delete</el-button> -->
+                          title="Você tem certeza?"
+                          @onConfirm="addManutentor(scope.$index, scope.row)"
+                          @onCancel="testeValidacao()">
+                          <el-button
+                          slot="reference"
+                          size="mini">Add</el-button>
+                        </el-popconfirm>
                       </template>
                     </el-table-column>
                   </el-table>
@@ -151,20 +149,19 @@
                     </el-table-column>
                     <el-table-column
                       align="right">
-                      <!-- <template slot="header" >
-                        <el-input
-                          v-model="search"
-                          size="mini"
-                          placeholder="Type to search"/>
-                      </template> -->
                       <template slot-scope="scope">
-                        <el-button
-                          size="mini"
-                          @click="handleEdit(scope.$index, scope.row)">Remover</el-button>
-                        <!-- <el-button
-                          size="mini"
-                          type="danger"
-                          @click="handleDelete(scope.$index, scope.row)">Delete</el-button> -->
+                        <el-popconfirm
+                          confirmButtonText='Confirmar'
+                          cancelButtonText='Cancelar'
+                          icon="el-icon-info"
+                          iconColor="red"
+                          title="Você tem certeza?"
+                          @onConfirm="RemoveManutentor(scope.$index, scope.row)"
+                          @onCancel="testeValidacao()">
+                          <el-button
+                          slot="reference"
+                          size="mini">Remove</el-button>
+                        </el-popconfirm>
                       </template>
                   </el-table-column>
                 </el-table>
@@ -193,10 +190,14 @@ export default {
 
   data() {
     return {
+      visible: false,
+      visibleMessage:false,
         valuesInput: {
           idOrdemServico:this.order.idOrdemServico,
           idUsuario:'',
+          excluded: '',
         },
+        opcao: '',
         manutentores: [],
         manutentorInOrdem: [],
         dialogVisible: false,
@@ -216,9 +217,14 @@ export default {
       if (this.order.Prioridade_idPrioridade === 3) return 'high-priority';
       if (this.order.Prioridade_idPrioridade === 4) return 'very-high-priority';
     },
+    testeValidacao() {
+      this.visible = false;
+      // console.log("cancelando");
+
+    },
     getManutentor() {
       console.log('Entrando');
-      this.$http.methodGet('users/get', getLocalStorageToken())
+      this.$http.methodPostNotVerified('detalhamento/getgeraluser', getLocalStorageToken(), this.valuesInput)
       .then(res => {
         if(res.result.length === 0)  return this.$swal({
           type: 'warning',
@@ -228,7 +234,9 @@ export default {
         if(res.result.length === undefined)
           this.manutentores.push(res.result);
         else this.manutentores = [ ...res.result ];
+        console.log(this.manutentores);
         });
+        
     },
     // manutentorInOrdem
     getManutentoresInOrdem() {
@@ -250,20 +258,25 @@ export default {
           console.log('eNTRA A2');
       });
     },
-    updateOrdemManutentor(idManutentor) {
-      console.log(idManutentor);
-    },
     valorPropriedade(scope) {
       console.log(scope);
+    },
+    validaAddManutentor(User) {
+      const result = this.manutentorInOrdem.find(element => element.idUsuario === User.idUsuario);
+      return result;
     },
     addManutentor(index, row){
       console.log('bla bla BLA BLA');
       // console.log(index);
-
+      const validManutentorAdd = this.validaAddManutentor(row);
+      if(validManutentorAdd === undefined){
+      this.dialogVisible = false;
+      this.visibleMessage = false;
+      this.valuesInput.excluded = 0;
       // console.log(this.order.idOrdemServico);
       this.valuesInput.idUsuario = row.idUsuario;
 
-            console.log(this.valuesInput);
+            // console.log(this.valuesInput);
       this.$http.methodPost('detalhamento/register', getLocalStorageToken(), this.valuesInput)
       .then(res => {
         if(res.status !== 200) return this.$swal({
@@ -291,9 +304,43 @@ export default {
         });
 
       });
+     }else {
+       this.visibleMessage = true;
+     }
     },
-    registerManutentor(){
-      
+    RemoveManutentor(index, row){
+      console.log('entrou BuaHAHAHAHAHAHAHA');
+      this.valuesInput.idUsuario = row.idUsuario;
+      this.valuesInput.excluded = 1;
+      this.dialogVisible = false;
+      this.$http.methodUpdate('detalhamento', getLocalStorageToken(), this.valuesInput, this.valuesInput.idOrdemServico)
+      .then(res => {
+        if(res.status !== 200) return this.$swal({
+          type: 'error',
+          title:`Ops! ${res.err}`,
+          confirmButtonColor: '#F34336',
+
+        })
+        this.$swal({
+          type: 'success',
+          title: `${res.result}`,
+          confirmButtonColor: '#F34336',
+        })
+        .then(() => {
+          // const index = this.manutentores.indexOf(this.manutentores.find(i => i.idUsuario = this.manutentorInOrdem.idUsuario));
+          this.manutentores.splice(row.idUsuario, 1);
+          this.getManutentoresInOrdem();
+          this.$setActivity(
+            'registerUser',
+              {
+                ...this.$store.state.user,
+                date: this.$moment().format('DD-MM-YYYY HH-mm'),
+                descricao: `${this.$store.state.user.nome} Removendo status excluded o usuário para ajudar na ordem serviço`,
+              },
+            getLocalStorageToken(),
+            );
+        });
+      });
       // this.$setActivity(
       //   'editUser',
       //     {
@@ -386,5 +433,9 @@ export default {
       width: 90vw;
     }
   }
+}
+.Span_lerta {
+  color: #ff0303;
+  font-family: 'Montserrat';
 }
 </style>
