@@ -1,7 +1,7 @@
 # Smart Care System
 ### Powered by Duas Rodas
 
-### COMO CONFIGURAR O SISTEMA:
+#### Configurando o sistema:
 ---
 
 - Primeira faça um `git clone` do repositório https://github.com/senai-duasrodas/smart-solution.git
