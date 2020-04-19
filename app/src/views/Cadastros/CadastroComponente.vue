@@ -141,7 +141,7 @@ export default {
 
     getEquipments(){
       const token = localStorage.getItem('token')
-      this.$http.methodGet('equipamento/get', token)
+      this.$http.get('equipamento/get', token)
         .then(res => {
           if (res.status !== 200) return this.$swal({
             type: 'error',
@@ -185,7 +185,7 @@ export default {
       showCancelButton: true,
       confirmButtonColor: '#F34336',
       preConfirm: () => {
-        this.$http.methodDelete
+        this.$http.delete
       }
     })
   }
