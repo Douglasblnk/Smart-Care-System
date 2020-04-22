@@ -1,5 +1,13 @@
 <template>
   <div class="root-verification-view">
+    <div class="my-3">
+        <simple-button
+          :no-margin="true"
+          label="Voltar"
+          prefix="fa-arrow-left"
+          @click.native="() => $emit('state-list')"
+        />
+    </div>
     <div class="verification-content p-3 d-flex">
       <div class="verification-title">
         <h3>Verificação </h3>
@@ -8,16 +16,16 @@
       </div>
       <div class="form-verification">
         <div class="text-solution-verification">
-          <simple-input v-model="solution" :label="'Solução Realizada:'" :type="'text'" />
+          <simple-input v-model="inputValues.solutionDescription" :label="'Solução Realizada:'" :type="'text'" />
         </div>
         <div class="form-verification-option">
           <label>O problema foi resolvido?</label>
-          <toggle-button :value="true"
+          <toggle-button v-model="inputValues.resolved"
                   :labels="{checked: 'Sim', unchecked: 'Não'}" :width="70" :height="30" :font-size="14"/>
         </div>
       </div>    
     </div>
-    <form @submit.prevent="maintenanceOrderCheck()" class="formPosition">
+    <form @submit.prevent="verificationOrder()" class="formPosition">
       <div class="d-flex justify-content-center m-3">
         <save-button label="Verificar"/>
       </div>
@@ -36,7 +44,6 @@ export default {
   components: {
     'simple-input': simpleInput,
     'save-button': saveButton,
-    'cancel-button': cancelButton,
     'toggle-button': ToggleButton
   },
 
@@ -46,7 +53,14 @@ export default {
 
   data() {
     return {
-      solution: ""
+      solution: "",
+      inputValues: {
+        solutionDescription: '',
+        resolved: true,
+        dateVerification: '',
+        order: '',
+        typeVerification: ''
+      }
     };
   },
 
@@ -55,11 +69,27 @@ export default {
   },
   
   methods: {
-    maintenanceOrderCheck(){
-
+    verificationOrder(){
+      this.inputValues.dateVerification = this.$moment().format('YYYY-MM-DD HH-mm-ss')
+      this.inputValues.order = this.order.idOrdemServico
+      this.inputValues.typeVerification = this.$store.state.user.nivelAcesso
+      console.log("INPUT VALUES: ")
+      console.log(this.inputValues)
+      this.$http.methodPost('verificacao', getLocalStorageToken(), this.inputValues)
+        .then(res => {
+          if (res.status !== 200) return this.$swal({
+            type: 'error',
+            title: `Ops! ${res.err}`,
+            confirmButtonColor: '#F34336',
+          })
+          this.$swal({
+            type: 'success',
+            title: `${res.result}`,
+            confirmButtonColor: '#F34336',
+          })
+        })
     }
   },
-
 };
 </script>
 

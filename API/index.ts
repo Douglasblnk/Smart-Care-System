@@ -24,6 +24,7 @@ const prioridade = require("./routes/Prioridade/Prioridade");
 const status = require("./routes/Status/Status");
 const epi = require("./routes/Epi/Epi");
 const detalhamento = require('./routes/Detalhamento/Detalhamento');
+const verificacao = require('./routes/Verificacao/Verificacao');
 
 app.use("/users", user);
 app.use("/equipamento", equipamento)
@@ -39,6 +40,7 @@ app.use("/prioridade", prioridade)
 app.use("/status", status)
 app.use("/epi", epi)
 app.use("/detalhamento", detalhamento)
+app.use("/verificacao", verificacao)
 
 app.get("/", (req: any, res: any) => {
   res.send("deu boa");
