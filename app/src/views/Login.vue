@@ -61,9 +61,12 @@ export default {
   },
   methods: {
     async loginValidation() {
+      if (this.isLoading) return;
+      
       try {
         this.isLoading = true;
 
+        
         const response = await this.$http.post('users', localStorage.getItem('token'), this.inputValues);
 
         this.$http.setActivity(
