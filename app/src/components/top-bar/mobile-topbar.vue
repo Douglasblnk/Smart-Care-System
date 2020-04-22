@@ -54,14 +54,10 @@ export default {
   data() {
     return {
 
-    }
+    };
   },
 
   methods: {
-    getIcon() {
-
-    },
-
     logoff() {
       console.log(this.$route);
       this.$swal({
@@ -70,16 +66,16 @@ export default {
         showCancelButton: true,
         cancelButtonText: 'Não!',
         confirmButtonText: 'Sim!',
-        confirmButtonColor: '#F34336'
+        confirmButtonColor: '#F34336',
       }).then(res => {
         if (res.value) {
           localStorage.removeItem('token');
-          this.$router.replace('/')
+          this.$router.replace('/');
         }
-      })
-    }
-  }
-}
+      });
+    },
+  },
+};
 </script>
 
 
@@ -103,7 +99,7 @@ export default {
       margin: 0 10px;
       span {
         font-size: 20px;
-        font-family: 'Montserrat';
+        font-family: 'roboto';
         color: #ffffff
       }
       .small-text {

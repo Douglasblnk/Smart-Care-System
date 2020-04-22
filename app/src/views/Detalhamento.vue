@@ -21,23 +21,23 @@
           <div class="my-3">
             <div class="my-3 d-flex align-items-center">
               <i class="fa fa-map-marker-alt mr-2" />
-              <span>Setor: {{ order.Setor_idSetor }}</span>
+              <span>Setor: {{ order.setor }}</span>
             </div>
             <div class="my-3 d-flex align-items-center">
               <i class="fa fa-ban mr-2" />
-              <span>Requer parada: {{ order.requerParada }}</span>
+              <span>Requer parada: {{ order.requerParada === 1 ? 'Sim' : 'Não' }}</span>
             </div>
             <div class="my-3 d-flex align-items-center">
               <i class="fa fa-exclamation-triangle mr-2" :class="getPriorityClass()" />
-              <span>Prioridade: {{ order.Prioridade_idPrioridade }}</span>
+              <span>Prioridade: {{ order.prioridade }}</span>
             </div>
             <div class="my-3 d-flex align-items-center">
               <i class="fa fa-laptop mr-2" />
-              <span>Equipamento: {{ order.Equipamento_idEquipamento }}</span>
+              <span>Equipamento: {{ order.equipamento }}</span>
             </div>
             <div class="my-3 d-flex align-items-center">
               <i class="fa fa-tools mr-2" />
-              <span>Tipo de Manutenção: {{ order.tipoManutencao_idtipoManutencao }}</span>
+              <span>Tipo de Manutenção: {{ order.tipo_manutencao }}</span>
             </div>
             <div class="my-3 d-flex align-items-center">
               <i class="fa fa-calendar-alt mr-2" />

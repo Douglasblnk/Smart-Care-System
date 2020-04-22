@@ -5,12 +5,16 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    user: {}    
+    user: {},
+    page: '',
   },
 
   mutations: {
-    addUser(state, { email, nome, nivelAcesso, cracha }) {
-      state.user = { email, nome, nivelAcesso, cracha }
-    }
-  }
+    addUser(state, { email, nome, nivelAcesso, funcao, cracha }) {
+      state.user = { email, nome, nivelAcesso, funcao, cracha };
+    },
+    addPageName(state, name) {
+      state.page = name;
+    },
+  },
 });

@@ -1,4 +1,4 @@
-const GetUserAutentication = require('../integration/GetUserAutentication');
+const GetUserAutentication = require('../integration/GetUserAuthentication');
 const SetActivityData = require('../datasource/SetActivityData');
 
 const RESOURCE_ORIGIN = 'http://localhost:8080';
@@ -24,9 +24,18 @@ module.exports = class SetActivity {
     this._activityId = activityId;
     this._descricao = descricao;
 
+    this._checkParameters();
+
     this._integrationAuthJwt = new GetUserAutentication();
 
-    this._checkParameters();
+    this._setActivityData = new SetActivityData(
+      this._nome,
+      this._cracha,
+      this._email,
+      this._date,
+      this._activityId,
+      this._descricao,
+    );
   }
 
 
@@ -34,6 +43,8 @@ module.exports = class SetActivity {
     try {
       await this._validateSession();
       await this._setActivity();
+
+      this._setActivityData.closeConnection();
 
       return {
         status: 200,
@@ -46,14 +57,7 @@ module.exports = class SetActivity {
 
   async _setActivity() {
     try {
-      const activityResponse = await new SetActivityData(
-        this._nome,
-        this._cracha,
-        this._email,
-        this._date,
-        this._activityId,
-        this._descricao,
-      ).setActivity();
+      const activityResponse = await this._setActivityData.setActivity();
 
       return activityResponse;
     } catch (err) {

@@ -6,7 +6,7 @@
       @click="collapsed = !collapsed"
     >
       <div class="title">
-        <i :class="icon" class="text-muted" />
+        <i :class="icon" class="text-muted fa-fw" />
         <p class="text-muted ml-3">{{ title }}</p>
       </div>
       <i :class="getCollapseIcon" />
@@ -74,7 +74,7 @@ export default {
   justify-content: space-between;
   p {
     margin: 0px;
-    font-family: 'Montserrat';
+    font-family: 'roboto';
     color: #505050;
     letter-spacing: 0.5px;
   }

@@ -57,7 +57,7 @@ export default class LoginValidate {
 
   getQuery(data: any) {
     const post = [data.numeroCracha, data.senha];
-    const query = /*SQL*/`SELECT ${TABLE}.numeroCracha, ${TABLE}.nivelAcesso, ${TABLE}.nome, ${TABLE}.senha, ${TABLE}.email FROM ${TABLE} WHERE ${TABLE}.numeroCracha = ? AND ${TABLE}.senha = ?;`;
+    const query = /*SQL*/`SELECT * FROM ${TABLE} WHERE ${TABLE}.numeroCracha = ? AND ${TABLE}.senha = ?;`;
 
     const dataQuery = { query, post, type: 'Usuário' };
 

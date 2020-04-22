@@ -126,7 +126,7 @@ export default {
     },
 
     getEquipment() {
-      this.$http.methodGet('equipamento/get', getLocalStorageToken())
+      this.$http.get('equipamento/get', getLocalStorageToken())
         .then(res => {
           if (res.result.length === 0) this.$swal({
             type: 'warning',
@@ -142,7 +142,7 @@ export default {
 
     registerEquipment(){
       if (this.isEditing) return this.updateEquipment();
-      this.$http.methodPost('equipamento', getLocalStorageToken(), this.inputValues)
+      this.$http.post('equipamento', getLocalStorageToken(), this.inputValues)
         .then(res => {
           if (res.status !== 200) return this.$swal({
             type: 'error',
@@ -170,7 +170,7 @@ export default {
         showCancelButton: true,
         confirmButtonColor: '#F34336',
         preConfirm: () => {
-          this.$http.methodDelete('equipamento', getLocalStorageToken(), equipment.idEquipamento)
+          this.$http.delete('equipamento', getLocalStorageToken(), equipment.idEquipamento)
             .then(res => {
               console.log(res);
               if (res.status !== 200) return this.$swal({
@@ -193,7 +193,7 @@ export default {
 
     updateEquipment() {
       console.log(this.inputValues.idEquipamento);
-      this.$http.methodUpdate('equipamento', getLocalStorageToken(), this.inputValues, this.inputValues.idEquipamento)
+      this.$http.update('equipamento', getLocalStorageToken(), this.inputValues, this.inputValues.idEquipamento)
         .then(res => {
           if (res.status !== 200) return this.$swal({
             type: 'error',

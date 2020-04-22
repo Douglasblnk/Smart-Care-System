@@ -1,7 +1,10 @@
 <template>
   <div class="root-cadastro-view">
     <transition name="slide-fade" mode="out-in">
-      <div v-if="$route.path === '/cadastros'" class="card-container d-flex justify-content-center align-items-center flex-column">
+      <div
+        v-if="$route.path === '/cadastros'"
+        class="card-container d-flex justify-content-center align-items-center flex-column"
+      >
         <div class="card-title d-flex justify-content-center align-items-center">
           <p>Escolha o tipo de cadastro</p>
         </div>
@@ -17,60 +20,62 @@
 </template>
 
 <script>
-
 export default {
-
   data() {
     return {
       cards: [
         {
           title: 'Ordem de Manutenção',
           icon: 'fas fa-file-signature',
-          route: 'cadastros/cadastro-ordem-manutencao'
+          route: 'cadastros/cadastro-ordem-manutencao',
         },
         {
           title: 'Equipamento',
           icon: 'fas fa-tools',
-          route: 'cadastros/cadastro-equipamento'
+          route: 'cadastros/cadastro-equipamento',
         },
         {
           title: 'Local de instalção',
           icon: 'fas fa-map-marker-alt',
-          route: 'cadastros/cadastro-local-instalacao'
+          route: 'cadastros/cadastro-local-instalacao',
         },
         {
           title: 'Centro de Trabalho',
           icon: 'fas fa-map-pin',
-          route: 'cadastros/cadastro-centro-trabalho'
+          route: 'cadastros/cadastro-centro-trabalho',
         },
         {
           title: 'Tipo de Ordem',
           icon: 'fas fa-file',
-          route: 'cadastros/cadastro-tipo-ordem'
+          route: 'cadastros/cadastro-tipo-ordem',
         },
         {
           title: 'Causa e sintoma',
           icon: 'fas fa-exclamation-triangle',
-          route: 'cadastros/cadastro-causa-sintoma'
+          route: 'cadastros/cadastro-causa-sintoma',
         },
         {
           title: 'EPI',
           icon: 'fas fa-hard-hat',
-          route: 'cadastros/cadastro-epi'
+          route: 'cadastros/cadastro-epi',
         },
         {
           title: 'Componente',
           icon: 'fas fa-puzzle-piece',
-          route: 'cadastros/cadastro-componente'
-        }
-      ]
+          route: 'cadastros/cadastro-componente',
+        },
+      ],
     };
   },
 
   created() {
     if (window.innerWidth <= '600') this.$router.replace('/dashboard');
     return;
-  }
+  },
+
+  mounted () {
+    this.$store.commit('addPageName', 'Cadastros');
+  },
 };
 </script>
 
@@ -82,7 +87,7 @@ export default {
   .card-container {
     .card-title{
       p {
-        font-family: 'Montserrat';
+        font-family: 'roboto';
         font-size: 23px;
         color: #E66E6D;
       }
