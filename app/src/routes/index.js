@@ -119,12 +119,6 @@ const routes = [
     meta: { requireAuth: true },
   },
   {
-    path: '/verificacao',
-    name: 'verificacao',
-    component: Verificacao,
-    meta: { requireAuth: true },
-  },
-  {
     path: '*',
     name: '404',
     component: Error404,

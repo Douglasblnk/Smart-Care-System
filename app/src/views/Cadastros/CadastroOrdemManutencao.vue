@@ -88,75 +88,69 @@
 </template>
 
 <script>
-import { getLocalStorageToken } from "../../utils/utils";
-import simpleInput from "../../components/inputs/simple-input";
-import description from "../../components/inputs/description";
-import selectId from "../../components/inputs/tranfer-select";
-import saveButton from "../../components/button/save-button";
-import select from "../../components/inputs/custom-select";
-import { FormWizard, TabContent } from "vue-form-wizard";
-import "vue-form-wizard/dist/vue-form-wizard.min.css";
+import { getLocalStorageToken } from '../../utils/utils';
+import selectId from '../../components/inputs/tranfer-select';
+import select from '../../components/inputs/custom-select';
+import { FormWizard, TabContent } from 'vue-form-wizard';
+import 'vue-form-wizard/dist/vue-form-wizard.min.css';
 
 export default {
   components: {
-    "simple-input": simpleInput,
-    "tranfer-select": selectId,
-    "save-button": saveButton,
-    description: description,
-    "custom-select": select,
+    'tranfer-select': selectId,
+    'custom-select': select,
     FormWizard,
     TabContent
   },
   data() {
     return {
       inputValues: {
-        title: "",
-        summary: "",
-        description: "",
-        plannedStart: "",
-        plannedEnd: "",
+        title: '',
+        summary: '',
+        description: '',
+        plannedStart: '',
+        plannedEnd: '',
         requireStop: true,
-        beginData: "",
-        equipment: "",
-        typeMaintenance: "",
-        sector: "",
-        priority: "",
-        stats: "",
-        customSelect: "",
-        customSelect2: ""
+        beginData: '',
+        equipment: '',
+        typeMaintenance: '',
+        sector: '',
+        priority: '',
+        stats: '',
+        customSelect: '',
+        customSelect2: '',
       },
       stats: [],
       workEquipment: [],
       selects: {
-        select: "",
+        select: '',
         selects: []
       },
       selectsTypeMaintenance: {
-        select: "",
+        select: '',
         selects: []
       },
       selectsSector: {
-        select: "",
+        select: '',
         selects: []
       },
       selectsPriority: {
-        select: "",
+        select: '',
         selects: []
       },
       selectsStats: {
-        select: "",
+        select: '',
         selects: []
       },
       selectsRequireStop: {
-        select: "",
+        select: '',
         selects: [
           {
             value: true,
-            label: "Sim"
+            label: 'Sim'
           },
           {
             value: false,
-            label: "Não"
+            label: 'Não'
           }
         ]
       }

@@ -23,7 +23,6 @@ export default class RegisterVericationValidate {
 
       const resultVerify : any = await commitDataVerify.run(getQueryExistVerification);
 
-      console.log("RESULT");
       console.log(resultVerify);
       console.log('Length', resultVerify.result.length, !resultVerify.result)
       if(resultVerify.result.length !== 0) throw "Verificação já realizada!"
@@ -55,12 +54,7 @@ export default class RegisterVericationValidate {
       err: 'Não existem dados!',
     };
     
-    isEmpty.verify(data,  ['solutionDescription', 'dateVerification','resolved','order','typeVerification'], '');
-    
-    if (data.solutionDescription === '') throw {
-      status: 404,
-      err: 'Descrição do solução não informada',
-    };
+    isEmpty.verify(data,  ['dateVerification','resolved','order','typeVerification'], '');
 
     if (data.dateVerification === '') throw {
       status: 404,

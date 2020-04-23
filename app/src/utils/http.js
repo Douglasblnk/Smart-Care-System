@@ -40,24 +40,6 @@ export default class Http {
       throw err;
     }
   }
-  methodPostNotVerified(endpoint, token = '', data) {
-    console.log(endpoint, token, data);
-    return new Promise((resolve) => {
-      fetch(`${router.options.apiUrl}/${endpoint}`, {
-        method: 'post',
-        headers: {
-          'Content-Type': 'application/json',
-          'authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(data),
-      }).then(res => res.json())
-        .then(json => {
-
-          return resolve(json);
-        });
-    });
-  }
-
   async delete(endpoint, token = '', id) {
     try {
       const response = await Axios({
@@ -80,7 +62,7 @@ export default class Http {
   async update(endpoint, token = '', data, id) {
     try {
       const response = await Axios({
-        method: 'update',
+        method: 'put',
         url: `${router.options.apiUrl}/${endpoint}/${id}`,
         data,
         headers: {
@@ -109,6 +91,7 @@ export default class Http {
 
   validateError(err) {
     try {
+      if (!err.response) return;
       if (!err.response.data) return;
       if (!err.response.data.status) return;
 

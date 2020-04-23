@@ -23,7 +23,7 @@
           <toggle-button v-model="inputValues.resolved"
                   :labels="{checked: 'Sim', unchecked: 'Não'}" :width="70" :height="30" :font-size="14"/>
         </div>
-      </div>    
+      </div>
     </div>
     <form @submit.prevent="verificationOrder()" class="formPosition">
       <div class="d-flex justify-content-center m-3">
@@ -34,17 +34,12 @@
 </template>
 
 <script>
-import { getLocalStorageToken } from '../utils/utils';
-import simpleInput from '../components/inputs/simple-input';
-import saveButton from '../components/button/save-button';
-import cancelButton from '../components/button/cancel-button';
+import { getLocalStorageToken, getErrors } from '../utils/utils';
 import { ToggleButton } from 'vue-js-toggle-button'
 
 export default {
   components: {
-    'simple-input': simpleInput,
-    'save-button': saveButton,
-    'toggle-button': ToggleButton
+    'toggle-button': ToggleButton,
   },
 
   props: {
@@ -53,41 +48,44 @@ export default {
 
   data() {
     return {
-      solution: "",
+      solution: '',
       inputValues: {
         solutionDescription: '',
         resolved: true,
         dateVerification: '',
         order: '',
-        typeVerification: ''
+        typeVerification: '',
       }
     };
   },
 
   mounted() {
-    console.log(this.order)
+    console.log(this.order);
   },
   
   methods: {
-    verificationOrder(){
-      this.inputValues.dateVerification = this.$moment().format('YYYY-MM-DD HH-mm-ss')
-      this.inputValues.order = this.order.idOrdemServico
-      this.inputValues.typeVerification = this.$store.state.user.nivelAcesso
-      console.log("INPUT VALUES: ")
-      console.log(this.inputValues)
-      this.$http.methodPost('verificacao', getLocalStorageToken(), this.inputValues)
-        .then(res => {
-          if (res.status !== 200) return this.$swal({
-            type: 'error',
-            title: `Ops! ${res.err}`,
-            confirmButtonColor: '#F34336',
-          })
+    async verificationOrder(){
+      try {
+        this.inputValues.dateVerification = this.$moment().format('YYYY-MM-DD HH-mm-ss')
+        this.inputValues.order = this.order.idOrdemServico;
+        this.inputValues.typeVerification = this.$store.state.user.nivelAcesso;
+
+        console.log('INPUT VALUES: ');
+        console.log(this.inputValues);
+        const response = await this.$http.post('verificacao', getLocalStorageToken(), this.inputValues);
           this.$swal({
             type: 'success',
-            title: `${res.result}`,
+            title: `${response.result}`,
             confirmButtonColor: '#F34336',
           })
+      } catch (err) {
+        console.log('verificationOrder =>', err)
+        return this.$swal({
+          type: 'error',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
         })
+      }
     }
   },
 };

@@ -258,8 +258,7 @@ export default {
     },
     // manutentorInOrdem
     getManutentoresInOrdem() {
-  
-      return this.$http.methodPostNotVerified('detalhamento', getLocalStorageToken(), this.valuesInput)
+      return this.$http.post('detalhamento', getLocalStorageToken(), this.valuesInput)
       .then( res => {
         console.log('hahahahahHAHAHAHAHAHAHAHAHAHAHAHAH');
         console.log(res);
