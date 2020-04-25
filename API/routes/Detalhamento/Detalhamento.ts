@@ -34,7 +34,7 @@ router.post('/', async (req: any, res: any) => {
 router.post('/register', async (req: any, res: any) => {
     try {
         await jwt.jwtVerify(req);
-        
+        console.log('chegou addmanutentor');
         const response = await register.run(req);
 
         res.status(200).send(response);
@@ -57,7 +57,7 @@ router.post('/getgeraluser', async (req: any, res: any) => {
 })
 router.put('/:id', async (req: any, res: any) => {
     try {
-        console.log('SO se gA')
+        console.log('chegou a requisição update')
         await jwt.jwtVerify(req);
         const response = await update.run(req);
 

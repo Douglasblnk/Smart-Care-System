@@ -13,8 +13,6 @@ export default class ListUserDetail {
             console.log('CHEGOU ATE AQUI RONEI');
         const data = this.getData(event);
 
-        // this.validateData(data);
-
         const getQuery = this.getQuery(data);
         console.log('CHEGOU ATE AQUI RONEI e a merda foi aqui');
         const result = await commitData.run(getQuery);
@@ -33,9 +31,9 @@ export default class ListUserDetail {
     }
 
     getQuery(data: any) {
-        console.log(data);
+
         const post = [data.idOrdemServico];
-        const query = /*SQL*/`SELECT ${TABLE}.idUsuario,${TABLE}.nome,${TABLE}.funcao,${TABLE}.nivelAcesso, ${TABLE}.numeroCracha FROM
+        const query = /*SQL*/`SELECT ${TABLE}.idUsuario,${TABLE}.nome,${TABLE}.funcao,${TABLE}.numeroCracha FROM
         ${TABLE} INNER JOIN ordemServico_has_Usuario ON ordemServico_has_Usuario.Usuario_idUsuario = ${TABLE}.idUsuario WHERE ordemServico_has_Usuario.ordemServico_idOrdemServico = ? AND ordemServico_has_Usuario.excluded = 0;`;
 
         const dataQuery = { query, post, type: 'Usuario'};

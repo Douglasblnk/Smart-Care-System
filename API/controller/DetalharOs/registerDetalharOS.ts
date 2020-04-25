@@ -16,43 +16,30 @@ const TABLE1 = 'Usuario';
 
 export default class RegisterDetalharOS {
 
-    // async run(event: any) {
-    //     try {
-
-    //         const data = this.getData(event);
-
-    //         this.validateData(data);
-
-    //         const getQuery = this.getQuery(data);
-
-    //         const result = await commitData.run(getQuery);
-
-    //         return result
-
-    //     } catch(err) {
-    //         throw err;
-    //     }
-    // }
     async run(event: any) {
         try {
-            const data = this.getData(event);
-            const queryGet = this.queryGet(data)
-            const resulte = await commitDataGet.run(queryGet)
-            console.log(resulte);
-            if(resulte === null) {
-               return console.log("usuario disponivel para adicionar");
-            }
-         
-            // if(resulte === 1 and resulte != ''){
-            //     const queryUpdate = this.queryUpdate(data);
-            //     const result2 = await commitDataUpdate.run(queryUpdate);
 
-            // }
-            // const queryInsert = this.getQuery(data);
-            // const result = await commitData.run(queryInsert)
-            // return result;
+            const data = this.getData(event);
+
+            const queryGet = this.queryGet(data);
+
+            const result : any = await commitDataGet.run(queryGet);
+
+            if(result.result.length === undefined && result.result.excluded === 1) {
+                console.log('oi ai');
+                const queryUpdate = this.queryUpdate(data);
+                const result2 = await commitDataUpdate.run(queryUpdate);
+                return result2;
+                
+            }else {
+                const queryInsert = this.getQuery(data);
+                const resulta = await commitData.run(queryInsert)
+                return resulta; 
+            }
+
 
         }catch(err) {
+
             throw err;
         }
     }
@@ -83,15 +70,15 @@ export default class RegisterDetalharOS {
         const post = { ordemServico_idOrdemServico: data.idOrdemServico, Usuario_idUsuario: data.idUsuario, excluded: data.excluded };
         const query = `INSERT INTO ${TABLE} SET ?;`;
 
-        const dataQuery = { query, post, type: 'Usuário'};
+        const dataQuery = { query, post, type: 'register User detail'};
 
         return dataQuery;
     }
+ 
     queryGet(data: any) {
-        const post= [data.idOrdemServico,data.idUsuario];
-        const query =`select ${TABLE}.excluded from ${TABLE} where ${TABLE}.ordemServico_idOrdemServico = ? and ${TABLE}.Usuario_idUsuario = ?;`;
-        // `SELECT ${TABLE1}.idUsuario,${TABLE1}.nome,${TABLE1}.funcao,${TABLE1}.nivelAcesso,${TABLE1}.numeroCracha,ordemServico_has_Usuario.excluded FROM
-        // ${TABLE1} INNER JOIN ordemServico_has_Usuario ON ordemServico_has_Usuario.Usuario_idUsuario = ${TABLE1}.idUsuario where ${TABLE}.ordemServico_idOrdemServico = ? AND ${TABLE}.Usuario_idUsuario = ?;`;
+        const post= {ordemServico_idOrdemServico:data.idOrdemServico};
+        const query =`select ${TABLE}.excluded from ${TABLE} where ${TABLE}.ordemServico_idOrdemServico = ${data.idOrdemServico} and ${TABLE}.Usuario_idUsuario = ${data.idUsuario};`;
+
         
         const dataQuery = { query, post, type: 'Usuario'};
 

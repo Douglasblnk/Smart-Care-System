@@ -80,7 +80,7 @@ export default class Http {
   async update(endpoint, token = '', data, id) {
     try {
       const response = await Axios({
-        method: 'update',
+        method: 'put',
         url: `${router.options.apiUrl}/${endpoint}/${id}`,
         data,
         headers: {

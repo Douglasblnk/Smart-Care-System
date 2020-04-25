@@ -27,11 +27,9 @@ export default class GetUserGeral {
     }
 
     getQuery(data: any) {
-        console.log("passou aqui ronei 182");
+
         const post = [data.idOrdemServico];
         const query = `SELECT * FROM ${TABLE};`;
-        // `SELECT ${TABLE}.idUsuario,${TABLE}.nome,${TABLE}.funcao,${TABLE}.nivelAcesso, ${TABLE}.numeroCracha,ordemServico_has_Usuario.excluded FROM
-        // Usuario INNER JOIN ordemServico_has_Usuario ON ordemServico_has_Usuario.Usuario_idUsuario = ${TABLE}.idUsuario where ordemServico_has_Usuario.ordemServico_idOrdemServico != ?;`;
 
         const dataQuery = { query, post, type:'UsuarioGeneral' };
 

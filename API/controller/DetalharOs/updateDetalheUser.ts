@@ -47,9 +47,7 @@ export default class UpdateDetalheUser {
         }
     }
     getQuery(data: any) {
-        console.log("narizinho");
-        // sempre dar uma olhada no obj pai
-        console.log(data);
+
         const values = { excluded: data.excluded };
         const where = [data.idOrdemServico];
         const query = `UPDATE ${TABLE} SET ? WHERE ordemServico_has_Usuario.ordemServico_idOrdemServico = ? AND ordemServico_has_Usuario.Usuario_idUsuario = ${data.idUsuario};`;
