@@ -28,7 +28,8 @@ module.exports = {
     "vue/html-closing-bracket-newline": "warn",
     "object-curly-spacing": ["warn", "always"],
     "vue/html-indent": "warn",
-    "eol-last": "warn"
+    "eol-last": "warn",
+    "no-mixed-spaces-and-tabs":"warn"
   },
   parserOptions: {
     parser: 'babel-eslint'
