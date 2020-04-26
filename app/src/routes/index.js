@@ -7,6 +7,7 @@ import Login from '../views/Login';
 import Configurações from '../views/Configurações.vue';
 import Verificacao from '../views/Verificacao.vue';
 import Consulta from '../views/Consulta.vue';
+import Profile from '../views/Profile.vue';
 
 import CadastroEquipamento from '../views/Cadastros/CadastroEquipamento';
 import CadastroLocalInstalacao from '../views/Cadastros/CadastroLocalInstalacao';
@@ -122,6 +123,12 @@ const routes = [
     path: '/verificacao',
     name: 'verificacao',
     component: Verificacao,
+    meta: { requireAuth: true },
+  },
+  {
+    path: '/profile',
+    name: 'Meu Perfil',
+    component: Profile,
     meta: { requireAuth: true },
   },
   {

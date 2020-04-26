@@ -88,6 +88,10 @@ span, p, strong {
   src: url("./assets/fonts/Roboto-Light.ttf");
 }
 
+.no-padding {
+  padding: 0 !important;
+}
+
 .content {
   width: 100vw;
   height: 100vh;

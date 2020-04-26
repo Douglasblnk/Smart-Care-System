@@ -80,7 +80,7 @@ export default class UpdateUserValidate {
   }
 
   getQuery(data: any) {
-    const values = { numeroCracha: data.numeroCracha, nivelAcesso: data.nivelAcesso, nome: data.nome, senha: data.senha, email: data.email, funcao: data.funcao };
+    const values = { numeroCracha: data.numeroCracha, nome: data.nome, senha: data.senha, email: data.email, funcao: data.funcao, nivel_acesso: data.nivelAcesso };
     const where = data.id;
     const query = /*sql*/`UPDATE ${TABLE} SET ? WHERE numeroCracha = ?;`;
 
