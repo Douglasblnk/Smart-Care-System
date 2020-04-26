@@ -2,22 +2,23 @@ import Update from '../../dao/Update';
 import { SSUtils } from '../../utils/utils';
 const _ = require('lodash');
 
-const comitData = new Update();
+const commitData = new Update();
 const isEmpty = new SSUtils();
 
-const TABLE = 'componente';
+const TABLE = 'Componente';
 
 export default class UpdateComponentValidate {
 
     async run(event: any) {
         try {
+            console.log('entrou nesta parte');
             const data = this.getData(event);
 
             this.validateData(data);
 
             const getQuery = this.getQuery(data);
 
-            const result = await comitData.run(getQuery);
+            const result = await commitData.run(getQuery);
             
             return result;
 
@@ -41,20 +42,20 @@ export default class UpdateComponentValidate {
             status: 404,
             err: 'NAo foi possivel encontrar o componente'
         };
-        isEmpty.verify(data, ['description'], '')
-        if(data.description === '') throw {
+        isEmpty.verify(data, ['DescricaoComponente'], '');
+        if(data.DescricaoComponente === '') throw {
             status: 404,
             err:'Componente não informado'
         };
 
     }
     getQuery(data: any) {
-        const values = { DescricaoComponente: data.description };
+        const values = { DescricaoComponente: data.DescricaoComponente };
         const where = data.id;
-        const query = `UPDATE ${TABLE} set ? WHERE idComponente = ?;`;
+        const query = `UPDATE ${TABLE} SET ? WHERE idComponente = ?;`;
 
 
-        const dataQuery = { query, values, where, type: 'componente' };
+        const dataQuery = { query, values, where, type: 'Componente' };
 
         return dataQuery;
     }

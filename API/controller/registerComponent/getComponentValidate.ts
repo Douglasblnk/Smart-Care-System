@@ -3,7 +3,7 @@ import Get from '../../dao/Get';
 
 const comitData = new Get();
 
-const TABLE = 'equipamento';
+const TABLE = 'Componente';
 
 export default class GetComponentValidate {
 
@@ -22,7 +22,7 @@ export default class GetComponentValidate {
         }
     }
     getQuery(){
-        const query = `select * from ${TABLE};`;
+        const query = `SELECT * FROM ${TABLE};`;
 
         const dataQuery = { query, type: 'equipamento' };
 

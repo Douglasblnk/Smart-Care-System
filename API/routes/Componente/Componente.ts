@@ -9,6 +9,7 @@ const router = Router();
 const registerComponent = new RegisterComponent();
 const getComponentValidate = new GetComponentValidate();
 const deleteComponentValidate = new DeleteComponentValidate();
+const updateComponentValidate = new UpdateComponentValidate();
 const jwt = new Auth();
 
 /** 
@@ -51,9 +52,10 @@ router.delete('/:id', async(req: any, res: any) => {
 })
 router.put('/:id', async(req: any, res: any) => {
   try {
+    console.log('entrar aqui em');
     await jwt.jwtVerify(req);
     
-    const response = await UpdateComponentValidate.arguments(req);
+    const response = await updateComponentValidate.run(req);
     res.status(200).send(response);
   
 

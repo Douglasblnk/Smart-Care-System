@@ -129,6 +129,7 @@ export default {
     },
 
     deleteWorkCenter(workCenter, index) {
+
       this.$swal({
         type: 'question',
         title: `Deseja mesmo remover o centro de trabalho ${workCenter.descricao_centro_trabalho}?`,
@@ -137,6 +138,7 @@ export default {
         preConfirm: () => {
           this.$http.delete('centro-trabalho', getLocalStorageToken(), workCenter.idCentro_Trabalho)
             .then(res => {
+
               if (res.status !== 200) return this.$swal({
                 type: 'error',
                 title: `Ops! ${res.err}`,
@@ -148,6 +150,8 @@ export default {
                 title: `${res.result}`,
                 confirmButtonColor: '#F34336',
               }).then(() => {
+                              console.log('lalalalalalalalalalal')
+              console.log(res)
                 this.workCenters.splice(index, 1)
               })
             })
