@@ -201,7 +201,8 @@ export default {
           confirmButtonColor: '#F34336',
         });
 
-        this.users.push(this.userInputValues);
+        this.getUsers();
+        
         this.resetModel();
       } catch (err) {
         console.log('Error Register user => ', err.response || err);

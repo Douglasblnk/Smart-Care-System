@@ -29,7 +29,7 @@ const validateSession = async apiUrl => {
       Vuex.default.commit('addUser', {
         email: response.data.user.email,
         nome: response.data.user.nome,
-        nivelAcesso: response.data.user.nivelAcesso,
+        nivelAcesso: response.data.user.nivel_acesso,
         funcao: response.data.user.funcao,
         cracha: response.data.user.numeroCracha,
       });

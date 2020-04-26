@@ -43,6 +43,7 @@
 </template>
 
 <script>
+import { getErrors } from '../utils/utils';
 export default {
   data() {
     return {
@@ -83,7 +84,7 @@ export default {
         this.$store.commit('addUser', {
           email: response.email,
           nome: response.nome,
-          nivelAcesso: response.nivelAcesso,
+          nivelAcesso: response.nivel_acesso,
           funcao: response.funcao,
           cracha: response.numeroCracha,
         });
@@ -102,16 +103,14 @@ export default {
           this.$router.replace('dashboard');
         });
       } catch (err) {
-        const { response } = err;
-
-        console.log('err login => :', response );
+        console.log('err login => :', err.response || err);
 
         this.isLoading = false;
 
         return this.$swal({
           type: 'error',
-          title: 'Por favor, tente novamente mais tarde.',
-          text: 'Ocorreu um erro ao tentar realizar o login.',
+          title: 'Não foi possível realizar o login',
+          text: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
