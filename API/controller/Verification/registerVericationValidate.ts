@@ -1,6 +1,6 @@
 import Create from '../../dao/Create';
 import Get from '../../dao/Get';
-import SSUtils from '../../utils/utils';
+import { SSUtils } from '../../utils/utils';
 const _ = require('lodash');
 
 const commitData = new Create();
@@ -24,7 +24,7 @@ export default class RegisterVericationValidate {
       const resultVerify : any = await commitDataVerify.run(getQueryExistVerification);
 
       console.log('resultVerify :>> ', resultVerify);
-      
+
       if(resultVerify.result.length !== 0) throw "Verificação já realizada!"
       
       const getQuery = this.getQuery(data)
