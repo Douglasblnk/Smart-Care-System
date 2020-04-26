@@ -77,9 +77,16 @@ const getErrors = err => {
   return error;
 };
 
+const getAccessLevel = accessNum => {
+  if (accessNum === '1') return 'Administrador';
+  if (accessNum === '2') return 'Manutentor';
+  if (accessNum === '3') return 'Solicitante';
+};
+
 module.exports = {
   getLocalStorageToken,
   validateToken,
   validateSession,
   getErrors,
+  getAccessLevel,
 };

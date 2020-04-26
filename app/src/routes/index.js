@@ -6,6 +6,7 @@ import Cadastros from '../views/Cadastros';
 import Login from '../views/Login';
 import Configurações from '../views/Configurações.vue';
 import Consulta from '../views/Consulta.vue';
+import Profile from '../views/Profile.vue';
 
 import CadastroEquipamento from '../views/Cadastros/CadastroEquipamento';
 import CadastroLocalInstalacao from '../views/Cadastros/CadastroLocalInstalacao';
@@ -14,6 +15,7 @@ import CadastroTipoOrdem from '../views/Cadastros/CadastroTipoOrdem';
 import CadastroCausaSintoma from '../views/Cadastros/CadastroCausaSintoma.vue';
 import CadastroComponente from '../views/Cadastros/CadastroComponente';
 import CadastroOrdemManutencao from '../views/Cadastros/CadastroOrdemManutencao';
+
 
 import { validateToken } from '../utils/utils';
 import Swal from 'sweetalert2';
@@ -109,6 +111,12 @@ const routes = [
     path: '/configuracoes',
     name: 'Configurações',
     component: Configurações,
+    meta: { requireAuth: true },
+  },
+  {
+    path: '/profile',
+    name: 'Meu Perfil',
+    component: Profile,
     meta: { requireAuth: true },
   },
   {
