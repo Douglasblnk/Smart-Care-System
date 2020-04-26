@@ -145,32 +145,31 @@ export default {
         });
       }
     },
-    deleteEpi(epi, index){
+     deleteEpi(epi, index){
+      try {
         this.$swal({
-            type: 'question',
-            title: `Deseja mesmo remover o Epi ${epi.descricaoEpi}`,
-            showCancelButton: true,
-            confirmButtonColor: '#F34336',
-            preConfirm: () => {
-                this.$http.delete('epi', getLocalStorageToken(), epi.idEpi)
-                .then(res => {
-                    if(res.status !== 200) return this.$swal({
-                        type: 'error',
-                        title: `Ops! ${res.err}`,
-                        text: res.detailErr || '',
-                        confirmButtonColor: '#F34336',
-                    }),
-                    this.$swal({
-                        type: 'success',
-                        title: `${res.result}`,
-                        confirmButtonColor: '#F34336',
-                    })
-                    .then(() => {
-                        this.Epis.splice(index, 1);
-                    });
-                });
-            },
+          type: 'question',
+          title: `Deseja mesmo remover o Epi ${epi.descricaoEpi}`,
+          showCancelButton: true,
+          confirmButtonColor: '#F34336',
+          preConfirm: async () => {
+            const response = await this.$http.delete('epi', getLocalStorageToken(), epi.idEpi);
+
+            this.$swal({
+                type: 'success',
+                title: `${response.result}`,
+                confirmButtonColor: '#F34336',
+            }),
+                this.Epis.splice(index, 1);
+          },
+      });
+      } catch (err) {
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
         });
+      }
     },
     editEpi(epi){
         this.inputValues = { ...epi };
