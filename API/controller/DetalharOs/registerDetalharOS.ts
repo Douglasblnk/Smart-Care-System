@@ -12,7 +12,6 @@ const commitDataUpdate = new Update();
 const isEmpty = new SSUtils();
 
 const TABLE = 'ordemServico_has_Usuario';
-const TABLE1 = 'Usuario';
 
 export default class RegisterDetalharOS {
 
@@ -21,11 +20,13 @@ export default class RegisterDetalharOS {
 
             const data = this.getData(event);
 
+            this.validateData(data);
+
             const queryGet = this.queryGet(data);
 
-            const result : any = await commitDataGet.run(queryGet);
+            const { result } : any = await commitDataGet.run(queryGet);
 
-            if(result.result.length === undefined && result.result.excluded === 1) {
+            if(result.length === undefined && result.excluded === 1) {
                 console.log('oi ai');
                 const queryUpdate = this.queryUpdate(data);
                 const result2 = await commitDataUpdate.run(queryUpdate);
@@ -55,7 +56,7 @@ export default class RegisterDetalharOS {
             status: 404,
             err: 'Não veio dados'
         }
-        isEmpty.verify(data, ['idOrdemServico', 'idUsuario'], '');
+        isEmpty.verify(data, ['idOrdemServico', 'idUsuario', 'excluded'], '');
 
         if(data.idOrdemServico === '') throw {
             status: 404,
@@ -64,6 +65,10 @@ export default class RegisterDetalharOS {
         if(data.idUsuario === '') throw {
             status: 404,
             err: 'isUser não encontrado'
+        }
+        if(data.excluded === '') throw {
+            status: 404,
+            err: 'excluded não encontrado'
         }
     }
     getQuery(data: any) {

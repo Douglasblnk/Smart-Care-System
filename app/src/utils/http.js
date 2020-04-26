@@ -40,23 +40,6 @@ export default class Http {
       throw err;
     }
   }
-  methodPostNotVerified(endpoint, token = '', data) {
-    console.log(endpoint, token, data);
-    return new Promise((resolve) => {
-      fetch(`${router.options.apiUrl}/${endpoint}`, {
-        method: 'post',
-        headers: {
-          'Content-Type': 'application/json',
-          'authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(data),
-      }).then(res => res.json())
-        .then(json => {
-
-          return resolve(json);
-        });
-    });
-  }
 
   async delete(endpoint, token = '', id) {
     try {

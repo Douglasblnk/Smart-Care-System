@@ -209,7 +209,6 @@ export default {
 
   data() {
     return {
-      visible: false,
       visibleMessage:false,
         valuesInput: {
           idOrdemServico:this.order.idOrdemServico,
@@ -317,12 +316,11 @@ export default {
         this.valuesInput.excluded = 1;
         this.dialogVisible = false;
         const response = await this.$http.update('detalhamento', getLocalStorageToken(), this.valuesInput, this.valuesInput.idOrdemServico);
-        if(response.status === 200) return this.$swal({
+        this.$swal({
           type: 'success',
           title: `${response.result}`,
           confirmButtonColor: '#F34336',
         }),
-        this.manutentorInOrdem.splice(row.idUsuario, 1),
         this.manutentorInOrdem = [],
         this.getManutentoresInOrdem(),
         this.$http.setActivity(

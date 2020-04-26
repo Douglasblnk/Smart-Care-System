@@ -28,10 +28,9 @@ export default class GetUserGeral {
 
     getQuery(data: any) {
 
-        const post = [data.idOrdemServico];
         const query = `SELECT * FROM ${TABLE};`;
 
-        const dataQuery = { query, post, type:'UsuarioGeneral' };
+        const dataQuery = { query, type:'UsuarioGeneral' };
 
         return dataQuery;
     }

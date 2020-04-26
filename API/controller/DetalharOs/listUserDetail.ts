@@ -10,14 +10,12 @@ export default class ListUserDetail {
 
     async run(event: any) {
         try {
-            console.log('CHEGOU ATE AQUI RONEI');
+           
         const data = this.getData(event);
 
         const getQuery = this.getQuery(data);
-        console.log('CHEGOU ATE AQUI RONEI e a merda foi aqui');
+       
         const result = await commitData.run(getQuery);
-        console.log('CHEGOU ATE AQUI RONEI hahahahahaahh');
-        console.log(result);
 
         return result;
         } catch(err) {
