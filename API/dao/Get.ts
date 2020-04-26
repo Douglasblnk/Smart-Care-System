@@ -11,9 +11,7 @@ export default class Get {
 
       return response
     } catch (err) {
-      console.log('deu erro 1');
-      console.error(err);
-
+      console.log('deu erro', err);
       throw err;
     }
   }
