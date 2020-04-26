@@ -77,10 +77,12 @@ const getErrors = err => {
   return error;
 };
 
-const getAccessLevel = accessNum => {
-  if (accessNum === '1') return 'Administrador';
-  if (accessNum === '2') return 'Manutentor';
-  if (accessNum === '3') return 'Solicitante';
+const getAccessLevelName = accessNum => {
+  let num = Number.isNaN(accessNum) ? accessNum : String(accessNum);
+
+  if (num === '1') return 'Administrador';
+  if (num === '2') return 'Manutentor';
+  if (num === '3') return 'Solicitante';
 };
 
 module.exports = {
@@ -88,5 +90,5 @@ module.exports = {
   validateToken,
   validateSession,
   getErrors,
-  getAccessLevel,
+  getAccessLevelName,
 };

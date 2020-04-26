@@ -30,7 +30,8 @@
                         <td>{{ user.nome }}</td>
                         <td>{{ user.numeroCracha }}</td>
                         <td>{{ user.email }}</td>
-                        <td>{{ user.nivel_acesso }}</td>
+
+                        <td>{{ getAccessLevelName(user.nivel_acesso) }}</td>
                         <td style="width: 50px">
                           <div class="d-flex table-action">
                             <i class="fas fa-edit text-muted" @click="editUser(user)"></i>
@@ -118,7 +119,7 @@
 </template>
 
 <script>
-import { getLocalStorageToken, getErrors } from '../utils/utils';
+import { getLocalStorageToken, getErrors, getAccessLevelName } from '../utils/utils';
 export default {
   
   data() {
@@ -135,6 +136,7 @@ export default {
       users: [],
       accessLevel: [],
       isEditing: false,
+      getAccessLevelName,
     };
   },
   mounted() {
