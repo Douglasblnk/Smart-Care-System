@@ -1,6 +1,6 @@
 import Create from '../../dao/Create';
 import Get from '../../dao/Get';
-import {SSUtils} from '../../utils/utils';
+import SSUtils from '../../utils/utils';
 const _ = require('lodash');
 
 const commitData = new Create();
@@ -23,17 +23,16 @@ export default class RegisterVericationValidate {
 
       const resultVerify : any = await commitDataVerify.run(getQueryExistVerification);
 
-      console.log("RESULT");
-      console.log(resultVerify);
-      console.log('Length', resultVerify.result.length, !resultVerify.result)
+      console.log('resultVerify :>> ', resultVerify);
+      
       if(resultVerify.result.length !== 0) throw "Verificação já realizada!"
       
-      console.log("RESULT1");
-
       const getQuery = this.getQuery(data)
 
       const result = await commitData.run(getQuery);
-      console.log('cheguei até aqui');
+
+      console.log('result :>> ', result);
+
       return result;
     } catch (err) {
       console.log(err);
