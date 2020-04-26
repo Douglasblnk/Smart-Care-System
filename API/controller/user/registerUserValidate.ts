@@ -76,7 +76,7 @@ export default class RegisterUserValidate {
   }
 
   getQuery(data: any) {
-    const post = { numeroCracha: data.numeroCracha, nivelAcesso: data.nivelAcesso, nome: data.nome, senha: data.senha, email: data.email, funcao: data.funcao };
+    const post = { numeroCracha: data.numeroCracha, nome: data.nome, senha: data.senha, email: data.email, funcao: data.funcao, nivel_acesso: data.nivelAcesso };
     const query = /*sql*/`INSERT INTO ${TABLE} SET ?;`;
 
     const dataQuery = { query, post, type: 'Usuário' };
