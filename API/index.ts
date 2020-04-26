@@ -24,6 +24,8 @@ const prioridade = require("./routes/Prioridade/Prioridade");
 const status = require("./routes/Status/Status");
 const epi = require("./routes/Epi/Epi");
 const detalhamento = require('./routes/Detalhamento/Detalhamento');
+const nivelAcesso = require("./routes/NivelAcesso/nivelAcesso");
+
 
 app.use("/users", user);
 app.use("/equipamento", equipamento)
@@ -39,9 +41,11 @@ app.use("/prioridade", prioridade)
 app.use("/status", status)
 app.use("/epi", epi)
 app.use("/detalhamento", detalhamento)
+app.use("/nivel-acesso", nivelAcesso)
+
 
 app.get("/", (req: any, res: any) => {
-  res.send("deu boa");
+  res.send("Smart Care API");
 });
 
 app.listen(3000, function () {
