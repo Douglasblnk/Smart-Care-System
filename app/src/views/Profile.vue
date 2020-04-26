@@ -3,72 +3,73 @@
     <div class="cadCard">
       <div class="d-flex">
         <div class="col-md-8 no-padding">
-          <div>
-            <label for="" class="nome1">Nome:</label>
-          </div>
+          <label class="nome1">Nome:</label>
+
           <div class="nome2">
             <span>{{user.nome}}</span>
           </div>
         </div>
+
         <div class="col-md-4 no-padding">
-            <label for="" class="email1">E-mail:</label>
+          <label class="email1">E-mail:</label>
+
           <div class="email2">
-           <span>{{user.email}}</span>
+            <span>{{user.email}}</span>
           </div>
         </div>
       </div>
+      
       <div class="d-flex">
-      <div class="col-md-8 no-padding">
-        <div>
-        <label for="" class="nivel1">Nível de acesso:</label>
+        <div class="col-md-8 no-padding">
+          <label class="nivel1">Nível de acesso:</label>
+
+          <div class="nivel2">
+            <span>{{getAccessLevelName(user.nivelAcesso)}}</span>
+          </div>
         </div>
-        <div class="nivel2">
-          <span>{{getAccessLevel(user.nivelAcesso)}}</span>
+
+        <div class="col-md-4 no-padding">
+          <label class="funcao1">Função:</label>
+
+          <div class="funcao2">
+            <span>{{user.funcao}}</span>
+          </div>
         </div>
-      </div>
-      <div class="cold-md-4 no padding">
-        <label for="" class="funcao1">Função:</label>
-      <div class="funcao2">
-        <span>{{user.funcao}}</span>
-      </div>
-      </div>
-      </div>
-      <div>
-      <div>
-        <label for="" class="cracha1">Nº Crachá:</label>
-      </div>
-      <div class="cracha2">
-        {{user.cracha}}
-      </div>
       </div>
 
+      <div class="col-md-12 no-padding">
+        <label class="cracha1">Nº Crachá:</label>
 
+        <div class="cracha2">
+          {{user.cracha}}
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { getAccessLevel } from '../utils/utils';
+import { getAccessLevelName } from '../utils/utils';
 
 export default {
   name:'perfil',
 
   data(){
     return{
-      getAccessLevel,
-    }
-    
-	},
+      getAccessLevelName,
+    };
+  },
+  
 	mounted(){
     this.$store.commit('addPageName', 'Meu Perfil');
-    console.log(this.$store.state.user);
   },
+
   computed: {
     user(){
       return this.$store.state.user;
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -115,7 +116,7 @@ export default {
   .email2 {
     color: #565656;
     font-family: 'roboto';
-    font-size: 18px;  
+    font-size: 18px;
   }
 
   .funcao1 {
@@ -128,7 +129,7 @@ export default {
   .funcao2 {
     color: #565656;
     font-family: 'roboto';
-    font-size: 18px; 
+    font-size: 18px;
   }
 
   .cracha1 {
@@ -158,6 +159,3 @@ export default {
   }
 }
 </style>
-
-
-
