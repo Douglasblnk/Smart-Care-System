@@ -22,7 +22,8 @@ module.exports = {
     "quotes": ["warn", "single"],
     "no-empty": "warn",
     "no-empty-function": "warn",
-    "padded-blocks": ["warn", "never"]
+    "padded-blocks": ["warn", "never"],
+    "no-mixed-spaces-and-tabs":"warn"
   },
   parserOptions: {
     parser: 'babel-eslint'
