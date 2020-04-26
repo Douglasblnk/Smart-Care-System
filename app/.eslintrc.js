@@ -29,7 +29,8 @@ module.exports = {
     "object-curly-spacing": ["warn", "always"],
     "vue/html-indent": "warn",
     "eol-last": "warn",
-    "no-mixed-spaces-and-tabs":"warn"
+    "no-mixed-spaces-and-tabs": "warn",
+    "space-before-blocks": "warn"
   },
   parserOptions: {
     parser: 'babel-eslint'
