@@ -22,7 +22,13 @@ module.exports = {
     "quotes": ["warn", "single"],
     "no-empty": "warn",
     "no-empty-function": "warn",
-    "padded-blocks": ["warn", "never"]
+    "padded-blocks": ["warn", "never"],
+    "array-bracket-spacing": "warn",
+    "vue/multiline-html-element-content-newline": "warn",
+    "vue/html-closing-bracket-newline": "warn",
+    "object-curly-spacing": ["warn", "always"],
+    "vue/html-indent": "warn",
+    "eol-last": "warn"
   },
   parserOptions: {
     parser: 'babel-eslint'

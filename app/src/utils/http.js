@@ -1,6 +1,7 @@
 import router from '../routes/index';
 import Swal from 'sweetalert2';
 import Axios from 'axios';
+import { get } from 'deep-object-js';
 
 export default class Http {
   async get(endpoint, token) {
@@ -83,9 +84,9 @@ export default class Http {
 
   async validateData(response) {
     try {
-      if (!response) throw 'Ops, ocorreu um erro na hora de buscar os dados';
+      if (!response || !response.data) throw 'Ops, ocorreu um erro com a requisição.';
 
-      if (response.status !== 200) throw 'Ops, ocorreu um erro na hora de buscar os dados';
+      if (response.status !== 200) throw 'Ops, ocorreu um erro com a requisição.';
     } catch (err) {
       throw err;
     }
@@ -93,8 +94,7 @@ export default class Http {
 
   validateError(err) {
     try {
-      if (!err.response.data) return;
-      if (!err.response.data.status) return;
+      if (!get(err, 'response.data.status', '')) return err;
 
       if (err.response.data.status === 401) {
         localStorage.removeItem('token');

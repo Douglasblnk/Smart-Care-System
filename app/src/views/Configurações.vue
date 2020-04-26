@@ -2,7 +2,6 @@
 <template>
   <div class="root-configuracoes-view">
     <div class="wrapper-configuration p-3">
-
       <div class="label-text">
         <span class="text-muted">Usuários</span>
       </div>
@@ -31,7 +30,7 @@
                         <td>{{ user.nome }}</td>
                         <td>{{ user.numeroCracha }}</td>
                         <td>{{ user.email }}</td>
-                        <td>{{ user.nivelAcesso }}</td>
+                        <td>{{ user.nivel_acesso }}</td>
                         <td style="width: 50px">
                           <div class="d-flex table-action">
                             <i class="fas fa-edit text-muted" @click="editUser(user)"></i>
@@ -58,7 +57,11 @@
                     <simple-input v-model="userInputValues.funcao" label="Função" type="text"></simple-input>
                   </div>
                   <div class="p-2 m-2 w-25">
-                    <simple-input v-model="userInputValues.nivelAcesso" label="Nível de acesso" type="number"></simple-input>
+                    <custom-select
+                      label="Nível de acesso"
+                      v-model="userInputValues.nivelAcesso"
+                      :options="getAccessLevelOptions()"
+                    />
                   </div>
                   <div class="p-2 m-2 w-25">
                     <simple-input v-model="userInputValues.email" label="E-mail" type="email"></simple-input>
@@ -91,7 +94,11 @@
                 <simple-input v-model="userInputValues.funcao" label="Função" type="text"></simple-input>
               </div>
               <div class="p-2 m-2">
-                <simple-input v-model="userInputValues.nivelAcesso" label="Nível de acesso" type="number"></simple-input>
+                <custom-select
+                  label="Nível de acesso"
+                  v-model="userInputValues.nivelAcesso"
+                  :options="getAccessLevelOptions()"
+                />
               </div>
               <div class="p-2 m-2">
                 <simple-input v-model="userInputValues.email" label="E-mail" type="email"></simple-input>
@@ -106,7 +113,6 @@
           </form>
         </accordion>
       </div>
-
     </div>
   </div>
 </template>
@@ -127,6 +133,7 @@ export default {
         nivelAcesso: '',
       },
       users: [],
+      accessLevel: [],
       isEditing: false,
     };
   },
@@ -134,7 +141,9 @@ export default {
     this.$store.commit('addPageName', 'Configurações');
 
     this.getUsers();
+    this.getAccessLevel();
   },
+
   methods: {
     async getUsers() {
       try {
@@ -144,15 +153,33 @@ export default {
         
         if (response.result.length === undefined)
           this.users.push(response.result);
-        else this.users = [ ...response.result ];
+        else this.users = [...response.result];
       } catch (err) {
         console.log('error getUser => ', err.response || err);
+      }
+    },
+    async getAccessLevel() {
+      try {
+        const response = await this.$http.get('nivel-acesso/get', getLocalStorageToken());
+
+        if (response.result.length === undefined)
+          this.accessLevel.push(response.result);
+
+        else this.accessLevel = [...response.result];
+      } catch (err) {
+        console.log('err getAccessLevel :>> ', err.response || err);
+
+        this.$swal({
+          type: 'warning',
+          text: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
       }
     },
     async register() {
       try {
         const response = await this.$http.post('users/register', getLocalStorageToken(), this.userInputValues);
-        
+        console.log('response :>> ', response);
         this.$http.setActivity(
           'registerUser',
           {
@@ -185,7 +212,7 @@ export default {
       }
     },
     editUser(user) {
-      this.userInputValues = { ...user };
+      this.userInputValues = { ...user, nivelAcesso: String(user.nivel_acesso) };
       
       this.isEditing = true;
     },
@@ -239,7 +266,7 @@ export default {
         confirmButtonColor: '#F34336',
         preConfirm: async () => {
           try {
-            const response = await this.$http.delete('users', getLocalStorageToken(), user.numeroCracha)
+            const response = await this.$http.delete('users', getLocalStorageToken(), user.numeroCracha);
 
             this.$http.setActivity(
               'deleteUser',
@@ -269,6 +296,9 @@ export default {
           }
         },
       });
+    },
+    getAccessLevelOptions() {
+      return this.accessLevel.map(i => ({ id: String(i.nivel_acesso), description: i.nivel_acesso_description }));
     },
     closeEditingUser() {
       this.isEditing = false;
