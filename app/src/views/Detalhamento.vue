@@ -237,7 +237,7 @@ export default {
     },
     async getManutentor() {
       try {
-        const response = await this.$http.post('detalhamento/getgeraluser', getLocalStorageToken(), this.valuesInput);
+        const response = await this.$http.post('detalhamento/get-geral-user', getLocalStorageToken(), this.valuesInput);
 
         if(response.result.length === undefined)
           this.manutentores.push(response.result);

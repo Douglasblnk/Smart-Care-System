@@ -23,9 +23,9 @@ export default class Update {
 
   runQuery(data: any) {
     return new Promise((resolve, reject) => {
-      connection.query(data.query, [data.values, data.where.map((i : any) => i)], (err: any, result: any) => {
+      connection.query(data.query, [data.values, data.where], (err: any, result: any) => {
         if (err) {
-          console.log("erro: ", err)          
+          console.log("erro: ", err)
           return reject('Ocorreu um erro na hora de deletar' + err);
         }
         
