@@ -64,7 +64,7 @@ router.post('/register', async (req: any, res: any) => {
     console.log('DEU CERTO');
     const response = await register.run(req);
 
-    console.log('user response', response);
+    // console.log('user response', response);
     
     res.status(200).send(response);
   } catch (err) {
@@ -84,7 +84,7 @@ router.delete('/:id', async (req: any, res: any) => {
     console.log('DEU CERTO');
     const response = await deleteUser.run(req);
 
-    console.log('user response', response);
+    // console.log('user response', response);
     
     res.status(200).send(response);
   } catch (err) {

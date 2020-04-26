@@ -5,6 +5,7 @@ import Dashboard from '../views/Dashboard';
 import Cadastros from '../views/Cadastros';
 import Login from '../views/Login';
 import Configurações from '../views/Configurações.vue';
+import Verificacao from '../views/Verificacao.vue';
 import Consulta from '../views/Consulta.vue';
 import Profile from '../views/Profile.vue';
 
@@ -15,7 +16,7 @@ import CadastroTipoOrdem from '../views/Cadastros/CadastroTipoOrdem';
 import CadastroCausaSintoma from '../views/Cadastros/CadastroCausaSintoma.vue';
 import CadastroComponente from '../views/Cadastros/CadastroComponente';
 import CadastroOrdemManutencao from '../views/Cadastros/CadastroOrdemManutencao';
-
+import CadastroEpi from '../views/Cadastros/CadastroEpi';
 
 import { validateToken } from '../utils/utils';
 import Swal from 'sweetalert2';
@@ -85,7 +86,12 @@ const routes = [
         component: CadastroOrdemManutencao,
         meta: { requireAuth: true },
       },
-
+      {
+        path: 'cadastro-epi',
+        name: 'epi',
+        component: CadastroEpi,
+        meta: { requireAuth: true },
+      },
     ],
     meta: { requireAuth: true },
   },
@@ -111,6 +117,12 @@ const routes = [
     path: '/configuracoes',
     name: 'Configurações',
     component: Configurações,
+    meta: { requireAuth: true },
+  },
+  {
+    path: '/verificacao',
+    name: 'verificacao',
+    component: Verificacao,
     meta: { requireAuth: true },
   },
   {

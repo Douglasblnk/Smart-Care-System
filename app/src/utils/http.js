@@ -1,5 +1,4 @@
 import router from '../routes/index';
-import Swal from 'sweetalert2';
 import Axios from 'axios';
 import { get } from 'deep-object-js';
 
@@ -65,7 +64,7 @@ export default class Http {
   async update(endpoint, token = '', data, id) {
     try {
       const response = await Axios({
-        method: 'update',
+        method: 'put',
         url: `${router.options.apiUrl}/${endpoint}/${id}`,
         data,
         headers: {

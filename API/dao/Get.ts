@@ -12,7 +12,6 @@ export default class Get {
       return response
     } catch (err) {
       console.log('deu erro', err);
-
       throw err;
     }
   }
@@ -24,7 +23,7 @@ export default class Get {
         
         console.log('result', result);
         
-        if (result.length === 0 || result === undefined) return reject({ status: 404, err: `${data.type} não encontrado!` });
+        if (result === undefined) return reject({ status: 404, err: `${data.type} não encontrado!` });
         
         const response = this.getQueryResult(result)
         console.log(response);
@@ -34,6 +33,7 @@ export default class Get {
   }
 
   getQueryResult(result: any) {
+    if (result.length === 0) return result;
     if (result.length > 1) return JSON.parse(JSON.stringify(result));
     return JSON.parse(JSON.stringify(result[0]))
   }
