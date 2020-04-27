@@ -33,10 +33,13 @@ module.exports = {
     "no-mixed-spaces-and-tabs": "warn",
     "space-before-blocks": "warn",
     "keyword-spacing": "warn",
+    "key-spacing": "warn",
     "prefer-const": "warn",
     "prefer-arrow-callback": "warn",
     "no-param-reassign": "warn",
     "curly": ['warn', 'multi-or-nest', 'consistent'],
+    "vue/mustache-interpolation-spacing": "warn",
+    "space-before-function-paren": "warn"
   },
   parserOptions: {
     parser: 'babel-eslint'
