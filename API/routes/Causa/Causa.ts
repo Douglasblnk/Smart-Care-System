@@ -3,7 +3,7 @@ import RegisterCauseValidate from '../../controller/Causa/registerCausaValidate'
 import GetCauseValidate from '../../controller/Causa/getCausaValidate'
 import DeleteCauseValidate from '../../controller/Causa/deleteCausaValidate'
 import UpdateCauseValidate from '../../controller/Causa/updateCausaValidate'
-import Auth from '../../auth/auth'
+import Auth from '../../shared/auth/auth'
 
 const router = Router();
 const registerCause = new RegisterCauseValidate()

@@ -3,7 +3,7 @@ import RegisterTipoOrdem from '../../controller/TipoOrdem/registerTipoOrdemValid
 import GetTipoOrdem from '../../controller/TipoOrdem/getTipoOrdemValidate'
 import DeleteTipoOrdem from '../../controller/TipoOrdem/deleteTipoOrdemValidate'
 import UpdateTipoOrdem from '../../controller/TipoOrdem/updateTipoOrdemValidate'
-import Auth from '../../auth/auth'
+import Auth from '../../shared/auth/auth'
 
 const router = Router();
 const TipoOrdem = new RegisterTipoOrdem();

@@ -1,6 +1,6 @@
 const { Router } = require("express");
 import GetPriorityValidate from '../../controller/Priority/getPriorityValidate'
-import Auth from '../../auth/auth'
+import Auth from '../../shared/auth/auth'
 
 const router = Router();
 const getPriorityValidate = new GetPriorityValidate();

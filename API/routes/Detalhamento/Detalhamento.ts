@@ -3,7 +3,7 @@ import ListUserDetail from "../../controller/DetalharOs/listUserDetail";
 import RegisterDetalharOS from "../../controller/DetalharOs/registerDetalharOS";
 import UpdateDetalheUser from "../../controller/DetalharOs/updateDetalheUser";
 import GetUserGeral from "../../controller/DetalharOs/getUserGeral";
-import Auth from "../../auth/auth";
+import Auth from "../../shared/auth/auth";
 
 const router = Router();
 const listaUserOs = new ListUserDetail();

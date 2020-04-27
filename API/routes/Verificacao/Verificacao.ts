@@ -1,6 +1,6 @@
 const { Router } = require("express");
 import RegisterVerificationValidate from '../../controller/Verification/registerVericationValidate'
-import Auth from '../../auth/auth'
+import Auth from '../../shared/auth/auth'
 
 const router = Router();
 const registerVerification = new RegisterVerificationValidate();

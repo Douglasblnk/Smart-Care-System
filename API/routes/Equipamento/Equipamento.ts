@@ -3,7 +3,7 @@ import RegisterEquipmentValidate from '../../controller/Equipment/registerEquipm
 import GetEquipmentValidate from '../../controller/Equipment/getEquipmentValidate'
 import DeleteEquipmentValidate from '../../controller/Equipment/deleteEquipmentValidate'
 import UpdateEquipmentValidate from '../../controller/Equipment/updateEquipmentValidate'
-import Auth from '../../auth/auth'
+import Auth from '../../shared/auth/auth'
 
 const router = Router();
 const registerEquipment = new RegisterEquipmentValidate();

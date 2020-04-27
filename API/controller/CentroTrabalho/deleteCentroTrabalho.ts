@@ -1,4 +1,4 @@
-import Delete from '../../dao/Delete';
+import Delete from '../../shared/dao/Delete';
 
 const commitData = new Delete();
 

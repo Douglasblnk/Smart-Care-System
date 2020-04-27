@@ -3,7 +3,7 @@ import RegisterSintomaValidate from '../../controller/Sintoma/registerSintomaVal
 import GetSintomaValidate from '../../controller/Sintoma/getSintomaValidate'
 import DeleteSintomaValidate from '../../controller/Sintoma/deleteSintomaValidate'
 import UpdateSintomaValidate from '../../controller/Sintoma/updateSintomavalidate'
-import Auth from '../../auth/auth'
+import Auth from '../../shared/auth/auth'
 
 const router = Router();
 const registerSymptom = new RegisterSintomaValidate()

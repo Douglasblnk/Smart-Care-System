@@ -1,4 +1,4 @@
-import Get from '../../dao/Get';
+import Get from '../../shared/dao/Get';
 
 
 const comitData = new Get();

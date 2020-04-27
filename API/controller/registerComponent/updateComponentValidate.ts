@@ -1,5 +1,5 @@
-import Update from '../../dao/Update';
-import { SSUtils } from '../../utils/utils';
+import Update from '../../shared/dao/Update';
+import { SSUtils } from '../../shared/utils/utils';
 const _ = require('lodash');
 
 const commitData = new Update();

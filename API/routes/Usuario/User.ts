@@ -4,7 +4,7 @@ import RegisterUserValidate from '../../controller/user/registerUserValidate'
 import GetUsersValidate from '../../controller/user/getUsersValidate'
 import DeleteUserValidate from '../../controller/user/deleteUserValidate'
 import UpdateUserValidate from '../../controller/user/updateUserValidate'
-import Auth from '../../auth/auth'
+import Auth from '../../shared/auth/auth'
 const  RateLimit  = require("express-rate-limit");
 //import RateLimit from '../../node_modules/express-rate-limit';
 

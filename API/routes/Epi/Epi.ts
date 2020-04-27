@@ -4,7 +4,7 @@ import GetEpiValidate from '../../controller/Epi/getEpiValidate';
 import RegisterEpiValidate from '../../controller/Epi/registerEpiValidate';
 import UpdateEpiValidate from '../../controller/Epi/updateEpiValidate';
 import DeleteEpiValidate from '../../controller/Epi/deleteEpiValidate';
-import Auth from '../../auth/auth';
+import Auth from '../../shared/auth/auth';
 
 const router = Router();
 const getEpiValidate = new GetEpiValidate();

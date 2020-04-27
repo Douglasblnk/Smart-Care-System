@@ -1,7 +1,7 @@
 const { Router } = require("express");
 import RegisterOrderMaintenanceValidate from '../../controller/OrderMaintenance/RegisterOrderMaintenanceValidate'
 import GetOrderMaintenanceValidate from '../../controller/OrderMaintenance/getOrdemMaintenanceValidate'
-import Auth from '../../auth/auth'
+import Auth from '../../shared/auth/auth'
 
 const router = Router();
 const registerOrderMaintenance = new RegisterOrderMaintenanceValidate();

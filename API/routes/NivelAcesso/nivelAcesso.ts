@@ -1,7 +1,7 @@
 const { Router } = require("express");
 
 import GetAccessLevel from '../../controller/AccessLevel/getAccessLevelController'
-import Auth from '../../auth/auth'
+import Auth from '../../shared/auth/auth'
 
 const router = Router();
 const getAccessLevel = new GetAccessLevel();

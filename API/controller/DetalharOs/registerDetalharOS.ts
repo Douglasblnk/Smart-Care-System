@@ -1,8 +1,8 @@
-import Post from '../../dao/Create';
-import Get from '../../dao/Get';
-import Update from '../../dao/Update';
+import Post from '../../shared/dao/Create';
+import Get from '../../shared/dao/Get';
+import Update from '../../shared/dao/Update';
 
-import { SSUtils } from '../../utils/utils';
+import { SSUtils } from '../../shared/utils/utils';
 const _= require('lodash');
 
 const commitData = new Post();

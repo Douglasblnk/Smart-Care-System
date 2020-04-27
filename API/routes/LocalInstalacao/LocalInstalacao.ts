@@ -3,7 +3,7 @@ import RegisterLocalInstalacaoValidate from '../../controller/localInstalacao/re
 import GetLocalInstalacaoValidate from '../../controller/localInstalacao/getLocalInstalacaoValidate'
 import DeleteLocalInstalacaoValidate from '../../controller/localInstalacao/deleteLocalInstalacaoValidate'
 import UpdateLocalInstalacaoValidate from '../../controller/localInstalacao/updateLocalInstalacaoValidate'
-import Auth from '../../auth/auth'
+import Auth from '../../shared/auth/auth'
 
 const router = Router();
 const registerLocalInstalacao = new RegisterLocalInstalacaoValidate();

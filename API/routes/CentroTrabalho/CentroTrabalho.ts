@@ -3,7 +3,7 @@ import RegisterCentroTrabalhoValidate from '../../controller/CentroTrabalho/regi
 import GetCentroTrabalhoValidate from '../../controller/CentroTrabalho/getCentroTrabalho'
 import DeleteCentroTrabalhoValidate from '../../controller/CentroTrabalho/deleteCentroTrabalho'
 import UpdateCentroTrabalhoValidate from '../../controller/CentroTrabalho/updateCentroTrabalho'
-import Auth from '../../auth/auth'
+import Auth from '../../shared/auth/auth'
 
 const router = Router();
 const registerCentroTrabalho = new RegisterCentroTrabalhoValidate();

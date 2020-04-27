@@ -2,7 +2,7 @@ const { Router } = require("express");
 import RegisterComponent from '../../controller/registerComponent/registerComponent';
 import GetComponentValidate from '../../controller/registerComponent/getComponentValidate';
 import  DeleteComponentValidate  from '../../controller/registerComponent/deleteComponentValidate';
-import Auth from '../../auth/auth';
+import Auth from '../../shared/auth/auth';
 import UpdateComponentValidate from '../../controller/registerComponent/updateComponentValidate';
 
 const router = Router();

@@ -1,5 +1,5 @@
-import Dao from '../../dao/Create';
-import {SSUtils} from '../../utils/utils';
+import Dao from '../../shared/dao/Create';
+import {SSUtils} from '../../shared/utils/utils';
 const _ = require('lodash');
 
 const commitData = new Dao();

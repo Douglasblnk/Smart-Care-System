@@ -1,5 +1,5 @@
-import Retrieve from '../../dao/Get';
-import {SSUtils} from '../../utils/utils';
+import Retrieve from '../../shared/dao/Get';
+import {SSUtils} from '../../shared/utils/utils';
 const _ = require('lodash');
 
 const commitData = new Retrieve();

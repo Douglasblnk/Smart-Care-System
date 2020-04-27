@@ -1,6 +1,6 @@
 const { Router } = require("express");
 import GetStatsValidate from '../../controller/Stats/getStatsValidate'
-import Auth from '../../auth/auth'
+import Auth from '../../shared/auth/auth'
 
 const router = Router();
 const getStatsValidate = new GetStatsValidate();
