@@ -71,7 +71,7 @@ export default {
         this.inputValues.order = this.order.idOrdemServico;
         this.inputValues.typeVerification = this.$store.state.user.nivelAcesso;
 
-        const response = await this.$http.post('verificacao', getLocalStorageToken(), this.inputValues)
+        const response = await this.$http.post('verificacao', getLocalStorageToken(), this.inputValues);
           
         this.$swal({
           type: 'success',
