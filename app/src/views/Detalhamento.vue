@@ -268,7 +268,7 @@ export default {
       try {
         const response = await this.$http.post('detalhamento/get-geral-user', getLocalStorageToken(), this.valuesInput);
 
-        if(response.result.length === undefined)
+        if (response.result.length === undefined)
           this.manutentores.push(response.result);
         else this.manutentores = [...response.result];
       } catch (err) {
@@ -286,7 +286,7 @@ export default {
       try {
         const response = await this.$http.post('detalhamento', getLocalStorageToken(), this.valuesInput);
 
-        if(response.result.length === undefined)
+        if (response.result.length === undefined)
           this.manutentorInOrdem.push(response.result);
         else this.manutentorInOrdem = [...response.result];
       } catch (err) {
@@ -303,7 +303,7 @@ export default {
       const result = this.manutentorInOrdem.find(element => element.idUsuario === User.idUsuario);
       return result;
     },
-    async addManutentor(index, row){
+    async addManutentor(index, row) {
       try {
         const validManutentorAdd = this.validaAddManutentor(row);
 

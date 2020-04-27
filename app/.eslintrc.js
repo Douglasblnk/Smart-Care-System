@@ -31,7 +31,12 @@ module.exports = {
     "vue/html-indent": "warn",
     "eol-last": "warn",
     "no-mixed-spaces-and-tabs": "warn",
-    "space-before-blocks": "warn"
+    "space-before-blocks": "warn",
+    "keyword-spacing": "warn",
+    "prefer-const": "warn",
+    "prefer-arrow-callback": "warn",
+    "no-param-reassign": "warn",
+    "curly": ['warn', 'multi-or-nest', 'consistent'],
   },
   parserOptions: {
     parser: 'babel-eslint'
