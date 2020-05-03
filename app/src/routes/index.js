@@ -7,6 +7,7 @@ import Login from '../views/Login';
 import Configurações from '../views/Configurações.vue';
 import Verificacao from '../views/Verificacao.vue';
 import Consulta from '../views/Consulta.vue';
+import Profile from '../views/Profile.vue';
 
 import CadastroEquipamento from '../views/Cadastros/CadastroEquipamento';
 import CadastroLocalInstalacao from '../views/Cadastros/CadastroLocalInstalacao';
@@ -119,6 +120,21 @@ const routes = [
     meta: { requireAuth: true },
   },
   {
+<<<<<<< HEAD
+=======
+    path: '/verificacao',
+    name: 'verificacao',
+    component: Verificacao,
+    meta: { requireAuth: true },
+  },
+  {
+    path: '/profile',
+    name: 'Meu Perfil',
+    component: Profile,
+    meta: { requireAuth: true },
+  },
+  {
+>>>>>>> 65afe24a361aa5d95e816ba7c2e310b94154c43c
     path: '*',
     name: '404',
     component: Error404,

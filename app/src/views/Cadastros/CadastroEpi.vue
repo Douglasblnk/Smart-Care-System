@@ -60,7 +60,7 @@
     
 </template>
 <script>
-import { getLocalStorageToken } from '../../utils/utils'
+import { getLocalStorageToken, getErrors } from '../../utils/utils'
 import simpleInput from '../../components/inputs/simple-input';
 import saveButton from '../../components/button/save-button';
 import cancelButton from '../../components/button/cancel-button';
@@ -81,7 +81,6 @@ export default {
         isEditing: false,
         Epis: [],
     };
-
   },
   mounted(){
       this.getEpi();
@@ -89,104 +88,103 @@ export default {
   methods: {
     getSaveButtonText(){
         if(this.isEditing) return 'Alterar';
-        else return 'Cadastro'
+        else return 'Cadastro';
     },
-    getEpi(){
-        this.$http.methodGet('epi/get', getLocalStorageToken())
-        .then(res =>{
-            if(res.result.length === 0) this.$swal({
+    async getEpi(){
+      try {
+        const response = await this.$http.get('epi/get', getLocalStorageToken());
+
+        if(response.result.length === undefined)
+          this.Epis.push(response.result);
+          else this.Epis = [ ...response.result ];
+      } catch (err) {
+        return this.$swal({
                 type:'warning',
-                title: 'Não foi encontrado nenhum Epi',
+                title: getErrors(err),
                 confirmButtonColor: '#F34336',
-            })
-            if(res.result.length === undefined)
-            this.Epis.push(res.result)
-            else this.Epis = [ ...res.result ]
-
-        }
-        )
+            });
+      }
     },
-    registerEpi() {
+    async registerEpi() {
+      try {
         if(this.isEditing) return this.updateEpi();
-        this.$http.methodPost('epi', getLocalStorageToken(), this.inputValues)
-        .then(res => {
-            if(res.status !== 200) return this.$swal({
-                type: 'error',
-                title: `Ops! ${res.err}`,
-                confirmButtonColor: '#F34336',
-            })
-            this.$swal({
-                type: 'success',
-                title:`${res.result}`,
-                confirmButtonColor: '#F34336',
-            }).then(() => {
-                this.Epis.push(this.inputValues);
-                this.resetModel();
-            })
-        })
-    },
-    updateEpi(epi) {
-        this.$http.methodUpdate('epi', getLocalStorageToken(), this.inputValues, this.inputValues.idEpi)
-        .then(res => {
-            if(res.status !== 200) return this.$swal({
-                type: 'error',
-                title: `Ops! ${res.err}`,
-                confirmButtonColor: '#F34336',
-            })
-            this.$swal({
-                type: 'success',
-                title: `${res.result}`,
-                confirmButtonColor: '#F34336',
-            })
-            .then(() => {
-                const index = this.Epis.indexOf(this.Epis.find(i => i.idEpi === this.inputValues.idEpi))
-                this.Epis.splice(index, 1, this.inputValues)
-                this.closeEditing()
-            })
-        })
 
-    },
-    deleteEpi(epi, index){
+        const response = await this.$http.post('epi', getLocalStorageToken(), this.inputValues);
+
         this.$swal({
-            type: 'question',
-            title: `Deseja mesmo remover o Epi ${epi.descricaoEpi}`,
-            showCancelButton: true,
-            confirmButtonColor: '#F34336',
-            preConfirm: () => {
-                this.$http.methodDelete('epi', getLocalStorageToken(), epi.idEpi)
-                .then(res => {
-                    if(res.status !== 200) return this.$swal({
-                        type: 'error',
-                        title: `Ops! ${res.err}`,
-                        text: res.detailErr || '',
-                        confirmButtonColor: '#F34336',
-                    })
-                    this.$swal({
-                        type: 'success',
-                        title: `${res.result}`,
-                        confirmButtonColor: '#F34336'
-                    })
-                    .then(() => {
-                        this.Epis.splice(index, 1)
-                    })
-                })
-            }
-        })
+          type: 'success',
+          title:`${response.result}`,
+          confirmButtonColor: '#F34336',
+        }),
+        this.Epis.push(this.inputValues);
+        this.resetModel();
+      } catch (err) {
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
+    async updateEpi(epi) {
+      try {
+        const response = await this.$http.update('epi', getLocalStorageToken(), this.inputValues, this.inputValues.idEpi);
+        this.$swal({
+          type: 'success',
+          title: `${response.result}`,
+          confirmButtonColor: '#F34336',
+        });
+        const index = this.Epis.indexOf(this.Epis.find(i => i.idEpi === this.inputValues.idEpi));
+        this.Epis.splice(index, 1, this.inputValues);
+        this.closeEditing();
+      } catch (err) {
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
+     deleteEpi(epi, index){
+      try {
+        this.$swal({
+          type: 'question',
+          title: `Deseja mesmo remover o Epi ${epi.descricaoEpi}`,
+          showCancelButton: true,
+          confirmButtonColor: '#F34336',
+          preConfirm: async () => {
+            const response = await this.$http.delete('epi', getLocalStorageToken(), epi.idEpi);
+
+            this.$swal({
+                type: 'success',
+                title: `${response.result}`,
+                confirmButtonColor: '#F34336',
+            }),
+                this.Epis.splice(index, 1);
+          },
+      });
+      } catch (err) {
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
     },
     editEpi(epi){
-        this.inputValues = { ...epi }
-        this.switchListRegister = 'register'
+        this.inputValues = { ...epi };
+        this.switchListRegister = 'register';
         this.isEditing = true;
     },
     closeEditing() {
-      this.switchListRegister = 'list'
+      this.switchListRegister = 'list';
       this.isEditing = false;
       this.resetModel();
     },
     resetModel() {
-        this.inputValues = {}
-    }
- }
+        this.inputValues = {};
+    },
+ },
     
 }
 </script>

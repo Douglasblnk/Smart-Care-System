@@ -1,182 +1,206 @@
 <template>
   <div class="root-detalhamento-view">
     <transition name="slide-side" mode="out-in">
-    <div class="detail-content" v-if="state.view === 'detail'">
-      <div class="my-3">
-        <simple-button
-          :no-margin="true"
-          label="Voltar"
-          prefix="fa-arrow-left"
-          @click.native="() => $emit('state-list')"
-        />
-      </div>
-      <div class="detail-container bg-white p-3 d-flex">
-        <div class="col-md-7">
-          <div class="order-title">
-            <span>Resumo: {{ order.resumo }}</span>
-          </div>
-          <div class="my-3">
-            <span>Descrição: {{ order.descricao }}</span>
-          </div>
-          <div class="my-3">
-            <div class="my-3 d-flex align-items-center">
-              <i class="fa fa-map-marker-alt mr-2" />
-              <span>Setor: {{ order.setor }}</span>
-            </div>
-            <div class="my-3 d-flex align-items-center">
-              <i class="fa fa-ban mr-2" />
-              <span>Requer parada: {{ order.requerParada === 1 ? 'Sim' : 'Não' }}</span>
-            </div>
-            <div class="my-3 d-flex align-items-center">
-              <i class="fa fa-exclamation-triangle mr-2" :class="getPriorityClass()" />
-              <span>Prioridade: {{ order.prioridade }}</span>
-            </div>
-            <div class="my-3 d-flex align-items-center">
-              <i class="fa fa-laptop mr-2" />
-              <span>Equipamento: {{ order.equipamento }}</span>
-            </div>
-            <div class="my-3 d-flex align-items-center">
-              <i class="fa fa-tools mr-2" />
-              <span>Tipo de Manutenção: {{ order.tipo_manutencao }}</span>
-            </div>
-            <div class="my-3 d-flex align-items-center">
-              <i class="fa fa-calendar-alt mr-2" />
-              <div class="d-flex flex-column">
-                <span>
-                  Inicio planejado:
-                  {{ this.$moment(order.inicioPlanejado).format('DD-MM-YYYY') }}
-                </span>
-                <span>
-                  Fim planejado:
-                  {{ this.$moment(order.fimPlanejado).format('DD-MM-YYYY') }}
-                </span>
-              </div>
-            </div>
-          </div>
+      <div class="detail-content" v-if="state.view === 'detail'">
+        <div class="my-3">
+          <simple-button
+            :no-margin="true"
+            label="Voltar"
+            prefix="fa-arrow-left"
+            @click.native="() => $emit('state-list')"
+          />
         </div>
-
-        <div class="col-md-5">
-          <div class="col-md-12 text-center">
-            <span style="font-size: 20px">Ações</span>
+        <div class="detail-container bg-white p-3 d-flex">
+          <div class="col-md-7">
+            <div class="order-title">
+              <span>Resumo: {{ order.resumo }}</span>
+            </div>
+            <div class="my-3">
+              <span>Descrição: {{ order.descricao }}</span>
+            </div>
+            <div class="my-3">
+              <div class="my-3 d-flex align-items-center">
+                <i class="fa fa-map-marker-alt mr-2" />
+                <span>Setor: {{ order.setor }}</span>
+              </div>
+              <div class="my-3 d-flex align-items-center">
+                <i class="fa fa-ban mr-2" />
+                <span>Requer parada: {{ order.requerParada === 1 ? 'Sim' : 'Não' }}</span>
+              </div>
+              <div class="my-3 d-flex align-items-center">
+                <i class="fa fa-exclamation-triangle mr-2" :class="getPriorityClass()" />
+                <span>Prioridade: {{ order.prioridade }}</span>
+              </div>
+              <div class="my-3 d-flex align-items-center">
+                <i class="fa fa-laptop mr-2" />
+                <span>Equipamento: {{ order.equipamento }}</span>
+              </div>
+              <div class="my-3 d-flex align-items-center">
+                <i class="fa fa-tools mr-2" />
+                <span>Tipo de Manutenção: {{ order.tipo_manutencao }}</span>
+              </div>
+              <div class="my-3 d-flex align-items-center">
+                <i class="fa fa-calendar-alt mr-2" />
+                <div class="d-flex flex-column">
+                  <span>
+                    Inicio planejado:
+                    {{ this.$moment(order.inicioPlanejado).format('DD-MM-YYYY') }}
+                  </span>
+                  <span>
+                    Fim planejado:
+                    {{ this.$moment(order.fimPlanejado).format('DD-MM-YYYY') }}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="d-flex justify-content-center">
-            <div class="options-wrapper">
-              <div class="options">
-                <i class="fa fa-play fa-lg mb-2" />
-                <span>Iniciar</span>
-              </div>
-              <div class="options">
-                <i class="fa fa-hand-point-right fa-lg mb-2" />
-                <span>Delegar</span>
-              </div>
-              <div class="options" @click="dialogVisible = true">
-                <i class="fa fa-users fa-lg mb-2" />
-                <span>Convidar técnico</span>
-              </div>
-              <div class="options">
-                <i class="fa fa-file-signature fa-lg mb-2" />
-                <span>Assinatura</span>
-              </div>
-              <div class="options">
-                <i class="fa fa-check-double fa-lg mb-2" />
-                <span>Checklist</span>
-              </div>
-              <div class="options" @click="openOrder(order)">
+
+          <div class="col-md-5">
+            <div class="col-md-12 text-center">
+              <span style="font-size: 20px">Ações</span>
+            </div>
+            <div class="d-flex justify-content-center">
+              <div class="options-wrapper">
+                <div class="options">
+                  <i class="fa fa-play fa-lg mb-2" />
+                  <span>Iniciar</span>
+                </div>
+
+                <div class="options">
+                  <i class="fa fa-hand-point-right fa-lg mb-2" />
+                  <span>Delegar</span>
+                </div>
+
+                <div class="options" @click="dialogVisible = true">
+                  <i class="fa fa-users fa-lg mb-2" />
+                  <span>Convidar técnico</span>
+                </div>
+
+                <div class="options">
+                  <i class="fa fa-file-signature fa-lg mb-2" />
+                  <span>Assinatura</span>
+                </div>
+
+                <div class="options">
+                  <i class="fa fa-check-double fa-lg mb-2" />
+                  <span>Checklist</span>
+                </div>
+                <div class="options" @click="openOrderVerification()">
                   <i class="fa fa-clipboard-check fa-lg mb-2" />
                   <span>Verificação</span>
                 </div>
+              </div>
             </div>
           </div>
-        </div>
-        <el-dialog
-          title="Convidar Técnico"
-          :visible.sync="dialogVisible"
-          width="40vw"
-          :before-close="handleClose">
+          <el-dialog
+            title="Convidar Técnico"
+            :visible.sync="dialogVisible"
+            width="40vw"
+          >
+            <p class="Span_lerta" v-show="visibleMessage">
+              Usuario Já Está na ordem. Consulte lista dos usuarios da ordem
+            </p>
             <el-tabs type="border-card" >
               <el-tab-pane label="Convidar">
                 <span slot="label">Convidar </span>
-                  <el-table
-                    :data="manutentores.filter(data => !search || data.nome.toLowerCase().includes(search.toLowerCase()))"
-                    style="width: 100%" >
-                    <el-table-column
-                      label="Name"
-                      prop="nome">
-                    </el-table-column>
-                    <el-table-column
-                      label="Area"
-                      prop="funcao">
-                    </el-table-column>
-                    <el-table-column
-                      align="right">
-                      <template slot="header" slot-scope="scope">
-                        <el-input
-                          @click="valorPropriedade(scope)"
-                          v-model="search"
-                          size="mini"
-                          placeholder="Pesquise nome"/>
-                      </template>
-                      <template slot-scope="scope">
-                        <el-popconfirm
-                          confirmButtonText='Sim'
-                          cancelButtonText='Não'
-                          icon="el-icon-info"
-                          iconColor="red"
-                        title="Tem certeza ?">
+                <el-table
+                  :data="manutentores.filter(
+                    data => !search || data.nome.toLowerCase()
+                      .includes(search.toLowerCase())
+                  )"
+                  style="width: 100%"
+                >
+                  <el-table-column
+                    label="Name"
+                    prop="nome"
+                  >
+                  </el-table-column>
+
+                  <el-table-column
+                    label="Area"
+                    prop="funcao"
+                  >
+                  </el-table-column>
+
+                  <el-table-column
+                    align="right"
+                  >
+                    <template slot="header" slot-scope="scope">
+                      <el-input
+                        v-model="search"
+                        size="mini"
+                        placeholder="Pesquise nome"
+                      />
+                    </template>
+                    <template slot-scope="scope">
+                      <el-popconfirm
+                        confirmButtonText='Confirmar'
+                        cancelButtonText='Cancelar'
+                        icon="el-icon-info"
+                        iconColor="red"
+                        title="Você tem certeza?"
+                        @onConfirm="addManutentor(scope.$index, scope.row)"
+                      >
                         <el-button
-                        slot="reference"
+                          slot="reference"
                           size="mini"
-                          @click="addManutentor(scope.$index, scope.row)">Add</el-button>
-                          </el-popconfirm>
-                        <!-- <el-button
-                          size="mini"
-                          type="danger"
-                          @click="handleDelete(scope.$index, scope.row)">Delete</el-button> -->
-                      </template>
-                    </el-table-column>
-                  </el-table>
+                        >
+                          Adicionar
+                        </el-button>
+                      </el-popconfirm>
+                    </template>
+                  </el-table-column>
+                </el-table>
               </el-tab-pane>
               <el-tab-pane label="Listar" >
                 <span slot="label">Listar </span>
                 <el-table
-                    :data="manutentorInOrdem"
-                    style="width: 100%" >
-                    <el-table-column
-                      label="Name"
-                      prop="nome">
-                    </el-table-column>
-                    <el-table-column
-                      label="Area"
-                      prop="funcao">
-                    </el-table-column>
-                    <el-table-column
-                      align="right">
-                      <!-- <template slot="header" >
-                        <el-input
-                          v-model="search"
-                          size="mini"
-                          placeholder="Type to search"/>
-                      </template> -->
-                      <template slot-scope="scope">
+                  :data="manutentorInOrdem"
+                  style="width: 100%"
+                >
+                  <el-table-column
+                    label="Name"
+                    prop="nome"
+                  >
+                  </el-table-column>
+
+                  <el-table-column
+                    label="Area"
+                    prop="funcao"
+                  >
+                  </el-table-column>
+
+                  <el-table-column
+                    align="right"
+                  >
+                    <template slot-scope="scope">
+                      <el-popconfirm
+                        confirmButtonText='Confirmar'
+                        cancelButtonText='Cancelar'
+                        icon="el-icon-info"
+                        iconColor="red"
+                        title="Você tem certeza?"
+                        @onConfirm="removeManutentor(scope.$index, scope.row)"
+                      >
                         <el-button
+                          slot="reference"
                           size="mini"
-                          @click="handleEdit(scope.$index, scope.row)">Remover</el-button>
-                        <!-- <el-button
-                          size="mini"
-                          type="danger"
-                          @click="handleDelete(scope.$index, scope.row)">Delete</el-button> -->
-                      </template>
+                        >
+                          Remove
+                        </el-button>
+                      </el-popconfirm>
+                    </template>
                   </el-table-column>
                 </el-table>
               </el-tab-pane>
             </el-tabs>
-          
-          <span slot="footer" class="dialog-footer">
-            <!-- <el-button @click="dialogVisible = false">Cancel</el-button> -->
-            <el-button type="primary" class="Button_close" @click="dialogVisible = false">Fechar</el-button>
-          </span>
-        </el-dialog>
-      </div>
+            
+            <span slot="footer" class="dialog-footer">
+              <!-- <el-button @click="dialogVisible = false">Cancel</el-button> -->
+              <el-button type="primary" class="Button_close" @click="dialogVisible = false">Fechar</el-button>
+            </span>
+          </el-dialog>
+        </div>
       </div>
       <div v-if="state.view === 'Verification'" key="Verification">
         <Verificacao
@@ -190,7 +214,7 @@
 
 <script>
 import Verificacao from './Verificacao.vue';
-import { getLocalStorageToken } from '../utils/utils';
+import { getLocalStorageToken, getErrors } from '../utils/utils';
 
 export default {
   name: 'Detalhamento',
@@ -208,10 +232,13 @@ export default {
       state: {
         view: 'detail',
       },
+      visibleMessage:false,
         valuesInput: {
           idOrdemServico:this.order.idOrdemServico,
           idUsuario:'',
+          excluded: '',
         },
+        opcao: '',
         manutentores: [],
         manutentorInOrdem: [],
         dialogVisible: false,
@@ -231,106 +258,131 @@ export default {
       if (this.order.Prioridade_idPrioridade === 3) return 'high-priority';
       if (this.order.Prioridade_idPrioridade === 4) return 'very-high-priority';
     },
-
-    openOrder(order) {
-      console.log(this.state.view)
-      console.log("Super Teste")
+    openOrderVerification() {
       this.$set(this.state, 'view', 'Verification');
-      console.log(this.state.view)
-      //this.$set(this.detail, 'order', order);
     },
     closeDetail() {
       this.$set(this.state, 'view', 'detail');
     },
-    getManutentor() {
-      console.log('Entrando');
-      this.$http.methodGet('users/get', getLocalStorageToken())
-      .then(res => {
-        if(res.result.length === 0)  return this.$swal({
+    async getManutentor() {
+      try {
+        const response = await this.$http.post('detalhamento/get-geral-user', getLocalStorageToken(), this.valuesInput);
+
+        if (response.result.length === undefined)
+          this.manutentores.push(response.result);
+        else this.manutentores = [...response.result];
+      } catch (err) {
+        console.log('err getManutentor :>> ', err.response || err);
+
+        return this.$swal({
           type: 'warning',
-          title: 'Não foi posivel encontrar manutentores',
+          title: getErrors(err),
           confirmButtonColor: '#F34336',
         });
-        if(res.result.length === undefined)
-          this.manutentores.push(res.result);
-        else this.manutentores = [ ...res.result ];
-        });
+      }
     },
     // manutentorInOrdem
-    getManutentoresInOrdem() {
-      return this.$http.post('detalhamento', getLocalStorageToken(), this.valuesInput)
-      .then( res => {
-        console.log('hahahahahHAHAHAHAHAHAHAHAHAHAHAHAH');
-        console.log(res);
-        if(res.result.length === 0) return this.$swal({
+    async getManutentoresInOrdem() {
+      try {
+        const response = await this.$http.post('detalhamento', getLocalStorageToken(), this.valuesInput);
+
+        if (response.result.length === undefined)
+          this.manutentorInOrdem.push(response.result);
+        else this.manutentorInOrdem = [...response.result];
+      } catch (err) {
+        console.log('err getManutentoresInOrdem :>> ', err.response || err);
+
+        return this.$swal({
           type:'warning',
-          title: 'Nenhum manutentor encontrado',
+          title: getErrors(err),
           confirmButtonColor: '#F34336',
         });
-        console.log('EnTRA A3');
-        if(res.result.length === undefined)
-         console.log('EnTRA A1'),
-          this.manutentorInOrdem.push(res.result);
-          else this.manutentorInOrdem = [ ...res.result ],
-          console.log('eNTRA A2');
-      });
+      }
     },
-    updateOrdemManutentor(idManutentor) {
-      console.log(idManutentor);
+    validaAddManutentor(User) {
+      const result = this.manutentorInOrdem.find(element => element.idUsuario === User.idUsuario);
+      return result;
     },
-    valorPropriedade(scope) {
-      console.log(scope);
-    },
-    addManutentor(index, row){
-      console.log('bla bla BLA BLA');
-      // console.log(index);
+    async addManutentor(index, row) {
+      try {
+        const validManutentorAdd = this.validaAddManutentor(row);
 
-      // console.log(this.order.idOrdemServico);
-      this.valuesInput.idUsuario = row.idUsuario;
+        if (validManutentorAdd === undefined) {
+          this.dialogVisible = false;
+          this.visibleMessage = false;
+          this.valuesInput.excluded = 0;
+          this.valuesInput.idUsuario = row.idUsuario;
 
-            console.log(this.valuesInput);
-      this.$http.methodPost('detalhamento/register', getLocalStorageToken(), this.valuesInput)
-      .then(res => {
-        if(res.status !== 200) return this.$swal({
-          type: 'error',
-          title: `Ops! ${res.err}`,
-          confirmButtonColor: '#F34336',
-        });
-        this.$swal({
-          type: 'success',
-          title:`${res.result}`,
-          confirmButtonColor: '#F34336',
-        }).then(() => {
-          this.manutentores.splice(row.idUsuario, 1);
+          const response = await this.$http.post('detalhamento/register', getLocalStorageToken(), this.valuesInput);
+
+          this.$swal({
+            type: 'success',
+            title:`${response.result}`,
+            confirmButtonColor: '#F34336',
+          }),
+
           this.getManutentoresInOrdem();
-          this.$setActivity(
+
+          this.$http.setActivity(
             'registerUser',
               {
-                  ...this.$store.state.user,
-                  date: this.$moment().format('DD-MM-YYYY HH-mm'),
-                  descricao: `${this.$store.state.user.nome} registerUser o usuário para ajudar na ordem serviço`,
+                ...this.$store.state.user,
+                date: this.$moment().format('DD-MM-YYYY HH-mm'),
+                descricao: `${this.$store.state.user.nome} 
+                registerUser o usuário ${row.nome} para ajudar na ordem serviço`,
               },
             getLocalStorageToken(),
-            );
-          
+          );
+        } else {
+          this.visibleMessage = true;
+        }
+      } catch (err) {
+        console.log('err addManutentor :>> ', err.response || err);
+
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
         });
-
-      });
+      }
     },
-    registerManutentor(){
-      
-      // this.$setActivity(
-      //   'editUser',
-      //     {
-      //         ...this.$store.state.user,
-      //         date: this.$moment().format('DD-MM-YYYY HH-mm'),
-      //         descricao: `${this.$store.state.user.nome} editou o usuário 
-      //         ${this.userInputValues.numeroCracha} - ${this.userInputValues.nome}`,
-      //     },
-      //   getLocalStorageToken(),
-      //   );
+    async removeManutentor(index, row) {
+      try {
+        this.valuesInput.idUsuario = row.idUsuario;
+        this.valuesInput.excluded = 1;
+        this.dialogVisible = false;
 
-      },
+        const response = await this.$http.update('detalhamento', getLocalStorageToken(), this.valuesInput, this.valuesInput.idOrdemServico);
+        
+        this.$swal({
+          type: 'success',
+          title: `${response.result}`,
+          confirmButtonColor: '#F34336',
+        }),
+
+        this.manutentorInOrdem = [],
+        this.getManutentoresInOrdem(),
+
+        this.$http.setActivity(
+          'editUser',
+            {
+              ...this.$store.state.user,
+              date: this.$moment().format('DD-MM-YYYY HH-mm'),
+              descricao: `${this.$store.state.user.nome} 
+              desabilitando o status excluded o usuário para ajudar na ordem serviço`,
+            },
+          getLocalStorageToken(),
+          );
+      } catch (err) {
+        console.log('err removeManutentor :>> ', err.response || err);
+
+        return this.$swal({
+          type: 'error',
+          title:getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
   },
 };
 </script>
@@ -411,5 +463,9 @@ export default {
       width: 90vw;
     }
   }
+}
+.Span_lerta {
+  color: #ff0303;
+  font-family: 'Montserrat';
 }
 </style>

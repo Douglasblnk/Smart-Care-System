@@ -29,7 +29,7 @@ const validateSession = async apiUrl => {
       Vuex.default.commit('addUser', {
         email: response.data.user.email,
         nome: response.data.user.nome,
-        nivelAcesso: response.data.user.nivelAcesso,
+        nivelAcesso: response.data.user.nivel_acesso,
         funcao: response.data.user.funcao,
         cracha: response.data.user.numeroCracha,
       });
@@ -77,9 +77,18 @@ const getErrors = err => {
   return error;
 };
 
+const getAccessLevelName = accessNum => {
+  let num = Number.isNaN(accessNum) ? accessNum : String(accessNum);
+
+  if (num === '1') return 'Administrador';
+  if (num === '2') return 'Manutentor';
+  if (num === '3') return 'Solicitante';
+};
+
 module.exports = {
   getLocalStorageToken,
   validateToken,
   validateSession,
   getErrors,
+  getAccessLevelName,
 };

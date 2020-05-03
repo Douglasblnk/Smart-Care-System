@@ -1,12 +1,12 @@
 <template>
   <div class="root-verification-view">
     <div class="my-3">
-        <simple-button
-          :no-margin="true"
-          label="Voltar"
-          prefix="fa-arrow-left"
-          @click.native="() => $emit('state-list')"
-        />
+      <simple-button
+        :no-margin="true"
+        label="Voltar"
+        prefix="fa-arrow-left"
+        @click.native="() => $emit('state-list')"
+      />
     </div>
     <div class="verification-content p-3 d-flex">
       <div class="verification-title">
@@ -20,8 +20,13 @@
         </div>
         <div class="form-verification-option">
           <label>O problema foi resolvido?</label>
-          <toggle-button v-model="inputValues.resolved"
-                  :labels="{checked: 'Sim', unchecked: 'Não'}" :width="70" :height="30" :font-size="14"/>
+          <toggle-button
+            v-model="inputValues.resolved"
+            :labels="{checked: 'Sim', unchecked: 'Não'}"
+            :width="70"
+            :height="30"
+            :font-size="14"
+          />
         </div>
       </div>
     </div>
@@ -35,7 +40,7 @@
 
 <script>
 import { getLocalStorageToken, getErrors } from '../utils/utils';
-import { ToggleButton } from 'vue-js-toggle-button'
+import { ToggleButton } from 'vue-js-toggle-button';
 
 export default {
   components: {
@@ -55,43 +60,39 @@ export default {
         dateVerification: '',
         order: '',
         typeVerification: '',
-      }
+      },
     };
-  },
-
-  mounted() {
-    console.log(this.order);
   },
   
   methods: {
-    async verificationOrder(){
+    async verificationOrder() {
       try {
-        this.inputValues.dateVerification = this.$moment().format('YYYY-MM-DD HH-mm-ss')
+        this.inputValues.dateVerification = this.$moment().format('YYYY-MM-DD HH-mm-ss');
         this.inputValues.order = this.order.idOrdemServico;
         this.inputValues.typeVerification = this.$store.state.user.nivelAcesso;
 
-        console.log('INPUT VALUES: ');
-        console.log(this.inputValues);
         const response = await this.$http.post('verificacao', getLocalStorageToken(), this.inputValues);
-          this.$swal({
-            type: 'success',
-            title: `${response.result}`,
-            confirmButtonColor: '#F34336',
-          })
+          
+        this.$swal({
+          type: 'success',
+          title: response.result,
+          confirmButtonColor: '#F34336',
+        });
       } catch (err) {
-        console.log('verificationOrder =>', err)
+        console.log('err verificationOrder :>> ', err.response || err);
+
         return this.$swal({
-          type: 'error',
+          type: 'warning',
           title: getErrors(err),
           confirmButtonColor: '#F34336',
-        })
+        });
       }
-    }
+    },
   },
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang='scss' scoped>
 .root-verification-view{
   margin: 30px;
   .verification-content {
