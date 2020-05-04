@@ -1,12 +1,15 @@
 import Dao from '../../../../shared/dao/Create';
 import {SSUtils} from '../../../../shared/utils/utils';
+import Cryptography from '../../../../shared/cryptography/cryptography';
+
 const _ = require('lodash');
+const bcrypt = require ('bcryptjs');
 
 const commitData = new Dao();
 const isEmpty = new SSUtils();
+const cryptography = new Cryptography();
 
 const TABLE = 'Usuario';
-
 export default class RegisterUserValidate {
 
   async run(event: any) {
@@ -15,11 +18,13 @@ export default class RegisterUserValidate {
 
       this.validateData(data);
 
+      const saltRounds = 12;
+      
+      data.senha = await cryptography.generateHash(data.senha, saltRounds);
+
       const dataQuery = this.getQuery(data);
 
-      const result = await commitData.run(dataQuery);
-
-      console.log('validation result', result);
+      const result = commitData.run(dataQuery);
 
       return result;
     } catch (err) {
@@ -76,7 +81,7 @@ export default class RegisterUserValidate {
   }
 
   getQuery(data: any) {
-    const post = { numeroCracha: data.numeroCracha, nome: data.nome, senha: data.senha, email: data.email, funcao: data.funcao, nivel_acesso: data.nivelAcesso };
+    const post = { numeroCracha: data.numeroCracha, nivel_acesso: data.nivelAcesso, nome: data.nome, senha: data.senha, email: data.email, funcao: data.funcao };
     const query = /*sql*/`INSERT INTO ${TABLE} SET ?;`;
 
     const dataQuery = { query, post, type: 'Usuário' };

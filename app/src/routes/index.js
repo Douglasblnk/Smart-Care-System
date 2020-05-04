@@ -120,8 +120,6 @@ const routes = [
     meta: { requireAuth: true },
   },
   {
-<<<<<<< HEAD
-=======
     path: '/verificacao',
     name: 'verificacao',
     component: Verificacao,
@@ -134,7 +132,6 @@ const routes = [
     meta: { requireAuth: true },
   },
   {
->>>>>>> 65afe24a361aa5d95e816ba7c2e310b94154c43c
     path: '*',
     name: '404',
     component: Error404,

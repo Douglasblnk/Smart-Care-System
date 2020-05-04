@@ -23,14 +23,16 @@ export default class RegisterVericationValidate {
 
       const resultVerify : any = await commitDataVerify.run(getQueryExistVerification);
 
-      if(resultVerify.result.length !== 0) throw "Verificação já realizada!"
+      console.log(resultVerify);
+      console.log('Length', resultVerify.result.length, !resultVerify.result)
+      if(resultVerify.result.length !== 0) throw 'Verificação já realizada!'
       
+      console.log("RESULT1");
+
       const getQuery = this.getQuery(data)
 
       const result = await commitData.run(getQuery);
-
-      console.log('result :>> ', result);
-
+      console.log('cheguei até aqui');
       return result;
     } catch (err) {
       console.log(err);
