@@ -22,10 +22,6 @@ export default class LoginValidate {
 
       var  { result }  : any = await commitData.run(getQuery);
 
-      console.log('RESULT');
-      console.log(result);
-      console.log(data.senha);
-
       await cryptography.compareHash(data.senha, result.senha);
 
       result = { result : result };
