@@ -41,7 +41,6 @@ export default class Http {
       throw err;
     }
   }
-
   async delete(endpoint, token = '', id) {
     try {
       const response = await Axios({

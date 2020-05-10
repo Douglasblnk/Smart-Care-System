@@ -1,9 +1,12 @@
 import Retrieve from '../../../../shared/dao/Get';
 import {SSUtils} from '../../../../shared/utils/utils';
+import Cryptography from '../../../../shared/cryptography/cryptography';
+
 const _ = require('lodash');
 
 const commitData = new Retrieve();
 const isEmpty = new SSUtils();
+const cryptography = new Cryptography();
 
 const TABLE = 'Usuario';
 
@@ -12,14 +15,23 @@ export default class LoginValidate {
   async run(event: any) {
     try {
       const data = this.getData(event);
-
+      
       this.validateData(data);
 
       const getQuery = this.getQuery(data)
 
-      const result = await commitData.run(getQuery);
-      console.log('cheguei até aqui');
+      var  { result }  : any = await commitData.run(getQuery);
+
+      console.log('RESULT');
+      console.log(result);
+      console.log(data.senha);
+
+      await cryptography.compareHash(data.senha, result.senha);
+
+      result = { result : result };
+
       return result;
+
     } catch (err) {
       console.log(err);
 
@@ -56,8 +68,8 @@ export default class LoginValidate {
   }
 
   getQuery(data: any) {
-    const post = [data.numeroCracha, data.senha];
-    const query = /*SQL*/`SELECT * FROM ${TABLE} WHERE ${TABLE}.numeroCracha = ? AND ${TABLE}.senha = ?;`;
+    const post = [data.numeroCracha];
+    const query = /*SQL*/`SELECT * FROM ${TABLE} WHERE ${TABLE}.numeroCracha = ?`;
 
     const dataQuery = { query, post, type: 'Usuário' };
 

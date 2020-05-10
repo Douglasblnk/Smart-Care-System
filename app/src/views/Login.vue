@@ -43,7 +43,6 @@
 </template>
 
 <script>
-import { getErrors } from '../utils/utils';
 export default {
   data() {
     return {
@@ -62,12 +61,9 @@ export default {
   },
   methods: {
     async loginValidation() {
-      if (this.isLoading) return;
-      
       try {
         this.isLoading = true;
 
-        
         const response = await this.$http.post('users', localStorage.getItem('token'), this.inputValues);
 
         this.$http.setActivity(
@@ -103,14 +99,16 @@ export default {
           this.$router.replace('dashboard');
         });
       } catch (err) {
-        console.log('err login => :', err.response || err);
+        const { response } = err;
+
+        console.log('err login => :', response );
 
         this.isLoading = false;
 
         return this.$swal({
           type: 'error',
-          title: 'Não foi possível realizar o login',
-          text: getErrors(err),
+          title: 'Por favor, tente novamente mais tarde.',
+          text: 'Ocorreu um erro ao tentar realizar o login.',
           confirmButtonColor: '#F34336',
         });
       }

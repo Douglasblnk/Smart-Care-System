@@ -5,6 +5,7 @@ import GetUsersValidate from '../../controller/user/getUsersValidate'
 import DeleteUserValidate from '../../controller/user/deleteUserValidate'
 import UpdateUserValidate from '../../controller/user/updateUserValidate'
 import Auth from '../../../../shared/auth/auth'
+import TokenValidate from '../../controller/user/tokenValidate'
 const  RateLimit  = require("express-rate-limit");
 //import RateLimit from '../../node_modules/express-rate-limit';
 
@@ -15,6 +16,7 @@ const getUser = new GetUsersValidate();
 const deleteUser = new DeleteUserValidate();
 const updateUser = new UpdateUserValidate();
 const jwt = new Auth();
+const tokenValidate = new TokenValidate();
 /*
 const apiLimiter = new RateLimit({
   windowMs: 15*60*1000, // 15 minutes 
@@ -124,8 +126,9 @@ router.get('/get', async (req: any, res: any) => {
 
 router.post('/token', async (req: any, res: any) => {
   try {
-    const response = await jwt.jwtVerify(req)
-    const user : any = await login.run(response)
+    const response = await jwt.jwtVerify(req);
+    console.log('RESPONSE: ', response);
+    const user : any = await tokenValidate.run(response);
 
     delete user.result.senha;
 
