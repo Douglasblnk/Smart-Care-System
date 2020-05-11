@@ -1,162 +1,198 @@
 <template>
   <div class="equipmentBackground">
-      <div class="cadCard">
-        <form-wizard @on-complete="registerOrderMaintenance()" class="stepByStep" title="Cadastro de Ordem de serviço" subtitle="" nextButtonText="Próximo" backButtonText="Voltar" finishButtonText="Finalizar">
-          <tab-content title="Causa Manutenção" icon="fas fa-user" class="maintenanceCause">
-            <div class="firstInput">
-              <simple-input v-model="inputValues.title" :label="'Título:'" :type="'text'" />
-            </div>
-            <div class="secondInput">
-              <simple-input v-model="inputValues.summary" :label="'Resumo'" :type="'text'" />
-            </div>
-            <div class="inputMaintenance">
+    <div class="cadCard">
+      <form-wizard @on-complete="registerOrderMaintenance()" class="stepByStep" title="Cadastro de Ordem de serviço" subtitle="" nextButtonText="Próximo" backButtonText="Voltar" finishButtonText="Finalizar">
+        <tab-content title="Causa Manutenção" icon="fas fa-user" class="maintenanceCause">
+          <div class="firstInput">
+            <simple-input v-model="inputValues.title" :label="'Título:'" :type="'text'" />
+          </div>
+          <div class="secondInput">
+            <simple-input v-model="inputValues.summary" :label="'Resumo'" :type="'text'" />
+          </div>
+          <div class="inputMaintenance">
+          <div>
+          <label class="text-muted">Descrição</label>
+          </div>
+            <textarea class="rounded descriptionInput" rows="3"
+            v-model="inputValues.description" name="comment" form="usrform"></textarea>
+            <!-- <simple-input v-model="inputValues.description" :label="'Descrição:'" :type="'text'" />-->
+          </div>
+        </tab-content>
+        <tab-content title="Datas" icon="fa fa-cog" class="maintenanceCause">
+          <div>
+            <simple-input
+              v-model="inputValues.plannedStart"
+              :label="'Inicio Planejado:'"
+              :type="'date'"
+            />
+          </div>
+          <div>
+            <simple-input
+              v-model="inputValues.plannedEnd"
+              :label="'Fim Planejado'"
+              :type="'date'"
+            />
+          </div>
+          <div>
+            <simple-input v-model="inputValues.beginData" :label="'Data emissão'" :type="'date'" />
+          </div>
+        </tab-content>
+        <tab-content title="Informações Gerais" icon="fas fa-check" class="maintenanceCause">
+          <div>
+            <tranfer-select
+              v-model="inputValues.equipment"
+              :selects="selects"
+              :label="'Equipamento'"
+            />
+          </div>
+          <div>
+            <tranfer-select
+              v-model="inputValues.typeMaintenance"
+              :selects="selectsTypeMaintenance"
+              :label="'Tipo Manutenção'"
+            />
+          </div>
+          <div>
+            <tranfer-select
+              v-model="inputValues.sector"
+              :selects="selectsSector"
+              :label="'Setor'"
+            />
+          </div>
+          <div>
+            <tranfer-select
+              v-model="inputValues.priority"
+              :selects="selectsPriority"
+              :label="'Prioridade'"
+            />
+          </div>
+          <div>
+            <tranfer-select
+              v-model="inputValues.requireStop"
+              :selects="selectsRequireStop"
+              :label="'Requer Parada'"
+            />
+          </div>
+        </tab-content>
+        <tab-content title="Operações" icon="fa fa-cog" class="maintenanceCause" >
+          <!-- <span>será para a step para preventiva e corretiva step4 </span> -->
+          <div class="firstInput">
+            <simple-input
+              v-model="inputValues.plannedTime"
+              :label="'Tempo Planejado'"
+              :type="'time'"
+            />
+          </div>
+          <div class="inputMaintenance">
             <div>
-              <label class="text-muted">Descrição</label>
-            </div>
-              <textarea class="rounded descriptionInput" rows="3" v-model="inputValues.description" name="comment" form="usrform"></textarea>
-              <!-- <simple-input v-model="inputValues.description" :label="'Descrição:'" :type="'text'" />-->
-            </div>
-          </tab-content>
-          <tab-content title="Datas" icon="fa fa-cog" class="maintenanceCause">
-            <div>
-              <simple-input
-                v-model="inputValues.plannedStart"
-                :label="'Inicio Planejado:'"
-                :type="'date'"
-              />
-            </div>
-            <div>
-              <simple-input
-                v-model="inputValues.plannedEnd"
-                :label="'Fim Planejado'"
-                :type="'date'"
-              />
-            </div>
-            <div>
-              <simple-input v-model="inputValues.beginData" :label="'Data emissão'" :type="'date'" />
-            </div>
-          </tab-content>
-          <tab-content title="Informações Gerais" icon="fas fa-check" class="maintenanceCause">
-            <div>
-              <tranfer-select
-                v-model="inputValues.equipment"
-                :selects="selects"
-                :label="'Equipamento'"
-              />
-            </div>
-            <div>
-              <tranfer-select
-                v-model="inputValues.typeMaintenance"
-                :selects="selectsTypeMaintenance"
-                :label="'Tipo Manutenção'"
-              />
-            </div>
-            <div>
-              <tranfer-select
-                v-model="inputValues.sector"
-                :selects="selectsSector"
-                :label="'Setor'"
-              />
-            </div>
-            <div>
-              <tranfer-select
-                v-model="inputValues.priority"
-                :selects="selectsPriority"
-                :label="'Prioridade'"
-              />
-            </div>
-            <div>
-              <tranfer-select
-                v-model="inputValues.requireStop"
-                :selects="selectsRequireStop"
-                :label="'Requer Parada'"
-              />
-            </div>
-            <div>
-              <tranfer-select
-                v-model="inputValues.stats"
-                :selects="selectsStats"
-                :label="'Status'"
-              />
-            </div>
-          </tab-content>
-        </form-wizard>
+            <label for="comment" class="text-muted">Descrição</label>
+            </div>  
+            <textarea class="rounded descriptionInput" rows="3"
+            v-model="inputValues.descriptionOperation" name="comment" form="usrform">
+            </textarea>
+          </div>
+        </tab-content>
+      </form-wizard>
+      
 
-        <!-- {{stats}} -->
-      </div>
+      <!-- {{stats}} -->
+    </div>
   </div>
 </template>
 
 <script>
-import { getLocalStorageToken } from "../../utils/utils";
-import simpleInput from "../../components/inputs/simple-input";
-import description from "../../components/inputs/description";
-import selectId from "../../components/inputs/tranfer-select";
-import saveButton from "../../components/button/save-button";
-import select from "../../components/inputs/custom-select";
-import { FormWizard, TabContent } from "vue-form-wizard";
-import "vue-form-wizard/dist/vue-form-wizard.min.css";
+import { getLocalStorageToken } from '../../../utils/utils';
+import simpleInput from '../../../components/inputs/simple-input';
+import description from '../../../components/inputs/description';
+import selectId from '../../../components/inputs/tranfer-select';
+import saveButton from '../../../components/button/save-button';
+import select from '../../../components/inputs/custom-select';
+import { FormWizard, TabContent } from 'vue-form-wizard';
+import 'vue-form-wizard/dist/vue-form-wizard.min.css';
 
 export default {
+  name: 'OrdemManutencaoCorretiva',
+
   components: {
-    "simple-input": simpleInput,
-    "tranfer-select": selectId,
-    "save-button": saveButton,
+    'simple-input': simpleInput,
+    'tranfer-select': selectId,
+    'save-button': saveButton,
     description: description,
-    "custom-select": select,
+    'custom-select': select,
     FormWizard,
     TabContent
   },
   data() {
     return {
       inputValues: {
-        title: "",
-        summary: "",
-        description: "",
-        plannedStart: "",
-        plannedEnd: "",
+        title: '',
+        summary: '',
+        description: '',
+        plannedStart: '',
+        plannedEnd: '',
         requireStop: true,
-        beginData: "",
-        equipment: "",
-        typeMaintenance: "",
-        sector: "",
-        priority: "",
-        stats: "",
-        customSelect: "",
-        customSelect2: ""
+        beginData: '',
+        equipment: '',
+        typeMaintenance: '',
+        sector: '',
+        priority: '',
+        stats: 'aberto',
+        customSelect: '',
+        customSelect2: '',
+        startTime: '',
+        endTime: '',
+        descriptionOperation: '',
+        plannedTime: '',
+        execution: false,
+      },
+      listateste: [],
+      operacoesRota: {
+        descricaoOperacao: '',
+        execusao: 0,
+        material: '',
+        quantidade: '',
+        unidade: '',
+      },
+      operacoesListaStepFour: {
+        descricao: '',
+        execusao: 0,
+        tempoPlanejado: 0,
+      },
+      operacoesListaStepFive: {
+        equipamentos: [],
       },
       stats: [],
       workEquipment: [],
       selects: {
-        select: "",
+        select: '',
         selects: []
       },
       selectsTypeMaintenance: {
-        select: "",
+        select: '',
         selects: []
       },
       selectsSector: {
-        select: "",
+        select: '',
         selects: []
       },
       selectsPriority: {
-        select: "",
+        select: '',
         selects: []
       },
       selectsStats: {
-        select: "",
+        select: '',
         selects: []
       },
       selectsRequireStop: {
-        select: "",
+        select: '',
         selects: [
           {
             value: true,
-            label: "Sim"
+            label: 'Sim'
           },
           {
             value: false,
-            label: "Não"
+            label: 'Não'
           }
         ]
       }
@@ -223,6 +259,7 @@ export default {
           console.log("-------");
           console.log(res.result);
           if (res.result.length === undefined) {
+            this.listateste.push(res.result),
             this.selects.selects.map(select => {
               Object.entries(select).forEach(([key, value]) => {
                 console.log(key, value);
@@ -237,6 +274,7 @@ export default {
               this.selectsTypeMaintenance.selects[index].label =
                 res.result[index].tipoManutencao;
             }
+            this.listateste.push(res.result)
           }
         });
     },
@@ -382,6 +420,7 @@ export default {
             width:98%;
           }
         }
+
         .firstInput{
           grid-column-start:1;
           grid-column-end:1;
@@ -392,7 +431,16 @@ export default {
         }
       }
     }
+    .maintanceMenu {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   }
+}
+.span_question {
+  color: #ff0303;
+  font-family: 'Montserrat';
 }
 @media (max-width: 1250px) {
   .equipmentBackground {
