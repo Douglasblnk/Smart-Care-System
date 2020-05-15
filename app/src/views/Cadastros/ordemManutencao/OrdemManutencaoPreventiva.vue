@@ -107,12 +107,9 @@
 </template>
 
 <script>
-import { getLocalStorageToken } from '../../../utils/utils';
-import simpleInput from '../../../components/inputs/simple-input';
-import description from '../../../components/inputs/description';
-import selectId from '../../../components/inputs/tranfer-select';
-import saveButton from '../../../components/button/save-button';
-import select from '../../../components/inputs/custom-select';
+import { getLocalStorageToken } from '../../utils/utils';
+import selectId from '../../components/inputs/tranfer-select';
+import select from '../../components/inputs/custom-select';
 import { FormWizard, TabContent } from 'vue-form-wizard';
 import 'vue-form-wizard/dist/vue-form-wizard.min.css';
 
@@ -120,10 +117,7 @@ export default {
   name: 'OrdemManutencaoPreventiva',
 
   components: {
-    'simple-input': simpleInput,
     'tranfer-select': selectId,
-    'save-button': saveButton,
-    description: description,
     'custom-select': select,
     FormWizard,
     TabContent
@@ -133,28 +127,18 @@ export default {
       inputValues: {
         title: '',
         summary: '',
+        description: '',
         plannedStart: '',
         plannedEnd: '',
-        startTime: '',
-        endTime: '',
-        beginData: '',
         requireStop: true,
+        beginData: '',
         equipment: '',
         typeMaintenance: '',
-        priority: '',
         sector: '',
-        stats: 'aberto',
+        priority: '',
+        stats: '',
         customSelect: '',
         customSelect2: '',
-        descriptionOperation: '',
-        plannedTime: '',
-        execution: false,
-      },
-      listateste: [],
-      operacoesPreventivaStepFour: {
-        descricao: '',
-        execusao: 0,
-        tempoPlanejado: 0,
       },
       stats: [],
       workEquipment: [],

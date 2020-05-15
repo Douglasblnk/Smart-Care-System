@@ -2,7 +2,14 @@ import Get from '../../../../shared/dao/Get';
 
 const commitData = new Get();
 
-const TABLE = 'ordemServico';
+const TABLE_ORDEM_SERVICO = 'ordemServico';
+const TABLE_LOCAIS = 'Locais';
+const TABLE_STATUS = 'Status';
+const TABLE_SETOR = 'Setor';
+const TABLE_EQUIPAMENTOS = 'Equipamentos';
+const TABLE_EQUIPAMENTO = 'Equipamento';
+const TABLE_TIPO_MANUTENCAO = 'tipoManutencao';
+const TABLE_PRIORIDADE = 'Prioridade';
 
 export default class GetOrderMaintenanceValidate {
 
@@ -31,14 +38,14 @@ export default class GetOrderMaintenanceValidate {
         os.fimPlanejado,
         os.requerParada,
         os.dataEmissao,
-        (SELECT e.descricao from Equipamento as e WHERE os.Equipamento_idEquipamento = e.idEquipamento) as equipamento,
-        os.dadosOperacoes_iddadoOperacao as dados_operacao,
-        (SELECT t.tipoManutencao from tipoManutencao as t WHERE os.tipoManutencao_idtipoManutencao = t.idtipoManutencao) as tipo_manutencao,
-        (SELECT s.nome from Setor as s WHERE os.Setor_idSetor = s.idSetor) as setor,
-        (SELECT p.descricaoPrioridade from Prioridade as p WHERE os.Prioridade_idPrioridade = p.idPrioridade) as prioridade,
-        (SELECT st.tipoStatus from Status as st WHERE os.Status_idStatus = st.idStatus) as status
-      from ${TABLE} as os;
-    
+        (SELECT descricao FROM ${TABLE_EQUIPAMENTO} WHERE idEquipamento = Equipamentos.Equipamento) as equipamento,
+        (SELECT Setor.nome FROM ${TABLE_SETOR} WHERE idSetor = Locais.Local) as local,
+        (SELECT t.tipoManutencao FROM ${TABLE_TIPO_MANUTENCAO} as t WHERE os.tipoManutencao_idtipoManutencao = t.idtipoManutencao) as tipo_manutencao,
+        (SELECT p.descricaoPrioridade FROM ${TABLE_PRIORIDADE} as p WHERE os.Prioridade_idPrioridade = p.idPrioridade) as prioridade,
+        (SELECT st.tipoStatus FROM ${TABLE_STATUS} as st WHERE os.Status_idStatus = st.idStatus) as status
+      FROM ${TABLE_ORDEM_SERVICO} as os
+      LEFT JOIN ${TABLE_LOCAIS} as Locais ON Locais.Ordem_Servico = os.idOrdemServico
+      LEFT JOIN ${TABLE_EQUIPAMENTOS} as Equipamentos ON Equipamentos.Ordem_servico = os.idOrdemServico;
     `;
 
     const dataQuery = { query, type: 'Ordem de manutenção' };

@@ -2,7 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
-const { run } = require('./summary/get');
+const summary = require('./summary/get');
+const lastMonth = require('./orderByMonth/get');
 
 const app = express();
 
@@ -14,7 +15,17 @@ app.use(bodyParser.json());
 
 app.get('/analysis/order-summary', async (req, res) => {
   try {
-    const response = await run(req);
+    const response = await summary.run(req);
+    
+    res.status(200).send(response);
+  } catch (err) {
+    res.status(404).send(err);
+  }
+});
+
+app.get('/analysis/last-month', async (req, res) => {
+  try {
+    const response = await lastMonth.run(req);
     
     res.status(200).send(response);
   } catch (err) {
