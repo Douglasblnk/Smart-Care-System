@@ -67,24 +67,51 @@
           </div>
         </tab-content>
         <tab-content title="Maquinas" icon="fa fa-cog" class="maintenanceCause">
-          <div class="firstInput">
-            <tranfer-select
-              v-model="inputValues.sector"
-              :selects="selectsSector"
-              :label="'Setor'"
-            />
-          </div>
-          <div>
-            <tranfer-select
-              v-model="inputValues.equipment"
-              :selects="selects"
-              :label="'Equipamento'"
-            />
-          </div>
-          <div>
-            <p>Aqui ira o card com as :
-              Operações { descriçao(text area), material(text), quantidade, unidade. no cadastro o campo execução como false = 0 }
-            </p>
+          <div class="container-Maquina-Operacoes">
+            <el-card class="box-card">
+              <div slot="header" class="clearfix">
+                <div class="maintenanceCause">
+                  <div class="firstInput">
+                    <tranfer-select
+                      v-model="inputValues.sector"
+                      :selects="selectsSector"
+                      :label="'Setor'"
+                    />
+                  </div>
+                  <div class="secondInput">
+                    <tranfer-select
+                      v-model="inputValues.equipment"
+                      :selects="selects"
+                      :label="'Equipamento'"
+                    />
+                  </div>
+                </div>
+                <el-button style="float: right; " type="success" icon="el-icon-plus" circle ></el-button>
+              </div>
+              <div class="maintenanceCause">
+                <div>
+                  <!-- <el-button style="float: right; " type="success" icon="el-icon-plus" circle ></el-button> -->
+                </div>
+                <div class="firstInput">
+                  <simple-input v-model="operacoesRota.material" :label="'Material:'" :type="'textarea'" />
+                </div>
+                <div class="secondInput">
+                  <simple-input v-model="operacoesRota.quantidade" :label="'Quantidade'" :type="'text'" />
+                  <!-- <el-button style="float: right; " type="success" icon="el-icon-plus" circle ></el-button> -->
+                </div>
+                <div class="firstInput">
+                  <simple-input v-model="operacoesRota.unidade" :label="'Unidade'" :type="'number'" />
+                </div>
+                <div class="inputMaintenance">
+                  <div>
+                    <label class="text-muted">Descrição</label>
+                  </div>
+                  <textarea class="rounded descriptionInput" rows="3"
+                  v-model="operacoesRota.descriptionOperation" name="comment" form="usrform"></textarea>
+                  <!-- <simple-input v-model="inputValues.description" :label="'Descrição:'" :type="'text'" />-->
+                </div>
+              </div>
+            </el-card>
           </div>
         </tab-content>
       </form-wizard>
@@ -122,9 +149,10 @@ export default {
       inputValues: {
         title: '',
         summary: '',
-        description: '',
         plannedStart: '',
         plannedEnd: '',
+        startTime: '',
+        endTime: '',
         requireStop: true,
         beginData: '',
         equipment: '',
@@ -134,11 +162,7 @@ export default {
         stats: 'aberto',
         customSelect: '',
         customSelect2: '',
-        startTime: '',
-        endTime: '',
-        descriptionOperation: '',
         plannedTime: '',
-        execution: false,
       },
       listateste: [],
       operacoesRota: {
@@ -147,16 +171,10 @@ export default {
         material: '',
         quantidade: '',
         unidade: '',
-      },
-      operacoesListaStepFour: {
-        descricao: '',
-        execusao: 0,
-        tempoPlanejado: 0,
-      },
-      operacoesListaStepFive: {
-        equipamentos: [],
+        descriptionOperation: '',
       },
       stats: [],
+      descriptionOperationRota: [],
       workEquipment: [],
       selects: {
         select: '',
@@ -424,8 +442,39 @@ export default {
           grid-column-start:2;
           grid-column-end:2;
         }
+
+        .container-Maquina-Operacoes {
+          grid-column-start: 1;
+          grid-column-end: 3;
+          padding: 1%;
+          border-radius: 20px;
+            .text {
+              font-size: 14px;
+            }
+
+            .item {
+              margin-bottom: 18px;
+            }
+
+            .clearfix:before,
+            .clearfix:after {
+              display: table;
+              content: "";
+            }
+            .clearfix:after {
+              clear: both
+            }
+
+            .box-card {
+              width: 100%;
+            }
+        }
+
+        
       }
+    
     }
+
     .maintanceMenu {
       display: flex;
       justify-content: center;
@@ -433,10 +482,7 @@ export default {
     }
   }
 }
-.span_question {
-  color: #ff0303;
-  font-family: 'Montserrat';
-}
+
 @media (max-width: 1250px) {
   .ordem-manutencao-rota-root {
     width: 100vw;

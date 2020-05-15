@@ -70,24 +70,24 @@
           <!-- <span>será para a step para preventiva e corretiva step4 </span> -->
           <div class="firstInput">
             <tranfer-select
-              v-model="inputValues.sector"
+              v-model="operacoesListaStepFour.sector"
               :selects="selectsSector"
               :label="'Setor'"
             />
           </div>
           <div>
             <simple-input
-              v-model="inputValues.plannedTime"
+              v-model="operacoesListaStepFour.plannedTime"
               :label="'Tempo Planejado'"
               :type="'time'"
             />
           </div>
           <div class="inputMaintenance">
             <div>
-            <label for="comment" class="text-muted">Descrição</label>
+            <label for="comment" class="text-muted">Descrição Operações</label>
             </div>  
             <textarea class="rounded descriptionInput" rows="3"
-            v-model="inputValues.descriptionOperation" name="comment" form="usrform">
+            v-model="operacoesListaStepFour.descriptionOperation" name="comment" form="usrform">
             </textarea>
           </div>
         </tab-content>
@@ -135,40 +135,33 @@ export default {
       inputValues: {
         title: '',
         summary: '',
-        description: '',
         plannedStart: '',
         plannedEnd: '',
+        startTime: '',
+        endTime: '',
         requireStop: true,
         beginData: '',
         equipment: '',
         typeMaintenance: '',
-        sector: '',
         priority: '',
         stats: 'aberto',
         customSelect: '',
         customSelect2: '',
-        startTime: '',
-        endTime: '',
         descriptionOperation: '',
         plannedTime: '',
         execution: false,
       },
       listateste: [],
-      operacoesRota: {
-        descricaoOperacao: '',
-        execusao: 0,
-        material: '',
-        quantidade: '',
-        unidade: '',
-      },
       operacoesListaStepFour: {
-        descricao: '',
-        execusao: 0,
-        tempoPlanejado: 0,
+        descriptionOperation: '',
+        execution: 0,
+        plannedTime: 0,
+        sector: '',
       },
       operacoesListaStepFive: {
         equipamentos: [],
       },
+      descriptionOperationList: [],
       stats: [],
       workEquipment: [],
       selects: {
@@ -253,6 +246,7 @@ export default {
             confirmButtonColor: "#F34336"
           });
         });
+
     },
     getTypeMaintenance() {
       this.$http

@@ -91,17 +91,57 @@
             v-model="inputValues.descriptionOperation" name="comment" form="usrform">
             </textarea>
           </div>
+          <div class="containerButton">
+            <save-button class="buttonAddOperation" :label="'Adicionar'" @click="addOperation()" />
+          </div>
+        </tab-content>
+        <tab-content title="Epi" icon="fa fa-cog">
+          <div class="d-flex justify-content-center">
+            <save-button id="show-btn" @click.native="showEpiModal" label="Adicionar EPI" />
+          </div>
+
+          <div class="w-100">
+            <label>EPIs selecionadas: </label>
+            <div class="d-flex">
+              <div v-for="(epi, index) in inputValues.selectedEpis" :key="`epi-${index}`">
+                <div
+                  @mouseenter="() => $set(showRemoveEpi, index, true)"
+                  @mouseleave="() => $set(showRemoveEpi, index, false)"
+                  class="selected-epi-wrapper"
+                >
+                  <span>{{ getEpiName(epi) }}</span>
+                  <div @click="removeEpi(index)" v-if="showRemoveEpi[index]" class="selected-epi-remove">
+                    <i class="fa fa-trash" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </tab-content>
       </form-wizard>
-      
-
-      <!-- {{stats}} -->
     </div>
+    <b-modal centered  @show="resetModal" ref="my-modal" hide-footer title="Cadastrar Epi na Ordem">
+      <div class="d-block text">
+        <b-form-group label="Escolha as EPI's:">
+          <b-form-checkbox-group
+            id="checkbox-group-1"
+            v-model="inputValues.selectedEpis"
+            :options="getEpiOptions()"
+            name="flavour-1"
+            stacked
+          />
+        </b-form-group>
+      </div>
+      <div class="d-flex justify-content-center">
+        <cancel-button label="Fechar" @click.native="closeModal" />
+        <save-button label="Adicionar" @click.native="confirmModal" />
+      </div>
+    </b-modal>
   </div>
 </template>
 
 <script>
-import { getLocalStorageToken } from '../../../utils/utils';
+import { getLocalStorageToken, getErrors } from '../../../utils/utils';
 import simpleInput from '../../../components/inputs/simple-input';
 import description from '../../../components/inputs/description';
 import selectId from '../../../components/inputs/tranfer-select';
@@ -130,36 +170,23 @@ export default {
         description: '',
         plannedStart: '',
         plannedEnd: '',
-        requireStop: true,
         beginData: '',
+        requireStop: true,
         equipment: '',
         typeMaintenance: '',
         sector: '',
         priority: '',
         stats: 'aberto',
-        customSelect: '',
-        customSelect2: '',
-        startTime: '',
-        endTime: '',
         descriptionOperation: '',
         plannedTime: '',
-        execution: false,
+        operationList: [],
+        selectedEpis: [],
       },
       listateste: [],
-      operacoesRota: {
-        descricaoOperacao: '',
-        execusao: 0,
-        material: '',
-        quantidade: '',
-        unidade: '',
-      },
-      operacoesListaStepFour: {
+      operacoesCorretivaStepFour: {
         descricao: '',
         execusao: 0,
         tempoPlanejado: 0,
-      },
-      operacoesListaStepFive: {
-        equipamentos: [],
       },
       stats: [],
       workEquipment: [],
@@ -169,33 +196,35 @@ export default {
       },
       selectsTypeMaintenance: {
         select: '',
-        selects: []
+        selects: [],
       },
       selectsSector: {
         select: '',
-        selects: []
+        selects: [],
       },
       selectsPriority: {
         select: '',
-        selects: []
+        selects: [],
       },
       selectsStats: {
         select: '',
-        selects: []
+        selects: [],
       },
       selectsRequireStop: {
         select: '',
         selects: [
           {
             value: true,
-            label: 'Sim'
+            label: 'Sim',
           },
           {
             value: false,
-            label: 'Não'
-          }
-        ]
-      }
+            label: 'Não',
+          },
+        ],
+      },
+      epiList: [],
+      showRemoveEpi: {},
     };
   },
   mounted() {
@@ -205,12 +234,53 @@ export default {
     this.getPriority();
     this.getStats();
   },
-  methods: {
-    getStatsSelect() {
-      const teste = this.stats.map(i => {});
-    },
 
-    registerOrderMaintenance() {
+  methods: {
+    resetModal() {
+      // this.name = ''
+      this.selected = []
+    },
+    getEpiOptions() {
+      return this.epiList.map(i => ({ text: i.descricaoEpi, value: i.idEpi }));
+    },
+    getEpiName(epi) {
+      const { descricaoEpi } = this.epiList.find(i => i.idEpi === epi);
+      return descricaoEpi;
+    },
+    removeEpi(index) {
+      this.inputValues.selectedEpis.splice(index, 1);
+      this.$set(this.showRemoveEpi, [index], false);
+    },
+    addOperation() {
+      // todo
+    },
+    async showEpiModal() {
+      await this.getEpis();
+
+      this.$refs['my-modal'].show();
+    },
+    closeModal() {
+      this.$refs['my-modal'].hide();
+    },
+    confirmModal() {
+      this.$refs['my-modal'].toggle('#toggle-btn');
+    },
+    async getEpis() {
+      try {
+        const { result } = await this.$http.get('epi/get', getLocalStorageToken());
+
+        this.epiList = [...result];
+      } catch (err) {
+        console.log('err :>> ', err.response || err);
+
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
+    async registerOrderMaintenance() {
       this.inputValues.equipment = this.selects.select;
       this.inputValues.priority = this.selectsPriority.select;
       this.inputValues.sector = this.selectsSector.select;
@@ -223,28 +293,44 @@ export default {
       console.log("------");
       console.log("------");
       const token = localStorage.getItem("token");
-      fetch(`${this.$apiUrl}/ordem-manutencao`, {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(this.inputValues)
-      })
-        .then(res => res.json())
-        .then(json => {
-          if (json.status !== 200)
-            return this.$swal({
-              type: "error",
-              title: `Ops! ${json.err}`,
-              confirmButtonColor: "#F34336"
-            });
+      // fetch(`${this.$apiUrl}/ordem-manutencao`, {
+      //   method: "post",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     authorization: `Bearer ${token}`
+      //   },
+      //   body: JSON.stringify(this.inputValues)
+      // })
+      //   .then(res => res.json())
+      //   .then(json => {
+      //     if (json.status !== 200)
+      //       return this.$swal({
+      //         type: "error",
+      //         title: `Ops! ${json.err}`,
+      //         confirmButtonColor: "#F34336"
+      //       });
+      //     this.$swal({
+      //       type: "success",
+      //       title: `Ordem de Serviço cadastrada com Sucesso`,
+      //       confirmButtonColor: "#F34336"
+      //     });
+      //   });
+      try {
+        const response = await this.$http.post('ordem-manutencao', token, this.inputValues);
           this.$swal({
             type: "success",
-            title: `Ordem de Serviço cadastrada com Sucesso`,
+            title: 'Ordem de Serviço cadastrada com Sucesso',
             confirmButtonColor: "#F34336"
           });
+        
+      } catch (err) {
+        console.log('err :>> ', err.response || err);
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
         });
+      }
     },
     getTypeMaintenance() {
       this.$http
@@ -388,7 +474,7 @@ export default {
           }
         }
       });
-    }
+    },
   }
 };
 </script>
@@ -429,6 +515,51 @@ export default {
           grid-column-start:2;
           grid-column-end:2;
         }
+        
+        .containerButton {
+          width: 100%;
+          height: 40px;
+          display: flex;
+          justify-content: flex-end;
+          align-items:flex-end;
+          .buttonAddOperation {
+            position: relative;
+              bottom: -40px;
+            // right: 30;
+            // // left: 80%;
+            // padding: 2%;
+          }
+        }
+      }
+      .selected-epi-wrapper {
+        min-width: 50px;
+        padding: 5px 20px;
+        margin: 5px;
+        border-radius: 100px;
+        background-color: #eee;
+        user-select: none;
+        position: relative;
+        &:hover {
+          background-color: #ddd;
+        }
+        .selected-epi-remove {
+          position: absolute;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          right: -10px;
+          top: -10px;
+          width: 30px;
+          height: 30px;
+          border-radius: 100px;
+          background-color: #eee;
+          cursor: pointer;
+          &:hover {
+            background-color: var(--duas-rodas-soft);
+            i { color: white; }
+          }
+          i { font-size: 14px; }
+        }
       }
     }
     .maintanceMenu {
@@ -449,5 +580,4 @@ export default {
     padding: 20px;
   }
 }
-
 </style>
