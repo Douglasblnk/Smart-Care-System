@@ -26,6 +26,7 @@ import { validateSession } from './utils/utils';
 import importedComponents from './plugins/importedComponents';
 import locale from 'element-ui/lib/locale/lang/pt-br';
 
+
 Vue.use(ElementUI, { locale });
 
 Vue.use(ToggleButton);

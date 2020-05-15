@@ -1,102 +1,131 @@
 <template>
-  <div class="equipmentBackground">
-      <div class="cadCard">
-        <form-wizard @on-complete="registerOrderMaintenance()" class="stepByStep" title="Cadastro de Ordem de serviço" subtitle="" nextButtonText="Próximo" backButtonText="Voltar" finishButtonText="Finalizar">
-          <tab-content title="Causa Manutenção" icon="fas fa-user" class="maintenanceCause">
-            <div class="firstInput">
-              <simple-input v-model="inputValues.title" :label="'Título:'" :type="'text'" />
-            </div>
-            <div class="secondInput">
-              <simple-input v-model="inputValues.summary" :label="'Resumo'" :type="'text'" />
-            </div>
-            <div class="inputMaintenance">
+  <div class="ordem-manutencao-lista-root">
+    <div class="cadCard">
+      <form-wizard @on-complete="registerOrderMaintenance()" class="stepByStep" title="Cadastro de Ordem de serviço" subtitle="" nextButtonText="Próximo" backButtonText="Voltar" finishButtonText="Finalizar">
+        <tab-content title="Causa Manutenção" icon="fas fa-user" class="maintenanceCause">
+          <div class="firstInput">
+            <simple-input v-model="inputValues.title" :label="'Título:'" :type="'text'" />
+          </div>
+          <div class="secondInput">
+            <simple-input v-model="inputValues.summary" :label="'Resumo'" :type="'text'" />
+          </div>
+        </tab-content>
+        <tab-content title="Datas" icon="fa fa-cog" class="maintenanceCause">
+          <div>
+            <simple-input
+              v-model="inputValues.plannedStart"
+              :label="'Inicio Planejado:'"
+              :type="'date'"
+            />
+          </div>
+          <div>
+            <simple-input
+              v-model="inputValues.plannedEnd"
+              :label="'Fim Planejado'"
+              :type="'date'"
+            />
+          </div>
+          <div>
+            <simple-input
+              v-model="inputValues.startTime"
+              :label="'Hora Inicio Programado:'"
+              :type="'time'"
+            />
+          </div>
+          <div>
+            <simple-input
+              v-model="inputValues.endTime"
+              :label="'Hora Fim Programado'"
+              :type="'time'"
+            />
+          </div>
+          <div>
+            <simple-input v-model="inputValues.beginData" :label="'Data emissão'" :type="'date'" />
+          </div>
+        </tab-content>
+        <tab-content title="Informações Gerais" icon="fas fa-check" class="maintenanceCause">
+          <div>
+            <tranfer-select
+              v-model="inputValues.typeMaintenance"
+              :selects="selectsTypeMaintenance"
+              :label="'Tipo Manutenção'"
+            />
+          </div>
+          <div>
+            <tranfer-select
+              v-model="inputValues.priority"
+              :selects="selectsPriority"
+              :label="'Prioridade'"
+            />
+          </div>
+          <div>
+            <tranfer-select
+              v-model="inputValues.requireStop"
+              :selects="selectsRequireStop"
+              :label="'Requer Parada'"
+            />
+          </div>
+        </tab-content>
+        <tab-content title="Operações" icon="fa fa-cog" class="maintenanceCause">
+          <!-- <span>será para a step para preventiva e corretiva step4 </span> -->
+          <div class="firstInput">
+            <tranfer-select
+              v-model="operacoesListaStepFour.sector"
+              :selects="selectsSector"
+              :label="'Setor'"
+            />
+          </div>
+          <div>
+            <simple-input
+              v-model="operacoesListaStepFour.plannedTime"
+              :label="'Tempo Planejado'"
+              :type="'time'"
+            />
+          </div>
+          <div class="inputMaintenance">
             <div>
-              <label class="text-muted">Descrição</label>
-            </div>
-              <textarea class="rounded descriptionInput" rows="3" v-model="inputValues.description" name="comment" form="usrform"></textarea>
-              <!-- <simple-input v-model="inputValues.description" :label="'Descrição:'" :type="'text'" />-->
-            </div>
-          </tab-content>
-          <tab-content title="Datas" icon="fa fa-cog" class="maintenanceCause">
-            <div>
-              <simple-input
-                v-model="inputValues.plannedStart"
-                :label="'Inicio Planejado:'"
-                :type="'date'"
-              />
-            </div>
-            <div>
-              <simple-input
-                v-model="inputValues.plannedEnd"
-                :label="'Fim Planejado'"
-                :type="'date'"
-              />
-            </div>
-            <div>
-              <simple-input v-model="inputValues.beginData" :label="'Data emissão'" :type="'date'" />
-            </div>
-          </tab-content>
-          <tab-content title="Informações Gerais" icon="fas fa-check" class="maintenanceCause">
-            <div>
-              <tranfer-select
-                v-model="inputValues.equipment"
-                :selects="selects"
-                :label="'Equipamento'"
-              />
-            </div>
-            <div>
-              <tranfer-select
-                v-model="inputValues.typeMaintenance"
-                :selects="selectsTypeMaintenance"
-                :label="'Tipo Manutenção'"
-              />
-            </div>
-            <div>
-              <tranfer-select
-                v-model="inputValues.sector"
-                :selects="selectsSector"
-                :label="'Setor'"
-              />
-            </div>
-            <div>
-              <tranfer-select
-                v-model="inputValues.priority"
-                :selects="selectsPriority"
-                :label="'Prioridade'"
-              />
-            </div>
-            <div>
-              <tranfer-select
-                v-model="inputValues.requireStop"
-                :selects="selectsRequireStop"
-                :label="'Requer Parada'"
-              />
-            </div>
-            <div>
-              <tranfer-select
-                v-model="inputValues.stats"
-                :selects="selectsStats"
-                :label="'Status'"
-              />
-            </div>
-          </tab-content>
-        </form-wizard>
+            <label for="comment" class="text-muted">Descrição Operações</label>
+            </div>  
+            <textarea class="rounded descriptionInput" rows="3"
+            v-model="operacoesListaStepFour.descriptionOperation" name="comment" form="usrform">
+            </textarea>
+          </div>
+        </tab-content>
+        <tab-content title="Maquinas" icon="fa fa-cog" class="maintenanceCause">
+          <div>
+            <tranfer-select
+              v-model="inputValues.equipment"
+              :selects="selects"
+              :label="'Equipamento'"
+            />
+          </div>
+        </tab-content>
+      </form-wizard>
+      
 
-        <!-- {{stats}} -->
-      </div>
+      <!-- {{stats}} -->
+    </div>
   </div>
 </template>
 
 <script>
-import { getLocalStorageToken } from '../../utils/utils';
-import selectId from '../../components/inputs/tranfer-select';
-import select from '../../components/inputs/custom-select';
+import { getLocalStorageToken } from '../../../utils/utils';
+import simpleInput from '../../../components/inputs/simple-input';
+import description from '../../../components/inputs/description';
+import selectId from '../../../components/inputs/tranfer-select';
+import saveButton from '../../../components/button/save-button';
+import select from '../../../components/inputs/custom-select';
 import { FormWizard, TabContent } from 'vue-form-wizard';
 import 'vue-form-wizard/dist/vue-form-wizard.min.css';
 
 export default {
+  name: 'OrdemManutencaoLista',
+
   components: {
+    'simple-input': simpleInput,
     'tranfer-select': selectId,
+    'save-button': saveButton,
+    description: description,
     'custom-select': select,
     FormWizard,
     TabContent
@@ -106,19 +135,33 @@ export default {
       inputValues: {
         title: '',
         summary: '',
-        description: '',
         plannedStart: '',
         plannedEnd: '',
+        startTime: '',
+        endTime: '',
         requireStop: true,
         beginData: '',
         equipment: '',
         typeMaintenance: '',
-        sector: '',
         priority: '',
-        stats: '',
+        stats: 'aberto',
         customSelect: '',
         customSelect2: '',
+        descriptionOperation: '',
+        plannedTime: '',
+        execution: false,
       },
+      listateste: [],
+      operacoesListaStepFour: {
+        descriptionOperation: '',
+        execution: 0,
+        plannedTime: 0,
+        sector: '',
+      },
+      operacoesListaStepFive: {
+        equipamentos: [],
+      },
+      descriptionOperationList: [],
       stats: [],
       workEquipment: [],
       selects: {
@@ -203,6 +246,7 @@ export default {
             confirmButtonColor: "#F34336"
           });
         });
+
     },
     getTypeMaintenance() {
       this.$http
@@ -217,6 +261,7 @@ export default {
           console.log("-------");
           console.log(res.result);
           if (res.result.length === undefined) {
+            this.listateste.push(res.result),
             this.selects.selects.map(select => {
               Object.entries(select).forEach(([key, value]) => {
                 console.log(key, value);
@@ -231,6 +276,7 @@ export default {
               this.selectsTypeMaintenance.selects[index].label =
                 res.result[index].tipoManutencao;
             }
+            this.listateste.push(res.result)
           }
         });
     },
@@ -350,7 +396,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.equipmentBackground {
+.ordem-manutencao-lista-root {
   width: 100vw;
   height: 100%;
   display: flex;
@@ -376,6 +422,7 @@ export default {
             width:98%;
           }
         }
+
         .firstInput{
           grid-column-start:1;
           grid-column-end:1;
@@ -386,14 +433,23 @@ export default {
         }
       }
     }
+    .maintanceMenu {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   }
 }
+.span_question {
+  color: #ff0303;
+  font-family: 'Montserrat';
+}
 @media (max-width: 1250px) {
-  .equipmentBackground {
+  .ordem-manutencao-lista-root {
     width: 100vw;
     height: 100vh;
     padding: 20px;
   }
-}
 
+}
 </style>

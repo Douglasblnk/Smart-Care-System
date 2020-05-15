@@ -1,10 +1,8 @@
 <template>
   <div class="root-save-button-componenet">
-    <div class="d-flex justify-content-center">
-      <button type="reset" class="save-button m-3">
-        {{ label }}
-      </button>
-    </div>
+    <button type="reset" class="save-button m-3">
+      {{ label }}
+    </button>
   </div>
 </template>
 
