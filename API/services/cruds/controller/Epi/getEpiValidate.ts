@@ -2,7 +2,7 @@ import Get from '../../../../shared/dao/Get';
 
 const commitData = new Get();
 
-const TABLE = 'epi';
+const TABLE = 'Epi';
 
 export default class GetEpiValidate {
 

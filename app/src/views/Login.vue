@@ -44,6 +44,7 @@
 
 <script>
 import { getErrors } from '../utils/utils';
+
 export default {
   data() {
     return {
@@ -62,12 +63,11 @@ export default {
   },
   methods: {
     async loginValidation() {
-      if (this.isLoading) return;
-      
+      if (this.isLoading === true) return;
+
       try {
         this.isLoading = true;
 
-        
         const response = await this.$http.post('users', localStorage.getItem('token'), this.inputValues);
 
         this.$http.setActivity(

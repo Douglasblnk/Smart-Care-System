@@ -16,11 +16,11 @@
 export default {
   props: {
     label: { type: String, default: '' },
-    selectOptions: { type: Array, default: () => [] },
+    selectOptions: { type: Object, default: () => ({}) },
     placeholder: { type: String, default: '' },
-    value: { type: Number, default: 0 },
-    model: { type: Number, default: 0},
-    selects:  { type: Array, default: () => [] }
+    value: { type: Boolean, default: false },
+    model: { type: String, default: '' },
+    selects:  { type: Object, default: () => ({}) }
   },
 
   data() {
