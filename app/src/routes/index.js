@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Error404 from '../views/Error404.vue';
 import Dashboard from '../views/Dashboard';
 import Cadastros from '../views/Cadastros';
 import Login from '../views/Login';
@@ -133,8 +132,7 @@ const routes = [
   },
   {
     path: '*',
-    name: '404',
-    component: Error404,
+    redirect: '/',
   },
 ];
 

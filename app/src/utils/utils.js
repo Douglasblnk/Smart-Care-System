@@ -1,5 +1,6 @@
 const Vuex = require('../store/index');
 const Axios = require('axios');
+const { isObject } = require('deep-object-js');
 
 const getLocalStorageToken = () => localStorage.getItem('token');
 
@@ -24,7 +25,7 @@ const validateSession = async apiUrl => {
     });
     
     if (response.status !== 200) throw response;
-
+    console.log('response.data.user :>> ', response.data.user);
     if (response.data.authorized) {
       Vuex.default.commit('addUser', {
         email: response.data.user.email,
@@ -73,7 +74,10 @@ const getErrors = err => {
 
   if (err.response.data.name === 'TokenExpiredError')
     return error.concat(' Sessão expirada.');
-    
+  
+  if (isObject(error))
+    return Object.values(error).join('');
+
   return error;
 };
 
