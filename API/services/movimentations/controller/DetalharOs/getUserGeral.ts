@@ -27,10 +27,17 @@ export default class GetUserGeral {
     }
 
     getQuery(data: any) {
+    
+        const query = `SELECT ${TABLE}.idUsuario,${TABLE}.nome,${TABLE}.funcao,${TABLE}.numeroCracha, ${TABLE}.nivel_acesso 
+                        FROM ${TABLE}
+                        WHERE Usuario.nivel_acesso = 2 AND ${TABLE}.excluded = 0 AND
+                        NOT EXISTS (
+                        SELECT * FROM ordemServico_has_Usuario
+                        WHERE ordemServico_has_Usuario.Usuario_idUsuario = ${TABLE}.idUsuario 
+                        AND ordemServico_has_Usuario.ordemServico_idOrdemServico = ${data.idOrdemServico}
+                        AND ordemServico_has_Usuario.excluded = 0);`
 
-        const query = `SELECT * FROM ${TABLE};`;
-
-        const dataQuery = { query, type:'UsuarioGeneral' };
+        const dataQuery = { query, type:'Usuário Geral' };
 
         return dataQuery;
     }
