@@ -25,7 +25,7 @@ export default class Create {
     return new Promise((resolve, reject) => {
       connection.query(data.query, data.post, (err: any, result: any) => {
         if (err) {
-          console.log("erro: ", err)
+          console.log("erro: ", err);
           const error = this.getQueryError(err, data.type);
           
           return reject(error);
