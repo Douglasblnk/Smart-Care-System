@@ -32,9 +32,13 @@ export default class ListUserDetail {
 
         const post = [data.idOrdemServico];
         const query = /*SQL*/`SELECT ${TABLE}.idUsuario,${TABLE}.nome,${TABLE}.funcao,${TABLE}.numeroCracha FROM
-        ${TABLE} INNER JOIN ordemServico_has_Usuario ON ordemServico_has_Usuario.Usuario_idUsuario = ${TABLE}.idUsuario WHERE ordemServico_has_Usuario.ordemServico_idOrdemServico = ? AND ordemServico_has_Usuario.excluded = 0;`;
+        ${TABLE} INNER JOIN ordemServico_has_Usuario ON ordemServico_has_Usuario.Usuario_idUsuario = ${TABLE}.idUsuario
+        WHERE ordemServico_has_Usuario.ordemServico_idOrdemServico = ? 
+        AND ordemServico_has_Usuario.excluded = 0 AND ordemServico_has_Usuario.is_master = 0`;
 
         const dataQuery = { query, post, type: 'Usuario'};
+
+        console.log('DataQuery: ', dataQuery);
 
         return dataQuery;
     }

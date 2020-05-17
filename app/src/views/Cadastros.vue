@@ -44,11 +44,11 @@ export default {
           icon: 'fas fa-map-pin',
           route: 'cadastros/cadastro-centro-trabalho',
         },
-        {
-          title: 'Tipo de Ordem',
-          icon: 'fas fa-file',
-          route: 'cadastros/cadastro-tipo-ordem',
-        },
+        // {
+        //   title: 'Tipo de Ordem',
+        //   icon: 'fas fa-file',
+        //   route: 'cadastros/cadastro-tipo-ordem',
+        // },
         {
           title: 'Causa e sintoma',
           icon: 'fas fa-exclamation-triangle',

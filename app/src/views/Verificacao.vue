@@ -60,7 +60,6 @@ export default {
   },
 
   mounted() {
-    console.log(this.order);
   },
   
   methods: {
@@ -69,10 +68,8 @@ export default {
         this.inputValues.dateVerification = this.$moment().format('YYYY-MM-DD HH-mm-ss');
         this.inputValues.order = this.order.idOrdemServico;
         this.inputValues.typeVerification = this.$store.state.user.nivelAcesso;
-        console.log(this.$store.state.user);
+        this.inputValues.cracha = this.$store.state.user.cracha;
 
-        console.log('INPUT VALUES: ');
-        console.log(this.inputValues);
         const response = await this.$http.post('verificacao', getLocalStorageToken(), this.inputValues);
           this.$swal({
             type: 'success',
