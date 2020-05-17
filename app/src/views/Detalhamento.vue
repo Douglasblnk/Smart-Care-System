@@ -74,7 +74,7 @@
             </div>
             <div class="d-flex justify-content-center">
               <div class="options-wrapper">
-                 <!-- // ? CARD PARA QUANDO A ORDEM ESTIVER COM STATUS ABERTA -->
+                <!-- // ? CARD PARA QUANDO A ORDEM ESTIVER COM STATUS ABERTA -->
                 <div
                   v-if="verifyOrderStatus === 'open'"
                   class="options"
@@ -328,8 +328,6 @@
   },
   
   mounted() {
-    console.log(this.order);
-    console.log(this.manutentorInOrdem);
     this.setActivity();
     this.getManutentoresInOrdem();
   },
@@ -512,17 +510,23 @@
       }
     },
     async assumeOrder() {
-      // if (this.isOrderAssumed) return;
-
+      if (this.isLoading.assume || this.isOrderAssumed) return;
+      
       try {
-        if (this.isLoading.assume) return;
         this.$set(this.isLoading, 'assume', true);
 
-        const response = await this.$http.post('initiate/assume', getLocalStorageToken(), {
+        const { result } = await this.$http.post('initiate/assume', getLocalStorageToken(), {
           ...this.$store.state.user,
           order: this.order.idOrdemServico,
         });
 
+        this.$swal({
+          type: 'success',
+          title: result,
+        });
+
+        await this.getManutentoresInOrdem();
+        this.$set(this.order, 'status', 'Assumida');
       } catch (err) {
         console.log('err assumeOrder :>> ', err.response || err);
 

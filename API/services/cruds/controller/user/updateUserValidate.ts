@@ -1,9 +1,13 @@
 import Update from '../../../../shared/dao/Update';
 import {SSUtils} from '../../../../shared/utils/utils';
+import Cryptography from '../../../../shared/cryptography/cryptography';
+
 const _ = require('lodash');
 
 const commitData = new Update();
 const isEmpty = new SSUtils();
+const cryptography = new Cryptography();
+
 
 const TABLE = 'Usuario';
 
@@ -14,6 +18,10 @@ export default class UpdateUserValidate {
       const data = this.getData(event);
 
       this.validateData(data);
+
+      const saltRounds = 12;
+      
+      data.senha = await cryptography.generateHash(data.senha, saltRounds);
 
       const getQuery = this.getQuery(data)
 

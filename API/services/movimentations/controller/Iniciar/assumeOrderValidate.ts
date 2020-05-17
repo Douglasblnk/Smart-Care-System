@@ -2,24 +2,30 @@ import Get from '../../../../shared/dao/Get';
 import AssumeOrderTransaction from '../../../../shared/dao/AssumeOrderTransaction'
 import _ from 'lodash';
 
-const TABLE_ORDER_HAS_USER = 'ordemServico_has_Usuario';
-const TABLE_USER = 'Usuario';
+import { 
+  TABLE_USUARIO,
+  TABLE_ORDEM_SERVICO_HAS_USUARIO,
+  TABLE_NIVEL_ACESSO
+ } from '../../../../shared/enums/database'
+
+import { 
+  ACCESS_LEVEL_MANUTENTOR
+ } from '../../../../shared/enums/accessLevel'
 
 export default class AssumeOrderValidate {
   private getParameters = (event: any) => ({
     nivelAcesso: _.get(event.body, 'nivelAcesso', ''),
-    cracha: _.get(event.body, 'cracha', ''),
+    userId: _.get(event.body, 'userId', ''),
     orderId: _.get(event.body, 'order', ''),
   });
 
   private checkParameters = ({
     nivelAcesso,
-    cracha,
-    isMaster,
+    userId,
     orderId,
   } : any = {}) => ({
     ...(!nivelAcesso ? { nivelAcesso: 'Nível de acesso não encontrado' } : ''),
-    ...(!cracha ? { cracha: 'Cracha não encontrado' } : ''),
+    ...(!userId ? { userId: 'userId não encontrado' } : ''),
     ...(!orderId ? { orderId: "Valor do 'orderId' não encontrado" } : ''),
   });
 
@@ -31,12 +37,11 @@ export default class AssumeOrderValidate {
       if (Object.keys(errors).length > 0) throw errors;
 
       await this.validateUsersInOrders(parameters);
+      await this.validateUserAccess(parameters);
       
-      const result = await new AssumeOrderTransaction(parameters).runTransaction()
+      const result = await new AssumeOrderTransaction().runTransaction(parameters)
 
-      console.log('result :>> ', result);
-
-      // return result;
+      return result;
     } catch (err) {
       console.log(err);
 
@@ -44,9 +49,9 @@ export default class AssumeOrderValidate {
     }
   }
 
-  private async validateUsersInOrders(parameters: { cracha: string; nivelAcesso: string, orderId: string }): Promise<any> {
+  private async validateUsersInOrders(parameters: { userId: number; nivelAcesso: string, orderId: string }): Promise<void> {
     try {
-      const userInOrderQuery = AssumeOrderValidate.getUserInOrderQuery(parameters);
+      const userInOrderQuery = this.getUserInOrderQuery(parameters);
 
       const { result } : any = await new Get().run(userInOrderQuery);
       
@@ -63,18 +68,45 @@ export default class AssumeOrderValidate {
     }
   }
 
-  private static getUserInOrderQuery(parameters: { cracha: string; nivelAcesso: string; orderId: string }): object {
+  private async validateUserAccess(parameters: { nivelAcesso: string; }) {
+    try {
+      const userAccessLevelQuery = this.getUserAccessLevelQuery();
+
+      const { result }: any = await new Get().run(userAccessLevelQuery);
+      if (_.isEmpty(result)) return;
+
+      const assumeAccessLevel = result.find((i: { nivel_acesso_description: string }) => i.nivel_acesso_description === ACCESS_LEVEL_MANUTENTOR)
+
+      if (assumeAccessLevel.nivel_acesso !== parameters.nivelAcesso)
+        throw String('O usuário não tem permissão para assumir a ordem!')
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  private getUserInOrderQuery(parameters: { orderId: string }): { query: string, post: string[] } {
     const query = `
       SELECT
-        (SELECT numeroCracha from ${TABLE_USER} WHERE idUsuario = Usuario_idUsuario) as cracha,
+        (SELECT numeroCracha from ${TABLE_USUARIO} WHERE idUsuario = Usuario_idUsuario) as cracha,
         ordemServico_idOrdemServico,
         is_master
-      FROM ${TABLE_ORDER_HAS_USER}
+      FROM ${TABLE_ORDEM_SERVICO_HAS_USUARIO}
       WHERE ordemServico_idOrdemServico = ? AND excluded <> 1;
     `;
 
     const post = [ parameters.orderId ];
 
     return { query, post };
+  }
+
+  private getUserAccessLevelQuery(): { query: string } {
+    const query = `
+      SELECT
+        nivel_acesso,
+        nivel_acesso_description
+      FROM ${TABLE_NIVEL_ACESSO};
+    `;
+
+    return { query };
   }
 }

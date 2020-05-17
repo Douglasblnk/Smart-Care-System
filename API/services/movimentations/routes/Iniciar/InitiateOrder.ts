@@ -39,6 +39,4 @@ router.post("/assume", async (req: any, res: any) => {
   }
 });
 
-
-
 module.exports = router;

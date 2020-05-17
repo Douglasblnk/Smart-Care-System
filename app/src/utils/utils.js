@@ -25,7 +25,7 @@ const validateSession = async apiUrl => {
     });
     
     if (response.status !== 200) throw response;
-    console.log('response.data.user :>> ', response.data.user);
+
     if (response.data.authorized) {
       Vuex.default.commit('addUser', {
         email: response.data.user.email,
@@ -33,6 +33,7 @@ const validateSession = async apiUrl => {
         nivelAcesso: response.data.user.nivel_acesso,
         funcao: response.data.user.funcao,
         cracha: response.data.user.numeroCracha,
+        userId: response.data.user.idUsuario,
       });
 
       return 'Autenticado!';
