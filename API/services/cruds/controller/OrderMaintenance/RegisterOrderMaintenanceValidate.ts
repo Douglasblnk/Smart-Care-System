@@ -110,14 +110,10 @@ export default class RegisterOrderMaintenanceValidate {
         status: 404,
         err: 'Status não informado',
     };
-    if (data.superiorEquipment === '') throw {
-        status: 404,
-        err: 'Equipamento Superior não informado',
-    };
     if (data.operations === '') throw {
       status: 404,
       err: 'Operações não informadas',
-  };
+    };
   }
 
   getQuery(data: any) {

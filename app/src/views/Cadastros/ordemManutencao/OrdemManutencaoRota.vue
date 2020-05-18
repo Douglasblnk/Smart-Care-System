@@ -44,27 +44,16 @@
           </div>
         </tab-content>
         <tab-content title="Informações Gerais" icon="fas fa-check" class="maintenanceCause">
-          <div>
-            <tranfer-select
-              v-model="inputValues.typeMaintenance"
-              :selects="selectsTypeMaintenance"
-              :label="'Tipo Manutenção'"
-            />
-          </div>
-          <div>
-            <tranfer-select
-              v-model="inputValues.priority"
-              :selects="selectsPriority"
-              :label="'Prioridade'"
-            />
-          </div>
-          <div>
-            <tranfer-select
-              v-model="inputValues.requireStop"
-              :selects="selectsRequireStop"
-              :label="'Requer Parada'"
-            />
-          </div>
+          <custom-select
+            label="Requer parada"
+            v-model="inputValues.requireStop"
+            :options="selectsRequireStop"
+          />
+          <custom-select
+            label="Prioridade"
+            v-model="inputValues.priority"
+            :options="getPriorityOptions()"
+          />
         </tab-content>
         <tab-content title="Maquinas" icon="fa fa-cog" class="maintenanceCause">
           <div class="container-Maquina-Operacoes">
@@ -72,17 +61,17 @@
               <div slot="header" class="clearfix">
                 <div class="maintenanceCause">
                   <div class="firstInput">
-                    <tranfer-select
+                    <custom-select
+                      label="Setor"
                       v-model="inputValues.sector"
-                      :selects="selectsSector"
-                      :label="'Setor'"
+                      :options="getSectorOptions()"
                     />
                   </div>
                   <div class="secondInput">
-                    <tranfer-select
+                    <custom-select
+                      label="Equipamento"
                       v-model="inputValues.equipment"
-                      :selects="selects"
-                      :label="'Equipamento'"
+                      :options="getEquipmentsOptions()"
                     />
                   </div>
                 </div>
@@ -114,16 +103,54 @@
             </el-card>
           </div>
         </tab-content>
-      </form-wizard>
-      
+        <tab-content title="Epi" icon="fa fa-cog">
+          <div class="d-flex justify-content-center">
+            <save-button id="show-btn" @click.native="showEpiModal" label="Adicionar EPI" />
+          </div>
 
+          <div class="w-100">
+            <label>EPIs selecionadas: </label>
+            <div class="d-flex">
+              <div v-for="(epi, index) in inputValues.selectedEpis" :key="`epi-${index}`">
+                <div
+                  @mouseenter="() => $set(showRemoveEpi, index, true)"
+                  @mouseleave="() => $set(showRemoveEpi, index, false)"
+                  class="selected-epi-wrapper"
+                >
+                  <span>{{ getEpiName(epi) }}</span>
+                  <div @click="removeEpi(index)" v-if="showRemoveEpi[index]" class="selected-epi-remove">
+                    <i class="fa fa-trash" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </tab-content>
+      </form-wizard>
       <!-- {{stats}} -->
     </div>
+    <b-modal centered  @show="resetModal" ref="my-modal" hide-footer title="Cadastrar Epi na Ordem">
+      <div class="d-block text">
+        <b-form-group label="Escolha as EPI's:">
+          <b-form-checkbox-group
+            id="checkbox-group-1"
+            v-model="inputValues.selectedEpis"
+            :options="getEpiOptions()"
+            name="flavour-1"
+            stacked
+          />
+        </b-form-group>
+      </div>
+      <div class="d-flex justify-content-center">
+        <cancel-button label="Fechar" @click.native="closeModal" />
+        <save-button label="Adicionar" @click.native="confirmModal" />
+      </div>
+    </b-modal>
   </div>
 </template>
 
 <script>
-import { getLocalStorageToken } from '../../../utils/utils';
+import { getLocalStorageToken, getErrors } from '../../../utils/utils';
 import simpleInput from '../../../components/inputs/simple-input';
 import description from '../../../components/inputs/description';
 import selectId from '../../../components/inputs/tranfer-select';
@@ -153,16 +180,17 @@ export default {
         plannedEnd: '',
         startTime: '',
         endTime: '',
-        requireStop: true,
+        requireStop: '',
         beginData: '',
         equipment: '',
-        typeMaintenance: '',
+        typeMaintenance: 9,
         sector: '',
         priority: '',
-        stats: 'aberto',
+        stats: 1,
         customSelect: '',
         customSelect2: '',
         plannedTime: '',
+        selectedEpis: [],
       },
       listateste: [],
       operacoesRota: {
@@ -173,236 +201,157 @@ export default {
         unidade: '',
         descriptionOperation: '',
       },
-      stats: [],
       descriptionOperationRota: [],
       workEquipment: [],
-      selects: {
-        select: '',
-        selects: []
-      },
-      selectsTypeMaintenance: {
-        select: '',
-        selects: []
-      },
-      selectsSector: {
-        select: '',
-        selects: []
-      },
-      selectsPriority: {
-        select: '',
-        selects: []
-      },
-      selectsStats: {
-        select: '',
-        selects: []
-      },
-      selectsRequireStop: {
-        select: '',
-        selects: [
+      selectsSector: [],
+      selectsPriority: [],
+      epiList: [],
+      showRemoveEpi: {},
+      selectsRequireStop: [
           {
-            value: true,
-            label: 'Sim'
+            id: '1',
+            description: 'Sim',
           },
           {
-            value: false,
-            label: 'Não'
+            id: '0',
+            description: 'Não',
           }
-        ]
-      }
+        ],
     };
   },
   mounted() {
     this.getEquipments();
-    this.getTypeMaintenance();
     this.getSector();
     this.getPriority();
-    this.getStats();
   },
   methods: {
     getStatsSelect() {
       const teste = this.stats.map(i => {});
     },
+    resetModal() {
+      this.inputValues.selectedEpis = [];
+    },
+    getEpiOptions() {
+      return this.epiList.map(i => ({ text: i.descricaoEpi, value: i.idEpi }));
+    },
+    getEpiName(epi) {
+      const { descricaoEpi } = this.epiList.find(i => i.idEpi === epi);
+      return descricaoEpi;
+    },
+    removeEpi(index) {
+      this.inputValues.selectedEpis.splice(index, 1);
+      this.$set(this.showRemoveEpi, [index], false);
+    },
+    addOperation() {
+      // todo
+    },
+    async showEpiModal() {
+      await this.getEpis();
 
-    registerOrderMaintenance() {
-      this.inputValues.equipment = this.selects.select;
-      this.inputValues.priority = this.selectsPriority.select;
-      this.inputValues.sector = this.selectsSector.select;
-      this.inputValues.stats = this.selectsStats.select;
-      this.inputValues.typeMaintenance = this.selectsTypeMaintenance.select;
-      this.inputValues.requireStop = this.selectsRequireStop.select;
-      console.log("------");
-      console.log("------");
-      console.log(this.inputValues);
-      console.log("------");
-      console.log("------");
-      const token = localStorage.getItem("token");
-      fetch(`${this.$apiUrl}/ordem-manutencao`, {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(this.inputValues)
-      })
-        .then(res => res.json())
-        .then(json => {
-          if (json.status !== 200)
-            return this.$swal({
-              type: "error",
-              title: `Ops! ${json.err}`,
-              confirmButtonColor: "#F34336"
-            });
+      this.$refs['my-modal'].show();
+    },
+    closeModal() {
+      this.$refs['my-modal'].hide();
+    },
+    confirmModal() {
+      this.$refs['my-modal'].toggle('#toggle-btn');
+    },
+    async getEpis() {
+      try {
+        const { result } = await this.$http.get('epi/get', getLocalStorageToken());
+
+        this.epiList = [...result];
+      } catch (err) {
+        console.log('err :>> ', err.response || err);
+
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
+    async registerOrderMaintenance() {
+      this.inputValues.equipment = this.workEquipment;
+      this.inputValues.priority = this.selectsPriority;
+      this.inputValues.sector = this.selectsSector;
+      this.inputValues.requireStop = this.selectsRequireStop;
+
+      try {
+        const response = await this.$http.post('ordem-manutencao', getLocalStorageToken(), this.inputValues);
           this.$swal({
-            type: "success",
-            title: `Ordem de Serviço cadastrada com Sucesso`,
-            confirmButtonColor: "#F34336"
+            type: 'success',
+            title: 'Ordem de Serviço cadastrada com Sucesso',
+            confirmButtonColor: '#F34336',
           });
-        });
+      } catch (err) {
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        })  
+      }
     },
-    getTypeMaintenance() {
-      this.$http
-        .get("tipo-manutencao/get", getLocalStorageToken())
-        .then(res => {
-          if (res.status !== 200)
-            return this.$swal({
-              type: "error",
-              title: `Ops! ${res.err}`,
-              confirmButtonColor: "#F34336"
-            });
-          console.log("-------");
-          console.log(res.result);
-          if (res.result.length === undefined) {
-            this.listateste.push(res.result),
-            this.selects.selects.map(select => {
-              Object.entries(select).forEach(([key, value]) => {
-                console.log(key, value);
-              });
-            });
-          } // this.selects.selects.push(res.result)
-          else {
-            for (let index = 0; index < res.result.length; index++) {
-              this.selectsTypeMaintenance.selects.push(res.result[index]);
-              this.selectsTypeMaintenance.selects[index].value =
-                res.result[index].idtipoManutencao;
-              this.selectsTypeMaintenance.selects[index].label =
-                res.result[index].tipoManutencao;
-            }
-            this.listateste.push(res.result)
-          }
-        });
-    },
-    getEquipments() {
-      this.$http
-        .get("equipamento/get", getLocalStorageToken())
-        .then(res => {
-          if (res.status !== 200)
-            return this.$swal({
-              type: "error",
-              title: `Ops! ${res.err}`,
-              confirmButtonColor: "#F34336"
-            });
+    async getEquipments() {
+      try {
+        const response = await this.$http.get('equipamento/get', getLocalStorageToken());
+        if (response.result.length === undefined)
+          this.workEquipment.push(response.result);
 
-          if (res.result.length === undefined) {
-            this.workEquipment.push(res.result);
-            console.log(this.workEquipment);
-            this.selects.selects.push(this.workEquipment);
-            this.selects.selects[0].value = this.workEquipment[0].idEquipamento;
-            this.selects.selects[0].label = this.workEquipment[0].equipamento;
-          } else {
-            // console.log("----")
-            // console.log(res.result)
-            for (let index = 0; index < res.result.length; index++) {
-              this.selects.selects.push(res.result[index]);
-              this.selects.selects[index].value =
-                res.result[index].idEquipamento;
-              this.selects.selects[index].label = res.result[index].equipamento;
-            }
-          }
+        else this.workEquipment = [...response.result];
+
+      } catch (err) {
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
         });
+      }
     },
-    getSector() {
-      this.$http
-        .get("local-instalacao/get", getLocalStorageToken())
-        .then(res => {
-          if (res.status !== 200)
-            return this.$swal({
-              type: "error",
-              title: `Ops! ${res.err}`,
-              confirmButtonColor: "#F34336"
-            });
-          console.log("-------");
-          console.log(res.result);
-          if (res.result.length != undefined) {
-            for (let index = 0; index < res.result.length; index++) {
-              this.selectsSector.selects.push(res.result[index]);
-              this.selectsSector.selects[index].value =
-                res.result[index].idSetor;
-              this.selectsSector.selects[index].label = res.result[index].nome;
-            }
-          }
+    getEquipmentsOptions() {
+      return this.workEquipment.map(i => ({ id: String(i.idEquipamento), description: i.equipamento }));
+    },
+    async getSector() {
+      try {
+        const response = await this.$http.get('local-instalacao/get', getLocalStorageToken());
+
+        if (response.result.length === undefined)
+          this.selectsSector.push(response.result);
+
+        else this.selectsSector = [...response.result];
+
+      } catch (err) {
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        }); 
+      }
+    },
+    getSectorOptions() {
+      return this.selectsSector.map(i => ({ id: String(i.idSetor), description: i.nome }));
+    },
+    async getPriority() {
+      try {
+        const response = await this.$http.get('prioridade/get', getLocalStorageToken());
+
+        if (response.result.length === undefined)
+          this.selectsPriority.push(response.result);
+
+        else this.selectsPriority = [...response.result];
+         
+      } catch (err) {
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
         });
+      }
     },
-    getPriority() {
-      console.log("Qualquer coisa");
-      this.$http
-        .get("prioridade/get", getLocalStorageToken())
-        .then(res => {
-          if (res.status !== 200)
-            return this.$swal({
-              type: "error",
-              title: `Ops! ${res.err}`,
-              confirmButtonColor: "#F34336"
-            });
-          console.log("-------0000");
-          console.log(res.result);
-          if (res.result.length === undefined) {
-            this.selects.selects.map(select => {
-              Object.entries(select).forEach(([key, value]) => {
-                console.log(key, value);
-              });
-            });
-          } // this.selects.selects.push(res.result)
-          else {
-            for (let index = 0; index < res.result.length; index++) {
-              this.selectsPriority.selects.push(res.result[index]);
-              this.selectsPriority.selects[index].value =
-                res.result[index].idPrioridade;
-              this.selectsPriority.selects[index].label =
-                res.result[index].descricaoPrioridade;
-            }
-          }
-        });
+    getPriorityOptions() {
+      return this.selectsPriority.map(i => ({ id: String(i.idPrioridade), description: i.descricaoPrioridade }));
     },
-    getStats() {
-      this.$http.get("status/get", getLocalStorageToken()).then(res => {
-        if (res.status !== 200)
-          return this.$swal({
-            type: "error",
-            title: `Ops! ${res.err}`,
-            confirmButtonColor: "#F34336"
-          });
-        if (res.result.length === undefined) this.stats.push(res.result);
-        else this.stats = [...res.result];
-        console.log("-------");
-        console.log(res.result);
-        if (res.result.length === undefined) {
-          this.selects.selects.map(select => {
-            Object.entries(select).forEach(([key, value]) => {
-              console.log(key, value);
-            });
-          });
-        } // this.selects.selects.push(res.result)
-        else {
-          for (let index = 0; index < res.result.length; index++) {
-            this.selectsStats.selects.push(res.result[index]);
-            this.selectsStats.selects[index].value = res.result[index].idStatus;
-            this.selectsStats.selects[index].label =
-              res.result[index].tipoStatus;
-          }
-        }
-      });
-    }
-  }
+  },
 };
 </script>
 
@@ -442,39 +391,53 @@ export default {
           grid-column-start:2;
           grid-column-end:2;
         }
-
-        .container-Maquina-Operacoes {
-          grid-column-start: 1;
-          grid-column-end: 3;
-          padding: 1%;
-          border-radius: 20px;
-            .text {
-              font-size: 14px;
-            }
-
-            .item {
-              margin-bottom: 18px;
-            }
-
-            .clearfix:before,
-            .clearfix:after {
-              display: table;
-              content: "";
-            }
-            .clearfix:after {
-              clear: both
-            }
-
-            .box-card {
-              width: 100%;
-            }
-        }
-
         
+        .containerButton {
+          width: 100%;
+          height: 40px;
+          display: flex;
+          justify-content: flex-end;
+          align-items:flex-end;
+          .buttonAddOperation {
+            position: relative;
+              bottom: -40px;
+            // right: 30;
+            // // left: 80%;
+            // padding: 2%;
+          }
+        }
       }
-    
+      .selected-epi-wrapper {
+        min-width: 50px;
+        padding: 5px 20px;
+        margin: 5px;
+        border-radius: 100px;
+        background-color: #eee;
+        user-select: none;
+        position: relative;
+        &:hover {
+          background-color: #ddd;
+        }
+        .selected-epi-remove {
+          position: absolute;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          right: -10px;
+          top: -10px;
+          width: 30px;
+          height: 30px;
+          border-radius: 100px;
+          background-color: #eee;
+          cursor: pointer;
+          &:hover {
+            background-color: var(--duas-rodas-soft);
+            i { color: white; }
+          }
+          i { font-size: 14px; }
+        }
+      }
     }
-
     .maintanceMenu {
       display: flex;
       justify-content: center;
@@ -482,13 +445,15 @@ export default {
     }
   }
 }
-
+.span_question {
+  color: #ff0303;
+  font-family: 'Montserrat';
+}
 @media (max-width: 1250px) {
-  .ordem-manutencao-rota-root {
+  .equipmentBackground {
     width: 100vw;
     height: 100vh;
     padding: 20px;
   }
-
 }
 </style>

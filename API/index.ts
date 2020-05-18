@@ -24,6 +24,7 @@ const prioridade = require('./services/cruds/routes/Prioridade/Prioridade');
 const status = require('./services/cruds/routes/Status/Status');
 const epi = require('./services/cruds/routes/Epi/Epi');
 const nivelAcesso = require('./services/cruds/routes/NivelAcesso/nivelAcesso');
+const operacoes = require("./services/cruds/routes/Operacoes/Operacoes");
 
 // MOVIMENTATIONS
 const detalhamento = require('./services/movimentations/routes/Detalhamento/Detalhamento');
@@ -47,6 +48,7 @@ app.use('/epi', epi)
 app.use('/detalhamento', detalhamento)
 app.use('/verificacao', verificacao)
 app.use('/nivel-acesso', nivelAcesso)
+app.use("/operacoes", operacoes)
 app.use('/initiate', initiate)
 
 
