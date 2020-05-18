@@ -40,16 +40,16 @@ export default class RegisterCentroTrabalhoValidate {
       err: 'Não existem dados!',
     };
     
-    isEmpty.verify(data,  ['descricao_centro_trabalho'], '');
+    isEmpty.verify(data,  ['descricao'], '');
     
-    if (data.descricao_centro_trabalho === '') throw {
+    if (data.descricao === '') throw {
       status: 404,
       err: 'Centro de trabalho não informado',
     };
   }
 
   getQuery(data: any) {
-    const post = { descricao_centro_trabalho: data.descricao_centro_trabalho };
+    const post = { descricao: data.descricao };
     const query = /*sql*/`INSERT INTO ${TABLE} SET ?;`;
 
     const dataQuery = { query, post, type: 'Centro de Trabalho' };

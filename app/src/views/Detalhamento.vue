@@ -91,7 +91,7 @@
                   v-if="verifyOrderStatus === 'assumed'"
                   class="options"
                   :class="verifyUserAccess ? '' : 'disable'"
-                  @click="orderMovimentations('assume')"
+                  @click="orderMovimentations('init')"
                 >
                   <i class="fa fa-play fa-lg mb-2" />
 
@@ -260,7 +260,36 @@
           @state-list="closeDetail"
         />
       </div>
+
     </transition>
+    <b-modal @hide="resetModal()" @show="checkSelectedEpis()" centered ref="my-modal" hide-footer hide-header title="Verificação de EPIs">
+        <div class="d-block text">
+          <div class="text-center">
+            <h3>Verificação de EPIs na ordem</h3>
+            <span>
+              Informe quais EPIs você esta utilizando
+            </span>
+          </div>
+          <div class="m-3">
+            <b-form-checkbox-group
+              id="checkbox-group-1"
+              v-model="selectedEpis"
+              :options="getEpiOptions()"
+              name="flavour-1"
+              stacked
+            />
+          </div>
+        </div>
+        <div v-if="modalHasError">
+          <div class="d-flex justify-content-center w-100 p-2 rounded" style="background-color: #ff4a4a5c; border: 1px solid #ff4a4aa6">
+            <span style="color: black">{{ modalErrorMessage }}</span>
+          </div>
+        </div>
+        <div class="d-flex justify-content-center">
+          <cancel-button label="Fechar" @click.native="closeModal()" />
+          <save-button label="Enviar" @click.native="addEpi()" />
+        </div>
+      </b-modal>
   </div>
 </template>
 
@@ -293,9 +322,12 @@
       opcao: '',
       manutentores: [],
       manutentorInOrdem: [],
+      epiList: [],
       dialogVisible: false,
+      modalHasError: false,
       search: '',
       isLoading: {},
+      selectedEpis: [],
       priorityClass: {
         'Baixa': 'low-priority',
         'Media': 'medium-priority',
@@ -330,10 +362,16 @@
   mounted() {
     this.setActivity();
     this.getManutentoresInOrdem();
+    this.getEpis();
   },
 
 
   methods: {
+    resetModal() {
+      this.modalHasError = false;
+      this.modalErrorMessage = '';
+      this.selectedEpis = [];
+    },
     setActivity() {
       this.$http.setActivity(
         'orderDetail',
@@ -459,7 +497,7 @@
           type: 'warning',
           title: getErrors(err),
           confirmButtonColor: '#F34336',
-        });
+        })
       }
     },
     async removeManutentor(index, row) {
@@ -500,6 +538,7 @@
       }
     },
     orderMovimentations(type) {
+      console.log('TYPE: ', type);
       switch (type) {
         case 'assume':
           this.assumeOrder();
@@ -533,31 +572,43 @@
         this.$set(this.isLoading, 'assume', false);
 
         return this.$swal({
-          type: 'warning',
-          title: getErrors(err),
+          type: 'success',
+          title: 'Ordem iniciada com sucesso!',
           confirmButtonColor: '#f34336',
         });
       }
     },
     async initiateOrder() {
       try {
+        console.log('INITIATE ORDER');
         if (this.isLoading.init) return;
         this.$set(this.isLoading, 'init', true);
 
         const manutentor = await this.validateActualManutentor();
 
-        if (manutentor !== undefined) {
-          this.$set(this.isLoading, 'init', false);
+        // if (manutentor !== undefined) {
+        //   this.$set(this.isLoading, 'init', false);
+        //   return this.$swal({
+        //     type: 'warning',
+        //     title: 'Parece que você já iniciou essa ordem!',
+        //   });
+        // }
 
-          return this.$swal({
-            type: 'warning',
-            title: 'Parece que você já iniciou essa ordem!',
-          });
-        }
-
-        const response = await this.$http.post('initiate', getLocalStorageToken(), { ...this.$store.state.user, isMaster: true, order: this.order.idOrdemServico });
+        const response = await this.$http.post('initiate/init', getLocalStorageToken(), { ...this.$store.state.user, isMaster: true, order: this.order.idOrdemServico });
 
         this.$set(this.isLoading, 'init', false);
+
+        this.order.status = 'Em Andamento';
+
+        this.$swal({
+          type: 'success',
+          title: 'Ordem iniciada com sucesso!',
+          confirmButtonColor: '#f34336',
+        }).then(() => {
+          console.log('Modal Aberto');
+          this.showEpiModal();
+        })
+
       } catch (err) {
         console.log('initiateOrder :>> ', err);
         this.$set(this.isLoading, 'init', false);
@@ -580,6 +631,45 @@
         throw err;
       }
     },
+    getEpiOptions() {
+      return this.epiList.map(i => ({ text: i.descricaoEpi, value: i.idEpi }));
+    },
+    checkSelectedEpis() {
+      // if (this.inputValues.epis.length > 0)
+      //   this.selectedEpis = [...this.inputValues.epis];
+    },
+    async showEpiModal() {
+      await this.getEpis();
+
+      this.$refs['my-modal'].show();
+    },
+    closeModal() {
+      this.$refs['my-modal'].hide();
+    },
+    addEpi() {
+      this.$refs['my-modal'].hide();
+    },
+    confirmModal() {
+      this.$refs['my-modal'].toggle('#toggle-btn');
+      this.resetModal();
+    },
+    async getEpis() {
+      try {
+        console.log('ORDER:',  { order: this.order.idOrdemServico })
+        const { result } = await this.$http.post('epi/order', getLocalStorageToken(), { order: this.order.idOrdemServico });
+        console.log('Result', result);
+        this.epiList = [...result];
+        console.log('EpiList: ', this.epiList);
+      } catch (err) {
+        console.log('err :>> ', err.response || err);
+
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    }
   },
 };
 </script>

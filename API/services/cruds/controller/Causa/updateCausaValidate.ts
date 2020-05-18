@@ -5,7 +5,7 @@ const _ = require('lodash');
 const commitData = new Update();
 const isEmpty = new SSUtils();
 
-const TABLE = 'causa';
+const TABLE = 'Causa';
 
 export default class UpdateCausaValidate {
 

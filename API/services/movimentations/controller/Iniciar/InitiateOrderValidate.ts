@@ -1,13 +1,16 @@
 import Create from '../../../../shared/dao/Create';
+import Update from '../../../../shared/dao/Update';
 import Get from '../../../../shared/dao/Get';
 import { SSUtils } from '../../../../shared/utils/utils';
 const _ = require('lodash');
 
 const commitData = new Create();
+const commitDataUpdate = new Update();
 const getData = new Get();
 
 const TABLE_STATUS = 'Status';
 const TABLE_ORDEr_HAS_USER = 'ordemServico_has_Usuario';
+const TABLE_ORDER_SERVICE = 'ordemServico';
 
 
 export default class InitiateOrderValidate {
@@ -37,13 +40,17 @@ export default class InitiateOrderValidate {
       const errors = this.checkParameters(parameters);
       if (Object.keys(errors).length > 0) throw errors;
 
-      await InitiateOrderValidate.validateUsersInOrders(parameters);
+      //await InitiateOrderValidate.validateUsersInOrders(parameters);
+      
+      const getQuery = this.InitiateOrderQuery(parameters);
+
+      const result = await commitDataUpdate.run(getQuery);
 
       // const result = await commitData.run(query);
 
       // console.log('result :>> ', result);
 
-      // return result;
+      return result;
     } catch (err) {
       console.log(err);
 
@@ -75,5 +82,18 @@ export default class InitiateOrderValidate {
     const post = [ parameters.orderId, parameters.cracha ];
 
     return { query, post };
+  }
+
+  private InitiateOrderQuery(parameters: { isMaster: string; cracha: string; nivelAcesso: string; orderId: string }): object {
+    const values = { Status_idStatus: 2};
+    const where = parameters.orderId;
+    console.log('orderId', parameters.orderId)
+    const query = `UPDATE ${TABLE_ORDER_SERVICE} SET ? WHERE idOrdemServico = ?;`;
+
+    const dataQuery = { query, values, where, type: 'Ordem de serviço' };
+
+    console.log(dataQuery);
+
+    return dataQuery;
   }
 }

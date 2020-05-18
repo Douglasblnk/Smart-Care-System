@@ -158,6 +158,7 @@ export default {
             this.equipments.push(this.inputValues);
             console.log(this.equipments);
             this.resetModel();
+            this.getEquipment();
           })
         })
     },

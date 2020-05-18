@@ -1,6 +1,6 @@
-import Delete from '../../../../shared/dao/Delete';
+import Update from '../../../../shared/dao/Update';
 
-const commitData = new Delete();
+const commitData = new Update();
 
 const TABLE = 'Setor';
 
@@ -40,11 +40,11 @@ export default class DeleteLocalInstalacaoValidate {
   }
 
   getQuery(data: any) {
-    const post = [data];
-    const query = /*SQL*/`DELETE from ${TABLE} WHERE ${TABLE}.idSetor = ?`
+    const values = { excluded: 1 };
+    const where = [data];
+    const query = `UPDATE ${TABLE} SET ? WHERE ${TABLE}.idSetor = ?;`;
 
-    const dataQuery = { query, post, type: 'Local de instalação' };
-
+    const dataQuery = { query, values, where, type: 'Local de instalação' };
     console.log(dataQuery);
 
     return dataQuery;
