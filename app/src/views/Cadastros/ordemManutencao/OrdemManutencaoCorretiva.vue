@@ -238,7 +238,14 @@ export default {
       }
     },
     addEpi() {
-      this.$refs['my-modal'].hide();
+      if (this.selectedEpis.length === 0) {
+        this.modalHasError = true;
+        this.modalErrorMessage = 'Selecione uma EPI antes de continuar';
+      } else {
+        this.inputValues.epis = this.selectedEpis.map(i => ({ Epi_idEpi: i}));
+        this.confirmModal();
+      }
+      console.log('this.inputValues.epis :>> ', this.inputValues.epis);
     },
     resetInputValues(){
       this.inputValues.operations = [];
