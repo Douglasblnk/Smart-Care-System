@@ -58,13 +58,13 @@ export default {
 		'ordem-lista': () => import('./OrdemManutencaoLista.vue'),
 		'ordem-rota': () => import('./OrdemManutencaoRota.vue'),
     'ordem-corretiva': () => import('./OrdemManutencaoCorretiva.vue'),
-    'ordem-preventiva':  () => import('./OrdemManutencaoPreventiva'),
+    'ordem-preventiva': () => import('./OrdemManutencaoPreventiva'),
 	},
 
 	data() {
 		return {
       state: {
-        view:'',
+        view: '',
       },
 		};
   },
@@ -79,6 +79,7 @@ export default {
       if (type === 'preventiva') this.$set(this.state, 'view', 'Preventiva');
       if (type === 'rota') this.$set(this.state, 'view', 'Rota');
       if (type === 'lista') this.$set(this.state, 'view', 'Lista');
+      this.$store.commit('addPageName', `Cadastro de Ordem | ${this.state.view}`);
     },
 	},
 };

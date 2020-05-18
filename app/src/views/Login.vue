@@ -87,6 +87,7 @@ export default {
           nivelAcesso: response.nivel_acesso,
           funcao: response.funcao,
           cracha: response.numeroCracha,
+          userId: response.idUsuario,
         });
 
         this.setTokenLocalStorage(response.token);

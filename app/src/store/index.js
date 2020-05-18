@@ -10,8 +10,8 @@ export default new Vuex.Store({
   },
 
   mutations: {
-    addUser(state, { email, nome, nivelAcesso, funcao, cracha }) {
-      state.user = { email, nome, nivelAcesso, funcao, cracha };
+    addUser(state, { email, nome, nivelAcesso, funcao, cracha, userId }) {
+      state.user = { email, nome, nivelAcesso, funcao, cracha, userId };
     },
     addPageName(state, name) {
       state.page = name;

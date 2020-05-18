@@ -35,7 +35,7 @@
 
             <span>Minhas OS</span>
           </div>
-          
+
           <transition name="slide-down" mode="out-in">
             <div v-if="showOptions" key="status" class="options-container p-3">
               <transition name="slide-side" mode="out-in">
@@ -54,7 +54,7 @@
                 </div>
 
                 <div v-if="option === 'data'" key="data" class="col-md-12">
-                  <simple-button @btn-click="() => filters.data = ''" label="Limpar campo"/>
+                  <simple-button @click.native="() => filters.data = ''" label="Limpar campo"/>
                   <simple-input v-model="filters.data" white type="date" />
                 </div>
 
@@ -68,7 +68,7 @@
                     </div>
                   </div>
                 </div>
-                
+
                 <div v-if="option === 'myOrders'" key="myOrders" class="d-flex flex-row">
                   // todo
                 </div>
@@ -95,7 +95,7 @@
               </span>
             </div>
             <div class="mx-2">
-              <simple-button @btn-click="clearFilters()" label="Limpar filtros"/>
+              <simple-button @click.native="clearFilters()" label="Limpar filtros"/>
             </div>
           </div>
 
@@ -186,7 +186,7 @@ import { getLocalStorageToken, getErrors } from '../utils/utils';
 
 export default {
   name: 'Consulta',
-  
+
   components: {
     Detalhamento,
   },
@@ -223,13 +223,6 @@ export default {
     };
   },
 
-  mounted() {
-    this.$store.commit('addPageName', 'Consultas');
-
-    this.getOrderMaintence();
-    this.getStatus();
-    this.getPriority();
-  },
 
   computed: {
     getFilteredOrders() {
@@ -242,7 +235,7 @@ export default {
         filteredOrder = filteredOrder.filter(
           order => this.$moment(order.dataEmissao).isSame(this.$moment(this.filters.data))
         );
-      
+
       if (this.filters.priority.idPrioridade)
         filteredOrder = filteredOrder.filter(
           order => order.Prioridade_idPrioridade === this.filters.priority.idPrioridade
@@ -262,9 +255,17 @@ export default {
         return true;
       if (this.filters.priority.idPrioridade)
         return true;
-      
+
       return false;
     },
+  },
+  
+  mounted() {
+    this.$store.commit('addPageName', 'Consultas');
+
+    this.getOrderMaintence();
+    this.getStatus();
+    this.getPriority();
   },
 
   methods: {
@@ -332,7 +333,7 @@ export default {
     async getOrderMaintence() {
       try {
         this.isLoading = true;
-        
+
         const response = await this.$http.get('ordem-manutencao', getLocalStorageToken());
 
         if (response.result.length === 0) return;
@@ -445,14 +446,19 @@ export default {
     background-color: white;
     border-radius: 10px;
     .orders-header {
+      position: sticky;
+      top: 0;
+      z-index: 999;
       background-color: var(--duas-rodas);
       border-top-left-radius: 10px;
       border-top-right-radius: 10px;
       padding: 20px 0;
-      span{color: white;}
       display: flex;
       justify-content: space-between;
       border-bottom: 1px solid rgb(216, 216, 216);
+      span{
+        color: white;
+      }
     }
     .order-body {
       background-color: rgb(241, 241, 241);

@@ -1,7 +1,7 @@
 <template>
   <div class="root-save-button-componenet">
     <div class="m-2">
-      <button @click.self="click()" type="submit" value="send" class="save-button d-flex align-items-center justify-content-center">
+      <button type="submit" value="send" class="save-button d-flex align-items-center justify-content-center">
         <div v-if="prefix" class="d-flex align-itens-center justify-content-center">
           <i class="fa mr-2" :class="prefix" />
         </div>
@@ -19,12 +19,6 @@ export default {
   },
 
   data: () => ({}),
-
-  methods: {
-    click() {
-      this.$emit('btn-click');
-    },
-  }
 };
 </script>
 
