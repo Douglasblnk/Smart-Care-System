@@ -1,8 +1,7 @@
 import Get from '../../../../shared/dao/Get';
+import { TABLE_OPERACAO } from '../../../../shared/enums/database'
 
 const commitData = new Get();
-
-const TABLE = 'operacao';
 
 export default class GetOperacoesValidate {
   async run() {
@@ -18,7 +17,7 @@ export default class GetOperacoesValidate {
   }
 
   getQuery() {
-    const query = /*sql*/`SELECT * FROM ${TABLE};`;
+    const query = /*sql*/`SELECT * FROM ${TABLE_OPERACAO};`;
 
     const dataQuery = { query, type: 'Operações' };
     console.log(dataQuery);

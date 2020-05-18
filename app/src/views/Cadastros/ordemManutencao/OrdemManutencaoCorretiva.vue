@@ -148,6 +148,7 @@ export default {
         description: '',
         plannedStart: '',
         plannedEnd: '',
+        beginData: '',
         requireStop: '',
         equipment: '',
         typeMaintenance: 1,
@@ -253,14 +254,18 @@ export default {
     },
     async registerOrderMaintenance() {
       try {
+        this.$set(this.inputValues, 'beginData', this.$moment().format('DD-MM-YYYY HH-mm'))
         console.log('this.inputValues :>> ', this.inputValues);
-        // const response = await this.$http.post('ordem-manutencao', getLocalStorageToken(), this.inputValues);
-        //   this.$swal({
-        //     type: 'success',
-        //     title: 'Ordem de Serviço cadastrada com Sucesso',
-        //     confirmButtonColor: '#F34336',
-        //   });
+
+        const response = await this.$http.post('ordem-manutencao', getLocalStorageToken(), this.inputValues);
         
+        console.log('response :>> ', response);
+
+        this.$swal({
+          type: 'success',
+          title: 'Ordem de Serviço cadastrada com Sucesso',
+          confirmButtonColor: '#F34336',
+        });
       } catch (err) {
         console.log('err :>> ', err.response || err);
         return this.$swal({
