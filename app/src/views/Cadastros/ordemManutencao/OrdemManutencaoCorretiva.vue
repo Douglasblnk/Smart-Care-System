@@ -225,7 +225,7 @@ export default {
     async getEpis() {
       try {
         const { result } = await this.$http.get('epi/get', getLocalStorageToken());
-
+        
         this.epiList = [...result];
       } catch (err) {
         console.log('err :>> ', err.response || err);
@@ -245,7 +245,6 @@ export default {
         this.inputValues.epis = this.selectedEpis.map(i => ({ Epi_idEpi: i}));
         this.confirmModal();
       }
-      console.log('this.inputValues.epis :>> ', this.inputValues.epis);
     },
     resetInputValues(){
       this.inputValues.operations = [];
@@ -254,8 +253,6 @@ export default {
       this.workEquipment = [];
     },
     async addOperation() {
-      console.log('Valor de list Operation: ', this.operations);
-
       for (const option of this.operations) {
         this.sequenceOperation += 10;
         let incrementOperationZero = this.incrementZero(this.sequenceOperation);
@@ -263,8 +260,6 @@ export default {
         let operationOption = { Operacao: option, sequencia_operacao: incrementOperationZero + this.sequenceOperation};
 
         this.inputValues.operations.push(operationOption);
-        
-        console.log('Input Values operation: ', this.inputValues.operations);
       }
     },
     incrementZero(sequenceOperation) {
@@ -275,13 +270,12 @@ export default {
     },
     checkSelectedEpis() {
       if (this.inputValues.epis.length > 0)
-        this.selectedEpis = [...this.inputValues.epis];
+        this.selectedEpis = [...this.inputValues.epis.Epi_idEpi];
     },
     async registerOrderMaintenance() {
       try {
         await this.addOperation();
         this.$set(this.inputValues, 'beginData', this.$moment().format('YYYY-MM-DD'))
-        console.log('this.inputValues :>> ', this.inputValues);
 
         const response = await this.$http.post('ordem-manutencao', getLocalStorageToken(), this.inputValues);
         
@@ -366,7 +360,6 @@ export default {
     async getOperations() {
       try {
         const { result } = await this.$http.get('operacoes/get', getLocalStorageToken());
-        console.log('result :>> ', result);
         this.operationsList = [...result];
       } catch (err) {
         console.log('err getOperations :>> ', err.response || err);
