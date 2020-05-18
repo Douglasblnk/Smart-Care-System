@@ -3,7 +3,6 @@ import {SSUtils} from '../../../../shared/utils/utils';
 import Cryptography from '../../../../shared/cryptography/cryptography';
 
 const _ = require('lodash');
-const bcrypt = require ('bcryptjs');
 
 const commitData = new Dao();
 const isEmpty = new SSUtils();

@@ -21,10 +21,6 @@ export class Mysql {
         password: this.password,
         database: this.database
       });
-      
-      connection.connect(err => {
-        if (err) throw err;
-      });
 
       return connection;
     } catch (err) {

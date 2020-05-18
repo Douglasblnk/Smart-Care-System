@@ -8,6 +8,9 @@ const commitDataVerify = new Get();
 const isEmpty = new SSUtils();
 
 const TABLE = 'Verificacao';
+const TABLE_USER = 'Usuario';
+const TABLE_ORDER_USER = 'ordemServico_has_Usuario'
+
 
 
 export default class RegisterVericationValidate {
@@ -20,19 +23,22 @@ export default class RegisterVericationValidate {
       this.validateData(data);
 
       const getQueryExistVerification = this.getQueryExistVerification(data);
-
       const resultVerify : any = await commitDataVerify.run(getQueryExistVerification);
+      let verify_master = 1;
 
-      console.log(resultVerify);
-      console.log('Length', resultVerify.result.length, !resultVerify.result)
+      if(data.typeVerification = '2'){
+        const getQueryIsMasterVerification = this.getQueryIsMasterVerification(data);
+        const resultIsMasterVerification : any = await commitDataVerify.run(getQueryIsMasterVerification);
+        if (resultIsMasterVerification.result.length == 0) verify_master = 0
+      }
+
       if(resultVerify.result.length !== 0) throw 'Verificação já realizada!'
-      
-      console.log("RESULT1");
+      if(verify_master == 0) throw 'Usuário não é o responsável pela ordem!'
 
-      const getQuery = this.getQuery(data)
+      const getQuery = this.getQuery(data);
 
       const result = await commitData.run(getQuery);
-      console.log('cheguei até aqui');
+
       return result;
     } catch (err) {
       console.log(err);
@@ -54,7 +60,7 @@ export default class RegisterVericationValidate {
       err: 'Não existem dados!',
     };
     
-    isEmpty.verify(data,  ['dateVerification','resolved','order','typeVerification'], '');
+    isEmpty.verify(data,  ['dateVerification','resolved','order','typeVerification','cracha'], '');
 
     if (data.dateVerification === '') throw {
       status: 404,
@@ -72,23 +78,54 @@ export default class RegisterVericationValidate {
         status: 404,
         err: 'Tipo de verificação não informado',
     };
+    if (data.cracha === '') throw {
+      status: 404,
+      err: 'User não encontrado',
+    };
   }
 
   getQuery(data: any) {
     const post = { solucaoRealizada: data.solutionDescription, dataVerificacao: data.dateVerification, problemaResolvido: data.resolved, ordemServico_idOrdemServico: data.order, tipoVerificacao: data.typeVerification};
-    const query = /*sql*/`INSERT INTO ${TABLE} SET ?;`;
+    const query = `INSERT INTO ${TABLE} SET ?;`;
 
     const dataQuery = { query, post, type: 'Verificação' };
+
     console.log(dataQuery);
+
     return dataQuery;
   }
 
   getQueryExistVerification(data: any) {
-    const query = /*sql*/`SELECT * FROM ${TABLE} WHERE Verificacao.ordemServico_idOrdemServico = ${data.order} AND Verificacao.tipoVerificacao = ${data.typeVerification};`;
+    const query = `SELECT * FROM ${TABLE} WHERE Verificacao.ordemServico_idOrdemServico = ${data.order} AND Verificacao.tipoVerificacao = ${data.typeVerification};`;
 
     const dataQuery = { query, type: 'Verificação' };
+
     console.log(dataQuery);
+
     return dataQuery;
+  }
+
+  getQueryIsMasterVerification(data: any) {
+    const post = { numeroCracha: data.cracha, ordemServico_idOrdemServico: data.order};
+
+    const query = `SELECT user_verification.numeroCracha AS cracha,
+                  user_verification.idUsuario AS id_usuario,
+                  users_order.is_master AS is_master,
+                  users_order.Usuario_idUsuario AS user_id_fk,
+                  users_order.ordemServico_idOrdemServico AS order_user_id
+                  FROM ${TABLE_USER} AS user_verification
+                  INNER JOIN ${TABLE_ORDER_USER} AS users_order
+                  ON user_verification.idUsuario = users_order.Usuario_idUsuario
+                  WHERE user_verification.numeroCracha = ${data.cracha}
+                  AND users_order.ordemServico_idOrdemServico = ${data.order}
+                  AND users_order.is_master = 1`;
+
+    const dataQuery = { query, post, type: 'Usuário' };
+
+    console.log(dataQuery);
+
+    return dataQuery;
+
   }
 
 }
