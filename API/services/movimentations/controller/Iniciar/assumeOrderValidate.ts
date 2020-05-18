@@ -60,9 +60,9 @@ export default class AssumeOrderValidate {
       if (result.length === undefined && result.is_master)
         throw String('Ordem já assumida!');
       
-      const isOrderAssumed = result.some((i: { is_master: string } ) => i.is_master);
-
-      if (isOrderAssumed) throw String('Ordem já assumida!');
+      // const isOrderAssumed = result.some((i: { is_master: string } ) => i.is_master);
+     
+      // if (isOrderAssumed) throw String('Ordem já assumida!');
     } catch (err) {
       throw err;
     }
