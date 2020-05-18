@@ -27,7 +27,7 @@
                   </tr>
                 </thead>
                 <tbody class="table-body">
-                  <tr v-for="(component, index) in selectsComponents.selects" value="component.label" :key="`component-${index}`">
+                  <tr v-for="(component, index) in workComponent" value="component.label" :key="`component-${index}`">
                     <td>{{ component.label}}</td>
                   
                     <!-- <td>{{ workCenter.DescricaoComponente}}</td> -->
@@ -50,11 +50,13 @@
       <form @submit.prevent="registerEquipment()" class="formPosition">
         <div class="cadCard">
           <div class="inputs">
-            <tranfer-select v-model="inputValues.Equipamento_idEquipamento" :selects="selectsEquipament" :label="'Máquina'" ></tranfer-select>     
+            <custom-select v-model="selectValue" :options="getWorkEquipmentOptions()"></custom-select>
+            <!--<tranfer-select v-model="inputValues.Equipamento_idEquipamento" :selects="selectsEquipament" :label="'Máquina'" ></tranfer-select>     
+            -->
           </div>
           <div class="sideInput">
             <div class="inputsSidePosition">
-              <description v-model="inputValues.DescricaoComponente" :label="'Descricao Componente:'" :type="'text'" />
+              <description v-model="inputValues.DescricaoComponente" :label="'Descrição Componente:'" :type="'text'" />
             </div>  
           </div>
         </div>
@@ -75,7 +77,7 @@
 <script>
 import { getLocalStorageToken } from '../../utils/utils'
 import simpleInput from "../../components/inputs/simple-input";
-// import select from '../../components/inputs/custom-select'
+import select from '../../components/inputs/custom-select'
 import description from "../../components/inputs/description";
 import selectId from "../../components/inputs/tranfer-select";
 import saveButton from '../../components/button/save-button';
@@ -84,7 +86,7 @@ import cancelButton from '../../components/button/cancel-button';
 export default {
   components: {
     "simple-input": simpleInput,
-    // 'custom-select': select
+    'custom-select': select,
     "tranfer-select": selectId,
     description: description,
     "save-button": saveButton,
@@ -99,6 +101,7 @@ export default {
   // },
   data() {
     return {
+      selectValue: '',
       inputValues: {
         DescricaoComponente: "",
         Equipamento_idEquipamento: 0,
@@ -133,17 +136,9 @@ export default {
     },
     registerEquipment(){
      if(this.isEditing) return this.updateComponent();
-      this.inputValues.Equipamento_idEquipamento = this.selectsEquipament.select;
+      this.inputValues.Equipamento_idEquipamento = this.selectValue;
 
-      const token = localStorage.getItem('token')
-       fetch(`${this.$apiUrl}/componente`, {
-        method: 'post',
-        headers: {
-          'Content-Type': 'application/json',
-          'authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(this.inputValues)
-      }).then(res => res.json())
+       this.$http.post('componente', getLocalStorageToken(), this.inputValues)
         .then(json => {
           if (json.status !== 200) return this.$swal({
             type: 'error',
@@ -156,6 +151,7 @@ export default {
             confirmButtonColor: '#F34336',
           })
           this.DescricaoComponente = '';
+          this.getComponentes();
         })
     },
 
@@ -163,67 +159,34 @@ export default {
        console.log('1A');
       
       // const token = localStorage.getItem('token')
-      this.$http.methodGet('equipamento/get', getLocalStorageToken())
+      this.$http.get('equipamento/get', getLocalStorageToken())
         .then(res => {
           if (res.status !== 200) return this.$swal({
             type: 'error',
             title: `Ops! ${res.err}`,
             confirmButtonColor: '#F34336',
           })
-
-         if (res.result.length === undefined ) {
+          this.workEquipment = res.result;
+          console.log('Work Equipment', this.workEquipment);
             // console.log("---aaaaaaaaaaaaaaaaa-")
-            // console.log(res.result)
-              this.workEquipment.push(res.result)
-            // console.log(this.workEquipment);
-            this.selectsEquipament.selects.push(this.workEquipment);
-             this.selectsEquipament.selects[0].value = this.workEquipment[0].idEquipamento;
-             this.selectsEquipament.selects[0].label = this.workEquipment[0].equipamento;
-
-            }else {
-
-            for (let index = 0; index < res.result.length; index++) {
-              this.selectsEquipament.selects.push(res.result[index]);
-              this.selectsEquipament.selects[index].value = res.result[index].idEquipamento;
-              this.selectsEquipament.selects[index].label = res.result[index].equipamento;
-            }
-          }
-            // console.log("---aaaaaaaaaaaaaaaaa-")
-            // console.log(this.selectsEquipament)
-                    
+            // console.log(this.selectsEquipament)      
         })
     },
 
     getComponentes(){
       console.log('2B');
       // const token = localStorage.getItem('token')
-      this.$http.methodGet('componente/get', getLocalStorageToken())
+      this.$http.get('componente/get', getLocalStorageToken())
         .then(res => {
           if (res.status !== 200) return this.$swal({
             type: 'error',
             title: `Ops! ${res.err}`,
             confirmButtonColor: '#F34336',
           })
-
-         if (res.result.length === undefined ) {
-            // console.log("---aaaaaaasssssaaaaaaaaaa-")
-            // console.log(res.result)
-                        // console.log('sassa1254a',  res.result)
-              this.workComponent.push(res.result)
-            // console.log(this.workEquipment);
-            this.selectsComponents.selects.push(this.workComponent);
-             this.selectsComponents.selects[0].value = this.workComponent[0].idComponente;
-             this.selectsComponents.selects[0].label = this.workComponent[0].DescricaoComponente;
-
-            }else {
-            // console.log("---sadasdasdasdas-")
-            // console.log('sasa',  res.result)
-            for (let index = 0; index < res.result.length; index++) {
-              this.selectsComponents.selects.push(res.result[index]);
-              this.selectsComponents.selects[index].value = res.result[index].idComponente;
-              this.selectsComponents.selects[index].label = res.result[index].DescricaoComponente;
-            }
-          }
+        if(response.result.length === undefined)
+          this.workComponent.push(response.result);
+        else this.workComponent = [ ...response.result ];
+        //this.workComponent.push(res.result);
             // console.log("---aaaaaaaaaaaaaaaaa-")
             // console.log(this.selectsComponents)          
         })
@@ -245,7 +208,7 @@ export default {
       showCancelButton: true,
       confirmButtonColor: '#F34336',
       preConfirm: () => {
-        this.$http.methodDelete('componente', getLocalStorageToken(), component.idComponente)
+        this.$http.update('componente', getLocalStorageToken(), component.idComponente)
         .then(res => {
           if(res.status !== 200) return this.$swal({
             type: 'error',
@@ -316,6 +279,9 @@ export default {
           })
     })
 
+  },
+  getWorkEquipmentOptions() {
+    return this.workEquipment.map(i => ({ id: String(i.idEquipamento), description: i.equipamento }));
   }
   },
 };

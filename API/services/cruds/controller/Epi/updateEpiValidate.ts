@@ -5,7 +5,7 @@ const _ = require("lodash");
 const commitData = new Update();
 const isEmpty = new SSUtils();
 
-const TABLE = "epi";
+const TABLE = "Epi";
 
 export default class UpdateEpiValidate {
   async run(event: any) {

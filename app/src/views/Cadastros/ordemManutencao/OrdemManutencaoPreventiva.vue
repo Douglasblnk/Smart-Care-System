@@ -107,9 +107,9 @@
 </template>
 
 <script>
-import { getLocalStorageToken } from '../../utils/utils';
-import selectId from '../../components/inputs/tranfer-select';
-import select from '../../components/inputs/custom-select';
+import { getLocalStorageToken } from '../../../utils/utils';
+import selectId from '../../../components/inputs/tranfer-select';
+import select from '../../../components/inputs/custom-select';
 import { FormWizard, TabContent } from 'vue-form-wizard';
 import 'vue-form-wizard/dist/vue-form-wizard.min.css';
 

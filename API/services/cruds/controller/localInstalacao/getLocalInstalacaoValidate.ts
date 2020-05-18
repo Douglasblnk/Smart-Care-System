@@ -22,7 +22,7 @@ export default class GetLocalInstalacaoValidate {
 
 
   getQuery() {
-    const query = /*sql*/`SELECT * FROM ${TABLE};`;
+    const query = /*sql*/`SELECT * FROM ${TABLE} WHERE excluded = 0;`;
 
     const dataQuery = { query, type: 'Local de instalação' };
     console.log(dataQuery);

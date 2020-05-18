@@ -1,6 +1,6 @@
-import Delete from '../../../../shared/dao/Delete';
+import Update from '../../../../shared/dao/Update';
 
-const commitData = new Delete();
+const commitData = new Update();
 
 const TABLE = 'Equipamento';
 
@@ -40,10 +40,11 @@ export default class DeleteEquipmentValidate {
   }
 
   getQuery(data: any) {
-    const post = [data];
-    const query = /*SQL*/`DELETE from ${TABLE} WHERE ${TABLE}.idEquipamento = ?`
+    const values = { excluded: 1 };
+    const where = [data];
+    const query = `UPDATE ${TABLE} SET ? WHERE ${TABLE}.idEquipamento = ?;`;
 
-    const dataQuery = { query, post, type: 'Equipamento' };
+    const dataQuery = { query, values, where, type: 'Equipamento' };
 
     console.log(dataQuery);
 
