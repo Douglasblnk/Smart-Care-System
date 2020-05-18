@@ -31,12 +31,20 @@ export default class ListUserDetail {
     getQuery(data: any) {
 
         const post = [data.idOrdemServico];
-        const query = /*SQL*/`SELECT ${TABLE}.idUsuario,${TABLE}.nome,${TABLE}.funcao,${TABLE}.numeroCracha FROM
-        ${TABLE} INNER JOIN ordemServico_has_Usuario ON ordemServico_has_Usuario.Usuario_idUsuario = ${TABLE}.idUsuario
-        WHERE ordemServico_has_Usuario.ordemServico_idOrdemServico = ? 
-        AND ordemServico_has_Usuario.excluded = 0 AND ordemServico_has_Usuario.is_master = 0`;
+      
+        const query = /*SQL*/`
+            SELECT
+                ${TABLE}.idUsuario,
+                ${TABLE}.nome,
+                ${TABLE}.funcao,
+                ${TABLE}.numeroCracha,
+                order_user.is_master
+            FROM ${TABLE}
+            INNER JOIN ordemServico_has_Usuario as order_user ON order_user.Usuario_idUsuario = ${TABLE}.idUsuario
+                WHERE order_user.ordemServico_idOrdemServico = ? AND order_user.excluded = 0;
+        `;
 
-        const dataQuery = { query, post, type: 'Usuario'};
+        const dataQuery = { query, post, type: 'Usuario' };
 
         console.log('DataQuery: ', dataQuery);
 

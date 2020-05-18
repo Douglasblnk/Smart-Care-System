@@ -88,6 +88,10 @@ span, p, strong {
   src: url("./assets/fonts/Roboto-Light.ttf");
 }
 
+.swal2-styled.swal2-confirm {
+  background-color: #F34336 !important;
+}
+
 .no-padding {
   padding: 0 !important;
 }

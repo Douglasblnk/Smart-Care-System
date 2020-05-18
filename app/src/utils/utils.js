@@ -1,5 +1,6 @@
 const Vuex = require('../store/index');
 const Axios = require('axios');
+const { isObject } = require('deep-object-js');
 
 const getLocalStorageToken = () => localStorage.getItem('token');
 
@@ -32,6 +33,7 @@ const validateSession = async apiUrl => {
         nivelAcesso: response.data.user.nivel_acesso,
         funcao: response.data.user.funcao,
         cracha: response.data.user.numeroCracha,
+        userId: response.data.user.idUsuario,
       });
 
       return 'Autenticado!';
@@ -73,7 +75,10 @@ const getErrors = err => {
 
   if (err.response.data.name === 'TokenExpiredError')
     return error.concat(' Sessão expirada.');
-    
+  
+  if (isObject(error))
+    return Object.values(error).join('');
+
   return error;
 };
 

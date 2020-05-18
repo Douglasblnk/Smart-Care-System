@@ -39,7 +39,10 @@ module.exports = {
     "no-param-reassign": "warn",
     "curly": ['warn', 'multi-or-nest', 'consistent'],
     "vue/mustache-interpolation-spacing": "warn",
-    "space-before-function-paren": ["warn", "never"]
+    "space-before-function-paren": ["warn", "never"],
+    "no-multi-spaces": "warn",
+    "vue/order-in-components": "warn",
+    "vue/attributes-order": "warn",
   },
   parserOptions: {
     parser: 'babel-eslint'
