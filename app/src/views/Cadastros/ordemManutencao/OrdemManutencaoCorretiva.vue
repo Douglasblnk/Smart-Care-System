@@ -63,7 +63,7 @@
           <span>Selecione</span>
           <b-form-checkbox-group
             id="checkbox-operations"
-            v-model="inputValues.operationList"
+            v-model="operations"
             :options="getOperationsOptions()"
             name="flavour-1"
             stacked
@@ -83,7 +83,7 @@
                   @mouseleave="() => $set(showRemoveEpi, index, false)"
                   class="selected-epi-wrapper"
                 >
-                  <span>{{ getEpiName(epi) }}</span>
+                  <span>{{ getEpiName(epi.Epi_idEpi) }}</span>
                   <div @click="removeEpi(index)" v-if="showRemoveEpi[index]" class="selected-epi-remove">
                     <i class="fa fa-trash" />
                   </div>
@@ -156,7 +156,7 @@ export default {
         priority: '',
         stats: 1,
         plannedTime: '',
-        operationsList: [],
+        operations: [],
         epis: [],
       },
       selectedEpis: [],
@@ -174,6 +174,8 @@ export default {
           },
         ],
       epiList: [],
+      operations: [],
+      sequenceOperation: 0,
       operationsList: [],
       showRemoveEpi: {},
       modalHasError: false,
@@ -208,9 +210,6 @@ export default {
       this.inputValues.epis.splice(index, 1);
       this.$set(this.showRemoveEpi, [index], false);
     },
-    addOperation() {
-      // todo
-    },
     async showEpiModal() {
       await this.getEpis();
 
@@ -243,10 +242,36 @@ export default {
         this.modalHasError = true;
         this.modalErrorMessage = 'Selecione uma EPI antes de continuar';
       } else {
-        this.inputValues.epis = [...this.selectedEpis];
+        this.inputValues.epis = this.selectedEpis.map(i => ({ Epi_idEpi: i}));
         this.confirmModal();
       }
       console.log('this.inputValues.epis :>> ', this.inputValues.epis);
+    },
+    resetInputValues(){
+      this.inputValues.operations = [];
+      this.sequenceOperation = 0;
+      this.selectedEpis = [];
+      this.workEquipment = [];
+    },
+    async addOperation() {
+      console.log('Valor de list Operation: ', this.operations);
+
+      for (const option of this.operations) {
+        this.sequenceOperation += 10;
+        let incrementOperationZero = this.incrementZero(this.sequenceOperation);
+
+        let operationOption = { Operacao: option, sequencia_operacao: incrementOperationZero + this.sequenceOperation};
+
+        this.inputValues.operations.push(operationOption);
+        
+        console.log('Input Values operation: ', this.inputValues.operations);
+      }
+    },
+    incrementZero(sequenceOperation) {
+      let zero = '';
+      if (sequenceOperation >= 100) return '0'
+
+      return '00'
     },
     checkSelectedEpis() {
       if (this.inputValues.epis.length > 0)
@@ -254,7 +279,8 @@ export default {
     },
     async registerOrderMaintenance() {
       try {
-        this.$set(this.inputValues, 'beginData', this.$moment().format('DD-MM-YYYY HH-mm'))
+        await this.addOperation();
+        this.$set(this.inputValues, 'beginData', this.$moment().format('YYYY-MM-DD'))
         console.log('this.inputValues :>> ', this.inputValues);
 
         const response = await this.$http.post('ordem-manutencao', getLocalStorageToken(), this.inputValues);
