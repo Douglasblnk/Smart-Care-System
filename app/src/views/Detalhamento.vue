@@ -88,7 +88,7 @@
 
                 <!-- // ? CARD PARA QUANDO A ORDEM FOR ASSUMIDA POR ALGUÉM -->
                 <div
-                  v-if="verifyOrderStatus === 'assumed'"
+                  v-if="verifyOrderStatus === 'assumed' || verifyOrderStatus === 'paused'"
                   class="options"
                   :class="verifyUserAccess ? '' : 'disable'"
                   @click="orderMovimentations('init')"
@@ -97,6 +97,19 @@
 
                   <i v-if="isLoading.init" class="fa fa-spinner fa-spin fa-lg m-2" />
                   <span v-else>Iniciar</span>
+                </div>
+
+                <!-- // ? CARD PARA QUANDO FOR INICIAR POR ALGUÉM -->
+                <div
+                  v-if="verifyOrderStatus === 'running'"
+                  class="options"
+                  :class="verifyUserAccess ? '' : 'disable'"
+                  @click="orderMovimentations('pause')"
+                >
+                  <i class="fa fa-play fa-lg mb-2" />
+
+                  <i v-if="isLoading.pause" class="fa fa-spinner fa-spin fa-lg m-2" />
+                  <span v-else>Pausar</span>
                 </div>
 
                 <div
@@ -561,6 +574,9 @@
         case 'init':
           this.initiateOrder();
           break;
+        case 'pause':
+          this.pauseOrder();
+          break;
       }
     },
     async assumeOrder() {
@@ -611,21 +627,41 @@
 
         const response = await this.$http.post('initiate/init', getLocalStorageToken(), { ...this.$store.state.user, isMaster: true, order: this.order.idOrdemServico });
 
-        this.$set(this.isLoading, 'init', false);
 
-        this.order.status = 'Em Andamento';
+        this.$set(this.order, 'status', 'Em Andamento');
 
         this.$swal({
           type: 'success',
           title: 'Ordem iniciada com sucesso!',
           confirmButtonColor: '#f34336',
         }).then(() => {
+          this.$set(this.isLoading, 'init', false);
           console.log('Modal Aberto');
           this.showEpiModal();
+          
         })
 
       } catch (err) {
         console.log('initiateOrder :>> ', err);
+        this.$set(this.isLoading, 'init', false);
+
+        this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
+    async pauseOrder(){
+      try{
+        this.$set(this.isLoading, 'pause', true);
+
+        const response = await this.$http.post('initiate/pause', getLocalStorageToken(), { ...this.$store.state.user, isMaster: true, order: this.order.idOrdemServico });
+
+        this.$set(this.isLoading, 'pause', false);
+
+        this.$set(this.order, 'status', 'Pausada');
+      } catch(err){
         this.$set(this.isLoading, 'init', false);
 
         this.$swal({
