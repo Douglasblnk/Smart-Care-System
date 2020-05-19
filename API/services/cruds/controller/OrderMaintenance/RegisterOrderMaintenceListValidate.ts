@@ -1,4 +1,4 @@
-import Transaction from '../../../../shared/dao/TransactionOrderRoute';
+import Transaction from '../../../../shared/dao/TransactionOrderList';
 import {SSUtils} from '../../../../shared/utils/utils';
 const _ = require('lodash');
 
@@ -12,7 +12,7 @@ const TABLE_SECTOR = 'Locais';
 const TABLE_EQUIPMENT_OPERATION = 'equipamento_operacao';
 const TABLE_EPIS = 'ordemServico_has_Epi';
 
-export default class RegisterOrderMaintenanceRouteValidate {
+export default class RegisterOrderMaintenanceListValidate {
 
   async run(event: any) {
     try {
@@ -90,7 +90,7 @@ export default class RegisterOrderMaintenanceRouteValidate {
         status: 404,
         err: 'Data de Inicio não informado',
     };
-    if (data.equipment === '') throw {
+    if (data.equipment_sector === '') throw {
         status: 404,
         err: 'Equipamento não informado',
     };
@@ -145,7 +145,7 @@ export default class RegisterOrderMaintenanceRouteValidate {
   }
 
   getQueryEquipmentsRegister(data: any) {
-    const post = { Equipamento: data.equipment};
+    const post =  data.equipment_sector;
     const query = `INSERT INTO ${TABLE_EQUIPMENT} SET ?;`;
 
     const dataQuery = { query, post, type: 'Equipamento' };
@@ -168,7 +168,7 @@ export default class RegisterOrderMaintenanceRouteValidate {
   }
 
   getQuerySectorRegister(data: any) {
-    const post = { Local: data.sector};
+    const post = data.equipment_sector;
     
     const query = `INSERT INTO ${TABLE_SECTOR} SET ?;`;
 
