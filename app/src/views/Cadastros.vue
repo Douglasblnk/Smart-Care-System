@@ -14,7 +14,8 @@
           </div>
         </div>
       </div>
-    <router-view></router-view>
+      
+      <router-view></router-view>
     </transition>
   </div>
 </template>
