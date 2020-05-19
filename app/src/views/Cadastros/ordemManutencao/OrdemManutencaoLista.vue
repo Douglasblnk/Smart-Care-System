@@ -1,15 +1,46 @@
 <template>
-  <div class="ordem-manutencao-lista-root">
-    <div class="cadCard">
-      <form-wizard @on-complete="registerOrderMaintenance()" class="stepByStep" title="Cadastro de Ordem de serviço" subtitle="" nextButtonText="Próximo" backButtonText="Voltar" finishButtonText="Finalizar">
+  <div class="ordem-corretiva-root">
+    <div class="content-wrapper">
+      <form-wizard
+        class="step-by-step"
+        title="Cadastro de Ordem de serviço"
+        subtitle=""
+        nextButtonText="Próximo"
+        backButtonText="Voltar"
+        finishButtonText="Finalizar"
+        @on-complete="registerOrderMaintenance()"
+      >
+        <!--
+          Step para informar o titulo, resumo e descrição da ordem
+         -->
         <tab-content title="Causa Manutenção" icon="fas fa-user" class="maintenanceCause">
           <div class="firstInput">
             <simple-input v-model="inputValues.title" :label="'Título:'" :type="'text'" />
           </div>
+
           <div class="secondInput">
             <simple-input v-model="inputValues.summary" :label="'Resumo'" :type="'text'" />
           </div>
+
+          <!-- <div class="inputMaintenance">
+            <div>
+              <label class="text-muted">
+                Descrição do problema:
+              </label>
+            </div>
+            <textarea
+              v-model="inputValues.description"
+              class="rounded w-100"
+              rows="3"
+              name="comment"
+              form="usrform"
+            />
+          </div> -->
         </tab-content>
+
+        <!--
+          Step para informada o inicio planejado e o fim planejado da ordem
+         -->
         <tab-content title="Datas" icon="fa fa-cog" class="maintenanceCause">
           <div>
             <simple-input
@@ -25,107 +56,129 @@
               :type="'date'"
             />
           </div>
-          <div>
-            <simple-input
-              v-model="inputValues.startTime"
-              :label="'Hora Inicio Programado:'"
-              :type="'time'"
-            />
-          </div>
-          <div>
-            <simple-input
-              v-model="inputValues.endTime"
-              :label="'Hora Fim Programado'"
-              :type="'time'"
-            />
-          </div>
-          <div>
-            <simple-input v-model="inputValues.beginData" :label="'Data emissão'" :type="'date'" />
-          </div>
         </tab-content>
+
+        <!--
+          Step para selecionar a prioridade, setor e se querer parada
+         -->
         <tab-content title="Informações Gerais" icon="fas fa-check" class="maintenanceCause">
           <custom-select
-            label="Prioridade"
             v-model="inputValues.priority"
+            label="Prioridade"
             :options="getPriorityOptions()"
           />
+
           <custom-select
-            label="Requer Parada'"
             v-model="inputValues.requireStop"
+            label="Requer Parada"
             :options="selectsRequireStopOptions()"
           />
         </tab-content>
-        <tab-content title="Operações" icon="fa fa-cog" class="maintenanceCause">
-          <!-- <span>será para a step para preventiva e corretiva step4 </span> -->
-          <custom-select
-            label="Setor"
-            v-model="inputValues.sector"
-            :options="getSectorOptions()"
-          />
-          <div>
-            <simple-input
-              v-model="operacoesListaStepFour.plannedTime"
-              :label="'Tempo Planejado'"
-              :type="'time'"
+
+        <!--
+          Step para selecionar os equipamentos
+         -->
+        <tab-content title="Equipamentos" icon="fas fa-check">
+          <div class="w-100 d-flex justify-content-center">
+            <span style="font-size: 22px">Seleciones os equipamentos</span>
+          </div>
+          <div class="equipament-items">
+            <b-form-checkbox-group
+              id="checkbox-equipment"
+              v-model="inputValues.equipments"
+              :options="getEquipmentOptions()"
+              name="flavour-1"
+              stacked
             />
           </div>
-          <div class="inputMaintenance">
-            <div>
-            <label for="comment" class="text-muted">Descrição Operações</label>
-            </div>  
-            <textarea class="rounded descriptionInput" rows="3"
-            v-model="operacoesListaStepFour.descriptionOperation" name="comment" form="usrform">
-            </textarea>
+        </tab-content>
+
+        <!--
+          Step para definir quais as operações que a ordem deve ter
+         -->
+        <tab-content title="Operações" icon="fa fa-cog">
+          <div class="operations-title">
+            <span class="text-center">Selecione o setor e as operações para os equipamentos</span>
+          </div>
+          <custom-select
+            v-model="inputValues.sector"
+            label="Setor"
+            :options="getSectorOptions()"
+          />
+          <div class="operations-items">
+            <label>Equipamentos</label>
+            <b-form-checkbox-group
+              id="checkbox-operations"
+              v-model="selectedOperations"
+              :options="getOperationsOptions()"
+              name="flavour-1"
+              stacked
+            />
           </div>
         </tab-content>
-        <tab-content title="Maquinas" icon="fa fa-cog" class="maintenanceCause">
-          <custom-select
-            label="Equipamento"
-            v-model="inputValues.equipment"
-            :options="getEquipmentsOptions()"
-          />
-        </tab-content>
+
+        <!--
+          Step para definir quais EPIs são necessárias para a ordem
+         -->
         <tab-content title="Epi" icon="fa fa-cog">
           <div class="d-flex justify-content-center">
-            <save-button id="show-btn" @click.native="showEpiModal" label="Adicionar EPI" />
+            <save-button id="show-btn" label="Adicionar EPI" @click.native="showEpiModal()" />
           </div>
 
           <div class="w-100">
             <label>EPIs selecionadas: </label>
-            <div class="d-flex">
-              <div v-for="(epi, index) in inputValues.selectedEpis" :key="`epi-${index}`">
+            <div v-if="inputValues.epis.length > 0" class="d-flex flex-wrap">
+              <div v-for="(epi, index) in inputValues.epis" :key="`epi-${index}`">
                 <div
+                  class="selected-epi-wrapper"
                   @mouseenter="() => $set(showRemoveEpi, index, true)"
                   @mouseleave="() => $set(showRemoveEpi, index, false)"
-                  class="selected-epi-wrapper"
                 >
-                  <span>{{ getEpiName(epi) }}</span>
-                  <div @click="removeEpi(index)" v-if="showRemoveEpi[index]" class="selected-epi-remove">
+                  <span>{{ getEpiName(epi.Epi_idEpi) }}</span>
+                  <div
+                    v-if="showRemoveEpi[index]"
+                    class="selected-epi-remove"
+                    @click="removeEpi(index)"
+                  >
                     <i class="fa fa-trash" />
                   </div>
                 </div>
               </div>
             </div>
+            <div v-else>
+              <span>Nenhuma EPI selecionada.</span>
+            </div>
           </div>
         </tab-content>
       </form-wizard>
-      <!-- {{stats}} -->
     </div>
-    <b-modal centered  @show="resetModal" ref="my-modal" hide-footer title="Cadastrar Epi na Ordem">
+
+    <b-modal ref="my-modal" centered hide-footer hide-header title="Cadastrar Epi na Ordem" @hide="resetModal()" @show="checkSelectedEpis()">
       <div class="d-block text">
-        <b-form-group label="Escolha as EPI's:">
+        <div class="text-center">
+          <h3>Adicionar EPIs à ordem</h3>
+          <span>
+            Informe quais EPIs esta ordem precisa para ser executada.
+          </span>
+        </div>
+        <div class="m-3">
           <b-form-checkbox-group
             id="checkbox-group-1"
-            v-model="inputValues.selectedEpis"
+            v-model="selectedEpis"
             :options="getEpiOptions()"
             name="flavour-1"
             stacked
           />
-        </b-form-group>
+        </div>
+      </div>
+      <div v-if="modalHasError">
+        <div class="d-flex justify-content-center w-100 p-2 rounded" style="background-color: #ff4a4a5c; border: 1px solid #ff4a4aa6">
+          <span style="color: black">{{ modalErrorMessage }}</span>
+        </div>
       </div>
       <div class="d-flex justify-content-center">
-        <cancel-button label="Fechar" @click.native="closeModal" />
-        <save-button label="Adicionar" @click.native="confirmModal" />
+        <cancel-button label="Fechar" @click.native="closeModal()" />
+        <save-button label="Adicionar" @click.native="addEpi()" />
       </div>
     </b-modal>
   </div>
@@ -133,103 +186,90 @@
 
 <script>
 import { getLocalStorageToken, getErrors } from '../../../utils/utils';
-import simpleInput from '../../../components/inputs/simple-input';
-import description from '../../../components/inputs/description';
-import selectId from '../../../components/inputs/tranfer-select';
-import saveButton from '../../../components/button/save-button';
-import select from '../../../components/inputs/custom-select';
 import { FormWizard, TabContent } from 'vue-form-wizard';
 import 'vue-form-wizard/dist/vue-form-wizard.min.css';
 
 export default {
-  name: 'OrdemManutencaoLista',
+  name: 'OrdemManutencaoCorretiva',
 
   components: {
-    'simple-input': simpleInput,
-    'tranfer-select': selectId,
-    'save-button': saveButton,
-    description: description,
-    'custom-select': select,
     FormWizard,
-    TabContent
+    TabContent,
   },
+
   data() {
     return {
       inputValues: {
         title: '',
         summary: '',
+        description: '',
         plannedStart: '',
         plannedEnd: '',
-        startTime: '',
-        endTime: '',
-        requireStop: '',
         beginData: '',
-        equipment: '',
+        requireStop: '',
+        equipments: [],
         typeMaintenance: 3,
+        sector: '',
         priority: '',
         stats: 1,
-        customSelect: '',
-        customSelect2: '',
-        descriptionOperation: '',
         plannedTime: '',
-        execution: false,
-        selectedEpis: [],
+        operations: [],
+        epis: [],
       },
-      listateste: [],
-      operacoesListaStepFour: {
-        descriptionOperation: '',
-        execution: 0,
-        plannedTime: 0,
-        sector: '',
-      },
-      operacoesListaStepFive: {
-        equipamentos: [],
-      },
-      descriptionOperationList: [],
-      stats: [],
+      selectedEpis: [],
       workEquipment: [],
-      selectsSector: [],
       selectsPriority: [],
+      selectsSector: [],
       selectsRequireStop: [
         {
-          value: true,
-          label: 'Sim',
+          id: true,
+          nome: 'Sim',
         },
         {
-          value: false,
-          label: 'Não',
-        }
+          id: false,
+          nome: 'Não',
+        },
       ],
       epiList: [],
+      selectedOperations: [],
+      sequenceOperation: 0,
+      operationsList: [],
       showRemoveEpi: {},
+      modalHasError: false,
+      modalErrorMessage: '',
+      isloading: false,
     };
   },
+
   mounted() {
     this.getEquipments();
     this.getSector();
     this.getPriority();
-    this.getStats();
+    this.getOperations();
   },
+
   methods: {
-    getStatsSelect() {
-      const teste = this.stats.map(i => {});
-    },
     resetModal() {
-      this.inputValues.selectedEpis = [];
+      this.modalHasError = false;
+      this.modalErrorMessage = '';
+      this.selectedEpis = [];
     },
     getEpiOptions() {
       return this.epiList.map(i => ({ text: i.descricaoEpi, value: i.idEpi }));
+    },
+    getOperationsOptions() {
+      return this.operationsList.map(i => ({ text: i.descricao_operacao, value: i.idoperacao }));
+    },
+    getEquipmentOptions() {
+      return this.workEquipment.map(i => ({ text: i.descricao, value: i.idEquipamento }));
     },
     getEpiName(epi) {
       const { descricaoEpi } = this.epiList.find(i => i.idEpi === epi);
       return descricaoEpi;
     },
     removeEpi(index) {
-      this.inputValues.selectedEpis.splice(index, 1);
+      this.inputValues.epis.splice(index, 1);
       this.$set(this.showRemoveEpi, [index], false);
-    },
-    addOperation() {
-      // todo
     },
     async showEpiModal() {
       await this.getEpis();
@@ -241,6 +281,7 @@ export default {
     },
     confirmModal() {
       this.$refs['my-modal'].toggle('#toggle-btn');
+      this.resetModal();
     },
     async getEpis() {
       try {
@@ -257,30 +298,61 @@ export default {
         });
       }
     },
-    selectsRequireStopOptions() {
-      return this.selectsRequireStop.map(i => ({ id: String(i.id), description: i.nome }));
+    addEpi() {
+      if (this.selectedEpis.length === 0) {
+        this.modalHasError = true;
+        this.modalErrorMessage = 'Selecione uma EPI antes de continuar';
+      } else {
+        this.inputValues.epis = this.selectedEpis.map(i => ({ Epi_idEpi: i }));
+        this.confirmModal();
+      }
+    },
+    resetInputValues() {
+      this.inputValues.operations = [];
+      this.sequenceOperation = 0;
+      this.selectedEpis = [];
+      this.selectedOperations = [];
+      this.workEquipment = [];
+    },
+    async addOperation() {
+      for (const option of this.selectedOperations) {
+        this.sequenceOperation += 10;
+        const incrementOperationZero = this.incrementZero(this.sequenceOperation);
+
+        const operationOption = { Operacao: option, sequencia_operacao: incrementOperationZero + this.sequenceOperation };
+
+        this.inputValues.operations.push(operationOption);
+      }
+    },
+    incrementZero(sequenceOperation) {
+      if (sequenceOperation >= 100) return '0';
+      return '00';
+    },
+    checkSelectedEpis() {
+      if (this.inputValues.epis.length > 0)
+        this.selectedEpis = this.inputValues.epis.map(i => i.Epi_idEpi);
     },
     async registerOrderMaintenance() {
-      this.inputValues.equipment = this.selects.select;
-      this.inputValues.priority = this.selectsPriority.select;
-      this.inputValues.sector = this.selectsSector.select;
-      this.inputValues.requireStop = this.selectsRequireStop.select;
-
       try {
-        const response = await this.$http.post('ordem-manutencao', getLocalStorageToken(), this.inputValues);
+        await this.addOperation();
+        this.$set(this.inputValues, 'beginData', this.$moment().format('YYYY-MM-DD'));
+        console.log('this.inputValues :>> ', this.inputValues);
+        // const response = await this.$http.post('ordem-manutencao', getLocalStorageToken(), this.inputValues);
+        
+        // console.log('response :>> ', response);
 
-        this.$swal({
-          type: 'success',
-          title: 'Ordem de Serviço cadastrada com Sucesso',
-          confirmButtonColor: '#F34336',
-        });
-
+        // this.$swal({
+        //   type: 'success',
+        //   title: 'Ordem de Serviço cadastrada com Sucesso',
+        //   confirmButtonColor: '#F34336',
+        // });
       } catch (err) {
+        console.log('err :>> ', err.response || err);
         return this.$swal({
           type: 'warning',
           title: getErrors(err),
           confirmButtonColor: '#F34336',
-        })     
+        });
       }
     },
     async getEquipments() {
@@ -291,7 +363,6 @@ export default {
           this.workEquipment.push(response.result);
 
         else this.workEquipment = [...response.result];
-
       } catch (err) {
         return this.$swal({
           type: 'warning',
@@ -303,6 +374,9 @@ export default {
     getEquipmentsOptions() {
       return this.workEquipment.map(i => ({ id: String(i.idEquipamento), description: i.equipamento }));
     },
+    selectsRequireStopOptions() {
+      return this.selectsRequireStop.map(i => ({ id: String(i.id), description: i.nome }));
+    },
     async getSector() {
       try {
         const response = await this.$http.get('local-instalacao/get', getLocalStorageToken());
@@ -311,7 +385,6 @@ export default {
           this.selectsSector.push(response.result);
 
         else this.selectsSector = [...response.result];
-
       } catch (err) {
         return this.$swal({
           type: 'warning',
@@ -331,8 +404,23 @@ export default {
           this.selectsPriority.push(response.result);
 
         else this.selectsPriority = [...response.result];
-
       } catch (err) {
+        console.log('err getSectorOptions :>> ', err.response || err);
+
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
+    async getOperations() {
+      try {
+        const { result } = await this.$http.get('operacoes/get', getLocalStorageToken());
+        this.operationsList = [...result];
+      } catch (err) {
+        console.log('err getOperations :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
           title: getErrors(err),
@@ -343,36 +431,31 @@ export default {
     getPriorityOptions() {
       return this.selectsPriority.map(i => ({ id: String(i.idPrioridade), description: i.descricaoPrioridade }));
     },
-  }
+  },
 };
 </script>
 
 <style lang="scss" scoped>
-.ordem-manutencao-lista-root {
-  width: 100vw;
-  height: 100%;
+.ordem-corretiva-root {
   display: flex;
   align-items: center;
   justify-content: center;
-  .cadCard {
-    width:75%;
+  .content-wrapper {
+    width: 70%;
     background-color: #ffffff;
     border-radius: 10px;
     padding: 25px;
-    margin-top:6%;
-    .stepByStep{
+    margin: 20px 0;
+    .step-by-step{
       width:100%;
       .maintenanceCause{
         display: grid;
         grid-template-columns: 1fr 1fr;
         grid-template-rows: 1fr 1fr;
         .inputMaintenance{
+          padding: 0.5rem;
           grid-column-start: 1;
           grid-column-end: 3;
-          .descriptionInput{
-            margin-left:1%;
-            width:98%;
-          }
         }
 
         .firstInput{
@@ -383,21 +466,21 @@ export default {
           grid-column-start:2;
           grid-column-end:2;
         }
-        
-        .containerButton {
-          width: 100%;
-          height: 40px;
-          display: flex;
-          justify-content: flex-end;
-          align-items:flex-end;
-          .buttonAddOperation {
-            position: relative;
-              bottom: -40px;
-            // right: 30;
-            // // left: 80%;
-            // padding: 2%;
-          }
-        }
+      }
+      .operations-title {
+        display: flex;
+        justify-content: center;
+        font-size: 22px;
+      }
+      .operations-items {
+        overflow: auto;
+        max-height: 300px;
+        margin: 20px;
+      }
+      .equipament-items {
+        overflow: auto;
+        max-height: 300px;
+        margin: 20px;
       }
       .selected-epi-wrapper {
         min-width: 50px;
@@ -430,22 +513,11 @@ export default {
         }
       }
     }
-    .maintanceMenu {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
   }
 }
-.span_question {
-  color: #ff0303;
-  font-family: 'Montserrat';
-}
-@media (max-width: 1250px) {
-  .equipmentBackground {
-    width: 100vw;
-    height: 100vh;
-    padding: 20px;
+@media (max-width: 1366px) {
+  .content-wrapper {
+    width: 100% !important;
   }
 }
 </style>
