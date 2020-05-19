@@ -46,8 +46,6 @@ export default class Dao {
         equipments_sectors_operations.push(obj);
       }
 
-      //let listOperations : any = await this.insertOperationsOrder(data[4]);
-
       for (const equipment_sector_operation of equipments_sectors_operations) {
         for (const operation of equipment_sector_operation.Operacao) {
           let data_equipment_operation = await this.returnEquipmentOperationOrder(equipment_sector_operation,operation,data[5].query);
@@ -58,8 +56,6 @@ export default class Dao {
       }
       
       connection.commit();
-
-      connection.end();
 
       return { result: 'Ordem de serviço criada!' }
     } catch (err) {
@@ -80,7 +76,9 @@ export default class Dao {
         });
       });
     } catch (err) {
-      throw err;
+      const error = this.getQueryError(err);
+
+      throw error;
     }
   }
 
@@ -90,7 +88,9 @@ export default class Dao {
       let post = { Equipamento: Equipamento, Ordem_servico: order};
       return { query, post, type: 'Equipamentos'};
     } catch (err) {
-      throw err;
+      const error = this.getQueryError(err);
+
+      throw error;
     }
   }
 
@@ -100,7 +100,9 @@ export default class Dao {
       let post = { Local: Local, Ordem_servico: order};
       return { query, post, type: 'Locais'};
     } catch (err) {
-      throw err;
+      const error = this.getQueryError(err);
+
+      throw error;
     }
   }
 
@@ -111,7 +113,9 @@ export default class Dao {
       
       return { query, post, type: 'Equipamentos e Operação'};
     } catch (err) {
-      throw err;
+      const error = this.getQueryError(err);
+
+      throw error;
     }
   }
 
@@ -130,7 +134,9 @@ export default class Dao {
       });
       //console.log('response :>> ', response.insertId);
     } catch (err) {
-      throw err;
+      const error = this.getQueryError(err);
+
+      throw error;
     }
   }
 
@@ -153,17 +159,18 @@ export default class Dao {
         }
       });
     } catch (err) {
-      throw err;
+      const error = this.getQueryError(err);
+
+      throw error;
     }
   }
 
-  errorTreatment(error: any) {
-    const errorObj = JSON.parse(JSON.stringify(error))
-    console.log('to aqui');
-    if (_.has(errorObj, 'code')) {
-      console.log('to aqui 2');
-      if (errorObj.code === 'ER_DUP_ENTRY') return 'Já existem registros com esses dados!'
-    }
+  private getQueryError(err: any): { status: number, err: string } {
+    const error = Object.assign({}, err);
+
+    if (_.has(error, 'code')) return { status: 400, err: 'Não foi possível concluir a operação!' };
+    if (error.code === 'ER_DUP_ENTRY') return { status: 400, err: 'item já cadastrado!' };
+    return { status: 400, err: _.get(error, 'message', 'Não foi possível concluir a operação!') }
   }
 
 

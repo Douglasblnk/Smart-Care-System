@@ -295,7 +295,7 @@
         </div>
         <div class="d-flex justify-content-center">
           <cancel-button label="Fechar" @click.native="closeModal()" />
-          <save-button label="Enviar" @click.native="addEpi()" />
+          <save-button label="Enviar" @click.native="alterEpiCheck()" />
         </div>
       </b-modal>
   </div>
@@ -635,6 +635,43 @@
         });
       }
     },
+    async listEpiCheck() {
+      let epiSelects = [];
+      for (const epiSelect of this.selectedEpis) {
+        console.log('epiSelect: ',epiSelect);
+        let epiOrder = this.epiList.find(i => i.Epi_idEpi === epiSelect);
+        console.log('epiOrder: ',epiOrder);
+        epiSelects.push(epiOrder);
+      }
+      return epiSelects;
+    },
+    async alterEpiCheck() {
+      try {
+        let listEpiCheck = await this.listEpiCheck();
+
+        console.log('LIST EPI CHECK: ',listEpiCheck);
+
+        const response = await this.$http.post('epi/register', getLocalStorageToken(), listEpiCheck);
+
+        this.$swal({
+          type: 'success',
+          title: 'EPIs checadas com sucesso!',
+          confirmButtonColor: '#f34336',
+        }).then(() => {
+          this.closeModal();
+        })
+
+      } catch (err) {
+        console.log('initiateOrder :>> ', err);
+        this.$set(this.isLoading, 'init', false);
+
+        this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
     async validateActualManutentor() {
       try {
         await this.getManutentoresInOrdem();
@@ -659,9 +696,6 @@
       this.$refs['my-modal'].show();
     },
     closeModal() {
-      this.$refs['my-modal'].hide();
-    },
-    addEpi() {
       this.$refs['my-modal'].hide();
     },
     confirmModal() {
