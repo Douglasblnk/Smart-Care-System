@@ -80,16 +80,20 @@
          -->
         <tab-content title="Equipamentos" icon="fas fa-check">
           <div class="w-100 d-flex justify-content-center">
-            <span style="font-size: 22px">Seleciones os equipamentos</span>
+            <span style="font-size: 22px">Selecione os equipamentos</span>
           </div>
           <div class="equipament-items">
-            <b-form-checkbox-group
-              id="checkbox-equipment"
-              v-model="inputValues.equipments"
-              :options="getEquipmentOptions()"
-              name="flavour-1"
-              stacked
+            <custom-select
+              v-model="sector"
+              label="Setor"
+              :options="getSectorOptions()"
             />
+            <custom-select
+              v-model="equipment"
+              label="Equipamento"
+              :options="getEquipmentOptions()"
+            />
+            <save-button label="Adicionar" @click.native="addEquipmentSector(sector,equipment)" />
           </div>
         </tab-content>
 
@@ -100,11 +104,6 @@
           <div class="operations-title">
             <span class="text-center">Selecione o setor e as operações para os equipamentos</span>
           </div>
-          <custom-select
-            v-model="inputValues.sector"
-            label="Setor"
-            :options="getSectorOptions()"
-          />
           <div class="operations-items">
             <label>Equipamentos</label>
             <b-form-checkbox-group
@@ -207,19 +206,20 @@ export default {
         plannedEnd: '',
         beginData: '',
         requireStop: '',
-        equipments: [],
         typeMaintenance: 3,
-        sector: '',
         priority: '',
         stats: 1,
         plannedTime: '',
         operations: [],
         epis: [],
+        equipments_sectors: []
       },
       selectedEpis: [],
       workEquipment: [],
       selectsPriority: [],
       selectsSector: [],
+      sector: '',
+      equipment: '',
       selectsRequireStop: [
         {
           id: true,
@@ -254,6 +254,27 @@ export default {
       this.modalErrorMessage = '';
       this.selectedEpis = [];
     },
+    addEquipmentSector(sector,equipment){
+      try{
+        let obj = { Equipamento: equipment, Local: sector}
+        this.inputValues.equipments_sectors.push(obj);
+        
+        this.$swal({
+          type: 'success',
+          title: 'Equipamento e Setor adicionados a lista',
+          confirmButtonColor: '#F34336',
+        });
+        console.log('Equipments_sectors', this.inputValues);
+      } catch (err) {
+        console.log('err :>> ', err.response || err);
+
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
     getEpiOptions() {
       return this.epiList.map(i => ({ text: i.descricaoEpi, value: i.idEpi }));
     },
@@ -261,7 +282,7 @@ export default {
       return this.operationsList.map(i => ({ text: i.descricao_operacao, value: i.idoperacao }));
     },
     getEquipmentOptions() {
-      return this.workEquipment.map(i => ({ text: i.descricao, value: i.idEquipamento }));
+      return this.workEquipment.map(i => ({ id: String(i.idEquipamento), description: i.descricao }));
     },
     getEpiName(epi) {
       const { descricaoEpi } = this.epiList.find(i => i.idEpi === epi);
@@ -337,15 +358,15 @@ export default {
         await this.addOperation();
         this.$set(this.inputValues, 'beginData', this.$moment().format('YYYY-MM-DD'));
         console.log('this.inputValues :>> ', this.inputValues);
-        // const response = await this.$http.post('ordem-manutencao', getLocalStorageToken(), this.inputValues);
+        const response = await this.$http.post('ordem-manutencao/list', getLocalStorageToken(), this.inputValues);
         
-        // console.log('response :>> ', response);
+        console.log('response :>> ', response);
 
-        // this.$swal({
-        //   type: 'success',
-        //   title: 'Ordem de Serviço cadastrada com Sucesso',
-        //   confirmButtonColor: '#F34336',
-        // });
+        this.$swal({
+          type: 'success',
+          title: 'Ordem de Serviço cadastrada com Sucesso',
+          confirmButtonColor: '#F34336',
+        });
       } catch (err) {
         console.log('err :>> ', err.response || err);
         return this.$swal({
@@ -358,11 +379,12 @@ export default {
     async getEquipments() {
       try {
         const response = await this.$http.get('equipamento/get', getLocalStorageToken());
-
+        console.log('EQUIPAMENTOS RETURN: ',response);
         if (response.result.length === undefined)
           this.workEquipment.push(response.result);
 
         else this.workEquipment = [...response.result];
+        console.log('EQUIPAMENTOS: ', this.workEquipment);
       } catch (err) {
         return this.$swal({
           type: 'warning',
@@ -370,9 +392,6 @@ export default {
           confirmButtonColor: '#F34336',
         });
       }
-    },
-    getEquipmentsOptions() {
-      return this.workEquipment.map(i => ({ id: String(i.idEquipamento), description: i.equipamento }));
     },
     selectsRequireStopOptions() {
       return this.selectsRequireStop.map(i => ({ id: String(i.id), description: i.nome }));
@@ -478,7 +497,7 @@ export default {
         margin: 20px;
       }
       .equipament-items {
-        overflow: auto;
+        //overflow: auto;
         max-height: 300px;
         margin: 20px;
       }

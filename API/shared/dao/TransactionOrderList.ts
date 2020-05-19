@@ -21,25 +21,39 @@ export default class Dao {
 
   async runQuery(data: any) {
     try{
+      let equipments_sectors = [];
       connection.beginTransaction();  
 
-      data[2].post.Ordem_servico = await this.insertGenericReturn(data[0]);
+      let order_service = await this.insertGenericReturn(data[0]);
 
-      await this.insertEpisOrder(data[6], data[2].post.Ordem_servico);
+      console.log('ORDER SERVICE', order_service);
+
+      await this.insertEpisOrder(data[6], order_service);
   
-      data[5].post.Equipamento_FK = await this.insertGenericReturn(data[2]);
+      for (const equipment_sector of data[2].post) {
+        let dataEquipment = await this.returnDataEquipmentOrder(data[2],order_service,equipment_sector.Equipamento);
+        
+        console.log('DATA EQUIPMENT AQUI: ', dataEquipment);
 
-      data[3].post.Ordem_Servico = data[2].post.Ordem_servico;
+        let equipment_id = await this.insertGenericReturn(dataEquipment);
+        
+        let dataSector = await this.returnDataSectorOrder(data[3],order_service,equipment_sector.Local);
 
-      data[5].post.Locais_FK = await this.insertGenericReturn(data[3]);
+        let sector_id = await this.insertGenericReturn(dataSector);
+
+        let obj = { Equipamentos: equipment_id, Locais: sector_id}
+        equipments_sectors.push(obj);
+      }
 
       let listOperations : any = await this.insertOperationsOrder(data[4]);
-      
-      console.log('LIST OPERATIONS Aqui',listOperations);
 
-      for (const element of listOperations) {
-        data[5].post.Operacao_FK = element;
-        await this.insertGenericReturn(data[5]);
+      for (const equipment_sector of equipments_sectors) {
+        for (const element of listOperations) {
+          data[5].post.Equipamento_FK = equipment_sector.Equipamentos;
+          data[5].post.Locais_FK = equipment_sector.Locais;
+          data[5].post.Operacao_FK = element;
+          await this.insertGenericReturn(data[5]);
+        }
       }
       
       connection.commit();
@@ -58,6 +72,7 @@ export default class Dao {
   private async insertGenericReturn(data: any) {
     try {
       return new Promise((resolve, reject) => {
+        console.log('DATA INSERT: ',data);
         connection.query(data.query, data.post,  async (err: any, result: any) =>{
           if (err) reject({ status: 401, msg: 'Não foi possível realizar a operação!', ...err })
           resolve(result.insertId);
@@ -68,9 +83,30 @@ export default class Dao {
     }
   }
 
+  private async returnDataEquipmentOrder(data: any, order: any, Equipamento: any) {
+    try {
+      let query = data.query;
+      let post = { Equipamento: Equipamento, Ordem_servico: order};
+      return { query, post, type: 'Equipamentos'};
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  private async returnDataSectorOrder(data: any, order: any, Local: any) {
+    try {
+      let query = data.query;
+      let post = { Local: Local, Ordem_servico: order};
+      return { query, post, type: 'Locais'};
+    } catch (err) {
+      throw err;
+    }
+  }
+
   private async insertEpisOrder(data: any, order: any) {
     try {
       return new Promise((resolve, reject) => {
+        console.log('MEU DATA EPI', data);
         for (let index = 0; index < data.post.length; index++) {
           data.post[index].ordemServico_idOrdemServico = order;
         }

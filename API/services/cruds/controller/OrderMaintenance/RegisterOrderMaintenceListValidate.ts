@@ -70,10 +70,6 @@ export default class RegisterOrderMaintenanceListValidate {
         status: 404,
         err: 'Resumo não informado',
     };
-    if (data.description === '') throw {
-        status: 404,
-        err: 'Descrição não informado',
-    };
     if (data.plannedStart === '') throw {
         status: 404,
         err: 'Inicio Planejado não informado',
@@ -145,7 +141,7 @@ export default class RegisterOrderMaintenanceListValidate {
   }
 
   getQueryEquipmentsRegister(data: any) {
-    const post =  data.equipment_sector;
+    const post =  data.equipments_sectors;
     const query = `INSERT INTO ${TABLE_EQUIPMENT} SET ?;`;
 
     const dataQuery = { query, post, type: 'Equipamento' };
@@ -168,7 +164,7 @@ export default class RegisterOrderMaintenanceListValidate {
   }
 
   getQuerySectorRegister(data: any) {
-    const post = data.equipment_sector;
+    const post = data.equipments_sectors;
     
     const query = `INSERT INTO ${TABLE_SECTOR} SET ?;`;
 
