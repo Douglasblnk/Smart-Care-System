@@ -95,12 +95,6 @@ const routes = [
     meta: { requireAuth: true },
   },
   {
-    path: '/solicitacoes',
-    name: 'Solicitações',
-    component: Dashboard,
-    meta: { requireAuth: true },
-  },
-  {
     path: '/consultas',
     name: 'Consultas',
     component: Consulta,

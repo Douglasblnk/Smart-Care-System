@@ -129,6 +129,7 @@ export default {
           this.instalationLocal.push(this.inputValues);
 
           this.resetModel();
+          this.getSector();
         });
       } catch (err) {
         console.log('err registerSector => :', err.response || err);
@@ -142,6 +143,7 @@ export default {
     },
     async updateSector() {
       try {
+        console.log('INPUT VALUES: ',this.inputValues);
         const response = await this.$http.update(
           'local-instalacao', getLocalStorageToken(), this.inputValues, this.inputValues.idSetor,
         );

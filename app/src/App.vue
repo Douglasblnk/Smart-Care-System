@@ -96,6 +96,33 @@ span, p, strong {
   padding: 0 !important;
 }
 
+.custom-control {
+  position: relative;
+  display: flex !important;
+  justify-content: flex-start !important;
+  min-height: 1.5rem;
+  padding-left: 1.5rem;
+  border-radius: 8px;
+  padding: 10px !important;
+  box-sizing: border-box !important;
+  label {
+    cursor: pointer;
+  }
+  &:hover{
+    background-color: #eee !important;
+  }
+  .custom-control-input {
+    position: relative !important;
+  }
+}
+
+/* ADICIONAR UM ESTILO CUSTOMIZADO AO SCROLL BAR */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: rgb(182, 182, 182); border-radius: 50px; }
+::-webkit-scrollbar-thumb:hover { background: rgb(119, 119, 119); }
+
+
 .content {
   width: 100vw;
   height: 100vh;

@@ -41,23 +41,23 @@ export default class UpdateEquipmentValidate {
       err: 'Não existem dados!',
     };
 
-    if (data.id === '' || data.id === undefined) throw {
+    if (data.id_centro_trabalho === '' || data.id === undefined) throw {
       status: 404,
       err: 'Não foi possível encontrar o equipamento!'
     }
     
-    isEmpty.verify(data,  ['descricao_centro_trabalho'], '');
+    isEmpty.verify(data,  ['descricao'], '');
     
-    if (data.descricao_centro_trabalho === '') throw {
+    if (data.descricao === '') throw {
       status: 404,
       err: 'Centro de trabalho não informado',
     };
   }
 
   getQuery(data: any) {
-    const values = { descricao_centro_trabalho: data.descricao_centro_trabalho };
-    const where = data.id;
-    const query = /*sql*/`UPDATE ${TABLE} SET ? WHERE idCentro_Trabalho = ?;`;
+    const values = { descricao: data.descricao };
+    const where = data.id_centro_trabalho;
+    const query = /*sql*/`UPDATE ${TABLE} SET ? WHERE id_centro_trabalho = ?;`;
 
     const dataQuery = { query, values, where, type: 'Centro de trabalho' };
     console.log(dataQuery);

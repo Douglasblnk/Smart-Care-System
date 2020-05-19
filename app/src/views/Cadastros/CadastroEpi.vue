@@ -83,7 +83,7 @@ export default {
     };
   },
   mounted(){
-      this.getEpi();
+    this.getEpi();
   },
   methods: {
     getSaveButtonText(){
@@ -118,6 +118,7 @@ export default {
         }),
         this.Epis.push(this.inputValues);
         this.resetModel();
+        this.getEpi();
       } catch (err) {
         return this.$swal({
           type: 'warning',

@@ -1,8 +1,8 @@
-import Delete from '../../../../shared/dao/Delete';
+import Update from '../../../../shared/dao/Update';
 
-const commitData = new Delete();
+const commitData = new Update();
 
-const TABLE = 'epi';
+const TABLE = 'Epi';
 
 export default class DeleteEpiValidate {
 
@@ -30,10 +30,11 @@ export default class DeleteEpiValidate {
         }
     }
     getQuery(data: any) {
-        const post = [data];
-        const query = `DELETE FROM ${TABLE} WHERE ${TABLE}.idEpi= ?;`;
+        const values = { excluded: 1 };
+        const where = [data];
+        const query = `UPDATE ${TABLE} SET ? WHERE ${TABLE}.idEpi = ?;`;
 
-        const dataQuery = {query, post, type: 'epi'};
+        const dataQuery = { query, values, where, type: 'Epi' };
 
         return dataQuery;
     }

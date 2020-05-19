@@ -2,7 +2,7 @@
   <div class="root-cadastro-causa-view d-flex justify-content-center align-items-center flex-column">
     <div class="register-select">
       <span>O que deseja cadastrar?</span>
-      <custom-select v-model="selectValue" :selectOptions="['Causa', 'Sintoma']"></custom-select>
+      <custom-select v-model="selectValue" :options="[{ id: 1, description: 'Causa'}, { id: 2, description: 'Sintoma'}]"></custom-select>
     </div>
 
     <transition name="slide-fade" mode="out-in">
@@ -11,7 +11,7 @@
         LISTA E CADASTRO DE CAUSA 
       
       -->
-      <div v-if="selectValue === 'Causa'" class="items-wrapper">
+      <div v-if="selectValue === 1" class="items-wrapper">
         <div class="list-option">
           <div class="d-flex justify-content-between">
             <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'list'">
@@ -78,7 +78,7 @@
 
        -->
 
-      <div v-if="selectValue === 'Sintoma'" class="items-wrapper">
+      <div v-if="selectValue === 2" class="items-wrapper">
         <div class="list-option">
           <div class="d-flex justify-content-between">
             <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'list'">
@@ -166,7 +166,7 @@ export default {
   watch: {
     selectValue: {
       handler: function($event) {
-        if ($event === 'Causa') return this.getCause();
+        if ($event === 1) return this.getCause();
         this.getSymptom();
       }
     }
@@ -243,6 +243,7 @@ export default {
             this.causes.push(this.inputValuesCause);
             console.log(this.causes);
             this.resetModel();
+            this.getCause();
           })
         })
     },
@@ -264,6 +265,7 @@ export default {
             this.symptons.push(this.inputValuesSymptom);
             console.log(this.symptons);
             this.resetModel();
+            this.getSymptom();
           })
         })
     },

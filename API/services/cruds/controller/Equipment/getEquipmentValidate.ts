@@ -22,7 +22,7 @@ export default class GetEquipmentValidate {
 
 
   getQuery() {
-    const query = /*sql*/`SELECT * FROM ${TABLE};`;
+    const query = `SELECT * FROM ${TABLE} WHERE ${TABLE}.excluded = 0;`;
 
     const dataQuery = { query, type: 'Equipamento' };
     console.log(dataQuery);

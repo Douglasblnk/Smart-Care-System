@@ -27,7 +27,7 @@
                 </thead>
                 <tbody class="table-body">
                   <tr v-for="(workCenter, index) in workCenters" :key="`workCenter-${index}`">
-                    <td>{{ workCenter.descricao_centro_trabalho}}</td>
+                    <td>{{ workCenter.descricao}}</td>
                     <td style="width: 50px">
                       <div class="d-flex table-action">
                         <i class="fas fa-edit text-muted" @click="editWorkCenter(workCenter)"></i>
@@ -46,7 +46,7 @@
         <form @submit.prevent="registerWorkCenter()" class="formPosition">
           <div class="cadCard">
             <div class="inputs">
-              <simple-input v-model="inputValues.descricao_centro_trabalho" :label="'Centro de Trabalho:'" :type="'text'" />
+              <simple-input v-model="inputValues.descricao" :label="'Centro de Trabalho:'" :type="'text'" />
             </div>
           </div>
           <div class="d-flex justify-content-center m-3">
@@ -74,7 +74,7 @@ export default {
   data() {
     return {
       inputValues: {
-        descricao_centro_trabalho: '',
+        descricao: '',
       },
       switchListRegister: 'list',
       isEditing: false,
@@ -124,6 +124,7 @@ export default {
             this.workCenters.push(this.inputValues);
             console.log(this.instalationLocal);
             this.resetModel();
+            this.getWorkCenter();
           })
         })
     },
@@ -132,11 +133,11 @@ export default {
 
       this.$swal({
         type: 'question',
-        title: `Deseja mesmo remover o centro de trabalho ${workCenter.descricao_centro_trabalho}?`,
+        title: `Deseja mesmo remover o centro de trabalho ${workCenter.descricao}?`,
         showCancelButton: true,
         confirmButtonColor: '#F34336',
         preConfirm: () => {
-          this.$http.delete('centro-trabalho', getLocalStorageToken(), workCenter.idCentro_Trabalho)
+          this.$http.delete('centro-trabalho', getLocalStorageToken(), workCenter.id_centro_trabalho)
             .then(res => {
 
               if (res.status !== 200) return this.$swal({
@@ -180,7 +181,7 @@ export default {
             title: `${res.result}`,
             confirmButtonColor: '#F34336',
           }).then(() => {
-            const index = this.workCenters.indexOf(this.workCenters.find(i => i.idCentro_Trabalho === this.inputValues.idCentro_Trabalho))
+            const index = this.workCenters.indexOf(this.workCenters.find(i => i.idCentro_Trabalho === this.inputValues.id_centro_trabalho))
             this.workCenters.splice(index, 1, this.inputValues)
             this.closeEditing()
           })

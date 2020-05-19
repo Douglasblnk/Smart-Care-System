@@ -1,23 +1,47 @@
 <template>
-  <div class="equipmentBackground">
-    <div class="cadCard">
-      <form-wizard @on-complete="registerOrderMaintenance()" class="stepByStep" title="Cadastro de Ordem de serviço" subtitle="" nextButtonText="Próximo" backButtonText="Voltar" finishButtonText="Finalizar">
+  <div class="ordem-corretiva-root">
+    <div class="content-wrapper">
+      <form-wizard
+        class="step-by-step"
+        title="Cadastro de Ordem de serviço"
+        subtitle=""
+        nextButtonText="Próximo"
+        backButtonText="Voltar"
+        finishButtonText="Finalizar"
+        @on-complete="registerOrderMaintenance()"
+      >
+        <!--
+          Step para informar o titulo, resumo e descrição da ordem
+         -->
         <tab-content title="Causa Manutenção" icon="fas fa-user" class="maintenanceCause">
           <div class="firstInput">
             <simple-input v-model="inputValues.title" :label="'Título:'" :type="'text'" />
           </div>
+
           <div class="secondInput">
             <simple-input v-model="inputValues.summary" :label="'Resumo'" :type="'text'" />
           </div>
+
           <div class="inputMaintenance">
-          <div>
-          <label class="text-muted">Descrição</label>
-          </div>
-            <textarea class="rounded descriptionInput" rows="3"
-            v-model="inputValues.description" name="comment" form="usrform"></textarea>
-            <!-- <simple-input v-model="inputValues.description" :label="'Descrição:'" :type="'text'" />-->
+            <div>
+              <label class="text-muted">
+                {{ (orderType === 'corretiva') ? 'Descrição do problema: ' : 'Observações: ' }}
+                <span v-if="orderType === 'preventiva'" class="text-muted">(opcional)</span>
+              </label>
+            </div>
+            <textarea
+              v-model="inputValues.description"
+              class="rounded w-100"
+              rows="3"
+              name="comment"
+              form="usrform"
+            />
           </div>
         </tab-content>
+
+        <!--
+          Step para informada o inicio planejado e o fim planejado da ordem
+         -->
         <tab-content title="Datas" icon="fa fa-cog" class="maintenanceCause">
           <div>
             <simple-input
@@ -33,45 +57,58 @@
               :type="'date'"
             />
           </div>
-          <!-- <div>
-            <simple-input v-model="inputValues.beginData" :label="'Data emissão'" :type="'date'" />
-          </div> -->
         </tab-content>
+
+        <!--
+          Step para selecionar os equipamentos, prioridade, setor e se querer parada
+         -->
         <tab-content title="Informações Gerais" icon="fas fa-check" class="maintenanceCause">
           <custom-select
-            label="Equipamento"
             v-model="inputValues.equipment"
+            label="Equipamento"
             :options="getEquipmentsOptions()"
           />
           <custom-select
-            label="Prioridade"
             v-model="inputValues.priority"
+            label="Prioridade"
             :options="getPriorityOptions()"
           />
           <custom-select
-            label="Setor"
             v-model="inputValues.sector"
+            label="Setor"
             :options="getSectorOptions()"
           />
           <custom-select
-            label="Requer Parada"
             v-model="inputValues.requireStop"
+            label="Requer Parada"
             :options="selectsRequireStopOptions()"
           />
         </tab-content>
+
+        <!--
+          Step para definir quais as operações que a ordem deve ter
+         -->
         <tab-content title="Operações" icon="fa fa-cog">
-          <span>Selecione</span>
-          <b-form-checkbox-group
-            id="checkbox-operations"
-            v-model="inputValues.operationList"
-            :options="getOperationsOptions()"
-            name="flavour-1"
-            stacked
-          />
+          <div class="operations-title">
+            <span>Selecione as operações para está ordem</span>
+          </div>
+          <div class="operations-items">
+            <b-form-checkbox-group
+              id="checkbox-operations"
+              v-model="selectedOperations"
+              :options="getOperationsOptions()"
+              name="flavour-1"
+              stacked
+            />
+          </div>
         </tab-content>
+
+        <!--
+          Step para definir quais EPIs são necessárias para a ordem
+         -->
         <tab-content title="Epi" icon="fa fa-cog">
           <div class="d-flex justify-content-center">
-            <save-button id="show-btn" @click.native="showEpiModal" label="Adicionar EPI" />
+            <save-button id="show-btn" label="Adicionar EPI" @click.native="showEpiModal()" />
           </div>
 
           <div class="w-100">
@@ -79,12 +116,16 @@
             <div v-if="inputValues.epis.length > 0" class="d-flex flex-wrap">
               <div v-for="(epi, index) in inputValues.epis" :key="`epi-${index}`">
                 <div
+                  class="selected-epi-wrapper"
                   @mouseenter="() => $set(showRemoveEpi, index, true)"
                   @mouseleave="() => $set(showRemoveEpi, index, false)"
-                  class="selected-epi-wrapper"
                 >
-                  <span>{{ getEpiName(epi) }}</span>
-                  <div @click="removeEpi(index)" v-if="showRemoveEpi[index]" class="selected-epi-remove">
+                  <span>{{ getEpiName(epi.Epi_idEpi) }}</span>
+                  <div
+                    v-if="showRemoveEpi[index]"
+                    class="selected-epi-remove"
+                    @click="removeEpi(index)"
+                  >
                     <i class="fa fa-trash" />
                   </div>
                 </div>
@@ -97,7 +138,8 @@
         </tab-content>
       </form-wizard>
     </div>
-    <b-modal @hide="resetModal()" @show="checkSelectedEpis()" centered ref="my-modal" hide-footer hide-header title="Cadastrar Epi na Ordem">
+
+    <b-modal ref="my-modal" centered hide-footer hide-header title="Cadastrar Epi na Ordem" @hide="resetModal()" @show="checkSelectedEpis()">
       <div class="d-block text">
         <div class="text-center">
           <h3>Adicionar EPIs à ordem</h3>
@@ -105,7 +147,7 @@
             Informe quais EPIs esta ordem precisa para ser executada.
           </span>
         </div>
-        <div class="m-3">
+        <div class="m-3" style="overflow: auto; max-height: 300px;">
           <b-form-checkbox-group
             id="checkbox-group-1"
             v-model="selectedEpis"
@@ -140,6 +182,11 @@ export default {
     FormWizard,
     TabContent,
   },
+
+  props: {
+    orderType: { type: String, default: '' },
+  },
+
   data() {
     return {
       inputValues: {
@@ -151,12 +198,12 @@ export default {
         beginData: '',
         requireStop: '',
         equipment: '',
-        typeMaintenance: 1,
+        typeMaintenance: this.getOrdertype(),
         sector: '',
         priority: '',
         stats: 1,
         plannedTime: '',
-        operationsList: [],
+        operations: [],
         epis: [],
       },
       selectedEpis: [],
@@ -164,16 +211,18 @@ export default {
       selectsPriority: [],
       selectsSector: [],
       selectsRequireStop: [
-          {
-            id: true,
-            nome: 'Sim',
-          },
-          {
-            id: false,
-            nome: 'Não',
-          },
-        ],
+        {
+          id: true,
+          nome: 'Sim',
+        },
+        {
+          id: false,
+          nome: 'Não',
+        },
+      ],
       epiList: [],
+      selectedOperations: [],
+      sequenceOperation: 0,
       operationsList: [],
       showRemoveEpi: {},
       modalHasError: false,
@@ -181,6 +230,7 @@ export default {
       isloading: false,
     };
   },
+
   mounted() {
     this.getEquipments();
     this.getSector();
@@ -207,9 +257,6 @@ export default {
     removeEpi(index) {
       this.inputValues.epis.splice(index, 1);
       this.$set(this.showRemoveEpi, [index], false);
-    },
-    addOperation() {
-      // todo
     },
     async showEpiModal() {
       await this.getEpis();
@@ -243,19 +290,43 @@ export default {
         this.modalHasError = true;
         this.modalErrorMessage = 'Selecione uma EPI antes de continuar';
       } else {
-        this.inputValues.epis = [...this.selectedEpis];
+        this.inputValues.epis = this.selectedEpis.map(i => ({ Epi_idEpi: i }));
         this.confirmModal();
       }
-      console.log('this.inputValues.epis :>> ', this.inputValues.epis);
+    },
+    resetInputValues() {
+      this.inputValues.operations = [];
+      this.sequenceOperation = 0;
+      this.selectedEpis = [];
+      this.selectedOperations = [];
+      this.workEquipment = [];
+    },
+    async addOperation() {
+      for (const option of this.selectedOperations) {
+        this.sequenceOperation += 10;
+        const incrementOperationZero = this.incrementZero(this.sequenceOperation);
+
+        const operationOption = { Operacao: option, sequencia_operacao: incrementOperationZero + this.sequenceOperation };
+
+        this.inputValues.operations.push(operationOption);
+      }
+    },
+    incrementZero(sequenceOperation) {
+      if (sequenceOperation >= 100) return '0';
+      return '00';
     },
     checkSelectedEpis() {
       if (this.inputValues.epis.length > 0)
-        this.selectedEpis = [...this.inputValues.epis];
+        this.selectedEpis = this.inputValues.epis.map(i => i.Epi_idEpi);
+    },
+    getOrdertype() {
+      if (this.orderType === 'corretiva') return 1;
+      return 2;
     },
     async registerOrderMaintenance() {
       try {
-        this.$set(this.inputValues, 'beginData', this.$moment().format('DD-MM-YYYY HH-mm'))
-        console.log('this.inputValues :>> ', this.inputValues);
+        await this.addOperation();
+        this.$set(this.inputValues, 'beginData', this.$moment().format('YYYY-MM-DD'));
 
         const response = await this.$http.post('ordem-manutencao', getLocalStorageToken(), this.inputValues);
         
@@ -340,7 +411,6 @@ export default {
     async getOperations() {
       try {
         const { result } = await this.$http.get('operacoes/get', getLocalStorageToken());
-        console.log('result :>> ', result);
         this.operationsList = [...result];
       } catch (err) {
         console.log('err getOperations :>> ', err.response || err);
@@ -360,31 +430,26 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.equipmentBackground {
-  width: 100vw;
-  height: 100%;
+.ordem-corretiva-root {
   display: flex;
   align-items: center;
   justify-content: center;
-  .cadCard {
-    width:75%;
+  .content-wrapper {
+    width: 70%;
     background-color: #ffffff;
     border-radius: 10px;
     padding: 25px;
-    margin-top:6%;
-    .stepByStep{
+    margin: 20px 0;
+    .step-by-step{
       width:100%;
       .maintenanceCause{
         display: grid;
         grid-template-columns: 1fr 1fr;
         grid-template-rows: 1fr 1fr;
         .inputMaintenance{
+          padding: 0.5rem;
           grid-column-start: 1;
           grid-column-end: 3;
-          .descriptionInput{
-            margin-left:1%;
-            width:98%;
-          }
         }
 
         .firstInput{
@@ -395,21 +460,16 @@ export default {
           grid-column-start:2;
           grid-column-end:2;
         }
-        
-        .containerButton {
-          width: 100%;
-          height: 40px;
-          display: flex;
-          justify-content: flex-end;
-          align-items:flex-end;
-          .buttonAddOperation {
-            position: relative;
-              bottom: -40px;
-            // right: 30;
-            // // left: 80%;
-            // padding: 2%;
-          }
-        }
+      }
+      .operations-title {
+        display: flex;
+        justify-content: center;
+        font-size: 22px;
+      }
+      .operations-items {
+        overflow: auto;
+        max-height: 300px;
+        margin: 20px;
       }
       .selected-epi-wrapper {
         min-width: 50px;
@@ -442,22 +502,11 @@ export default {
         }
       }
     }
-    .maintanceMenu {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
   }
 }
-.span_question {
-  color: #ff0303;
-  font-family: 'Montserrat';
-}
-@media (max-width: 1250px) {
-  .equipmentBackground {
-    width: 100vw;
-    height: 100vh;
-    padding: 20px;
+@media (max-width: 1366px) {
+  .content-wrapper {
+    width: 100% !important;
   }
 }
 </style>
