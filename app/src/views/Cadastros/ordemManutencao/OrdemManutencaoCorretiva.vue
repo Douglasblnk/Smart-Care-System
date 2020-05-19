@@ -327,7 +327,7 @@ export default {
       try {
         await this.addOperation();
         this.$set(this.inputValues, 'beginData', this.$moment().format('YYYY-MM-DD'));
-
+        console.log('INPUT VALUES REGISTER: ',this.inputValues);
         const response = await this.$http.post('ordem-manutencao', getLocalStorageToken(), this.inputValues);
         
         console.log('response :>> ', response);
