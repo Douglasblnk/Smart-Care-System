@@ -3,6 +3,7 @@ const { Router } = require("express");
 import GetEpiValidate from '../../controller/Epi/getEpiValidate';
 import GetOrderEpiValidate from '../../controller/Epi/getOrderEpiValidate';
 import RegisterEpiValidate from '../../controller/Epi/registerEpiValidate';
+import UpdateOrderEpiValidate from '../../controller/Epi/registerOrderEpiValidate';
 import UpdateEpiValidate from '../../controller/Epi/updateEpiValidate';
 import DeleteEpiValidate from '../../controller/Epi/deleteEpiValidate';
 import Auth from '../../../../shared/auth/auth';
@@ -11,6 +12,7 @@ const router = Router();
 const getEpiValidate = new GetEpiValidate();
 const getOrderEpiValidate = new GetOrderEpiValidate();
 const registerEpiValidate = new RegisterEpiValidate();
+const updateOrderEpiValidate = new UpdateOrderEpiValidate();
 const updateEpiValidate = new UpdateEpiValidate();
 const deleteEpiValidate = new DeleteEpiValidate();
 const jwt = new Auth();
@@ -41,6 +43,16 @@ router.post('/order', async(req: any, res: any) => {
     try {
         await jwt.jwtVerify(req);
         const response = await getOrderEpiValidate.run(req);
+
+        res.status(200).send(response);
+    } catch(err) {
+        res.status(404).send(err);
+    }
+})
+router.post('/register', async(req: any, res: any) => {
+    try {
+        await jwt.jwtVerify(req);
+        const response = await updateOrderEpiValidate.run(req);
 
         res.status(200).send(response);
     } catch(err) {

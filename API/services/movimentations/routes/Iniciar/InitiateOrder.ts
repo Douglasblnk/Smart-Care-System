@@ -2,11 +2,13 @@ const { Router } = require("express");
 
 import Auth from "../../../../shared/auth/auth";
 import InitiateOrderValidate from '../../controller/Iniciar/InitiateOrderValidate';
+import PauseOrderValidate from '../../controller/Iniciar/PauseOrderValidate';
 import AssumeOrderValidate from '../../controller/Iniciar/assumeOrderValidate';
 
 const router = Router();
 const jwt = new Auth();
 const initiateOrder = new InitiateOrderValidate();
+const pauseOrder = new PauseOrderValidate();
 const assumeOrder = new AssumeOrderValidate();
 
 
@@ -16,6 +18,20 @@ router.post("/init", async (req: any, res: any) => {
     await jwt.jwtVerify(req);
 
     const response = await initiateOrder.run(req);
+
+    console.log('response =>', response);
+    res.status(200).send(response);
+  } catch (err) {
+    console.log('err init => :>> ', err);
+    res.status(404).send(err);
+  }
+});
+
+router.post("/pause", async (req: any, res: any) => {
+  try {
+    await jwt.jwtVerify(req);
+
+    const response = await pauseOrder.run(req);
 
     console.log('response =>', response);
     res.status(200).send(response);

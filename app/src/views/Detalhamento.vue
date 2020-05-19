@@ -88,7 +88,7 @@
 
                 <!-- // ? CARD PARA QUANDO A ORDEM FOR ASSUMIDA POR ALGUÉM -->
                 <div
-                  v-if="verifyOrderStatus === 'assumed'"
+                  v-if="verifyOrderStatus === 'assumed' || verifyOrderStatus === 'paused'"
                   class="options"
                   :class="verifyUserAccess ? '' : 'disable'"
                   @click="orderMovimentations('init')"
@@ -97,6 +97,19 @@
 
                   <i v-if="isLoading.init" class="fa fa-spinner fa-spin fa-lg m-2" />
                   <span v-else>Iniciar</span>
+                </div>
+
+                <!-- // ? CARD PARA QUANDO FOR INICIAR POR ALGUÉM -->
+                <div
+                  v-if="verifyOrderStatus === 'running'"
+                  class="options"
+                  :class="verifyUserAccess ? '' : 'disable'"
+                  @click="orderMovimentations('pause')"
+                >
+                  <i class="fa fa-play fa-lg mb-2" />
+
+                  <i v-if="isLoading.pause" class="fa fa-spinner fa-spin fa-lg m-2" />
+                  <span v-else>Pausar</span>
                 </div>
 
                 <div
@@ -295,7 +308,7 @@
         </div>
         <div class="d-flex justify-content-center">
           <cancel-button label="Fechar" @click.native="closeModal()" />
-          <save-button label="Enviar" @click.native="addEpi()" />
+          <save-button label="Enviar" @click.native="alterEpiCheck()" />
         </div>
       </b-modal>
   </div>
@@ -561,6 +574,9 @@
         case 'init':
           this.initiateOrder();
           break;
+        case 'pause':
+          this.pauseOrder();
+          break;
       }
     },
     async assumeOrder() {
@@ -611,17 +627,74 @@
 
         const response = await this.$http.post('initiate/init', getLocalStorageToken(), { ...this.$store.state.user, isMaster: true, order: this.order.idOrdemServico });
 
-        this.$set(this.isLoading, 'init', false);
 
-        this.order.status = 'Em Andamento';
+        this.$set(this.order, 'status', 'Em Andamento');
 
         this.$swal({
           type: 'success',
           title: 'Ordem iniciada com sucesso!',
           confirmButtonColor: '#f34336',
         }).then(() => {
+          this.$set(this.isLoading, 'init', false);
           console.log('Modal Aberto');
           this.showEpiModal();
+          
+        })
+
+      } catch (err) {
+        console.log('initiateOrder :>> ', err);
+        this.$set(this.isLoading, 'init', false);
+
+        this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
+    async pauseOrder(){
+      try{
+        this.$set(this.isLoading, 'pause', true);
+
+        const response = await this.$http.post('initiate/pause', getLocalStorageToken(), { ...this.$store.state.user, isMaster: true, order: this.order.idOrdemServico });
+
+        this.$set(this.isLoading, 'pause', false);
+
+        this.$set(this.order, 'status', 'Pausada');
+      } catch(err){
+        this.$set(this.isLoading, 'init', false);
+
+        this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
+    async listEpiCheck() {
+      let epiSelects = [];
+      for (const epiSelect of this.selectedEpis) {
+        console.log('epiSelect: ',epiSelect);
+        let epiOrder = this.epiList.find(i => i.Epi_idEpi === epiSelect);
+        console.log('epiOrder: ',epiOrder);
+        epiSelects.push(epiOrder);
+      }
+      return epiSelects;
+    },
+    async alterEpiCheck() {
+      try {
+        let listEpiCheck = await this.listEpiCheck();
+
+        console.log('LIST EPI CHECK: ',listEpiCheck);
+
+        const response = await this.$http.post('epi/register', getLocalStorageToken(), listEpiCheck);
+
+        this.$swal({
+          type: 'success',
+          title: 'EPIs checadas com sucesso!',
+          confirmButtonColor: '#f34336',
+        }).then(() => {
+          this.closeModal();
         })
 
       } catch (err) {
@@ -659,9 +732,6 @@
       this.$refs['my-modal'].show();
     },
     closeModal() {
-      this.$refs['my-modal'].hide();
-    },
-    addEpi() {
       this.$refs['my-modal'].hide();
     },
     confirmModal() {

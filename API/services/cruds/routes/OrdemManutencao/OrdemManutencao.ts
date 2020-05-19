@@ -1,12 +1,14 @@
 const { Router } = require("express");
 import RegisterOrderMaintenanceValidate from '../../controller/OrderMaintenance/RegisterOrderMaintenanceValidate'
 import RegisterOrderMaintenanceRouteValidate from '../../controller/OrderMaintenance/RegisterOrderMaintenceRouteValidate'
+import RegisterOrderMaintenanceListValidate from '../../controller/OrderMaintenance/RegisterOrderMaintenceListValidate'
 import GetOrderMaintenanceValidate from '../../controller/OrderMaintenance/getOrdemMaintenanceValidate'
 import Auth from '../../../../shared/auth/auth'
 
 const router = Router();
 const registerOrderMaintenance = new RegisterOrderMaintenanceValidate();
 const registerOrderMaintenanceRoute = new RegisterOrderMaintenanceRouteValidate();
+const registerOrderMaintenanceListValidate = new RegisterOrderMaintenanceListValidate();
 const getOrderMaintenance = new GetOrderMaintenanceValidate();
 const jwt = new Auth();
 
@@ -44,10 +46,23 @@ router.get('/', async (req: any, res: any) => {
   }
 });
 
-router.post('/rota', async (req: any, res: any) => {
+router.post('/route', async (req: any, res: any) => {
   try {
     await jwt.jwtVerify(req)
     const response = await registerOrderMaintenanceRoute.run(req);
+
+    res.status(200).send(response);
+  } catch (err) {
+    console.log('deu erro mesmo', err);
+
+    res.status(404).send(err);
+  }
+});
+
+router.post('/list', async (req: any, res: any) => {
+  try {
+    await jwt.jwtVerify(req)
+    const response = await registerOrderMaintenanceListValidate.run(req);
 
     res.status(200).send(response);
   } catch (err) {

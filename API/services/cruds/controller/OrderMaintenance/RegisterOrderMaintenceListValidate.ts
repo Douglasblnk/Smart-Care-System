@@ -1,4 +1,4 @@
-import Transaction from '../../../../shared/dao/TransactionOrderRoute';
+import Transaction from '../../../../shared/dao/TransactionOrderList';
 import {SSUtils} from '../../../../shared/utils/utils';
 const _ = require('lodash');
 
@@ -141,7 +141,7 @@ export default class RegisterOrderMaintenanceListValidate {
   }
 
   getQueryEquipmentsRegister(data: any) {
-    const post =  data.equipments_sectors_operations;
+    const post =  data.equipments_sectors;
     const query = `INSERT INTO ${TABLE_EQUIPMENT} SET ?;`;
 
     const dataQuery = { query, post, type: 'Equipamento' };
@@ -164,7 +164,7 @@ export default class RegisterOrderMaintenanceListValidate {
   }
 
   getQuerySectorRegister(data: any) {
-    const post = data.equipments_sectors_operations;
+    const post = data.equipments_sectors;
     
     const query = `INSERT INTO ${TABLE_SECTOR} SET ?;`;
 
@@ -176,7 +176,7 @@ export default class RegisterOrderMaintenanceListValidate {
   }
 
   getQueryEquipmentOperationRegister(data: any) {
-    const post = data.equipments_sectors_operations;
+    const post = {};
     
     const query = `INSERT INTO ${TABLE_EQUIPMENT_OPERATION} SET ?;`;
 

@@ -8,10 +8,8 @@ export default class Dao {
 
   async run(data: any) {
     try {
-      console.log('Post data Transaction', data);
       const response = await this.runQuery(data);
 
-      console.log('Query response: ', response);
 
       return 'response';
     } catch (err) {
@@ -35,7 +33,6 @@ export default class Dao {
 
       let listOperations : any = await this.insertOperationsOrder(data[4]);
       
-      console.log('LIST OPERATIONS Aqui',listOperations);
 
       for (const element of listOperations) {
         data[5].post.Operacao_FK = element;
@@ -44,13 +41,12 @@ export default class Dao {
       
       connection.commit();
 
-      connection.end();
-
       return { result: 'Ordem de serviço criada!' }
     } catch (err) {
       console.log('err runTransaction :>> ', err);
+      
 
-      await connection.rollback()
+      await connection.rollback();
       throw err;
     }
   }
@@ -64,7 +60,9 @@ export default class Dao {
         });
       });
     } catch (err) {
-      throw err;
+      const error = this.getQueryError(err);
+
+      throw error;
     }
   }
 
@@ -81,9 +79,10 @@ export default class Dao {
           });
         }
       });
-      //console.log('response :>> ', response.insertId);
     } catch (err) {
-      throw err;
+      const error = this.getQueryError(err);
+
+      throw error;
     }
   }
 
@@ -94,29 +93,27 @@ export default class Dao {
         let response: any;
         for (const item of data.post) {
           connection.query(data.query, item, async (err: any, result: any) =>{
-            console.log('ERRO ACONTECEU');
             if (err) reject({ status: 401, msg: 'Não foi possível realizar a operação!', ...err })
-            console.log('ERRO Passou', err);
-            console.log('Result Passou', result.insertId);
+
             listOperations.push(result.insertId);
             
-            console.log('List Passou', listOperations);
             resolve(listOperations);
           });
         }
       });
     } catch (err) {
-      throw err;
+      const error = this.getQueryError(err);
+
+      throw error;
     }
   }
 
-  errorTreatment(error: any) {
-    const errorObj = JSON.parse(JSON.stringify(error))
-    console.log('to aqui');
-    if (_.has(errorObj, 'code')) {
-      console.log('to aqui 2');
-      if (errorObj.code === 'ER_DUP_ENTRY') return 'Já existem registros com esses dados!'
-    }
+  private getQueryError(err: any): { status: number, err: string } {
+    const error = Object.assign({}, err);
+
+    if (_.has(error, 'code')) return { status: 400, err: 'Não foi possível concluir a operação!' };
+    if (error.code === 'ER_DUP_ENTRY') return { status: 400, err: 'item já cadastrado!' };
+    return { status: 400, err: _.get(error, 'message', 'Não foi possível concluir a operação!') }
   }
 
 
