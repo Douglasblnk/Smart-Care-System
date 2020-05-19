@@ -120,9 +120,10 @@
                 <div
                   class="options"
                   :class="verifyUserAccess ? '' : 'disable'"
+                  @click="openOrderNote()"
                 >
                   <i class="fa fa-file-signature fa-lg mb-2" />
-                  <span>Assinatura</span>
+                  <span>Apontamentos</span>
                 </div>
 
                 <div
@@ -261,6 +262,13 @@
         />
       </div>
 
+      <div v-if="state.view === 'Note'" key="Note">
+        <OrderNote
+          :order="order"
+          @state-list="closeDetail"
+        />
+      </div>
+
     </transition>
     <b-modal @hide="resetModal()" @show="checkSelectedEpis()" centered ref="my-modal" hide-footer hide-header title="Verificação de EPIs">
         <div class="d-block text">
@@ -295,6 +303,7 @@
 
 <script>
   import Verificacao from './Verificacao.vue';
+  import OrderNote from './OrderNote.vue';
   import { getErrors, getLocalStorageToken } from '../utils/utils';
 
   export default {
@@ -302,6 +311,7 @@
 
   components: {
     Verificacao,
+    OrderNote,
   },
 
   props: {
@@ -404,6 +414,11 @@
       if (!this.verifyUserAccess) return;
 
       this.$set(this.state, 'view', 'Verification');
+    },
+    openOrderNote() {
+      if (!this.verifyUserAccess) return;
+
+      this.$set(this.state, 'view', 'Note');
     },
     closeDetail() {
       this.$set(this.state, 'view', 'detail');
@@ -657,8 +672,13 @@
       try {
         console.log('ORDER:',  { order: this.order.idOrdemServico })
         const { result } = await this.$http.post('epi/order', getLocalStorageToken(), { order: this.order.idOrdemServico });
-        console.log('Result', result);
-        this.epiList = [...result];
+        console.log('Result', result.length);
+        if (result.length !== undefined) {
+          this.epiList = [...result];
+        }else{
+          this.epiList = [result];
+        }
+        
         console.log('EpiList: ', this.epiList);
       } catch (err) {
         console.log('err :>> ', err.response || err);
