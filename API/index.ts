@@ -30,7 +30,7 @@ const operacoes = require("./services/cruds/routes/Operacoes/Operacoes");
 const detalhamento = require('./services/movimentations/routes/Detalhamento/Detalhamento');
 const verificacao = require('./services/movimentations/routes/Verificacao/Verificacao');
 const initiate = require('./services/movimentations/routes/Iniciar/InitiateOrder');
-
+const orderNote = require('./services/movimentations/routes/Apontar/OrderNote');
 
 app.use('/users', user);
 app.use('/equipamento', equipamento)
@@ -50,6 +50,7 @@ app.use('/verificacao', verificacao)
 app.use('/nivel-acesso', nivelAcesso)
 app.use("/operacoes", operacoes)
 app.use('/initiate', initiate)
+app.use('/order-note', orderNote)
 
 
 app.get('/', (req: any, res: any) => {

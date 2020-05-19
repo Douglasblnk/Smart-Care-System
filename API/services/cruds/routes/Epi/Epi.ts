@@ -43,7 +43,6 @@ router.post('/order', async(req: any, res: any) => {
         const response = await getOrderEpiValidate.run(req);
 
         res.status(200).send(response);
-
     } catch(err) {
         res.status(404).send(err);
     }
