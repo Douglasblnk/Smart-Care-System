@@ -116,6 +116,18 @@ span, p, strong {
   }
 }
 
+.scalable-btn {
+  cursor: pointer;
+  transition: .1s;
+  &:hover {
+    transform: scale(1.1);
+  }
+  &:active {
+    transform: scale(1);
+  }
+}
+
+
 /* ADICIONAR UM ESTILO CUSTOMIZADO AO SCROLL BAR */
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background: #f1f1f1; }
