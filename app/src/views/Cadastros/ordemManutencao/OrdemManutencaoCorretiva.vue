@@ -92,14 +92,30 @@
           <div class="operations-title">
             <span>Selecione as operações para está ordem</span>
           </div>
-          <div class="operations-items">
-            <b-form-checkbox-group
-              id="checkbox-operations"
-              v-model="selectedOperations"
-              :options="getOperationsOptions()"
-              name="flavour-1"
-              stacked
-            />
+
+          <div class="d-flex justify-content-center">
+            <save-button id="show-btn" label="Adicionar Operação" @click.native="showOperationModal()" />
+          </div>
+
+          <div class="w-100">
+            <label>Operações selecionadas: </label>
+
+            <div v-if="inputValues.operations.length > 0" class="d-flex flex-column">
+              <div v-for="(operation, index) in inputValues.operations" :key="`epi-${index}`">
+                <div class="seleted-operation-item">
+                  <div class="d-flex flex-column">
+                    <span>Operação: {{ getOperationName(operation.Operacao) }}</span>
+                    <span>Sequencia: {{ operation.sequencia_operacao }}</span>
+                  </div>
+                  <div>
+                    <i @click="removeOperation(index)" class="fa fa-trash fa-lg scalable-btn" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-else>
+              <span>Nenhuma operação selecionada.</span>
+            </div>
           </div>
         </tab-content>
 
@@ -107,6 +123,10 @@
           Step para definir quais EPIs são necessárias para a ordem
          -->
         <tab-content title="Epi" icon="fa fa-cog">
+          <div class="operations-title">
+            <span>Selecione as EPIs para está ordem</span>
+          </div>
+
           <div class="d-flex justify-content-center">
             <save-button id="show-btn" label="Adicionar EPI" @click.native="showEpiModal()" />
           </div>
@@ -139,7 +159,18 @@
       </form-wizard>
     </div>
 
-    <b-modal ref="my-modal" centered hide-footer hide-header title="Cadastrar Epi na Ordem" @hide="resetModal()" @show="checkSelectedEpis()">
+    <!--
+      Modal para adicionar EPIS
+      -->
+    <b-modal
+      ref="epi-modal"
+      centered
+      hide-footer
+      hide-header
+      title="Cadastrar Epi na Ordem"
+      @hide="resetModal()"
+      @show="checkSelectedEpis()"
+    >
       <div class="d-block text">
         <div class="text-center">
           <h3>Adicionar EPIs à ordem</h3>
@@ -163,8 +194,48 @@
         </div>
       </div>
       <div class="d-flex justify-content-center">
-        <cancel-button label="Fechar" @click.native="closeModal()" />
+        <cancel-button label="Fechar" @click.native="closeEpiModal()" />
         <save-button label="Adicionar" @click.native="addEpi()" />
+      </div>
+    </b-modal>
+
+    <!--
+      Modal para adicionar Operações
+      -->
+    <b-modal
+      ref="operation-modal"
+      centered
+      hide-footer
+      hide-header
+      title="Cadastrar operações na Ordem"
+      @hide="resetModal()"
+      @show="checkSelectedOperations()"
+    >
+      <div class="d-block text">
+        <div class="text-center">
+          <h3>Adicionar Operações à ordem</h3>
+          <span>
+            Informe quais operações serão executas nesta ordem.
+          </span>
+        </div>
+        <div class="m-3" style="overflow: auto; max-height: 300px;">
+          <b-form-checkbox-group
+            id="checkbox-operations"
+            v-model="selectedOperations"
+            :options="getOperationsOptions()"
+            name="flavour-1"
+            stacked
+          />
+        </div>
+      </div>
+      <div v-if="modalHasError">
+        <div class="d-flex justify-content-center w-100 p-2 rounded" style="background-color: #ff4a4a5c; border: 1px solid #ff4a4aa6">
+          <span style="color: black">{{ modalErrorMessage }}</span>
+        </div>
+      </div>
+      <div class="d-flex justify-content-center">
+        <cancel-button label="Fechar" @click.native="closeOperationModal()" />
+        <save-button label="Adicionar" @click.native="addOperation()" />
       </div>
     </b-modal>
   </div>
@@ -222,12 +293,11 @@ export default {
       ],
       epiList: [],
       selectedOperations: [],
-      sequenceOperation: 0,
       operationsList: [],
+
       showRemoveEpi: {},
       modalHasError: false,
       modalErrorMessage: '',
-      isloading: false,
     };
   },
 
@@ -243,6 +313,7 @@ export default {
       this.modalHasError = false;
       this.modalErrorMessage = '';
       this.selectedEpis = [];
+      this.selectedOperations = [];
     },
     getEpiOptions() {
       return this.epiList.map(i => ({ text: i.descricaoEpi, value: i.idEpi }));
@@ -254,20 +325,56 @@ export default {
       const { descricaoEpi } = this.epiList.find(i => i.idEpi === epi);
       return descricaoEpi;
     },
+    getOperationName(operation) {
+      const { descricao_operacao } = this.operationsList.find(i => i.idoperacao === operation);
+      return descricao_operacao;
+    },
     removeEpi(index) {
       this.inputValues.epis.splice(index, 1);
       this.$set(this.showRemoveEpi, [index], false);
     },
+    removeOperation(index) {
+      this.inputValues.operations.splice(index, 1);
+      this.updateCurrentOperations();
+    },
+    updateCurrentOperations() {
+      const updatedOperations = [];
+      let sequenceOperation = 0;
+
+      for (const option of this.inputValues.operations) {
+        sequenceOperation += 10;
+
+        const incrementOperationZero = this.incrementZero(sequenceOperation);
+
+        const operationOption = {
+          Operacao: option.Operacao,
+          sequencia_operacao: incrementOperationZero + sequenceOperation,
+        };
+
+        updatedOperations.push(operationOption);
+      }
+      this.inputValues.operations = [...updatedOperations];
+    },
     async showEpiModal() {
       await this.getEpis();
 
-      this.$refs['my-modal'].show();
+      this.$refs['epi-modal'].show();
     },
-    closeModal() {
-      this.$refs['my-modal'].hide();
+    showOperationModal() {
+      this.$refs['operation-modal'].show();
     },
-    confirmModal() {
-      this.$refs['my-modal'].toggle('#toggle-btn');
+    closeEpiModal() {
+      this.$refs['epi-modal'].hide();
+    },
+    closeOperationModal() {
+      this.$refs['operation-modal'].hide();
+    },
+    confirmEpiModal() {
+      this.$refs['epi-modal'].toggle('#toggle-btn');
+      this.resetModal();
+    },
+    confirmOperationModal() {
+      this.$refs['operation-modal'].toggle('#toggle-btn');
       this.resetModal();
     },
     async getEpis() {
@@ -291,25 +398,44 @@ export default {
         this.modalErrorMessage = 'Selecione uma EPI antes de continuar';
       } else {
         this.inputValues.epis = this.selectedEpis.map(i => ({ Epi_idEpi: i }));
-        this.confirmModal();
+        this.confirmEpiModal();
       }
-    },
-    resetInputValues() {
-      this.inputValues.operations = [];
-      this.sequenceOperation = 0;
-      this.selectedEpis = [];
-      this.selectedOperations = [];
-      this.workEquipment = [];
     },
     async addOperation() {
-      for (const option of this.selectedOperations) {
-        this.sequenceOperation += 10;
-        const incrementOperationZero = this.incrementZero(this.sequenceOperation);
+      if (this.selectedOperations.length === 0) {
+        this.modalHasError = true;
+        this.modalErrorMessage = 'Selecione uma operação antes de continuar';
+      } else {
+        const nonSelectedOperations = this.selectedOperations.filter((operation, index) => {
+          if (!_.get(this.inputValues.operations[index], 'Operacao', ''))
+            return operation;
+          return '';
+        });
+        
+        if (nonSelectedOperations.length === 0) return this.confirmOperationModal();
 
-        const operationOption = { Operacao: option, sequencia_operacao: incrementOperationZero + this.sequenceOperation };
+        let sequenceOperation = this.getLastSequence();
 
-        this.inputValues.operations.push(operationOption);
+        for (const option of nonSelectedOperations) {
+          sequenceOperation += 10;
+
+          const incrementOperationZero = this.incrementZero(sequenceOperation);
+
+          const operationOption = {
+            Operacao: option,
+            sequencia_operacao: incrementOperationZero + sequenceOperation,
+          };
+
+          this.inputValues.operations.push(operationOption);
+        }
+        this.confirmOperationModal();
       }
+    },
+    getLastSequence() {
+      const lastSequencie = _.get(this.inputValues.operations[this.inputValues.operations.length - 1], 'sequencia_operacao', '');
+      if (lastSequencie)
+        return Number(lastSequencie.slice(2));
+      return 0;
     },
     incrementZero(sequenceOperation) {
       if (sequenceOperation >= 100) return '0';
@@ -319,13 +445,23 @@ export default {
       if (this.inputValues.epis.length > 0)
         this.selectedEpis = this.inputValues.epis.map(i => i.Epi_idEpi);
     },
+    checkSelectedOperations() {
+      if (this.inputValues.operations.length > 0)
+        this.selectedOperations = this.inputValues.operations.map(i => i.Operacao);
+    },
     getOrdertype() {
       if (this.orderType === 'corretiva') return 1;
       return 2;
     },
+    resetInputValues() {
+      this.inputValues.operations = [];
+      this.sequenceOperation = 0;
+      this.selectedEpis = [];
+      this.selectedOperations = [];
+      this.workEquipment = [];
+    },
     async registerOrderMaintenance() {
       try {
-        await this.addOperation();
         this.$set(this.inputValues, 'beginData', this.$moment().format('YYYY-MM-DD'));
         console.log('INPUT VALUES REGISTER: ',this.inputValues);
         const response = await this.$http.post('ordem-manutencao', getLocalStorageToken(), this.inputValues);
@@ -354,7 +490,6 @@ export default {
           this.workEquipment.push(response.result);
 
         else this.workEquipment = [...response.result];
-        
       } catch (err) {
         return this.$swal({
           type: 'warning',
@@ -466,10 +601,19 @@ export default {
         justify-content: center;
         font-size: 22px;
       }
-      .operations-items {
-        overflow: auto;
-        max-height: 300px;
-        margin: 20px;
+      .seleted-operation-item {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 8px;
+        padding: 20px;
+        i {
+          color: #555;
+        }
+        &:hover {
+          background-color: #eee;
+        }
       }
       .selected-epi-wrapper {
         min-width: 50px;
