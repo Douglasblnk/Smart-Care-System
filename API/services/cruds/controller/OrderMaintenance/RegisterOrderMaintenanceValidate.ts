@@ -60,7 +60,9 @@ export default class RegisterOrderMaintenanceValidate {
       err: 'Não existem dados!',
     };
     
-    isEmpty.verify(data,  ['orderType'], '');
+    isEmpty.verify(data,  ['title','summary','description','plannedStart','plannedEnd',
+                           'requireStop','beginData','equipment','typeMaintenance','sector',
+                           'priority','stats','operations'], '');
 
     if (data.title === '') throw {
       status: 404,
@@ -123,7 +125,7 @@ export default class RegisterOrderMaintenanceValidate {
                     tipoManutencao_idtipoManutencao: data.typeMaintenance, Prioridade_idPrioridade: data.priority, 
                     Status_idStatus: data.stats
                 };
-    const query = /*sql*/`INSERT INTO ${TABLE} SET ?;`;
+    const query = `INSERT INTO ${TABLE} SET ?;`;
 
     const dataQuery = { query, post, type: 'Ordem de Manutenção' };
     console.log(dataQuery);

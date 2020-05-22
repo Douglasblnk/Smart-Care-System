@@ -60,7 +60,9 @@ export default class RegisterOrderMaintenanceListValidate {
       err: 'Não existem dados!',
     };
     
-    isEmpty.verify(data,  ['orderType'], '');
+    isEmpty.verify(data,  ['title','summary','plannedStart','plannedEnd','requireStop','beginData',
+                           'equipment_sector','typeMaintenance','sector','priority','stats',
+                           'superiorEquipment','operations'], '');
 
     if (data.title === '') throw {
       status: 404,

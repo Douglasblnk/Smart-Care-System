@@ -262,7 +262,6 @@
 
             <span slot="footer" class="dialog-footer">
               <!-- <el-button @click="dialogVisible = false">Cancel</el-button> -->
-              // ! TODO remove inline logic, reset modal properties
               <el-button type="primary" class="Button_close" @click="dialogVisible = false">Fechar</el-button>
             </span>
           </el-dialog>

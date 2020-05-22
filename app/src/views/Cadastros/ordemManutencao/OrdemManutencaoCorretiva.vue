@@ -83,6 +83,16 @@
             label="Requer Parada"
             :options="selectsRequireStopOptions()"
           />
+          <custom-select
+            v-model="inputValues.requester"
+            label="Solicitante"
+            :options="selectsRequestersOptions()"
+          />
+          <custom-select
+            v-model="inputValues.report"
+            label="Reporte"
+            :options="selectsReportOptions()"
+          />
         </tab-content>
 
         <!--
@@ -139,7 +149,8 @@
       </form-wizard>
     </div>
 
-    <b-modal ref="my-modal" centered hide-footer hide-header title="Cadastrar Epi na Ordem" @hide="resetModal()" @show="checkSelectedEpis()">
+    <b-modal ref="my-modal" centered hide-footer hide-header
+      title="Cadastrar Epi na Ordem" @hide="resetModal()" @show="checkSelectedEpis()">
       <div class="d-block text">
         <div class="text-center">
           <h3>Adicionar EPIs à ordem</h3>
@@ -198,6 +209,8 @@ export default {
         beginData: '',
         requireStop: '',
         equipment: '',
+        requester: '',
+        report: '',
         typeMaintenance: this.getOrdertype(),
         sector: '',
         priority: '',
@@ -205,11 +218,14 @@ export default {
         plannedTime: '',
         operations: [],
         epis: [],
+        
       },
       selectedEpis: [],
       workEquipment: [],
       selectsPriority: [],
       selectsSector: [],
+      selectsRequesterOptions: [],
+      selectsReports: [],
       selectsRequireStop: [
         {
           id: true,
@@ -236,6 +252,8 @@ export default {
     this.getSector();
     this.getPriority();
     this.getOperations();
+    this.getRequester();
+    this.getReporter();
   },
 
   methods: {
@@ -363,11 +381,49 @@ export default {
         });
       }
     },
+    async getRequester() {
+      try {
+        const response = await this.$http.get('users/requester', getLocalStorageToken());
+
+        if (response.result.length === undefined)
+          this.selectsRequesterOptions.push(response.result);
+        else this.selectsRequesterOptions = [...response.result];
+        
+      } catch (err) {
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
+    async getReporter() {
+      try {
+        const response = await this.$http.get('users/report', getLocalStorageToken());
+        console.log('Reporter: ',response);
+        if (response.result.length === undefined)
+          this.selectsReports.push(response.result);
+        else this.selectsReports = [...response.result];
+        
+      } catch (err) {
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
     getEquipmentsOptions() {
       return this.workEquipment.map(i => ({ id: String(i.idEquipamento), description: i.equipamento }));
     },
     selectsRequireStopOptions() {
       return this.selectsRequireStop.map(i => ({ id: String(i.id), description: i.nome }));
+    },
+    selectsRequestersOptions() {
+      return this.selectsRequesterOptions.map(i => ({ id: String(i.idUsuario), description: i.nome }));
+    },
+    selectsReportOptions(){
+      return this.selectsReports.map(i => ({ id: String(i.idUsuario), description: i.nome }));
     },
     async getSector() {
       try {
