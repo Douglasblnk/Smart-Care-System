@@ -412,6 +412,8 @@ export default {
           return '';
         });
         
+        if (nonSelectedOperations.length === 0) return this.confirmOperationModal();
+
         let sequenceOperation = this.getLastSequence();
 
         for (const option of nonSelectedOperations) {
