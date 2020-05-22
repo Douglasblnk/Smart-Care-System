@@ -2,11 +2,11 @@
   <div class="root-local-instalacao-view">
     <div class="list-option">
       <div class="d-flex justify-content-between">
-        <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'list'">
+        <div class="option d-flex align-items-center m-4" @click="switchLabelPage('list')">
           <i class="fas fa-list-alt" />
           <span>Listar</span>
         </div>
-        <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'register'">
+        <div class="option d-flex align-items-center m-4" @click="switchLabelPage('register')">
           <i class="fas fa-edit" />
           <span>Cadastrar</span>
         </div>
@@ -85,6 +85,8 @@ export default {
 
   mounted() {
     this.getSector();
+    this.$store.commit('addPageName', 'Cadastro de Local Instalação ');
+    this.switchLabelPage('list');
   },
 
   methods: {
@@ -93,9 +95,21 @@ export default {
       else return 'Cadastrar';
     },
     editSector(sector) {
+      this.switchLabelPage('edit');
       this.inputValues = { ...sector };
       this.switchListRegister = 'register';
       this.isEditing = true;
+    },
+    switchLabelPage(labelPage) {
+      if (labelPage === 'list') {
+        this.switchListRegister = 'list';
+        return this.$store.commit('addPageName', `Cadastro de Local Instalação | Listagem`);
+      } else if (labelPage === 'register') {
+        this.switchListRegister = 'register';
+        return this.$store.commit('addPageName', `Cadastro de Local Instalação | Cadastrar`);
+      } else {
+        return this.$store.commit('addPageName', `Cadastro de Local Instalação | Editar`);
+      }
     },
     async getSector() {
       try {
@@ -201,6 +215,7 @@ export default {
       });
     },
     closeEditing() {
+      this.switchLabelPage('list')
       this.switchListRegister = 'list';
       this.isEditing = false;
       this.resetModel();

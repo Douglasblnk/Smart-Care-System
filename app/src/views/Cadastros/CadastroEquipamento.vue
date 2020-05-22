@@ -1,76 +1,76 @@
 <template>
-    <div class="equipment-wrapper">
-      <div class="list-option">
-        <div class="d-flex justify-content-between">
-          <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'list'">
-            <i class="fas fa-list-alt" />
-            <span>Listar</span>
-          </div>
-          <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'register'">
-            <i class="fas fa-edit" />
-            <span>Cadastrar</span>
-          </div>
+  <div class="equipment-wrapper">
+    <div class="list-option">
+      <div class="d-flex justify-content-between">
+        <div class="option d-flex align-items-center m-4" @click="switchLabelPage('list')">
+          <i class="fas fa-list-alt" />
+          <span>Listar</span>
+        </div>
+        <div class="option d-flex align-items-center m-4" @click="switchLabelPage('register')">
+          <i class="fas fa-edit" />
+          <span>Cadastrar</span>
         </div>
       </div>
+    </div>
       
-      <transition name="slide-fade" mode="out-in">
-        <template v-if="switchListRegister === 'list'">
-          <div class="d-flex w-100 justify-content-center">
-            <div class="table-content bg-white p-4 w-100">
-              <div class="table-responsive">
-                <table class="table table table-striped table-borderless table-hover" cellspacing="0">
-                  <thead class="table-head">
-                    <tr>
-                      <th scope="col">Local de instalação</th>
-                      <th scope="col">Equipamento</th>
-                      <th scope="col">Descrição</th>
-                      <th scope="col">Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody class="table-body">
-                    <tr v-for="(equipment, index) in equipments" :key="`equipment-${index}`">
-                      <td>{{ equipment.Setor_idSetor }}</td>
-                      <td>{{ equipment.equipamento }}</td>
-                      <td>{{ equipment.descricao }}</td>
-                      <td style="width: 50px">
-                        <div class="d-flex table-action">
-                          <i class="fas fa-edit text-muted" @click="editEquipment(equipment)"></i>
-                          <i class="fas fa-trash text-muted" @click="deleteEquipment(equipment, index)"></i>
-                        </div> 
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+    <transition name="slide-fade" mode="out-in">
+      <template v-if="switchListRegister === 'list'">
+        <div class="d-flex w-100 justify-content-center">
+          <div class="table-content bg-white p-4 w-100">
+            <div class="table-responsive">
+              <table class="table table table-striped table-borderless table-hover" cellspacing="0">
+                <thead class="table-head">
+                  <tr>
+                    <th scope="col">Local de instalação</th>
+                    <th scope="col">Equipamento</th>
+                    <th scope="col">Descrição</th>
+                    <th scope="col">Ações</th>
+                  </tr>
+                </thead>
+                <tbody class="table-body">
+                  <tr v-for="(equipment, index) in equipments" :key="`equipment-${index}`">
+                    <td>{{ equipment.Setor_idSetor }}</td>
+                    <td>{{ equipment.equipamento }}</td>
+                    <td>{{ equipment.descricao }}</td>
+                    <td style="width: 50px">
+                      <div class="d-flex table-action">
+                        <i class="fas fa-edit text-muted" @click="editEquipment(equipment)"></i>
+                        <i class="fas fa-trash text-muted" @click="deleteEquipment(equipment, index)"></i>
+                      </div> 
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
-        </template>
+        </div>
+      </template>
 
-        <template v-if="switchListRegister === 'register'">
-          <form @submit.prevent="registerEquipment()" class="formPosition">
-            <div class="cadCard">
-              <div class="input-card w-100 d-flex">
-                <simple-input v-model="inputValues.Setor_idSetor" label="Local Instalação:" type="number" />
-                <simple-input v-model="inputValues.equipamento" label="Equipamento:" type="text" />
-                <simple-input v-model="inputValues.equipamentoSuperior" label="Equipamento Superior:" type="text" />
-              </div>
-              <div class="w-100">
-                <description
-                  v-model="inputValues.descricao"
-                  cols="30"
-                  rows="3"
-                  label="Descrição:"
-                />
-              </div>
+      <template v-if="switchListRegister === 'register'">
+        <form @submit.prevent="registerEquipment()" class="formPosition">
+          <div class="cadCard">
+            <div class="input-card w-100 d-flex">
+              <simple-input v-model="inputValues.Setor_idSetor" label="Local Instalação:" type="number" />
+              <simple-input v-model="inputValues.equipamento" label="Equipamento:" type="text" />
+              <simple-input v-model="inputValues.equipamentoSuperior" label="Equipamento Superior:" type="text" />
             </div>
-            <div class="d-flex justify-content-center m-3">
-              <save-button :label="getSaveButtonText()" />
-              <cancel-button v-if="isEditing" @click.native="closeEditing" label="Cancelar" />
+            <div class="w-100">
+              <description
+                v-model="inputValues.descricao"
+                cols="30"
+                rows="3"
+                label="Descrição:"
+              />
             </div>
-          </form>
-        </template>
-      </transition>
-    </div>
+          </div>
+          <div class="d-flex justify-content-center m-3">
+            <save-button :label="getSaveButtonText()" />
+            <cancel-button v-if="isEditing" @click.native="closeEditing" label="Cancelar" />
+          </div>
+        </form>
+      </template>
+    </transition>
+  </div>
 </template>
 
 <script>
@@ -102,16 +102,29 @@ export default {
   },
 
   mounted() {
+    this.$store.commit('addPageName', 'Cadastro de Equipamento');
     this.getEquipment();
+    this.switchLabelPage('list');
   },
 
   methods: {
     getSaveButtonText() {
       if (this.isEditing) return 'Alterar';
-      else return 'Cadastrar'
+      else return 'Cadastrar';
     },
-
+    switchLabelPage(labelPage) {
+      if (labelPage === 'list') {
+        this.switchListRegister = 'list';
+        return this.$store.commit('addPageName', `Cadastro de Equipamento | Listagem`);
+      } else if (labelPage === 'register') {
+        this.switchListRegister = 'register';
+        return this.$store.commit('addPageName', `Cadastro de Equipamento | Cadastrar`);
+      } else {
+        return this.$store.commit('addPageName', `Cadastro de Equipamento | Editar`);
+      }
+    },
     editEquipment(equipment) {
+      this.switchLabelPage('edit');
       console.log(equipment);
       this.inputValues = { ...equipment }
       console.log(typeof this.inputValues.Setor_idSetor);
@@ -120,6 +133,7 @@ export default {
     },
 
     closeEditing() {
+      this.switchLabelPage('list');
       this.switchListRegister = 'list'
       this.isEditing = false;
       this.resetModel();
@@ -140,7 +154,8 @@ export default {
         })
     },
 
-    registerEquipment(){
+    registerEquipment() {
+
       if (this.isEditing) return this.updateEquipment();
       this.$http.post('equipamento', getLocalStorageToken(), this.inputValues)
         .then(res => {
@@ -161,7 +176,7 @@ export default {
             this.getEquipment();
           })
         })
-    },
+      },
 
     deleteEquipment(equipment, index) {
       console.log(equipment);
@@ -215,7 +230,7 @@ export default {
     },
 
     resetModel() {
-      this.inputValues = {}
+      this.inputValues = {};
     },
   },
 };

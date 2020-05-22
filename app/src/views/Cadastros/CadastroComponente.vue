@@ -2,11 +2,11 @@
   <div class="root-centro-trabalho-view">
     <div class="list-option">
       <div class="d-flex justify-content-between">
-        <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'list'">
+        <div class="option d-flex align-items-center m-4" @click="switchLabelPage('list')">
           <i class="fas fa-list-alt" />
           <span>Listar</span>
         </div>
-        <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'register'">
+        <div class="option d-flex align-items-center m-4" @click="switchLabelPage('register')">
           <i class="fas fa-edit" />
           <span>Cadastrar</span>
         </div>
@@ -46,29 +46,27 @@
       </template>
 
       <template v-if="switchListRegister === 'register'">
-
-      <form @submit.prevent="registerEquipment()" class="formPosition">
-        <div class="cadCard">
-          <div class="inputs">
-            <custom-select v-model="selectValue" :options="getWorkEquipmentOptions()"></custom-select>
-            <!--<tranfer-select v-model="inputValues.Equipamento_idEquipamento" :selects="selectsEquipament" :label="'Máquina'" ></tranfer-select>     
-            -->
+        <form @submit.prevent="registerEquipment()" class="formPosition">
+          <div class="cadCard">
+            <div class="inputs">
+              <custom-select v-model="selectValue" :options="getWorkEquipmentOptions()"></custom-select>
+              <!--<tranfer-select v-model="inputValues.Equipamento_idEquipamento" :selects="selectsEquipament" :label="'Máquina'" ></tranfer-select>     
+              -->
+            </div>
+            <div class="sideInput">
+              <div class="inputsSidePosition">
+                <description v-model="inputValues.DescricaoComponente" :label="'Descrição Componente:'" :type="'text'" />
+              </div>  
+            </div>
           </div>
-          <div class="sideInput">
-            <div class="inputsSidePosition">
-              <description v-model="inputValues.DescricaoComponente" :label="'Descrição Componente:'" :type="'text'" />
-            </div>  
+          <!-- <div class="d-flex justify-content-center m-3">
+            <b-button type="submit" value="send" variant="danger">Cadastrar</b-button>
+          </div> -->
+          <div class="d-flex justify-content-center m-3">
+            <save-button :label="getSaveButtonText()" />
+            <cancel-button v-if="isEditing" @click.native="closeEditing" label="Cancelar" />
           </div>
-        </div>
-        <!-- <div class="d-flex justify-content-center m-3">
-          <b-button type="submit" value="send" variant="danger">Cadastrar</b-button>
-        </div> -->
-        <div class="d-flex justify-content-center m-3">
-          <save-button :label="getSaveButtonText()" />
-          <cancel-button v-if="isEditing" @click.native="closeEditing" label="Cancelar" />
-        </div>
-      </form>
-
+        </form>
       </template>
     </transition>
   </div>
@@ -124,18 +122,31 @@ export default {
       equipamentos:[]
     };
   },
-  mounted(){
+  mounted() {
     this.getEquipments();
     this.getComponentes();
+    this.$store.commit('addPageName', 'Cadastro de Componentes');
+    this.switchLabelPage('list');
     
   },
   methods: {
     getSaveButtonText() {
       if (this.isEditing) return 'Alterar';
-      else return 'Cadastrar'
+      else return 'Cadastrar';
     },
-    registerEquipment(){
-     if(this.isEditing) return this.updateComponent();
+    switchLabelPage(labelPage) {
+      if (labelPage === 'list') {
+        this.switchListRegister = 'list';
+        return this.$store.commit('addPageName', `Cadastro de Componentes | Listagem`);
+      } else if (labelPage === 'register') {
+        this.switchListRegister = 'register';
+        return this.$store.commit('addPageName', `Cadastro de Componentes | Cadastrar`);
+      } else {
+        return this.$store.commit('addPageName', `Cadastro de Componentes | Editar`);
+      }
+    },
+    registerEquipment() {
+     if (this.isEditing) return this.updateComponent();
       this.inputValues.Equipamento_idEquipamento = this.selectValue;
 
        this.$http.post('componente', getLocalStorageToken(), this.inputValues)
@@ -155,7 +166,7 @@ export default {
         })
     },
 
-    getEquipments(){
+    getEquipments() {
        console.log('1A');
       
       // const token = localStorage.getItem('token')
@@ -173,7 +184,7 @@ export default {
         })
     },
 
-    getComponentes(){
+    getComponentes() {
       console.log('2B');
       // const token = localStorage.getItem('token')
       this.$http.get('componente/get', getLocalStorageToken())
@@ -195,7 +206,7 @@ export default {
     },
 
     resetModel() {
-      this.inputValues = {}
+      this.inputValues = {};
     },
   
   deleteComponents(component, index) {
@@ -228,6 +239,7 @@ export default {
     })
   },
   editComponent(component) {
+    this.switchLabelPage('edit');
     this.inputValues = { ...component };
 
     // console.log('a-------------------------------------a---------------------------------a');
@@ -253,13 +265,12 @@ export default {
   // }
   
   closeEditing() {
-    this.switchListRegister = 'list'
+    this.switchLabelPage('list');
+    this.switchListRegister = 'list';
     this.isEditing = false;
     this.resetModel();
     },
-  updateComponent(){
-
-   
+  updateComponent() {
     this.$http.methodUpdate('componente', getLocalStorageToken(), this.inputValues, this.inputValues.idComponente)
     .then(res => {
       if (res.status !== 200) return this.$swal({

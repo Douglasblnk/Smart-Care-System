@@ -17,7 +17,7 @@ export default class GetOperacoesValidate {
   }
 
   getQuery() {
-    const query = /*sql*/`SELECT * FROM ${TABLE_OPERACAO};`;
+    const query = /*sql*/`SELECT * FROM ${TABLE_OPERACAO} WHERE ${TABLE_OPERACAO}.excluded = 0;`;
 
     const dataQuery = { query, type: 'Operações' };
     console.log(dataQuery);

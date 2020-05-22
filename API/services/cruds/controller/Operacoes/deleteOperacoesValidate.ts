@@ -1,6 +1,6 @@
-import Delete from '../../../../shared/dao/Delete';
+import Update from '../../../../shared/dao/Update';
 import { TABLE_OPERACAO } from '../../../../shared/enums/database'
-const commitData = new Delete();
+const commitData = new Update();
 
 
 export default class DeleteOperacoesValidate {
@@ -25,7 +25,8 @@ export default class DeleteOperacoesValidate {
 
   getData(evt: any) {
     const data = evt.params.id || undefined;
-
+    console.log('oia so')
+    console.log(data)
     return data;
   }
 
@@ -39,10 +40,11 @@ export default class DeleteOperacoesValidate {
   }
 
   getQuery(data: any) {
-    const post = [data];
-    const query = /*SQL*/`DELETE from ${TABLE_OPERACAO} WHERE ${TABLE_OPERACAO}.idoperacao = ?`
-
-    const dataQuery = { query, post, type: 'Operação' };
+    const values = { excluded: 1};
+    const where = data;
+    const query = /*sql*/`UPDATE ${TABLE_OPERACAO} SET ? WHERE idoperacao = ?;`;
+    console.log(query);
+    const dataQuery = { query, values, where, type: 'Operacões' };
 
     console.log(dataQuery);
 

@@ -2,11 +2,11 @@
   <div class="root-epi-view">
     <div class="list-option">
       <div class="d-flex justify-content-between">
-        <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'list'">
+        <div class="option d-flex align-items-center m-4" @click="switchLabelPage('list')">
           <i class="fas fa-list-alt" />
           <span>Listar</span>
         </div>
-        <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'register'">
+        <div class="option d-flex align-items-center m-4" @click="switchLabelPage('register')">
           <i class="fas fa-edit" />
           <span>Cadastrar</span>
         </div>
@@ -72,7 +72,7 @@ export default {
         'cancel-button': cancelButton,
 
   },
-  data(){
+  data() {
     return {
         inputValues: {
             descricaoEpi:'',
@@ -82,16 +82,30 @@ export default {
         Epis: [],
     };
   },
-  mounted(){
+  mounted() {
     this.getEpi();
+    this.$store.commit('addPageName', 'Cadastro de EPI');
+    this.switchLabelPage('list');
   },
   methods: {
-    getSaveButtonText(){
+    getSaveButtonText() {
         if(this.isEditing) return 'Alterar';
         else return 'Cadastro';
     },
-    async getEpi(){
+    switchLabelPage(labelPage) {
+      if (labelPage === 'list') {
+        this.switchListRegister = 'list';
+        return this.$store.commit('addPageName', `Cadastro de EPI | Listagem`);
+      } else if (labelPage === 'register') {
+        this.switchListRegister = 'register';
+        return this.$store.commit('addPageName', `Cadastro de EPI | Cadastrar`);
+      } else {
+        return this.$store.commit('addPageName', `Cadastro de EPI | Editar`);
+      }
+    },
+    async getEpi() {
       try {
+
         const response = await this.$http.get('epi/get', getLocalStorageToken());
 
         if(response.result.length === undefined)
@@ -146,7 +160,7 @@ export default {
         });
       }
     },
-     deleteEpi(epi, index){
+     deleteEpi(epi, index) {
       try {
         this.$swal({
           type: 'question',
@@ -172,18 +186,20 @@ export default {
         });
       }
     },
-    editEpi(epi){
-        this.inputValues = { ...epi };
-        this.switchListRegister = 'register';
-        this.isEditing = true;
+    editEpi(epi) {
+      this.switchLabelPage('edit');
+      this.inputValues = { ...epi };
+      this.switchListRegister = 'register';
+      this.isEditing = true;
     },
     closeEditing() {
+      this.switchLabelPage('list');
       this.switchListRegister = 'list';
       this.isEditing = false;
       this.resetModel();
     },
     resetModel() {
-        this.inputValues = {};
+      this.inputValues = {};
     },
  },
     

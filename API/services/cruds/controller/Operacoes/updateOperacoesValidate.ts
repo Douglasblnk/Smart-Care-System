@@ -53,9 +53,9 @@ export default class UpdateOperacoesValidate {
       status: 400,
       err: 'Descrição da operação não informado',
     };
-    if (data.material === '') throw {
+    if (data.Material === '') throw {
       status: 400,
-      err: 'Material não informado',
+      err: 'material não informado',
     };
     if (data.quantidade_material === '') throw {
       status: 400,

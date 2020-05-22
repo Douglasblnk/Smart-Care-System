@@ -281,36 +281,35 @@
           @state-list="closeDetail"
         />
       </div>
-
     </transition>
-    <b-modal @hide="resetModal()" @show="checkSelectedEpis()" centered ref="my-modal" hide-footer hide-header title="Verificação de EPIs">
-        <div class="d-block text">
-          <div class="text-center">
-            <h3>Verificação de EPIs na ordem</h3>
-            <span>
-              Informe quais EPIs você esta utilizando
-            </span>
-          </div>
-          <div class="m-3">
-            <b-form-checkbox-group
-              id="checkbox-group-1"
-              v-model="selectedEpis"
-              :options="getEpiOptions()"
-              name="flavour-1"
-              stacked
-            />
-          </div>
+  <b-modal @hide="resetModal()" @show="checkSelectedEpis()" centered ref="my-modal" hide-footer hide-header title="Verificação de EPIs">
+      <div class="d-block text">
+        <div class="text-center">
+          <h3>Verificação de EPIs na ordem</h3>
+          <span>
+            Informe quais EPIs você esta utilizando
+          </span>
         </div>
-        <div v-if="modalHasError">
-          <div class="d-flex justify-content-center w-100 p-2 rounded" style="background-color: #ff4a4a5c; border: 1px solid #ff4a4aa6">
-            <span style="color: black">{{ modalErrorMessage }}</span>
-          </div>
+        <div class="m-3">
+          <b-form-checkbox-group
+            id="checkbox-group-1"
+            v-model="selectedEpis"
+            :options="getEpiOptions()"
+            name="flavour-1"
+            stacked
+          />
         </div>
-        <div class="d-flex justify-content-center">
-          <cancel-button label="Fechar" @click.native="closeModal()" />
-          <save-button label="Enviar" @click.native="alterEpiCheck()" />
+      </div>
+      <div v-if="modalHasError">
+        <div class="d-flex justify-content-center w-100 p-2 rounded" style="background-color: #ff4a4a5c; border: 1px solid #ff4a4aa6">
+          <span style="color: black">{{ modalErrorMessage }}</span>
         </div>
-      </b-modal>
+      </div>
+      <div class="d-flex justify-content-center">
+        <cancel-button label="Fechar" @click.native="closeModal()" />
+        <save-button label="Enviar" @click.native="alterEpiCheck()" />
+      </div>
+    </b-modal>
   </div>
 </template>
 
@@ -652,7 +651,7 @@
         });
       }
     },
-    async pauseOrder(){
+    async pauseOrder() {
       try{
         this.$set(this.isLoading, 'pause', true);
 
@@ -665,10 +664,10 @@
         this.$set(this.isLoading, 'init', false);
 
         this.$swal({
-          type: 'warning',
-          title: getErrors(err),
-          confirmButtonColor: '#F34336',
-        });
+        type: 'warning',
+        title: getErrors(err),
+        confirmButtonColor: '#F34336',
+      });
       }
     },
     async listEpiCheck() {

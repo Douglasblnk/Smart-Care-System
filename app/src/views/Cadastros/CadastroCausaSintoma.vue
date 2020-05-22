@@ -14,11 +14,11 @@
       <div v-if="selectValue === 1" class="items-wrapper">
         <div class="list-option">
           <div class="d-flex justify-content-between">
-            <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'list'">
+            <div class="option d-flex align-items-center m-4" @click="switchLabelPage('list')">
               <i class="fas fa-list-alt" />
               <span>Listar</span>
             </div>
-            <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'register'">
+            <div class="option d-flex align-items-center m-4" @click="switchLabelPage('register')">
               <i class="fas fa-edit" />
               <span>Cadastrar</span>
             </div>
@@ -81,11 +81,11 @@
       <div v-if="selectValue === 2" class="items-wrapper">
         <div class="list-option">
           <div class="d-flex justify-content-between">
-            <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'list'">
+            <div class="option d-flex align-items-center m-4" @click="switchLabelPage('list')">
               <i class="fas fa-list-alt" />
               <span>Listar</span>
             </div>
-            <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'register'">
+            <div class="option d-flex align-items-center m-4" @click="switchLabelPage('register')">
               <i class="fas fa-edit" />
               <span>Cadastrar</span>
             </div>
@@ -143,7 +143,7 @@
 </template>
 
 <script>
-import { getLocalStorageToken } from '../../utils/utils'
+import { getLocalStorageToken } from '../../utils/utils';
 
 export default {
 
@@ -156,18 +156,32 @@ export default {
       inputValuesSymptom: {
         descricaoSintomas: '',
       },
+      state: {
+        view: '',
+      },
       causes: [],
       symptons: [],
       switchListRegister: 'list',
       isEditing: false,
     };
   },
+  mounted() {
+    this.$store.commit('addPageName', 'Cadastro de Causa e Sintoma ');
+  },
 
   watch: {
+    //todo
     selectValue: {
       handler: function($event) {
-        if ($event === 1) return this.getCause();
-        this.getSymptom();
+        if ($event === 1) {
+          this.state.view = 'Cadastro de Causa';
+          this.$store.commit('addPageName', 'Cadastro de Causa | Listagem');
+          return this.getCause();
+       } else {
+          this.state.view = 'Cadastro de Sintoma';
+          this.$store.commit('addPageName', 'Cadastro de Sintoma | Listagem');
+          return this.getSymptom();
+        }
       }
     }
   },
@@ -177,8 +191,20 @@ export default {
       if (this.isEditing) return 'Alterar';
       else return 'Cadastrar'
     },
+    switchLabelPage(labelPage) {
+      if (labelPage === 'list') {
+        this.switchListRegister = 'list';
+        return this.$store.commit('addPageName', `${this.state.view} | Listagem`);
+      } else if (labelPage === 'register') {
+        this.switchListRegister = 'register';
+        return this.$store.commit('addPageName', `${this.state.view} | Cadastrar`);
+      } else {
+        return this.$store.commit('addPageName', `${this.state.view} | Editar`);
+      }
+    },
 
     closeEditing() {
+      this.switchLabelPage('list');
       this.switchListRegister = 'list'
       this.isEditing = false;
       this.resetModel();
@@ -190,6 +216,7 @@ export default {
     },
 
     startEdition(value) {
+      this.switchLabelPage('edit');
       this.inputValuesCause = { ...value }
       this.inputValuesSymptom = { ...value }
       this.switchListRegister = 'register'

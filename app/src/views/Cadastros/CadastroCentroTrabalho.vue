@@ -2,11 +2,11 @@
   <div class="root-centro-trabalho-view">
     <div class="list-option">
       <div class="d-flex justify-content-between">
-        <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'list'">
+        <div class="option d-flex align-items-center m-4" @click="switchLabelPage('list')">
           <i class="fas fa-list-alt" />
           <span>Listar</span>
         </div>
-        <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'register'">
+        <div class="option d-flex align-items-center m-4" @click="switchLabelPage('register')">
           <i class="fas fa-edit" />
           <span>Cadastrar</span>
         </div>
@@ -84,6 +84,8 @@ export default {
 
   mounted() {
     this.getWorkCenter();
+    this.$store.commit('addPageName', 'Cadastro de Centro de Trabalho ');
+    this.switchLabelPage('list');
   },
 
   methods: {
@@ -91,7 +93,17 @@ export default {
       if (this.isEditing) return 'Alterar';
       return 'Cadastrar';
     },
-
+    switchLabelPage(labelPage) {
+      if (labelPage === 'list') {
+        this.switchListRegister = 'list';
+        return this.$store.commit('addPageName', `Cadastro de Centro de Trabalho | Listagem`);
+      } else if (labelPage === 'register') {
+        this.switchListRegister = 'register';
+        return this.$store.commit('addPageName', `Cadastro de Centro de Trabalho | Cadastrar`);
+      } else {
+        return this.$store.commit('addPageName', `Cadastro de Centro de Trabalho | Editar`);
+      }
+    },
     getWorkCenter() {
       this.$http.get('centro-trabalho/get', getLocalStorageToken())
         .then(res => {
@@ -161,7 +173,7 @@ export default {
     },
 
     editWorkCenter(workCenter) {
-      console.log(workCenter);
+      this.switchLabelPage('edit');
       this.inputValues = { ...workCenter }
       console.log(this.inputValues);
       this.switchListRegister = 'register'
@@ -189,6 +201,7 @@ export default {
     },
 
     closeEditing() {
+      this.switchLabelPage('list');
       this.switchListRegister = 'list'
       this.isEditing = false;
       this.resetModel();

@@ -16,6 +16,7 @@ import CadastroCausaSintoma from '../views/Cadastros/CadastroCausaSintoma.vue';
 import CadastroComponente from '../views/Cadastros/CadastroComponente';
 import OrdemManutencaoWrapper from '../views/Cadastros/ordemManutencao/OrdemManutencaoWrapper.vue';
 import CadastroEpi from '../views/Cadastros/CadastroEpi';
+import CadastroOperations from '../views/Cadastros/CadastroOperations.vue';
 
 import { validateToken } from '../utils/utils';
 import Swal from 'sweetalert2';
@@ -89,6 +90,12 @@ const routes = [
         path: 'cadastro-epi',
         name: 'epi',
         component: CadastroEpi,
+        meta: { requireAuth: true },
+      },
+      {
+        path: 'cadastro-operations',
+        name: 'Cadastro Operações',
+        component: CadastroOperations,
         meta: { requireAuth: true },
       },
     ],
