@@ -34,7 +34,11 @@
 
     <transition name="slide-side" mode="out-in">
       <template v-if="state.view === 'Corretiva'">
-        <ordem-corretiva key="corretiva" order-type="corretiva"/>
+        <ordem-corretiva
+          key="corretiva"
+          order-type="corretiva"
+          @reset:closeOrderMaintenance="resetOrder"
+        />
       </template>
 
       <template v-if="state.view === 'Preventiva'">
@@ -80,7 +84,11 @@ export default {
       if (type === 'preventiva') this.$set(this.state, 'view', 'Preventiva');
       if (type === 'rota') this.$set(this.state, 'view', 'Rota');
       if (type === 'lista') this.$set(this.state, 'view', 'Lista');
+
       this.$store.commit('addPageName', `Cadastro de Ordem | ${this.state.view}`);
+    },
+    resetOrder() {
+      this.$set(this.state, 'view', '');
     },
 	},
 };
