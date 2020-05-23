@@ -45,7 +45,9 @@ export default class GetOrderMaintenanceValidate {
         (SELECT st.tipoStatus FROM ${TABLE_STATUS} as st WHERE os.Status_idStatus = st.idStatus) as status
       FROM ${TABLE_ORDEM_SERVICO} as os
       LEFT JOIN ${TABLE_LOCAIS} as Locais ON Locais.Ordem_Servico = os.idOrdemServico
-      LEFT JOIN ${TABLE_EQUIPAMENTOS} as Equipamentos ON Equipamentos.Ordem_servico = os.idOrdemServico;
+      LEFT JOIN ${TABLE_EQUIPAMENTOS} as Equipamentos ON Equipamentos.Ordem_servico = os.idOrdemServico
+      WHERE os.excluded = 0
+      GROUP BY os.idOrdemServico;
     `;
 
     const dataQuery = { query, type: 'Ordem de manutenção' };
