@@ -46,6 +46,7 @@ export default class GetOrderMaintenanceValidate {
       FROM ${TABLE_ORDEM_SERVICO} as os
       LEFT JOIN ${TABLE_LOCAIS} as Locais ON Locais.Ordem_Servico = os.idOrdemServico
       LEFT JOIN ${TABLE_EQUIPAMENTOS} as Equipamentos ON Equipamentos.Ordem_servico = os.idOrdemServico
+      WHERE os.excluded = 0
       GROUP BY os.idOrdemServico;
     `;
 
