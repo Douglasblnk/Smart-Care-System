@@ -37,11 +37,7 @@ export default {
     topbar,
   },
 
-  data(){
-    return {
-      
-    };
-  },
+  data: () => ({}),
 
   computed: {
     routes() {
@@ -49,7 +45,6 @@ export default {
       if (this.$route.name === '404') return false;
       return true;
     },
-
     isMobile() {
       if (window.innerWidth <= '600') return true;
       return false;
@@ -59,164 +54,4 @@ export default {
 
 </script>
 
-<style lang="scss">
-:root {
-  --duas-rodas: #F34336;
-  --duas-rodas-soft: #E66E6D;
-  --shadow-gray: rgb(160, 160, 160);
-  --gray: rgb(92, 92, 92);
-  --button-gray: #eee;
-}
-
-body {
-  background-color: #f1f1f1 !important;
-  box-sizing: border-box;
-}
-
-span, p, strong {
-  color: var(--gray)
-}
-
-@font-face {
-  font-family: "roboto";
-  src: url("./assets/fonts/Roboto-Light.ttf");
-  src: url("./assets/fonts/Roboto-Regular.ttf");
-}
-
-@font-face {
-  font-family: "roboto-thin";
-  src: url("./assets/fonts/Roboto-Light.ttf");
-}
-
-.swal2-styled.swal2-confirm {
-  background-color: #F34336 !important;
-}
-
-.no-padding {
-  padding: 0 !important;
-}
-
-.custom-control {
-  position: relative;
-  display: flex !important;
-  justify-content: flex-start !important;
-  min-height: 1.5rem;
-  padding-left: 1.5rem;
-  border-radius: 8px;
-  padding: 10px !important;
-  box-sizing: border-box !important;
-  label {
-    cursor: pointer;
-  }
-  &:hover{
-    background-color: #eee !important;
-  }
-  .custom-control-input {
-    position: relative !important;
-  }
-}
-
-.scalable-btn {
-  cursor: pointer;
-  transition: .1s;
-  &:hover {
-    transform: scale(1.1);
-  }
-  &:active {
-    transform: scale(1);
-  }
-}
-
-
-/* ADICIONAR UM ESTILO CUSTOMIZADO AO SCROLL BAR */
-::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { background: #f1f1f1; }
-::-webkit-scrollbar-thumb { background: rgb(182, 182, 182); border-radius: 50px; }
-::-webkit-scrollbar-thumb:hover { background: rgb(119, 119, 119); }
-
-
-.content {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  .wrapper {
-    display: flex;
-    overflow: auto;
-    flex-direction: column;
-    width: 100%;
-    .topbar-content {
-      width: 100%;
-      padding: 20px;
-    }
-    .mobile-topbar-content{
-      width: 100%;
-    }
-    .router-content {
-      box-sizing: border-box;
-      padding: 20px;
-      width: 100%;
-      height: 100%;
-    }
-  }
-  .sidebar-content {
-    overflow: auto;
-    max-width: 20rem;
-    background-color: white;
-    height: 100%;
-  }
-  
-}
-
-@media screen and (max-width: 1366px) {
-  .content > .sidebar-content {
-    min-width: 16rem;
-  }
-}
-
-.cursor-pointer {
-  cursor: pointer;
-}
-
-.link {
-  cursor: pointer;
-  text-decoration: underline;
-  color: rgb(60, 70, 131)
-}
-
-.slide-fade-enter-active {
-  transition: all 0.1s ease;
-}
-.slide-fade-leave-active {
-  transition: all 0.1s cubic-bezier(1, 0.5, 0.8, 1);
-}
-.slide-fade-enter,
-.slide-fade-leave-to {
-  transform: translateY(10px);
-  opacity: 0;
-}
-
-.slide-down-enter-active {
-  transition: all 0.2s ease;
-}
-.slide-down-leave-active {
-  transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1);
-}
-.slide-down-enter,
-.slide-down-leave-to {
-  transform: translateY(-10px);
-  opacity: 0;
-}
-
-.slide-side-enter-active {
-  transition: all 0.2s ease;
-}
-.slide-side-leave-active {
-  transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1);
-}
-.slide-side-enter,
-.slide-side-leave-to {
-  transform: translateX(10px);
-  opacity: 0;
-}
-
-</style>
+<style src="./app.scss" lang="scss"></style>

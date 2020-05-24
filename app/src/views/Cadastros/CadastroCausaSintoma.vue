@@ -1,144 +1,171 @@
 <template>
-  <div class="root-cadastro-causa-view d-flex justify-content-center align-items-center flex-column">
-    <div class="register-select">
-      <span>O que deseja cadastrar?</span>
-      <custom-select v-model="selectValue" :options="[{ id: 1, description: 'Causa'}, { id: 2, description: 'Sintoma'}]"></custom-select>
+  <div class="root-cadastro-causa-view">
+    <div class="d-flex align-items-center">
+      <div class="back-button ml-3" @click="goBack">
+        <i
+          class="fa fa-arrow-left fa-fw"
+          title="Retornar"
+        />
+        <span>Voltar</span>
+      </div>
     </div>
 
-    <transition name="slide-fade" mode="out-in">
-      <!-- 
-      
-        LISTA E CADASTRO DE CAUSA 
-      
-      -->
-      <div v-if="selectValue === 1" class="items-wrapper">
-        <div class="list-option">
-          <div class="d-flex justify-content-between">
-            <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'list'">
-              <i class="fas fa-list-alt" />
-              <span>Listar</span>
-            </div>
-            <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'register'">
-              <i class="fas fa-edit" />
-              <span>Cadastrar</span>
-            </div>
+    <div class="d-flex align-items-center flex-column">
+      <div class="register-select">
+        <span>Selecione um tipo de cadastro</span>
+      </div>
+      <div>
+        <div class="options-wrapper">
+          <div
+            class="option-text"
+            :class="registerType === 'cause' ? 'selected' : ''"
+            @click="selectRegisterType('cause')"
+          >
+            <span>Causa</span>
+          </div>
+
+          <div
+            class="option-text"
+            :class="registerType === 'symptom' ? 'selected' : ''"
+            @click="selectRegisterType('symptom')"
+          >
+            <span>Sintoma</span>
           </div>
         </div>
-
-        <transition name="slide-fade" mode="out-in">
-          <template v-if="switchListRegister === 'list'">
-            <div class="d-flex w-100 justify-content-center">
-              <div class="table-content bg-white p-4 w-100">
-                <div class="table-responsive">
-                  <table class="table table table-striped table-borderless table-hover" cellspacing="0">
-                    <thead class="table-head">
-                      <tr>
-                        <th scope="col">Causa</th>
-                        <th scope="col">Ações</th>
-                      </tr>
-                    </thead>
-                    <tbody class="table-body">
-                      <tr v-for="(cause, index) in causes" :key="`order-${index}`">
-                        <td>{{ cause.descricaoCausa }}</td>
-                        <td style="width: 50px">
-                          <div class="d-flex table-action">
-                            <i class="fas fa-edit text-muted" @click="startEdition(cause)"></i>
-                            <i class="fas fa-trash text-muted" @click="deleteCause(cause, index)"></i>
-                          </div> 
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </template>
-
-          <template v-if="switchListRegister === 'register'">
-            <form @submit.prevent="registerCause">
-              <div class="cadCard p-4 bg-white mt-4">
-                <simple-input
-                  label="Digite aqui a causa do defeito: "
-                  type="text"
-                  v-model="inputValuesCause.descricaoCausa"
-                />
-              </div>
-              <div class="d-flex justify-content-center m-3">
-                <save-button :label="getSaveButtonText()" />
-                <cancel-button v-if="isEditing" @click.native="closeEditing" label="Cancelar" />
-              </div>
-            </form>
-          </template>
-        </transition>
       </div>
+    </div>
 
-      <!-- 
-
-        LISTA E CADASTRO DE SINTOMA
-
-       -->
-
-      <div v-if="selectValue === 2" class="items-wrapper">
-        <div class="list-option">
-          <div class="d-flex justify-content-between">
-            <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'list'">
-              <i class="fas fa-list-alt" />
-              <span>Listar</span>
-            </div>
-            <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'register'">
-              <i class="fas fa-edit" />
-              <span>Cadastrar</span>
+    <div class="content-wrapper">
+      <transition name="slide-fade" mode="out-in">
+        <!--
+          LISTA E CADASTRO DE CAUSA
+        -->
+        <div v-if="registerType === 'cause'" key="cause" class="items-wrapper">
+          <div class="list-option">
+            <div class="d-flex justify-content-between">
+              <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'list'">
+                <i class="fas fa-list-alt" />
+                <span>Listar</span>
+              </div>
+              <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'register'">
+                <i class="fas fa-edit" />
+                <span>Cadastrar</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <transition name="slide-fade" mode="out-in">
-          <template v-if="switchListRegister === 'list'">
-            <div class="d-flex w-100 justify-content-center">
-              <div class="table-content bg-white p-4 w-100">
-                <div class="table-responsive">
-                  <table class="table table table-striped table-borderless table-hover" cellspacing="0">
-                    <thead class="table-head">
-                      <tr>
-                        <th scope="col">Sintoma</th>
-                        <th scope="col">Ações</th>
-                      </tr>
-                    </thead>
-                    <tbody class="table-body">
-                      <tr v-for="(symptom, index) in symptons" :key="`order-${index}`">
-                        <td>{{ symptom.descricaoSintomas }}</td>
-                        <td style="width: 50px">
-                          <div class="d-flex table-action">
-                            <i class="fas fa-edit text-muted" @click="startEdition(symptom)"></i>
-                            <i class="fas fa-trash text-muted" @click="deleteSymptom(symptom, index)"></i>
-                          </div> 
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+          <transition name="slide-fade" mode="out-in">
+            <template v-if="switchListRegister === 'list'">
+              <div class="d-flex w-100 justify-content-center">
+                <div class="table-content bg-white p-4 w-100">
+                  <div class="table-responsive">
+                    <table class="table table table-striped table-borderless table-hover" cellspacing="0">
+                      <thead class="table-head">
+                        <tr>
+                          <th scope="col">Causa</th>
+                          <th scope="col">Ações</th>
+                        </tr>
+                      </thead>
+                      <tbody class="table-body">
+                        <tr v-for="(cause, index) in causes" :key="`order-${index}`">
+                          <td>{{ cause.descricaoCausa }}</td>
+                          <td style="width: 50px">
+                            <div class="d-flex table-action">
+                              <i class="fas fa-edit text-muted" @click="startEdition(cause)"></i>
+                              <i class="fas fa-trash text-muted" @click="deleteCause(cause, index)"></i>
+                            </div> 
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
-            </div>
-          </template>
+            </template>
 
-          <template v-if="switchListRegister === 'register'">
-            <form @submit.prevent="registerSymptom">
-              <div class="cadCard p-4 bg-white mt-4">
-                <simple-input
-                  label="Digite aqui o sintoma do defeito: "
-                  type="text"
-                  v-model="inputValuesSymptom.descricaoSintomas"
-                />
+            <template v-if="switchListRegister === 'register'">
+              <form @submit.prevent="registerCause">
+                <div class="cadCard p-4 bg-white">
+                  <simple-input
+                    label="Digite aqui a causa do defeito: "
+                    type="text"
+                    v-model="inputValuesCause.descricaoCausa"
+                  />
+                </div>
+                <div class="d-flex justify-content-center m-3">
+                  <save-button :label="getSaveButtonText()" />
+                  <cancel-button v-if="isEditing" @click.native="closeEditing" label="Cancelar" />
+                </div>
+              </form>
+            </template>
+          </transition>
+        </div>
+
+        <!--
+          LISTA E CADASTRO DE SINTOMA
+        -->
+        <div v-if="registerType === 'symptom'" key="symptom" class="items-wrapper">
+          <div class="list-option">
+            <div class="d-flex justify-content-between">
+              <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'list'">
+                <i class="fas fa-list-alt" />
+                <span>Listar</span>
               </div>
-              <div class="d-flex justify-content-center m-3">
-                <save-button :label="getSaveButtonText()" />
-                <cancel-button v-if="isEditing" @click.native="closeEditing" label="Cancelar" />
+              <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'register'">
+                <i class="fas fa-edit" />
+                <span>Cadastrar</span>
               </div>
-            </form>
-          </template>
-        </transition>
-      </div>
-    </transition>
+            </div>
+          </div>
+
+          <transition name="slide-fade" mode="out-in">
+            <template v-if="switchListRegister === 'list'">
+              <div class="d-flex w-100 justify-content-center">
+                <div class="table-content bg-white p-4 w-100">
+                  <div class="table-responsive">
+                    <table class="table table table-striped table-borderless table-hover" cellspacing="0">
+                      <thead class="table-head">
+                        <tr>
+                          <th scope="col">Sintoma</th>
+                          <th scope="col">Ações</th>
+                        </tr>
+                      </thead>
+                      <tbody class="table-body">
+                        <tr v-for="(symptom, index) in symptons" :key="`order-${index}`">
+                          <td>{{ symptom.descricaoSintomas }}</td>
+                          <td style="width: 50px">
+                            <div class="d-flex table-action">
+                              <i class="fas fa-edit text-muted" @click="startEdition(symptom)"></i>
+                              <i class="fas fa-trash text-muted" @click="deleteSymptom(symptom, index)"></i>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </template>
+
+            <template v-if="switchListRegister === 'register'">
+              <form @submit.prevent="registerSymptom">
+                <div class="cadCard p-4 bg-white">
+                  <simple-input
+                    v-model="inputValuesSymptom.descricaoSintomas"
+                    label="Digite aqui o sintoma do defeito: "
+                    type="text"
+                  />
+                </div>
+                <div class="d-flex justify-content-center m-3">
+                  <save-button :label="getSaveButtonText()" />
+                  <cancel-button v-if="isEditing" label="Cancelar" @click.native="closeEditing" />
+                </div>
+              </form>
+            </template>
+          </transition>
+        </div>
+      </transition>
+    </div>
   </div>
 </template>
 
@@ -149,7 +176,7 @@ export default {
 
   data() {
     return {
-      selectValue: '',
+      registerType: '',
       inputValuesCause: {
         descricaoCausa: '',
       },
@@ -163,19 +190,17 @@ export default {
     };
   },
 
-  watch: {
-    selectValue: {
-      handler: function($event) {
-        if ($event === 1) return this.getCause();
-        this.getSymptom();
-      }
-    }
-  },
-
   methods: {
+    selectRegisterType(type) {
+      if (this.registerType === type) return;
+
+      this.registerType = type;
+      if (type === 'cause') return this.getCause();
+      return this.getSymptom();
+    },
     getSaveButtonText() {
       if (this.isEditing) return 'Alterar';
-      else return 'Cadastrar'
+      return 'Cadastrar';
     },
 
     closeEditing() {
@@ -369,27 +394,62 @@ export default {
           })
         })
     },
-  }
-}
+    goBack() {
+      this.$router.push('/cadastros');      
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
 .root-cadastro-causa-view {
-  width: 70%;
+  width: 100%;
   .register-select {
-    width: 200px;
     span {
-      color: var(--duas-rodas);
-      font-family: 'Montserrat'
+      font-size: 24px;
+      color: var(--duas-rodas-soft);
+      font-family: 'roboto'
     }
   }
+  .options-wrapper {
+    display: flex;
+    justify-content: space-around;
+    margin: 5px 0;
+    .option-text {
+      padding: 15px 20px;
+      margin: 0 5px;
+      background-color: #ddd;
+      border-radius: 8px;
+      cursor: pointer;
+      user-select: none;
+      transition: .2s;
+      &:hover {
+        background-color: #ddd;
+        transform: scale(1.1);
+      }
+      &:active {
+        transform: scale(1);
+      }
+    }
+    .selected {
+      background-color: var(--duas-rodas-soft) !important;
+      span {
+        color: white !important;
+      }
+    }
+  }
+  .content-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
   .items-wrapper {
-    width: 80% !important;
     .cadCard {
       border-radius: 10px;
     }
   }
   .list-option {
+    width: 50vw;
     display: flex;
     justify-content: flex-start;
     .option {

@@ -2,10 +2,20 @@
   <div class="root-consulta-view">
     <transition name="slide-side" mode="out-in">
       <div v-if="state.view === 'list'" key="list">
+        <div class="d-flex align-items-center">
+          <div class="back-button ml-3" @click="goBack">
+            <i
+              class="fa fa-arrow-left fa-fw"
+              title="Retornar"
+            />
+            <span>Voltar</span>
+          </div>
+        </div>
+
         <div class="p-3" style="max-width: 600px">
           <simple-input
-            white
             v-model="filters.search"
+            white
             placeholder="Buscar por ordem de manutenção..."
             label="Buscar: "
           />
@@ -13,22 +23,22 @@
             <p>Filtros: </p>
 
             <span
-              @click="setFilters('status')"
               :class="(filters.status.idStatus || option === 'status') ? 'selected' : ''"
+              @click="setFilters('status')"
             >
               Status
             </span>
 
             <span
-              @click="setFilters('data')"
               :class="(filters.data || option === 'data') ? 'selected' : ''"
+              @click="setFilters('data')"
             >
               Data
             </span>
 
             <span
-              @click="setFilters('priority')"
               :class="(filters.priority.idPrioridade || option === 'priority') ? 'selected' : ''"
+              @click="setFilters('priority')"
             >
               Prioridade
             </span>
@@ -43,9 +53,9 @@
                   <div v-for="(status, index) in optionsData.status" :key="`status-${index}`">
                     <div class="filters">
                       <span
-                        @click="setStatusFilter(status)"
                         :class="filters.status.idStatus === status.idStatus ? 'selected' : ''"
                         style="border: 1px solid #dddddd"
+                        @click="setStatusFilter(status)"
                       >
                         {{ status.tipoStatus }}
                       </span>
@@ -54,7 +64,7 @@
                 </div>
 
                 <div v-if="option === 'data'" key="data" class="col-md-12">
-                  <simple-button @click.native="() => filters.data = ''" label="Limpar campo"/>
+                  <simple-button label="Limpar campo" @click.native="() => filters.data = ''" />
                   <simple-input v-model="filters.data" white type="date" />
                 </div>
 
@@ -62,9 +72,12 @@
                   <div v-for="(priority, index) in optionsData.priority" :key="`status-${index}`">
                     <div class="filters">
                       <span
-                      @click="setPriorityFilter(priority)"
-                      :class="filters.priority.idPrioridade === priority.idPrioridade ? 'selected' : ''"
-                      style="border: 1px solid #dddddd">{{ priority.descricaoPrioridade }}</span>
+                        :class="filters.priority.idPrioridade === priority.idPrioridade ? 'selected' : ''"
+                        style="border: 1px solid #dddddd"
+                        @click="setPriorityFilter(priority)"
+                      >
+                        {{ priority.descricaoPrioridade }}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -95,7 +108,7 @@
               </span>
             </div>
             <div class="mx-2">
-              <simple-button @click.native="clearFilters()" label="Limpar filtros"/>
+              <simple-button label="Limpar filtros" @click.native="clearFilters()" />
             </div>
           </div>
 
@@ -231,15 +244,17 @@ export default {
       if (this.filters.status.idStatus)
         filteredOrder = filteredOrder.filter(order => order.Status_idStatus === this.filters.status.idStatus);
 
-      if (this.filters.data)
+      if (this.filters.data) {
         filteredOrder = filteredOrder.filter(
           order => this.$moment(order.dataEmissao).isSame(this.$moment(this.filters.data))
         );
+      }
 
-      if (this.filters.priority.idPrioridade)
+      if (this.filters.priority.idPrioridade) {
         filteredOrder = filteredOrder.filter(
           order => order.Prioridade_idPrioridade === this.filters.priority.idPrioridade
         );
+      }
 
       return filteredOrder.filter(order => {
         const searchableString = this.getSearchableString(order);
@@ -340,7 +355,7 @@ export default {
 
         if (response.result.length === undefined)
           this.maintenainceOrders.push(response.result);
-        else this.maintenainceOrders = [ ...response.result ];
+        else this.maintenainceOrders = [...response.result];
 
         this.isLoading = false;
 
@@ -411,6 +426,9 @@ export default {
         ${String(order.idOrdemServico).toLowerCase()}
       `;
       return string;
+    },
+    goBack() {
+      this.$router.push('/dashboard');
     },
   },
 };
