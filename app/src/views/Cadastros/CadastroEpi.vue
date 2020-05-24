@@ -1,125 +1,138 @@
 <template>
   <div class="root-epi-view">
-    <div class="list-option">
-      <div class="d-flex justify-content-between">
-        <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'list'">
-          <i class="fas fa-list-alt" />
-          <span>Listar</span>
-        </div>
-        <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'register'">
-          <i class="fas fa-edit" />
-          <span>Cadastrar</span>
-        </div>
+    <div class="d-flex align-items-center">
+      <div class="back-button ml-3" @click="goBack">
+        <i
+          class="fa fa-arrow-left fa-fw"
+          title="Retornar"
+        />
+        <span>Voltar</span>
       </div>
     </div>
 
-    <transition name="slide-fade" mode="out-in">
-      <template v-if="switchListRegister === 'list'">
-        <div class="d-flex w-100 justify-content-center">
-          <div class="table-content bg-white p-4 w-100">
-            <div class="table-responsive">
-              <table class="table table table-striped table-borderless table-hover" cellspacing="0">
-                <thead class="table-head">
-                  <tr>
-                    <th scope="col">Epi</th>
-                    <th scope="col">Ações</th>
-                  </tr>
-                </thead>
-                <tbody class="table-body">
-                  <tr v-for="(epi, index) in Epis" :key="`epi-${index}`">
-                    <td>{{ epi.descricaoEpi}}</td>
-                    <td style="width: 50px">
-                      <div class="d-flex table-action">
-                        <i class="fas fa-edit text-muted" @click="editEpi(epi)"></i>
-                        <i class="fas fa-trash text-muted" @click="deleteEpi(epi, index)"></i>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+    <div class="content-wrapper">
+      <div>
+        <div class="list-option">
+          <div class="d-flex justify-content-between">
+            <div class="option d-flex align-items-center m-4" @click="() => switchListRegister = 'list'">
+              <i class="fas fa-list-alt" />
+              <span>Listar</span>
+            </div>
+            <div class="option d-flex align-items-center m-4" @click="() => switchListRegister = 'register'">
+              <i class="fas fa-edit" />
+              <span>Cadastrar</span>
             </div>
           </div>
         </div>
-      </template>
 
-      <template v-if="switchListRegister === 'register'">
-        <form @submit.prevent="registerEpi()" class="formPosition">
-          <div class="cadCard">
-            <div class="inputs">
-              <simple-input v-model="inputValues.descricaoEpi" :label="'Epi:'" :type="'text'" />
+        <transition name="slide-fade" mode="out-in">
+          <template v-if="switchListRegister === 'list'">
+            <div class="list-option">
+              <div class="table-content bg-white p-4 w-100">
+                <div class="table-responsive">
+                  <table class="table table table-striped table-borderless table-hover" cellspacing="0">
+                    <thead class="table-head">
+                      <tr>
+                        <th scope="col">Epi</th>
+                        <th scope="col">Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-body">
+                      <tr v-for="(epi, index) in Epis" :key="`epi-${index}`">
+                        <td>{{ epi.descricaoEpi }}</td>
+                        <td style="width: 50px">
+                          <div class="d-flex table-action">
+                            <i class="fas fa-edit text-muted" @click="editEpi(epi)"></i>
+                            <i class="fas fa-trash text-muted" @click="deleteEpi(epi, index)"></i>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="d-flex justify-content-center m-3">
-            <save-button :label="getSaveButtonText()" />
-            <cancel-button v-if="isEditing" @click.native="closeEditing" label="Cancelar" />
-          </div>
-        </form>
-      </template>
-    </transition>
+          </template>
+
+          <template v-if="switchListRegister === 'register'">
+            <form @submit.prevent="registerEpi()">
+              <div class="cadCard">
+                <simple-input v-model="inputValues.descricaoEpi" :label="'Epi:'" :type="'text'" />
+              </div>
+
+              <div class="d-flex justify-content-center m-3">
+                <save-button :label="getSaveButtonText()" />
+                <cancel-button v-if="isEditing" label="Cancelar" @click.native="closeEditing" />
+              </div>
+            </form>
+          </template>
+        </transition>
+      </div>
+    </div>
   </div>
-    
 </template>
 <script>
-import { getLocalStorageToken, getErrors } from '../../utils/utils'
-import simpleInput from '../../components/inputs/simple-input';
-import saveButton from '../../components/button/save-button';
-import cancelButton from '../../components/button/cancel-button';
+import { getLocalStorageToken, getErrors } from '../../utils/utils';
 
 export default {
-  components: {
-        'simple-input': simpleInput,
-        'save-button': saveButton,
-        'cancel-button': cancelButton,
+  name: 'CadastroEpi',
 
-  },
-  data(){
+  data() {
     return {
-        inputValues: {
-            descricaoEpi:'',
-        },
-        switchListRegister: 'list',
-        isEditing: false,
-        Epis: [],
+      inputValues: {
+        descricaoEpi: '',
+      },
+      switchListRegister: 'list',
+      isEditing: false,
+      Epis: [],
     };
   },
-  mounted(){
+
+  mounted() {
     this.getEpi();
   },
+
   methods: {
-    getSaveButtonText(){
-        if(this.isEditing) return 'Alterar';
-        else return 'Cadastro';
+    getSaveButtonText() {
+      if (this.isEditing) return 'Alterar';
+      return 'Cadastro';
     },
-    async getEpi(){
+    async getEpi() {
       try {
         const response = await this.$http.get('epi/get', getLocalStorageToken());
 
-        if(response.result.length === undefined)
+        if (response.result.length === undefined)
           this.Epis.push(response.result);
-          else this.Epis = [ ...response.result ];
+        else this.Epis = [...response.result];
       } catch (err) {
+        console.log('err getEpi :>> ', err.response || err);
+
         return this.$swal({
-                type:'warning',
-                title: getErrors(err),
-                confirmButtonColor: '#F34336',
-            });
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
       }
     },
     async registerEpi() {
       try {
-        if(this.isEditing) return this.updateEpi();
+        if (this.isEditing) return this.updateEpi();
 
         const response = await this.$http.post('epi', getLocalStorageToken(), this.inputValues);
 
         this.$swal({
           type: 'success',
-          title:`${response.result}`,
+          title: response.result,
           confirmButtonColor: '#F34336',
         }),
+
         this.Epis.push(this.inputValues);
+
         this.resetModel();
         this.getEpi();
       } catch (err) {
+        console.log('err registerEpi :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
           title: getErrors(err),
@@ -127,18 +140,23 @@ export default {
         });
       }
     },
-    async updateEpi(epi) {
+    async updateEpi() {
       try {
         const response = await this.$http.update('epi', getLocalStorageToken(), this.inputValues, this.inputValues.idEpi);
+
         this.$swal({
           type: 'success',
-          title: `${response.result}`,
+          title: response.result,
           confirmButtonColor: '#F34336',
         });
+
         const index = this.Epis.indexOf(this.Epis.find(i => i.idEpi === this.inputValues.idEpi));
+
         this.Epis.splice(index, 1, this.inputValues);
         this.closeEditing();
       } catch (err) {
+        console.log('err updateEpi :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
           title: getErrors(err),
@@ -146,7 +164,7 @@ export default {
         });
       }
     },
-     deleteEpi(epi, index){
+    deleteEpi(epi, index) {
       try {
         this.$swal({
           type: 'question',
@@ -157,14 +175,17 @@ export default {
             const response = await this.$http.delete('epi', getLocalStorageToken(), epi.idEpi);
 
             this.$swal({
-                type: 'success',
-                title: `${response.result}`,
-                confirmButtonColor: '#F34336',
+              type: 'success',
+              title: `${response.result}`,
+              confirmButtonColor: '#F34336',
             }),
-                this.Epis.splice(index, 1);
+
+            this.Epis.splice(index, 1);
           },
-      });
+        });
       } catch (err) {
+        console.log('err deleteEpi :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
           title: getErrors(err),
@@ -172,10 +193,10 @@ export default {
         });
       }
     },
-    editEpi(epi){
-        this.inputValues = { ...epi };
-        this.switchListRegister = 'register';
-        this.isEditing = true;
+    editEpi(epi) {
+      this.inputValues = { ...epi };
+      this.switchListRegister = 'register';
+      this.isEditing = true;
     },
     closeEditing() {
       this.switchListRegister = 'list';
@@ -183,45 +204,46 @@ export default {
       this.resetModel();
     },
     resetModel() {
-        this.inputValues = {};
+      this.inputValues = {};
     },
- },
-    
-}
+    goBack() {
+      this.$router.push('/cadastros');
+    },
+  },
+};
 </script>
 <style lang="scss" scoped>
 .root-epi-view {
-  width: 70%;
-  .list-option {
-    display: flex;
-    justify-content: flex-start;
-    .option {
-      cursor: pointer;
-      color: var(--duas-rodas-soft);
-      transition: .2s;
-      &:hover {
-        transform: scale(1.2)
-      }
-      &:active {
-        transform: scale(1)
-      }
-      i {
-        
-        cursor: pointer;
-        font-size: 1.4rem;
-        margin: 0 5px;
-      }
-    }
-  }
-  .formPosition{
+  width: 100%;
+  .content-wrapper {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
-    .cadCard {
-      width: 80%;
-      padding: 20px;
+    .list-option {
+      width: 50vw;
       display: flex;
-      flex-direction: column;
+      justify-content: flex-start;
+      .option {
+        cursor: pointer;
+        color: var(--duas-rodas-soft);
+        transition: .2s;
+        &:hover {
+          transform: scale(1.2)
+        }
+        &:active {
+          transform: scale(1)
+        }
+        i {
+          
+          cursor: pointer;
+          font-size: 1.4rem;
+          margin: 0 5px;
+        }
+      }
+    }
+    .cadCard {
+      padding: 20px;
       border-radius: 10px;
       background-color: #ffffff;
     }

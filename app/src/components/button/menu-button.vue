@@ -32,6 +32,7 @@ export default {
       border: 0;
       padding: 10px;
       transition: .1s;
+      outline: none;
       &:hover {
         background-color: rgb(233, 233, 233);
       }

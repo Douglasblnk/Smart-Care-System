@@ -1,16 +1,24 @@
 <template>
   <div class="root-cadastro-view">
     <transition name="slide-fade" mode="out-in">
-      <div
-        v-if="$route.path === '/cadastros'"
-        class="card-container d-flex justify-content-center align-items-center flex-column"
-      >
-        <div class="card-title d-flex justify-content-center align-items-center">
-          <p>Escolha o tipo de cadastro</p>
+      <div v-if="$route.path === '/cadastros'">
+        <div class="d-flex align-items-center">
+          <div class="back-button ml-3" @click="goBack">
+            <i
+              class="fa fa-arrow-left fa-fw"
+              title="Retornar"
+            />
+            <span>Voltar</span>
+          </div>
         </div>
-        <div class="card-wrapper d-flex justify-content-center align-items-center flex-wrap">
-          <div v-for="(card, index) in cards" :key="`card-${index}`">
-            <card-option :title="card.title" :icon="card.icon" :route="card.route" />
+        <div class="card-container d-flex justify-content-center align-items-center flex-column">
+          <div class="card-title d-flex justify-content-center align-items-center">
+            <span>Escolha o tipo de cadastro</span>
+          </div>
+          <div class="card-wrapper d-flex justify-content-center align-items-center flex-wrap">
+            <div v-for="(card, index) in cards" :key="`card-${index}`">
+              <card-option :title="card.title" :icon="card.icon" :route="card.route" />
+            </div>
           </div>
         </div>
       </div>
@@ -74,20 +82,23 @@ export default {
     return;
   },
 
-  mounted () {
+  mounted() {
     this.$store.commit('addPageName', 'Cadastros');
+  },
+  
+  methods: {
+    goBack() {
+      this.$router.push('/dashboard');
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
 .root-cadastro-view {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   .card-container {
     .card-title{
-      p {
+      span {
         font-family: 'roboto';
         font-size: 23px;
         color: #E66E6D;

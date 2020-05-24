@@ -1,23 +1,34 @@
 <template>
   <div class="root-local-instalacao-view">
-    <div class="list-option">
-      <div class="d-flex justify-content-between">
-        <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'list'">
-          <i class="fas fa-list-alt" />
-          <span>Listar</span>
-        </div>
-        <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'register'">
-          <i class="fas fa-edit" />
-          <span>Cadastrar</span>
-        </div>
+    <div class="d-flex align-items-center">
+      <div class="back-button ml-3" @click="goBack">
+        <i
+          class="fa fa-arrow-left fa-fw"
+          title="Retornar"
+        />
+        <span>Voltar</span>
       </div>
     </div>
 
-    <transition name="slide-fade" mode="out-in">
-      <template v-if="switchListRegister === 'list'">
-        <div class="d-flex w-100 justify-content-center">
-          <div class="table-content bg-white p-4 w-100">
-            <div class="table-responsive">
+
+    <div class="content-wrapper">
+      <div>
+        <div class="list-option">
+          <div class="d-flex justify-content-between">
+            <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'list'">
+              <i class="fas fa-list-alt" />
+              <span>Listar</span>
+            </div>
+            <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'register'">
+              <i class="fas fa-edit" />
+              <span>Cadastrar</span>
+            </div>
+          </div>
+        </div>
+
+        <transition name="slide-fade" mode="out-in">
+          <template v-if="switchListRegister === 'list'">
+            <div class="table-content list-option bg-white p-4">
               <table class="table table table-striped table-borderless table-hover" cellspacing="0">
                 <thead class="table-head">
                   <tr>
@@ -38,24 +49,24 @@
                 </tbody>
               </table>
             </div>
-          </div>
-        </div>
-      </template>
+          </template>
 
-      <template v-if="switchListRegister === 'register'">
-        <form @submit.prevent="registerSector()" class="formPosition">
-          <div class="cadCard">
-            <div class="inputs">
-              <simple-input v-model="inputValues.nome" :label="'Local Instalação:'" :type="'text'" />
-            </div>
-          </div>
-          <div class="d-flex justify-content-center m-3">
-            <save-button :label="getSaveButtonText()" />
-            <cancel-button v-if="isEditing" @click.native="closeEditing" label="Cancelar" />
-          </div>
-        </form>
-      </template>
-    </transition>
+          <template v-if="switchListRegister === 'register'">
+            <form @submit.prevent="registerSector()">
+              <div class="cadCard">
+                <div class="inputs">
+                  <simple-input v-model="inputValues.nome" :label="'Local Instalação:'" :type="'text'" />
+                </div>
+              </div>
+              <div class="d-flex justify-content-center m-3">
+                <save-button :label="getSaveButtonText()" />
+                <cancel-button v-if="isEditing" label="Cancelar" @click.native="closeEditing" />
+              </div>
+            </form>
+          </template>
+        </transition>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -90,7 +101,7 @@ export default {
   methods: {
     getSaveButtonText() {
       if (this.isEditing) return 'Alterar';
-      else return 'Cadastrar';
+      return 'Cadastrar';
     },
     editSector(sector) {
       this.inputValues = { ...sector };
@@ -104,7 +115,7 @@ export default {
         if (response.result.length === undefined)
           this.instalationLocal.push(response.result);
           
-        else this.instalationLocal = [ ...response.result ];
+        else this.instalationLocal = [...response.result];
       } catch (err) {
         console.log('err getSector => :', err.response || err);
 
@@ -208,77 +219,81 @@ export default {
     resetModel() {
       this.inputValues = {};
     },
+    goBack() {
+      this.$router.push('/cadastros');
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
 .root-local-instalacao-view {
-  width: 70%;
-  .list-option {
+  width: 100%;
+  .content-wrapper {
     display: flex;
-    justify-content: flex-start;
-    .option {
-      cursor: pointer;
-      color: var(--duas-rodas-soft);
-      transition: .2s;
-      &:hover {
-        transform: scale(1.2)
-      }
-      &:active {
-        transform: scale(1)
-      }
-      i {
-        
+    justify-content: center;
+    align-items: center;
+    .list-option {
+      width: 50vw;
+      display: flex;
+      justify-content: flex-start;
+      .option {
         cursor: pointer;
-        font-size: 1.4rem;
-        margin: 0 5px;
+        color: var(--duas-rodas-soft);
+        transition: .2s;
+        &:hover {
+          transform: scale(1.2)
+        }
+        &:active {
+          transform: scale(1)
+        }
+        i {
+          
+          cursor: pointer;
+          font-size: 1.4rem;
+          margin: 0 5px;
+        }
       }
     }
-  }
-  .formPosition{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     .cadCard {
-      width: 80%;
       padding: 20px;
       display: flex;
       flex-direction: column;
       border-radius: 10px;
       background-color: #ffffff;
     }
-  }
+    
 
-  .table-content {
-    border-radius: 10px;
-    table {
-      overflow:hidden;
-      border-collapse:separate;
+    .table-content {
       border-radius: 10px;
-    }
-    .table-head {
-      background-color: var(--duas-rodas);
-      color: white;
-      th {
-        padding: 20px;
+      table {
+        overflow:hidden;
+        border-collapse:separate;
+        border-radius: 10px;
       }
-    }
-    .table-body {
-      td {
-        padding: 20px;
-      }
-    }
-    .table-action {
-      i {
-        margin: 0 10px;
-        cursor: pointer;
-        transition: .1s;
-        &:hover {
-          transform: scale(1.3);
+      .table-head {
+        background-color: var(--duas-rodas);
+        color: white;
+        th {
+          padding: 20px;
         }
-        &:active {
-          transform: scale(1);
+      }
+      .table-body {
+        td {
+          padding: 20px;
+        }
+      }
+      .table-action {
+        i {
+          margin: 0 10px;
+          cursor: pointer;
+          transition: .1s;
+          &:hover {
+            transform: scale(1.3);
+          }
+          &:active {
+            transform: scale(1);
+          }
         }
       }
     }
