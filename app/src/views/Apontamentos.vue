@@ -36,7 +36,7 @@
     </div>
     <form class="formPosition" @submit.prevent="NoteOrder()">
       <div class="d-flex justify-content-center m-3">
-        <save-button label="Apontar"/>
+        <save-button label="Apontar" />
       </div>
     </form>
   </div>
@@ -46,6 +46,7 @@
 import { getLocalStorageToken, getErrors } from '../utils/utils';
 
 export default {
+  name: 'Apontamentos',
 
   props: {
     order: { type: Object, default: () => ({}) },
@@ -64,25 +65,26 @@ export default {
   
   methods: {
     async NoteOrder() {
-        try {
-            this.inputValues.user = this.$store.state.user.userId;
-            this.inputValues.order = this.order.idOrdemServico;
+      try {
+        this.inputValues.user = this.$store.state.user.userId;
+        this.inputValues.order = this.order.idOrdemServico;
 
-            const response = await this.$http.post('order-note', getLocalStorageToken(), this.inputValues);
-            
-            this.$swal({
-                type: 'success',
-                title: `${response.result}`,
-                confirmButtonColor: '#F34336',
-            });
-        } catch (err) {
-            console.log('NoteOrder =>', err);
-            return this.$swal({
-                type: 'error',
-                title: getErrors(err),
-                confirmButtonColor: '#F34336',
-            });
-        }
+        const response = await this.$http.post('order-note', getLocalStorageToken(), this.inputValues);
+        
+        this.$swal({
+          type: 'success',
+          title: response.result,
+          confirmButtonColor: '#F34336',
+        });
+      } catch (err) {
+        console.log('NoteOrder =>', err);
+
+        return this.$swal({
+          type: 'error',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
     },
   },
 };

@@ -24,12 +24,18 @@
           <span>Ordens finalizadas</span>
         </div>
       </div>
-      <div class="Chart__container" v-if="loaded">
+      <div  v-if="loaded" class="Chart__container">
         <div class="Chart__title">
           Ordens por Semana dos Últimos 30 dias
         </div>
         <div class="chart__content">
-          <line-chart v-if="loaded" :styles="myStyles" :chart-data="quantity" :chart-labels="labels" :optionStyle="style" ></line-chart>
+          <line-chart
+            v-if="loaded"
+            :styles="myStyles"
+            :chart-data="quantity"
+            :chart-labels="labels"
+            :optionStyle="style"
+          />
         </div>
       </div>
     </template>
@@ -43,7 +49,7 @@ import LineChart from '../../src/components/chart/chartLine.vue';
 export default {
 
   components: {
-    LineChart
+    'line-chart': LineChart,
   },
   
   data() {
@@ -66,20 +72,13 @@ export default {
         legend: true,
         ticksY: true,
         gridLinesY: true,
-        gridLinesX: false
+        gridLinesX: false,
       },
       myStyles: {
-          height: '300px',
-          width: '62vw'
-      }
+        height: '300px',
+        width: '62vw',
+      },
     };
-  },
-
-  mounted () {
-    this.$store.commit('addPageName', 'Dashboard');
-
-    this.getOrdersSummary();
-    this.getLastOrderByMonth();
   },
 
   computed: {
@@ -88,6 +87,14 @@ export default {
       return false;
     },
   },
+
+  mounted() {
+    this.$store.commit('addPageName', 'Dashboard');
+
+    this.getOrdersSummary();
+    this.getLastOrderByMonth();
+  },
+
 
   methods: {
     async getOrdersSummary() {
@@ -107,20 +114,23 @@ export default {
         this.isLoading = false;
       }
     },
-    async getLastOrderByMonth (){
+    async getLastOrderByMonth() {
       try {
-        this.resetState()
+        this.resetState();
+
         const response = await this.$http.microserviceAnalisis('analysis/last-month', getLocalStorageToken());
+
         this.quantity = response.map(order => order.Quantity);
         this.labels = response.map(order => this.$moment(order.OpeningDate).format('DD-MM-YYYY'));
+
         this.loaded = true;
       } catch (error) {
         console.log(error);
       }
     },
-    resetState () {
-      this.loaded = false
-    }
+    resetState() {
+      this.loaded = false;
+    },
   },
 };
 </script>

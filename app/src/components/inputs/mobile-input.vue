@@ -1,9 +1,8 @@
 <template>
   <div class="container p-2">
     <div class="input-container">
-      <i class="fa" :class="icon"/>
+      <i class="fa" :class="icon" />
       <input
-        :id="label"
         v-model="model"
         :type="type"
         :placeholder="placeholder"
@@ -21,7 +20,7 @@ export default {
     icon: { type: String, default: '' },
     type: { type: String, default: '' },
     placeholder: { type: String, default: '' },
-    value: { type: undefined, default: '' }
+    value: { type: undefined, default: '' },
   },
 
   data() {
@@ -37,12 +36,11 @@ export default {
       },
 
       set(val) {
-        this.$emit('input', val)
-      } 
-    }
-  }
-
-}
+        this.$emit('input', val);
+      },
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

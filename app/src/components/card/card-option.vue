@@ -1,29 +1,29 @@
 <template>
-	<div class="root-card-option-component">
-		<div class="card-option shadow" :class="size ? 'small' : ''">
-			<router-link class="text-decoration-none text-muted" :to="route">
-				<div class="card-wrapper">
-					<div class="icon-card">
-						<i :class="icon" class="fa-2x"></i>
-					</div>
-					<div>
-						<span class="text-muted">{{ title }}</span>
-					</div>
-				</div>
-			</router-link>
-		</div>
-	</div>
+  <div class="root-card-option-component">
+    <router-link class="text-decoration-none text-muted" :to="route">
+      <div class="card-option shadow" :class="size ? 'small' : ''">
+        <div class="card-wrapper">
+          <div class="icon-card">
+            <i :class="icon" class="fa-2x"></i>
+          </div>
+          <div>
+            <span class="text-muted">{{ title }}</span>
+          </div>
+        </div>
+      </div>
+    </router-link>
+  </div>
 </template>
 
 <script>
 export default {
-	props:{
-		title: { type: String, default: '' },
-		icon: { type: String, default: '' },
-		route: { type: String, default: '' },
-		size: { type: String, default: '' },
-	}
-}
+  props: {
+    title: { type: String, default: '' },
+    icon: { type: String, default: '' },
+    route: { type: String, default: '' },
+    size: { type: String, default: '' },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

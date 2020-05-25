@@ -8,8 +8,8 @@ module.exports = {
     'eslint:recommended'
   ],
   rules: {
-    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    "no-console": "off",
+    "no-debbug": "off",
     "vue/no-unused-components": 1,
     "no-unused-vars": "warn",
     "vue/no-unused-vars": "warn",
@@ -39,10 +39,18 @@ module.exports = {
     "no-param-reassign": "warn",
     "curly": ['warn', 'multi-or-nest', 'consistent'],
     "vue/mustache-interpolation-spacing": "warn",
-    "space-before-function-paren": ["warn", "never"],
+    "space-before-function-paren": ["warn", {
+      "anonymous": "never",
+      "named": "never",
+      "asyncArrow": "always"
+    }],
     "no-multi-spaces": "warn",
     "vue/order-in-components": "warn",
     "vue/attributes-order": "warn",
+    "no-else-return": "warn",
+    "indent": ["warn", 2],
+    "vue/html-closing-bracket-spacing": "warn",
+    "no-unreachable": "warn"
   },
   parserOptions: {
     parser: 'babel-eslint'

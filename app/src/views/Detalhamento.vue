@@ -267,20 +267,20 @@
           </el-dialog>
         </div>
       </div>
+
       <div v-if="state.view === 'Verification'" key="Verification">
-        <Verificacao
+        <order-verification
           :order="order"
           @state-list="closeDetail"
         />
       </div>
 
       <div v-if="state.view === 'Note'" key="Note">
-        <OrderNote
+        <order-note
           :order="order"
           @state-list="closeDetail"
         />
       </div>
-
     </transition>
     <b-modal @hide="resetModal()" @show="checkSelectedEpis()" centered ref="my-modal" hide-footer hide-header title="Verificação de EPIs">
         <div class="d-block text">
@@ -314,16 +314,16 @@
 </template>
 
 <script>
-  import Verificacao from './Verificacao.vue';
-  import OrderNote from './OrderNote.vue';
+  import orderVerification from './Verificacao.vue';
+  import OrderNote from './Apontamentos.vue';
   import { getErrors, getLocalStorageToken } from '../utils/utils';
 
   export default {
   name: 'Detalhamento',
 
   components: {
-    Verificacao,
-    OrderNote,
+    'order-verification': orderVerification,
+    'order-note': OrderNote,
   },
 
   props: {

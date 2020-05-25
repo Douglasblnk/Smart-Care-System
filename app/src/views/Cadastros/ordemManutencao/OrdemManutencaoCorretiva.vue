@@ -470,28 +470,22 @@ export default {
       if (this.orderType === 'corretiva') return 1;
       return 2;
     },
-    resetInputValues() {
-      this.inputValues.operations = [];
-      this.sequenceOperation = 0;
-      this.selectedEpis = [];
-      this.selectedOperations = [];
-      this.workEquipment = [];
-    },
     async registerOrderMaintenance() {
       try {
         this.$set(this.inputValues, 'beginData', this.$moment().format('YYYY-MM-DD'));
-        console.log('INPUT VALUES REGISTER: ',this.inputValues);
-        const response = await this.$http.post('ordem-manutencao', getLocalStorageToken(), this.inputValues);
-        
-        console.log('response :>> ', response);
 
+        await this.$http.post('ordem-manutencao', getLocalStorageToken(), this.inputValues);
+        
         this.$swal({
           type: 'success',
           title: 'Ordem de Serviço cadastrada com Sucesso',
           confirmButtonColor: '#F34336',
         });
+
+        this.$emit('reset:closeOrderMaintenance');
       } catch (err) {
         console.log('err :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
           title: getErrors(err),

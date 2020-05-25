@@ -55,12 +55,14 @@ export default {
       isLoading: false,
     };
   },
+  
   computed: {
     isMobile() {
       if (window.innerWidth <= '600') return true;
       return false;
     },
   },
+  
   methods: {
     async loginValidation() {
       if (this.isLoading === true) return;
@@ -143,12 +145,6 @@ export default {
       min-width: 30vw;
     }
   }
-  @media screen and (max-width: 600px) {
-    .hold-login {
-      border-radius: 10px !important;
-      box-shadow: 1px 1px 10px -2px rgb(75, 75, 75) !important;
-    }
-  }
   .login-text {
     h4 {
       color: #777777;
@@ -157,17 +153,21 @@ export default {
     width: 100%;
   }
 }
-@media screen and (max-width: 600px) {
-  .root-login-view {
-    width: 100%;
-    height: 100%;
-    background-color: var(--duas-rodas-soft);
+@media screen and (max-width: 991px) {
+    .hold-login {
+      border-radius: 10px !important;
+      box-shadow: 1px 1px 10px -2px rgb(75, 75, 75) !important;
+    }
+    .root-login-view {
+      width: 100%;
+      height: 100%;
+      background-color: var(--duas-rodas-soft);
+    }
+    .conteiner {
+      margin: 50px 0;
+    }
+    .login-wrapper{
+      width: 100%;
+    }
   }
-  .conteiner {
-    margin: 50px 0;
-  }
-  .login-wrapper{
-    width: 90%;
-  }
-}
 </style>
