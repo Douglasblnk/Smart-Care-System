@@ -61,8 +61,8 @@ export default class RegisterOrderMaintenanceListValidate {
     };
     
     isEmpty.verify(data,  ['title','summary','plannedStart','plannedEnd','requireStop','beginData',
-                           'equipment_sector','typeMaintenance','sector','priority','stats',
-                           'superiorEquipment','operations'], '');
+                           'equipments_sectors','typeMaintenance','priority','stats',
+                           'operations','requester','report'], '');
 
     if (data.title === '') throw {
       status: 404,
@@ -88,17 +88,13 @@ export default class RegisterOrderMaintenanceListValidate {
         status: 404,
         err: 'Data de Inicio não informado',
     };
-    if (data.equipment_sector === '') throw {
+    if (data.equipments_sectors === '') throw {
         status: 404,
         err: 'Equipamento não informado',
     };
     if (data.typeMaintenance === '') throw {
         status: 404,
         err: 'Tipo Manutenção não informado',
-    };
-    if (data.sector === '') throw {
-        status: 404,
-        err: 'Setor não informado',
     };
     if (data.priority === '') throw {
         status: 404,
@@ -108,14 +104,18 @@ export default class RegisterOrderMaintenanceListValidate {
         status: 404,
         err: 'Status não informado',
     };
-    if (data.superiorEquipment === '') throw {
-        status: 404,
-        err: 'Equipamento Superior não informado',
-    };
     if (data.operations === '') throw {
       status: 404,
       err: 'Operações não informadas',
-  };
+    };
+    if (data.requester === '') throw {
+      status: 404,
+      err: 'Solicitante não informado',
+    };
+    if (data.report === '') throw {
+      status: 404,
+      err: 'Reporte não informado',
+    };
   }
 
   getQuery(data: any) {
@@ -123,7 +123,7 @@ export default class RegisterOrderMaintenanceListValidate {
                     titulo: data.title, resumo: data.summary, descricao: data.description, inicioPlanejado: data.plannedStart, 
                     fimPlanejado: data.plannedEnd, requerParada: data.requireStop, dataEmissao: data.beginData, 
                     tipoManutencao_idtipoManutencao: data.typeMaintenance, Prioridade_idPrioridade: data.priority, 
-                    Status_idStatus: data.stats
+                    Status_idStatus: data.stats, reporte: data.report, solicitante: data.requester
                 };
     const query = /*sql*/`INSERT INTO ${TABLE} SET ?;`;
 

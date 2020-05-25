@@ -60,9 +60,9 @@ export default class RegisterOrderMaintenanceValidate {
       err: 'Não existem dados!',
     };
     
-    isEmpty.verify(data,  ['title','summary','description','plannedStart','plannedEnd',
+    isEmpty.verify(data,  ['title','summary','plannedStart','plannedEnd',
                            'requireStop','beginData','equipment','typeMaintenance','sector',
-                           'priority','stats','operations'], '');
+                           'priority','stats','operations','requester','report'], '');
 
     if (data.title === '') throw {
       status: 404,
@@ -71,10 +71,6 @@ export default class RegisterOrderMaintenanceValidate {
     if (data.summary === '') throw {
         status: 404,
         err: 'Resumo não informado',
-    };
-    if (data.description === '') throw {
-        status: 404,
-        err: 'Descrição não informado',
     };
     if (data.plannedStart === '') throw {
         status: 404,
@@ -116,6 +112,14 @@ export default class RegisterOrderMaintenanceValidate {
       status: 404,
       err: 'Operações não informadas',
     };
+    if (data.requester === '') throw {
+      status: 404,
+      err: 'Solicitante não informado',
+    };
+    if (data.report === '') throw {
+      status: 404,
+      err: 'Reporte não informado',
+    };
   }
 
   getQuery(data: any) {
@@ -123,7 +127,7 @@ export default class RegisterOrderMaintenanceValidate {
                     titulo: data.title, resumo: data.summary, descricao: data.description, inicioPlanejado: data.plannedStart, 
                     fimPlanejado: data.plannedEnd, requerParada: data.requireStop, dataEmissao: data.beginData, 
                     tipoManutencao_idtipoManutencao: data.typeMaintenance, Prioridade_idPrioridade: data.priority, 
-                    Status_idStatus: data.stats
+                    Status_idStatus: data.stats, reporte: data.report, solicitante: data.requester
                 };
     const query = `INSERT INTO ${TABLE} SET ?;`;
 

@@ -1,12 +1,12 @@
 <template>
   <div class="root-note-view">
     <div class="my-3">
-        <simple-button
-          :no-margin="true"
-          label="Voltar"
-          prefix="fa-arrow-left"
-          @click.native="() => $emit('state-list')"
-        />
+      <simple-button
+        :no-margin="true"
+        label="Voltar"
+        prefix="fa-arrow-left"
+        @click.native="() => $emit('state-list')"
+      />
     </div>
     <div class="note-content p-3 d-flex">
       <div class="note-title">
@@ -19,22 +19,22 @@
           <simple-input v-model="inputValues.description" :label="'Descricao Atividade:'" :type="'text'" />
         </div>
         <div>
-            <simple-input
-              v-model="inputValues.date"
-              :label="'Data do lançamento:'"
-              :type="'date'"
-            />
+          <simple-input
+            v-model="inputValues.date"
+            :label="'Data do lançamento:'"
+            :type="'date'"
+          />
         </div>
         <div>
-            <simple-input
-              v-model="inputValues.time"
-              :label="'Tempo Dedicado:'"
-              :type="'time'"
-            />
+          <simple-input
+            v-model="inputValues.time"
+            :label="'Tempo Dedicado:'"
+            :type="'time'"
+          />
         </div>
       </div>
     </div>
-    <form @submit.prevent="NoteOrder()" class="formPosition">
+    <form class="formPosition" @submit.prevent="NoteOrder()">
       <div class="d-flex justify-content-center m-3">
         <save-button label="Apontar"/>
       </div>
@@ -44,12 +44,8 @@
 
 <script>
 import { getLocalStorageToken, getErrors } from '../utils/utils';
-import { ToggleButton } from 'vue-js-toggle-button'
 
 export default {
-  components: {
-    'toggle-button': ToggleButton,
-  },
 
   props: {
     order: { type: Object, default: () => ({}) },
@@ -61,18 +57,15 @@ export default {
       inputValues: {
         date: '',
         time: true,
-        description: ''
-      }
+        description: '',
+      },
     };
-  },
-
-  mounted() {
   },
   
   methods: {
-    async NoteOrder(){
+    async NoteOrder() {
         try {
-            this.inputValues.user = this.$store.state.user.userId; 
+            this.inputValues.user = this.$store.state.user.userId;
             this.inputValues.order = this.order.idOrdemServico;
 
             const response = await this.$http.post('order-note', getLocalStorageToken(), this.inputValues);
@@ -81,16 +74,16 @@ export default {
                 type: 'success',
                 title: `${response.result}`,
                 confirmButtonColor: '#F34336',
-            })
+            });
         } catch (err) {
-            console.log('NoteOrder =>', err)
+            console.log('NoteOrder =>', err);
             return this.$swal({
                 type: 'error',
                 title: getErrors(err),
                 confirmButtonColor: '#F34336',
-            })
+            });
         }
-    }
+    },
   },
 };
 </script>
