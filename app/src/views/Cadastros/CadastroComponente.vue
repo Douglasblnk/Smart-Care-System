@@ -91,19 +91,12 @@ export default {
     "cancel-button": cancelButton,
     
   },
-  // computed: {
-  //   if(selectsComponents && selectsEquipament){
-
-  //   }
-  //   // this.mesclaListas();
-  // },
   data() {
     return {
       selectValue: '',
       inputValues: {
         DescricaoComponente: "",
         Equipamento_idEquipamento: 0,
-        // equipamento_name:"",
 
       },
       workEquipment: [],
@@ -178,7 +171,6 @@ export default {
     },
 
     async getComponentes() {
-      console.log('2B');
       try {
         const response = await this.$http.get('componente/get', getLocalStorageToken());
         if(response.result.length === undefined)
@@ -229,37 +221,21 @@ export default {
     this.inputValues = { ...component };
     this.switchListRegister = 'register';
     this.isEditing = true;
-     console.log(component);
-    console.log('a-------------------------------------a---------------------------------a');
-    console.log(this.workEquipment);
 
     this.workEquipmentEdit = this.workEquipment;
-    // console.log(this.workEquipmentEdit);
-    const equipamentName =  this.workEquipment.find(equipament => equipament.idEquipamento === component.Equipamento_idEquipamento);
-    // // console.log(equipamentName);
-     console.log('--------------------------------------');
-    console.log(equipamentName)
-    this.workEquipment = [];
-    // //  so q com isso terei q fazer outra requisiçao ou salvar em outra variavel o objeto das maquinas
-    this.workEquipment.push(equipamentName);
-    this.getWorkEquipmentOptions();
-    // this.workEquipment.push({ id: String(i.idEquipamento), description: i.equipamento });
-    // this.workEquipment.map(i => ({ id: String(i.idEquipamento), description: i.equipamento }));
-    // // console.log(this.workEquipment);
-    // this.getWorkEquipmentOptions();
-    // this.selectsEquipament.selects.push(this.workEquipment);
-    // this.selectsEquipament.selects[0].value = this.workEquipment[0].value;
-    // this.selectsEquipament.selects[0].label = this.workEquipment[0].label;
 
-    // this.switchListRegister = 'register'
-    // this.isEditing = true;
+    const equipamentName =  this.workEquipment.find(equipament => equipament.idEquipamento === component.Equipamento_idEquipamento);
+
+    if (equipamentName !== undefined) {
+      this.workEquipment = [];
+      this.workEquipment.push(equipamentName);
+      this.getWorkEquipmentOptions();
+    } else { return this.workEquipment= this.workEquipment }
+
+
   },
-  // teste(){
-  //   const equipamentName = this.selectsEquipament.selects.find(equipament => equipament.idEquipamento === component.Equipamento_idEquipamento); 
-  // }
   
   closeEditing() {
-    console.log('clousing entrando');
     
     this.switchLabelPage('list');
     this.switchListRegister = 'list';
