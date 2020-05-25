@@ -14,10 +14,9 @@ export default class DeleteOperacoesValidate {
       const getQuery = this.getQuery(data)
 
       const result = await commitData.run(getQuery);
-      console.log('cheguei até aqui');
+
       return result;
     } catch (err) {
-      console.log(err);
 
       throw err;
     }
@@ -25,13 +24,11 @@ export default class DeleteOperacoesValidate {
 
   getData(evt: any) {
     const data = evt.params.id || undefined;
-    console.log('oia so')
-    console.log(data)
+
     return data;
   }
 
   validateData(data: any) {
-    console.log('data cru', data);
     
     if (data === '' || !data) throw {
       status: 404,

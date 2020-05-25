@@ -73,16 +73,10 @@
 </template>
 <script>
 import { getLocalStorageToken,getErrors } from '../../utils/utils';
-import select from '../../components/inputs/custom-select';
-import saveButton from '../../components/button/save-button';
-import cancelButton from '../../components/button/cancel-button';
+
 
 export default {
   components: {
-    'custom-select': select,
-
-    'save-button': saveButton,
-    'cancel-button': cancelButton,
     
   },
   data() {
@@ -97,7 +91,6 @@ export default {
         tempo_planejado: 0,
       },
       workOperations: [],
-      selectsComponentseEquipament: [],
       switchListRegister: 'list',
       isEditing: false,
     };
@@ -125,7 +118,6 @@ export default {
       }
     },
     async registerOperations() {
-      console.log('valores :>> ', this.inputValues);
       if (this.isEditing) return this.updateOperations();
       try {
         const response = await this.$http.post('operacoes', getLocalStorageToken(), this.inputValues);
@@ -145,7 +137,6 @@ export default {
       }
     },
     async getOperations() {
-      console.log('2B');
       // const token = localStorage.getItem('token')
       try {
         const response = await this.$http.get('operacoes/get', getLocalStorageToken());
@@ -167,30 +158,29 @@ export default {
     },
   
   deleteOperations(component, index) {
-// const response = await this.$http.
-console.log(component);
+
   try {
-  this.$swal({
-    type: 'question',
-    title: `Deseja mesmo remover o Componente ${component.descricao_operacao}`,
-    showCancelButton: true,
-    confirmButtonColor: '#F34336',
-    preConfirm: async() => {
-      const response = await this.$http.delete('operacoes', getLocalStorageToken(), component.idoperacao);
-        this.$swal({
-          type: 'success',
-          title: 'Removido com sucesso',
-          confirmButtonColor: '#F34336',
-        }),
-        this.workOperations.splice(index, 1);
-    }
-  })
-  } catch (err) {
-    return this.$swal({
-      type: 'warning',
-      title: getErrors(err),
+    this.$swal({
+      type: 'question',
+      title: `Deseja mesmo remover o Componente ${component.descricao_operacao}`,
+      showCancelButton: true,
       confirmButtonColor: '#F34336',
-    });
+      preConfirm: async() => {
+        const response = await this.$http.delete('operacoes', getLocalStorageToken(), component.idoperacao);
+          this.$swal({
+            type: 'success',
+            title: 'Removido com sucesso',
+            confirmButtonColor: '#F34336',
+          }),
+          this.workOperations.splice(index, 1);
+      }
+    })
+  } catch (err) {
+      return this.$swal({
+        type: 'warning',
+        title: getErrors(err),
+        confirmButtonColor: '#F34336',
+      });
   }
   },
   editOperations(component) {

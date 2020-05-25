@@ -16,7 +16,7 @@ import CadastroCausaSintoma from '../views/Cadastros/CadastroCausaSintoma.vue';
 import CadastroComponente from '../views/Cadastros/CadastroComponente';
 import OrdemManutencaoWrapper from '../views/Cadastros/ordemManutencao/OrdemManutencaoWrapper.vue';
 import CadastroEpi from '../views/Cadastros/CadastroEpi';
-import CadastroOperations from '../views/Cadastros/CadastroOperations.vue';
+import CadastroOperacao from '../views/Cadastros/CadastroOperacao.vue';
 
 import { validateToken } from '../utils/utils';
 import Swal from 'sweetalert2';
@@ -93,9 +93,9 @@ const routes = [
         meta: { requireAuth: true },
       },
       {
-        path: 'cadastro-operations',
+        path: 'cadastro-operacao',
         name: 'Cadastro Operações',
-        component: CadastroOperations,
+        component: CadastroOperacao,
         meta: { requireAuth: true },
       },
     ],

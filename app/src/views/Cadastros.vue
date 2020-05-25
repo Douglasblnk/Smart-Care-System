@@ -68,7 +68,7 @@ export default {
         {
           title: 'Operações',
           icon: 'fas fa-cogs',
-          route: 'cadastros/cadastro-operations',
+          route: 'cadastros/cadastro-operacao',
         },
       ],
     };

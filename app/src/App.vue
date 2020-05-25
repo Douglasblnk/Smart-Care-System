@@ -69,7 +69,7 @@ export default {
 }
 
 body {
-  background-color: #f1f1f1 !important;
+  background-color: #d3d3d3 !important;
   box-sizing: border-box;
 }
 

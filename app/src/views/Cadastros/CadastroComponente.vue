@@ -21,14 +21,14 @@
               <table class="table table table-striped table-borderless table-hover" cellspacing="0">
                 <thead class="table-head">
                   <tr>
-                  <th scope="col">Componente</th>
+                    <th scope="col">Componente</th>
                     <!-- <th scope="col">Máquina</th> -->
                     <th scope="col">Ações</th>
                   </tr>
                 </thead>
                 <tbody class="table-body">
                   <tr v-for="(component, index) in workComponent" value="component.label" :key="`component-${index}`">
-                    <td>{{ component.label}}</td>
+                    <td>{{ component.DescricaoComponente }}</td>
                   
                     <!-- <td>{{ workCenter.DescricaoComponente}}</td> -->
                     <td style="width: 50px">
@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import { getLocalStorageToken } from '../../utils/utils'
+import { getLocalStorageToken, getErrors } from '../../utils/utils'
 import simpleInput from "../../components/inputs/simple-input";
 import select from '../../components/inputs/custom-select'
 import description from "../../components/inputs/description";
@@ -107,19 +107,12 @@ export default {
 
       },
       workEquipment: [],
+      workEquipmentEdit: [],
       workComponent: [],
-      selectsEquipament:{
-        select: "",
-        selects: []
-      },
-      selectsComponents:{
-        select: "",
-        selects: []
-      },
       selectsComponentseEquipament: [],
       switchListRegister: 'list',
       isEditing: false,
-      equipamentos:[]
+      equipamentos:[],
     };
   },
   mounted() {
@@ -131,77 +124,73 @@ export default {
   },
   methods: {
     getSaveButtonText() {
+      
       if (this.isEditing) return 'Alterar';
       else return 'Cadastrar';
     },
     switchLabelPage(labelPage) {
       if (labelPage === 'list') {
         this.switchListRegister = 'list';
+        this.workEquipment = this.workEquipmentEdit;
         return this.$store.commit('addPageName', `Cadastro de Componentes | Listagem`);
       } else if (labelPage === 'register') {
+        this.workEquipment = this.workEquipmentEdit;
         this.switchListRegister = 'register';
         return this.$store.commit('addPageName', `Cadastro de Componentes | Cadastrar`);
       } else {
         return this.$store.commit('addPageName', `Cadastro de Componentes | Editar`);
       }
     },
-    registerEquipment() {
+    async registerEquipment() {
      if (this.isEditing) return this.updateComponent();
       this.inputValues.Equipamento_idEquipamento = this.selectValue;
-
-       this.$http.post('componente', getLocalStorageToken(), this.inputValues)
-        .then(json => {
-          if (json.status !== 200) return this.$swal({
-            type: 'error',
-            title: `Ops! ${json.err}`,
-            confirmButtonColor: '#F34336',
-          })
+       try {
+         const response = await this.$http.post('componente', getLocalStorageToken(), this.inputValues);
           this.$swal({
             type: 'success',
-            title: `${json.result}`,
+            title: 'Cadastrado com sucesso',
             confirmButtonColor: '#F34336',
-          })
+          }),
           this.DescricaoComponente = '';
           this.getComponentes();
-        })
+       } catch (err) {
+        return this.$swal({
+                type: 'warning',
+                title: getErrors(err),
+                confirmButtonColor: '#F34336',
+            }); 
+       }
     },
 
-    getEquipments() {
-       console.log('1A');
-      
-      // const token = localStorage.getItem('token')
-      this.$http.get('equipamento/get', getLocalStorageToken())
-        .then(res => {
-          if (res.status !== 200) return this.$swal({
-            type: 'error',
-            title: `Ops! ${res.err}`,
-            confirmButtonColor: '#F34336',
-          })
-          this.workEquipment = res.result;
-          console.log('Work Equipment', this.workEquipment);
-            // console.log("---aaaaaaaaaaaaaaaaa-")
-            // console.log(this.selectsEquipament)      
-        })
+    async getEquipments() {
+      try {
+        const response = await this.$http.get('equipamento/get', getLocalStorageToken());
+        if(response.result.length === undefined)
+          this.workEquipment.push(response.result);
+          else this.workEquipment = [ ...response.result ];
+      } catch (err) {
+        return this.$swal({
+                type: 'warning',
+                title: getErrors(err),
+                confirmButtonColor: '#F34336',
+            }); 
+      }
     },
 
-    getComponentes() {
+    async getComponentes() {
       console.log('2B');
-      // const token = localStorage.getItem('token')
-      this.$http.get('componente/get', getLocalStorageToken())
-        .then(res => {
-          if (res.status !== 200) return this.$swal({
-            type: 'error',
-            title: `Ops! ${res.err}`,
-            confirmButtonColor: '#F34336',
-          })
+      try {
+        const response = await this.$http.get('componente/get', getLocalStorageToken());
         if(response.result.length === undefined)
           this.workComponent.push(response.result);
-        else this.workComponent = [ ...response.result ];
-        //this.workComponent.push(res.result);
-            // console.log("---aaaaaaaaaaaaaaaaa-")
-            // console.log(this.selectsComponents)          
-        })
-        // -----
+          else this.workComponent = [ ...response.result ];
+      } catch (err) {
+        return this.$swal({
+                type: 'warning',
+                title: getErrors(err),
+                confirmButtonColor: '#F34336',
+            }); 
+      }
      
     },
 
@@ -209,87 +198,94 @@ export default {
       this.inputValues = {};
     },
   
-  deleteComponents(component, index) {
-          // o index e para remover o item com splice na posiçao x 
-          // console.log(component.idComponente);
-    const token = localStorage.getItem('token')
+  async deleteComponents(component, index) {
+
+    try {
     this.$swal({
       type: 'question',
       title: `Deseja mesmo remover o Componente ${component.DescricaoComponente}`,
       showCancelButton: true,
       confirmButtonColor: '#F34336',
-      preConfirm: () => {
-        this.$http.update('componente', getLocalStorageToken(), component.idComponente)
-        .then(res => {
-          if(res.status !== 200) return this.$swal({
-            type: 'error',
-            title: `Ops ! ${res.err}`,
-            text: res.detailErr || '',
-            confirmButtonColor: '#F34336',
-          })
-          this.$swal({
+      preConfirm: async() => {
+        const response = await this.$http.delete('componente', getLocalStorageToken(), component.idComponente);
+        return this.$swal({
             type: 'success',
-            title: `${res.result}`,
+            title: 'Removido com Sucesso',
+            text: response.detailErr || '',
             confirmButtonColor: '#F34336',
-          }).then(() => {
-            this.selectsComponents.selects.splice(index, 1)
-          })
-        })
+          });
       }
-    })
+    });
+    } catch (err) {
+      return this.$swal({
+              type: 'warning',
+              title: getErrors(err),
+              confirmButtonColor: '#F34336',
+          }); 
+    }
   },
-  editComponent(component) {
+   editComponent(component) {
     this.switchLabelPage('edit');
     this.inputValues = { ...component };
-
-    // console.log('a-------------------------------------a---------------------------------a');
-    // console.log(this.inputValues);
-       
-    const equipamentName = this.selectsEquipament.selects.find(equipament => equipament.idEquipamento === component.Equipamento_idEquipamento);
-    // console.log(equipamentName);
-    //  console.log('--------------------------------------');
-    //  so q com isso terei q fazer outra requisiçao ou salvar em outra variavel o objeto das maquinas
-    this.equipamentos.push(equipamentName);
-    this.selectsEquipament.selects = [];
-    this.workEquipment.push(equipamentName)
-    // console.log(this.workEquipment);
-    this.selectsEquipament.selects.push(this.workEquipment);
-    this.selectsEquipament.selects[0].value = this.workEquipment[0].value;
-    this.selectsEquipament.selects[0].label = this.workEquipment[0].label;
-
-    this.switchListRegister = 'register'
+    this.switchListRegister = 'register';
     this.isEditing = true;
+     console.log(component);
+    console.log('a-------------------------------------a---------------------------------a');
+    console.log(this.workEquipment);
+
+    this.workEquipmentEdit = this.workEquipment;
+    // console.log(this.workEquipmentEdit);
+    const equipamentName =  this.workEquipment.find(equipament => equipament.idEquipamento === component.Equipamento_idEquipamento);
+    // // console.log(equipamentName);
+     console.log('--------------------------------------');
+    console.log(equipamentName)
+    this.workEquipment = [];
+    // //  so q com isso terei q fazer outra requisiçao ou salvar em outra variavel o objeto das maquinas
+    this.workEquipment.push(equipamentName);
+    this.getWorkEquipmentOptions();
+    // this.workEquipment.push({ id: String(i.idEquipamento), description: i.equipamento });
+    // this.workEquipment.map(i => ({ id: String(i.idEquipamento), description: i.equipamento }));
+    // // console.log(this.workEquipment);
+    // this.getWorkEquipmentOptions();
+    // this.selectsEquipament.selects.push(this.workEquipment);
+    // this.selectsEquipament.selects[0].value = this.workEquipment[0].value;
+    // this.selectsEquipament.selects[0].label = this.workEquipment[0].label;
+
+    // this.switchListRegister = 'register'
+    // this.isEditing = true;
   },
   // teste(){
   //   const equipamentName = this.selectsEquipament.selects.find(equipament => equipament.idEquipamento === component.Equipamento_idEquipamento); 
   // }
   
   closeEditing() {
+    console.log('clousing entrando');
+    
     this.switchLabelPage('list');
     this.switchListRegister = 'list';
     this.isEditing = false;
+    this.workEquipment = this.workEquipmentEdit;
     this.resetModel();
     },
-  updateComponent() {
-    this.$http.methodUpdate('componente', getLocalStorageToken(), this.inputValues, this.inputValues.idComponente)
-    .then(res => {
-      if (res.status !== 200) return this.$swal({
-            type: 'error',
-            title: `Ops! ${res.err}`,
-            confirmButtonColor: '#F34336',
-          })
-          this.$swal({
-            type: 'success',
-            title: `${res.result}`,
-            confirmButtonColor: '#F34336',
-          }).then( () => {
-            this.selectsEquipament.selects.push(this.equipamentos)
-            const index =  this.selectsComponents.selects.indexOf(this.selectsComponents.selects.find(i => i.idComponente === this.inputValues.idComponente))
-            this.selectsComponents.selects.splice(index,1 , this.inputValues)
-            this.closeEditing()
-          })
-    })
-
+  async updateComponent() {
+    try {
+      const response = await this.$http.update('componente', getLocalStorageToken(), this.inputValues, this.inputValues.idComponente);
+      this.$swal({
+        type: 'success',
+        title: 'Alterado com Sucesso',
+        confirmButtonColor: '#F34336',
+      })
+      const index =  this.workComponent.indexOf(this.workComponent.find(i => i.idComponente === this.inputValues.idComponente));
+      this.workComponent.splice(index,1 , this.inputValues);
+      this.workEquipment = this.workEquipmentEdit;
+      this.closeEditing();
+    } catch (err) {
+      return this.$swal({
+              type: 'warning',
+              title: getErrors(err),
+              confirmButtonColor: '#F34336',
+          }); 
+    }
   },
   getWorkEquipmentOptions() {
     return this.workEquipment.map(i => ({ id: String(i.idEquipamento), description: i.equipamento }));
