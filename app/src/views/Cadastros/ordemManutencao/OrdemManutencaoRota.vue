@@ -73,6 +73,16 @@
             label="Requer Parada"
             :options="selectsRequireStopOptions()"
           />
+          <custom-select
+            v-model="inputValues.requester"
+            label="Solicitante"
+            :options="selectsRequestersOptions()"
+          />
+          <custom-select
+            v-model="inputValues.report"
+            label="Reporte"
+            :options="selectsReportOptions()"
+          />
         </tab-content>
 
         <!--
@@ -202,6 +212,8 @@ export default {
         plannedEnd: '',
         beginData: '',
         requireStop: '',
+        requester: '',
+        report: '',
         typeMaintenance: 3,
         priority: '',
         stats: 1,
@@ -228,9 +240,11 @@ export default {
       ],
       epiList: [],
       selectedOperations: [],
-      sequenceOperation: 0,
+      selectsRequesterOptions: [],
+      selectsReports: [],
       operationsList: [],
       showRemoveEpi: {},
+      sequenceOperation: 0,
       modalHasError: false,
       modalErrorMessage: '',
       isloading: false,
@@ -242,6 +256,8 @@ export default {
     this.getSector();
     this.getPriority();
     this.getOperations();
+    this.getRequester();
+    this.getReporter();
   },
 
   methods: {
@@ -250,7 +266,7 @@ export default {
       this.modalErrorMessage = '';
       this.selectedEpis = [];
     },
-    async addEquipmentSectorOperations(sector,equipment,operations){
+    async addEquipmentSectorOperations(sector,equipment,operations) {
         try{
         let operationList = await this.addOperation(operations);
 
@@ -393,6 +409,38 @@ export default {
         });
       }
     },
+    async getRequester() {
+      try {
+        const response = await this.$http.get('users/requester', getLocalStorageToken());
+
+        if (response.result.length === undefined)
+          this.selectsRequesterOptions.push(response.result);
+        else this.selectsRequesterOptions = [...response.result];
+        
+      } catch (err) {
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
+    async getReporter() {
+      try {
+        const response = await this.$http.get('users/report', getLocalStorageToken());
+        console.log('Reporter: ',response);
+        if (response.result.length === undefined)
+          this.selectsReports.push(response.result);
+        else this.selectsReports = [...response.result];
+        
+      } catch (err) {
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
     selectsRequireStopOptions() {
       return this.selectsRequireStop.map(i => ({ id: String(i.id), description: i.nome }));
     },
@@ -414,6 +462,12 @@ export default {
     },
     getSectorOptions() {
       return this.selectsSector.map(i => ({ id: String(i.idSetor), description: i.nome }));
+    },
+    selectsRequestersOptions() {
+      return this.selectsRequesterOptions.map(i => ({ id: String(i.idUsuario), description: i.nome }));
+    },
+    selectsReportOptions(){
+      return this.selectsReports.map(i => ({ id: String(i.idUsuario), description: i.nome }));
     },
     async getPriority() {
       try {

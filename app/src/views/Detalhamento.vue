@@ -90,7 +90,7 @@
                 <div
                   v-if="verifyOrderStatus === 'assumed' || verifyOrderStatus === 'paused'"
                   class="options"
-                  :class="verifyUserAccess ? '' : 'disable'"
+                  :class="verifyUserAccessLevel ? '' : 'disable'"
                   @click="orderMovimentations('init')"
                 >
                   <i class="fa fa-play fa-lg mb-2" />
@@ -103,7 +103,7 @@
                 <div
                   v-if="verifyOrderStatus === 'running'"
                   class="options"
-                  :class="verifyUserAccess ? '' : 'disable'"
+                  :class="verifyUserAccessLevel ? '' : 'disable'"
                   @click="orderMovimentations('pause')"
                 >
                   <i class="fa fa-play fa-lg mb-2" />
@@ -114,7 +114,7 @@
 
                 <div
                   class="options"
-                  :class="verifyUserAccess ? '' : 'disable'"
+                  :class="verifyUserAccessLevel ? '' : 'disable'"
                 >
                   <i class="fa fa-hand-point-right fa-lg mb-2" />
                   <span>Delegar</span>
@@ -122,7 +122,7 @@
 
                 <div
                   class="options"
-                  :class="verifyUserAccess ? '' : 'disable'"
+                  :class="verifyUserAccessLevel ? '' : 'disable'"
                   @click="openIntiveTechnician()"
                 >
                   <i class="fa fa-users fa-lg mb-2" />
@@ -132,7 +132,7 @@
 
                 <div
                   class="options"
-                  :class="verifyUserAccess ? '' : 'disable'"
+                  :class="verifyUserAccessLevel ? '' : 'disable'"
                   @click="openOrderNote()"
                 >
                   <i class="fa fa-file-signature fa-lg mb-2" />
@@ -141,7 +141,7 @@
 
                 <div
                   class="options"
-                  :class="verifyUserAccess ? '' : 'disable'"
+                  :class="verifyUserAccessLevel ? '' : 'disable'"
                 >
                   <i class="fa fa-check-double fa-lg mb-2" />
                   <span>Checklist</span>
@@ -262,7 +262,6 @@
 
             <span slot="footer" class="dialog-footer">
               <!-- <el-button @click="dialogVisible = false">Cancel</el-button> -->
-              // ! TODO remove inline logic, reset modal properties
               <el-button type="primary" class="Button_close" @click="dialogVisible = false">Fechar</el-button>
             </span>
           </el-dialog>
@@ -345,6 +344,7 @@
       opcao: '',
       manutentores: [],
       manutentorInOrdem: [],
+      report_requester: [],
       epiList: [],
       dialogVisible: false,
       modalHasError: false,
@@ -362,11 +362,29 @@
 
   computed: {
     verifyUserAccess() {
-      const orderManutentor = this.manutentorInOrdem.find(i => i.is_master);
-      const currentUser = this.$store.state.user;
+      const user = this.$store.state.user;
+      if (user.nivelAcesso === 2) {
+        const orderManutentor = this.manutentorInOrdem.find(i => i.is_master);
+        const currentUser = this.$store.state.user;
+        if (orderManutentor !== undefined && orderManutentor.numeroCracha === currentUser.cracha)
+          return true;
+      } else if (user.nivelAcesso === 1 || user.nivelAcesso === 3) {
+        const reportRequester = this.report_requester.find(i => i.nivel_acesso === user.nivelAcesso
+                                                          && i.idUsuario === user.userId);
+        if (reportRequester !== undefined)
+          return true;
+      }
+      
+      return false;
+    },
+    verifyUserAccessLevel() {
+      const user = this.$store.state.user;
 
-      if (orderManutentor !== undefined && orderManutentor.numeroCracha === currentUser.cracha)
+      const userAccess = this.verifyUserAccess;
+
+      if (userAccess === true && (user.nivelAcesso === 2 || user.nivelAcesso === 1))
         return true;
+      
       return false;
     },
     verifyOrderStatus() {
@@ -385,7 +403,9 @@
   mounted() {
     this.setActivity();
     this.getManutentoresInOrdem();
+    this.getReportRequester();
     this.getEpis();
+    console.log('USER: ', this.$store.state.user);
   },
 
 
@@ -429,7 +449,7 @@
       this.$set(this.state, 'view', 'Verification');
     },
     openOrderNote() {
-      if (!this.verifyUserAccess) return;
+      if (!this.verifyUserAccessLevel) return;
 
       this.$set(this.state, 'view', 'Note');
     },
@@ -437,7 +457,7 @@
       this.$set(this.state, 'view', 'detail');
     },
     async openIntiveTechnician() {
-      if (!this.verifyUserAccess) return;
+      if (!this.verifyUserAccessLevel) return;
 
       try {
         if (this.isLoading.convidar) return;
@@ -478,6 +498,20 @@
         if (response.result.length === undefined)
           this.manutentorInOrdem.push(response.result);
         else this.manutentorInOrdem = [...response.result];
+      } catch (err) {
+        throw err;
+      }
+    },
+    // Busca o reporte e o solicitante da ordem
+    async getReportRequester() {
+      try {
+        const response = await this.$http.post('detalhamento/get-report-requester', getLocalStorageToken(), this.valuesInput);
+        console.log('RESPONSE REPORT_REQUESTER: ',response);
+        if (response.result.length === undefined)
+          this.report_requester.push(response.result);
+        else this.report_requester = [...response.result];
+        console.log('REPORT_REQUESTER: ',this.report_requester);
+
       } catch (err) {
         throw err;
       }
@@ -566,6 +600,7 @@
       }
     },
     orderMovimentations(type) {
+      if (this.$store.state.user.nivelAcesso !== 2) return;
       console.log('TYPE: ', type);
       switch (type) {
         case 'assume':
