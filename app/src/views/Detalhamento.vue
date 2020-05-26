@@ -511,11 +511,7 @@ import { ToggleButton } from 'vue-js-toggle-button';
         throw err;
       }
     },
-    filterManutentorMater(array) {
-    this.listManutentorInOrdem.push(this.manutentores.filter( i => {
-      return i.is_master === 0 ;
-      }))
-    },
+
     validaAddManutentor(User) {
       return this.manutentorInOrdem.find(element => element.idUsuario === User.idUsuario);
     },
