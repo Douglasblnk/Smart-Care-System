@@ -504,7 +504,6 @@ import { ToggleButton } from 'vue-js-toggle-button';
           this.listManutentorInOrdem = this.manutentorInOrdem.filter( i => {
             return i.is_master === 0 ;
            });
-           console.log(this.listManutentorInOrdem);
           
         }
       } catch (err) {
@@ -549,7 +548,6 @@ import { ToggleButton } from 'vue-js-toggle-button';
           this.visibleMessage = true;
         }
       } catch (err) {
-        console.log('err addManutentor :>> ', err.response || err);
 
         return this.$swal({
           type: 'warning',
@@ -586,7 +584,6 @@ import { ToggleButton } from 'vue-js-toggle-button';
           getLocalStorageToken(),
           );
       } catch (err) {
-        console.log('err removeManutentor :>> ', err.response || err);
 
         return this.$swal({
           type: 'warning',
@@ -596,7 +593,6 @@ import { ToggleButton } from 'vue-js-toggle-button';
       }
     },
     orderMovimentations(type) {
-      console.log('TYPE: ', type);
       switch (type) {
         case 'assume':
           this.assumeOrder();
@@ -628,7 +624,6 @@ import { ToggleButton } from 'vue-js-toggle-button';
         await this.getManutentoresInOrdem();
         this.$set(this.order, 'status', 'Assumida');
       } catch (err) {
-        console.log('err assumeOrder :>> ', err.response || err);
 
         this.$set(this.isLoading, 'assume', false);
 
@@ -647,13 +642,6 @@ import { ToggleButton } from 'vue-js-toggle-button';
 
         const manutentor = await this.validateActualManutentor();
 
-        // if (manutentor !== undefined) {
-        //   this.$set(this.isLoading, 'init', false);
-        //   return this.$swal({
-        //     type: 'warning',
-        //     title: 'Parece que você já iniciou essa ordem!',
-        //   });
-        // }
 
         const response = await this.$http.post('initiate/init', getLocalStorageToken(), { ...this.$store.state.user, isMaster: true, order: this.order.idOrdemServico });
 
@@ -691,7 +679,7 @@ import { ToggleButton } from 'vue-js-toggle-button';
         this.$set(this.isLoading, 'pause', false);
 
         this.$set(this.order, 'status', 'Pausada');
-      } catch(err){
+      } catch(err) {
         this.$set(this.isLoading, 'init', false);
         this.$swal({
         type: 'warning',
@@ -714,8 +702,6 @@ import { ToggleButton } from 'vue-js-toggle-button';
       try {
         let listEpiCheck = await this.listEpiCheck();
 
-        console.log('LIST EPI CHECK: ',listEpiCheck);
-
         const response = await this.$http.post('epi/register', getLocalStorageToken(), listEpiCheck);
 
         this.$swal({
@@ -727,7 +713,6 @@ import { ToggleButton } from 'vue-js-toggle-button';
         })
 
       } catch (err) {
-        console.log('initiateOrder :>> ', err);
         this.$set(this.isLoading, 'init', false);
 
         this.$swal({
@@ -795,10 +780,8 @@ import { ToggleButton } from 'vue-js-toggle-button';
       }).then( async res => {
         console.log(this.order)
         if (res.value) {
-          // todo
           const manutentor = await this.validateActualManutentor();
           
-          // throw this.order.idOrdemServico;
           const response = await this.$http.update('ordem-manutencao', getLocalStorageToken(), {...this.$store.state.user}, this.order.idOrdemServico);
 
           this.$swal({
@@ -809,7 +792,6 @@ import { ToggleButton } from 'vue-js-toggle-button';
           this.$emit('state-list');
         }
       }).catch(err => {
-        console.log('err :>> ', err.response || err);
 
         return this.$swal({
           type: 'warning',
