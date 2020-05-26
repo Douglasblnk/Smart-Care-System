@@ -73,6 +73,11 @@ export default {
           icon: 'fas fa-puzzle-piece',
           route: 'cadastros/cadastro-componente',
         },
+        {
+          title: 'Operações',
+          icon: 'fas fa-cogs',
+          route: 'cadastros/cadastro-operacao',
+        },
       ],
     };
   },

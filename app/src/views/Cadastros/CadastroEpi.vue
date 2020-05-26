@@ -87,18 +87,31 @@ export default {
       Epis: [],
     };
   },
-
   mounted() {
     this.getEpi();
+    this.$store.commit('addPageName', 'Cadastro de EPI');
+    this.switchLabelPage('list');
   },
 
   methods: {
     getSaveButtonText() {
-      if (this.isEditing) return 'Alterar';
-      return 'Cadastro';
+        if(this.isEditing) return 'Alterar';
+        else return 'Cadastro';
+    },
+    switchLabelPage(labelPage) {
+      if (labelPage === 'list') {
+        this.switchListRegister = 'list';
+        return this.$store.commit('addPageName', `Cadastro de EPI | Listagem`);
+      } else if (labelPage === 'register') {
+        this.switchListRegister = 'register';
+        return this.$store.commit('addPageName', `Cadastro de EPI | Cadastrar`);
+      } else {
+        return this.$store.commit('addPageName', `Cadastro de EPI | Editar`);
+      }
     },
     async getEpi() {
       try {
+
         const response = await this.$http.get('epi/get', getLocalStorageToken());
 
         if (response.result.length === undefined)
@@ -194,11 +207,13 @@ export default {
       }
     },
     editEpi(epi) {
+      this.switchLabelPage('edit');
       this.inputValues = { ...epi };
       this.switchListRegister = 'register';
       this.isEditing = true;
     },
     closeEditing() {
+      this.switchLabelPage('list');
       this.switchListRegister = 'list';
       this.isEditing = false;
       this.resetModel();

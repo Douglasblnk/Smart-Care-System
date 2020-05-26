@@ -109,25 +109,40 @@ export default {
   },
 
   mounted() {
+    this.$store.commit('addPageName', 'Cadastro de Equipamento');
     this.getEquipment();
     this.getSector();
+    this.switchLabelPage('list');
   },
 
   methods: {
     getSaveButtonText() {
       if (this.isEditing) return 'Alterar';
-      return 'Cadastrar';
+      else return 'Cadastrar';
     },
-
+    switchLabelPage(labelPage) {
+      if (labelPage === 'list') {
+        this.switchListRegister = 'list';
+        return this.$store.commit('addPageName', `Cadastro de Equipamento | Listagem`);
+      } else if (labelPage === 'register') {
+        this.switchListRegister = 'register';
+        return this.$store.commit('addPageName', `Cadastro de Equipamento | Cadastrar`);
+      } else {
+        return this.$store.commit('addPageName', `Cadastro de Equipamento | Editar`);
+      }
+    },
     editEquipment(equipment) {
-      this.inputValues = { ...equipment };
-      
-      this.switchListRegister = 'register';
+      this.switchLabelPage('edit');
+      console.log(equipment);
+      this.inputValues = { ...equipment }
+      console.log(typeof this.inputValues.Setor_idSetor);
+      this.switchListRegister = 'register'
       this.isEditing = true;
     },
 
     closeEditing() {
-      this.switchListRegister = 'list';
+      this.switchLabelPage('list');
+      this.switchListRegister = 'list'
       this.isEditing = false;
       this.resetModel();
     },

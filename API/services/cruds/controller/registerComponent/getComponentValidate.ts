@@ -1,9 +1,8 @@
 import Get from '../../../../shared/dao/Get';
-
+import { TABLE_COMPONENTE } from '../../../../shared/enums/database';
 
 const comitData = new Get();
 
-const TABLE = 'Componente';
 
 export default class GetComponentValidate {
 
@@ -22,7 +21,7 @@ export default class GetComponentValidate {
         }
     }
     getQuery(){
-        const query = `SELECT * FROM ${TABLE};`;
+        const query = `SELECT * FROM ${TABLE_COMPONENTE} WHERE ${TABLE_COMPONENTE}.excluded = 0 ;`;
 
         const dataQuery = { query, type: 'equipamento' };
 

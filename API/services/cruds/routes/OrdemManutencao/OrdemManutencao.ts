@@ -3,6 +3,7 @@ import RegisterOrderMaintenanceValidate from '../../controller/OrderMaintenance/
 import RegisterOrderMaintenanceRouteValidate from '../../controller/OrderMaintenance/RegisterOrderMaintenceRouteValidate'
 import RegisterOrderMaintenanceListValidate from '../../controller/OrderMaintenance/RegisterOrderMaintenceListValidate'
 import GetOrderMaintenanceValidate from '../../controller/OrderMaintenance/getOrdemMaintenanceValidate'
+import UpdateOrdemMaintenceValidate from '../../controller/OrderMaintenance/updateOrdemMaintenceValidate';
 import Auth from '../../../../shared/auth/auth'
 
 const router = Router();
@@ -10,6 +11,7 @@ const registerOrderMaintenance = new RegisterOrderMaintenanceValidate();
 const registerOrderMaintenanceRoute = new RegisterOrderMaintenanceRouteValidate();
 const registerOrderMaintenanceListValidate = new RegisterOrderMaintenanceListValidate();
 const getOrderMaintenance = new GetOrderMaintenanceValidate();
+const updateOrdemMaintenceValidate = new UpdateOrdemMaintenceValidate();
 const jwt = new Auth();
 
 /** 
@@ -71,5 +73,15 @@ router.post('/list', async (req: any, res: any) => {
     res.status(404).send(err);
   }
 });
+router.put('/:id', async (req: any, res: any) => {
+  try {
+    
+    await jwt.jwtVerify(req)
+    const response = await updateOrdemMaintenceValidate.run(req);
+    res.status(200).send(response);
+  } catch (err) {
+    res.status(404).send(err);
+  }
+})
 
 module.exports = router;
