@@ -51,10 +51,18 @@ export default class RegisterVericationValidate {
         const resultVerificationMaintainerRequester : any = await commitDataVerify.run(getQueryVerificationMaintainerRequester);
 
         if (resultVerificationMaintainerRequester.result.length === 0
-            || resultVerificationMaintainerRequester.result.length === undefined) throw 'A verificações pendentes!'
+            || resultVerificationMaintainerRequester.result.length === undefined) throw 'O manutentor não realizou!'
 
         const getQueryStatusReport = this.getQueryStatusReport(data);
         const status = await commitDataUpdate.run(getQueryStatusReport);
+      }
+
+      if(data.typeVerification === 3){
+        const getQueryVerificationMaintainerRequester = this.getQueryExistVerificationMaintainerRequester(data);
+
+        const resultVerificationMaintainerRequester : any = await commitDataVerify.run(getQueryVerificationMaintainerRequester);
+
+        if (resultVerificationMaintainerRequester.result.length === 0) throw 'O manutentor ainda não realizou a verificação!'
       }
 
       const getQuery = this.getQuery(data);
