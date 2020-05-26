@@ -18,10 +18,9 @@ export default class RegisterOperacoesValidate {
       const getQuery = this.getQuery(data)
 
       const result = await commitData.run(getQuery);
-      console.log('cheguei até aqui');
+
       return result;
     } catch (err) {
-      console.log(err);
 
       throw err;
     }
@@ -34,7 +33,7 @@ export default class RegisterOperacoesValidate {
   }
 
   validateData(data: any) {
-    console.log('data cru', data);
+
     if (_.isEmpty(data)) throw {
       status: 400,
       err: 'Não existem dados!',
@@ -69,7 +68,6 @@ export default class RegisterOperacoesValidate {
     const query = /*sql*/`INSERT INTO ${TABLE_OPERACAO} SET ?;`;
 
     const dataQuery = { query, post, type: 'Operacões' };
-    console.log(dataQuery);
     return dataQuery;
   }
 }

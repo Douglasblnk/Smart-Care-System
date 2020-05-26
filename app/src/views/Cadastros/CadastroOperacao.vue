@@ -27,14 +27,14 @@
                   </tr>
                 </thead>
                 <tbody class="table-body">
-                  <tr v-for="(component, index) in workComponent" value="component.label" :key="`component-${index}`">
-                    <td>{{ component.DescricaoComponente }}</td>
+                  <tr v-for="(component, index) in workOperations" value="component.descricao_operacao" :key="`component-${index}`">
+                    <td>{{ component.descricao_operacao }}</td>
                   
                     <!-- <td>{{ workCenter.DescricaoComponente}}</td> -->
                     <td style="width: 50px">
                       <div class="d-flex table-action">
-                        <i class="fas fa-edit text-muted" @click="editComponent(component)"></i>
-                        <i class="fas fa-trash text-muted" @click="deleteComponents(component, index)"></i>
+                        <i class="fas fa-edit text-muted" @click="editOperations(component)"></i>
+                        <i class="fas fa-trash text-muted" @click="deleteOperations(component, index)"></i>
                       </div>
                     </td>
                   </tr>
@@ -46,17 +46,17 @@
       </template>
 
       <template v-if="switchListRegister === 'register'">
-        <form @submit.prevent="registerEquipment()" class="formPosition">
+        <form @submit.prevent="registerOperations()" class="formPosition">
           <div class="cadCard">
             <div class="inputs">
-              <custom-select v-model="selectValue" :options="getWorkEquipmentOptions()"></custom-select>
+              <!-- <custom-select v-model="selectValue" :options="getWorkEquipmentOptions()"></custom-select> -->
               <!--<tranfer-select v-model="inputValues.Equipamento_idEquipamento" :selects="selectsEquipament" :label="'Máquina'" ></tranfer-select>     
               -->
-            </div>
-            <div class="sideInput">
-              <div class="inputsSidePosition">
-                <description v-model="inputValues.DescricaoComponente" :label="'Descrição Componente:'" :type="'text'" />
-              </div>  
+              <simple-input v-model="inputValues.descricao_operacao" label="Descrição Operaçao:" type="text" ></simple-input>
+              <simple-input v-model="inputValues.material" label="Material:" type="text" ></simple-input>
+              <simple-input v-model="inputValues.quantidade_material" label="Quantidade:" type="number"></simple-input>
+              <simple-input v-model="inputValues.unidade_material" label="Unidade:" type="text "></simple-input>
+              <simple-input v-model="inputValues.tempo_planejado" label="Tempo Planejado:" type="time"></simple-input>
             </div>
           </div>
           <!-- <div class="d-flex justify-content-center m-3">
@@ -71,201 +71,155 @@
     </transition>
   </div>
 </template>
-
 <script>
-import { getLocalStorageToken, getErrors } from '../../utils/utils'
-import simpleInput from "../../components/inputs/simple-input";
-import select from '../../components/inputs/custom-select'
-import description from "../../components/inputs/description";
-import selectId from "../../components/inputs/tranfer-select";
-import saveButton from '../../components/button/save-button';
-import cancelButton from '../../components/button/cancel-button';
+import { getLocalStorageToken,getErrors } from '../../utils/utils';
+
 
 export default {
   components: {
-    "simple-input": simpleInput,
-    'custom-select': select,
-    "tranfer-select": selectId,
-    description: description,
-    "save-button": saveButton,
-    "cancel-button": cancelButton,
     
   },
   data() {
     return {
-      selectValue: '',
       inputValues: {
-        DescricaoComponente: "",
-        Equipamento_idEquipamento: 0,
-
+        excluded: 1,
+        idoperacao: 0,
+        descricao_operacao: '',
+        material: '',
+        quantidade_material: 0,
+        unidade_material: '',
+        tempo_planejado: 0,
       },
-      workEquipment: [],
-      workEquipmentEdit: [],
-      workComponent: [],
-      selectsComponentseEquipament: [],
+      workOperations: [],
       switchListRegister: 'list',
       isEditing: false,
-      equipamentos:[],
     };
   },
   mounted() {
-    this.getEquipments();
-    this.getComponentes();
-    this.$store.commit('addPageName', 'Cadastro de Componentes');
+    this.getOperations();
+    this.$store.commit('addPageName', 'Cadastro de Operações');
     this.switchLabelPage('list');
     
   },
   methods: {
     getSaveButtonText() {
-      
       if (this.isEditing) return 'Alterar';
       else return 'Cadastrar';
     },
     switchLabelPage(labelPage) {
       if (labelPage === 'list') {
         this.switchListRegister = 'list';
-        this.workEquipment = this.workEquipmentEdit;
-        return this.$store.commit('addPageName', `Cadastro de Componentes | Listagem`);
+        return this.$store.commit('addPageName', `Cadastro de Operações | Listagem`);
       } else if (labelPage === 'register') {
-        this.workEquipment = this.workEquipmentEdit;
         this.switchListRegister = 'register';
-        return this.$store.commit('addPageName', `Cadastro de Componentes | Cadastrar`);
+        return this.$store.commit('addPageName', `Cadastro de Operações | Cadastrar`);
       } else {
-        return this.$store.commit('addPageName', `Cadastro de Componentes | Editar`);
+        return this.$store.commit('addPageName', `Cadastro de Operações | Editar`);
       }
     },
-    async registerEquipment() {
-     if (this.isEditing) return this.updateComponent();
-      this.inputValues.Equipamento_idEquipamento = this.selectValue;
-       try {
-         const response = await this.$http.post('componente', getLocalStorageToken(), this.inputValues);
-          this.$swal({
-            type: 'success',
-            title: 'Cadastrado com sucesso',
-            confirmButtonColor: '#F34336',
-          }),
-          this.DescricaoComponente = '';
-          this.getComponentes();
-       } catch (err) {
-        return this.$swal({
-                type: 'warning',
-                title: getErrors(err),
-                confirmButtonColor: '#F34336',
-            }); 
-       }
-    },
-
-    async getEquipments() {
+    async registerOperations() {
+      if (this.isEditing) return this.updateOperations();
       try {
-        const response = await this.$http.get('equipamento/get', getLocalStorageToken());
-        if(response.result.length === undefined)
-          this.workEquipment.push(response.result);
-          else this.workEquipment = [ ...response.result ];
+        const response = await this.$http.post('operacoes', getLocalStorageToken(), this.inputValues);
+        this.$swal({
+          type: 'success',
+          title: 'Cadastrado',
+          confirmButtonColor: '#F34336',
+        }),
+        this.resetModel();
+        this.getOperations();
       } catch (err) {
         return this.$swal({
-                type: 'warning',
-                title: getErrors(err),
-                confirmButtonColor: '#F34336',
-            }); 
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
       }
     },
-
-    async getComponentes() {
+    async getOperations() {
+      // const token = localStorage.getItem('token')
       try {
-        const response = await this.$http.get('componente/get', getLocalStorageToken());
-        if(response.result.length === undefined)
-          this.workComponent.push(response.result);
-          else this.workComponent = [ ...response.result ];
+        const response = await this.$http.get('operacoes/get', getLocalStorageToken());
+        if (response.result.length === undefined)
+          this.workOperations.push(response.result);
+
+        else this.workOperations = [...response.result];
       } catch (err) {
         return this.$swal({
-                type: 'warning',
-                title: getErrors(err),
-                confirmButtonColor: '#F34336',
-            }); 
-      }
-     
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }  
     },
 
     resetModel() {
       this.inputValues = {};
     },
   
-  async deleteComponents(component, index) {
+  deleteOperations(component, index) {
 
-    try {
+  try {
     this.$swal({
       type: 'question',
-      title: `Deseja mesmo remover o Componente ${component.DescricaoComponente}`,
+      title: `Deseja mesmo remover o Componente ${component.descricao_operacao}`,
       showCancelButton: true,
       confirmButtonColor: '#F34336',
       preConfirm: async() => {
-        const response = await this.$http.delete('componente', getLocalStorageToken(), component.idComponente);
-        return this.$swal({
+        const response = await this.$http.delete('operacoes', getLocalStorageToken(), component.idoperacao);
+          this.$swal({
             type: 'success',
-            title: 'Removido com Sucesso',
-            text: response.detailErr || '',
+            title: 'Removido com sucesso',
             confirmButtonColor: '#F34336',
-          });
+          }),
+          this.workOperations.splice(index, 1);
       }
-    });
-    } catch (err) {
+    })
+  } catch (err) {
       return this.$swal({
-              type: 'warning',
-              title: getErrors(err),
-              confirmButtonColor: '#F34336',
-          }); 
-    }
+        type: 'warning',
+        title: getErrors(err),
+        confirmButtonColor: '#F34336',
+      });
+  }
   },
-   editComponent(component) {
+  editOperations(component) {
     this.switchLabelPage('edit');
     this.inputValues = { ...component };
     this.switchListRegister = 'register';
     this.isEditing = true;
-
-    this.workEquipmentEdit = this.workEquipment;
-
-    const equipamentName =  this.workEquipment.find(equipament => equipament.idEquipamento === component.Equipamento_idEquipamento);
-
-    if (equipamentName !== undefined) {
-      this.workEquipment = [];
-      this.workEquipment.push(equipamentName);
-      this.getWorkEquipmentOptions();
-    } else { return this.workEquipment= this.workEquipment }
-
-
   },
-  
   closeEditing() {
-    
     this.switchLabelPage('list');
     this.switchListRegister = 'list';
     this.isEditing = false;
-    this.workEquipment = this.workEquipmentEdit;
     this.resetModel();
     },
-  async updateComponent() {
+  async updateOperations() {
     try {
-      const response = await this.$http.update('componente', getLocalStorageToken(), this.inputValues, this.inputValues.idComponente);
+      const response = await this.$http.update('operacoes', getLocalStorageToken(), this.inputValues, this.inputValues.idoperacao);
+      
+      const index = this.workOperations.indexOf(this.workOperations.find(i => i.idoperacao === this.inputValues.idoperacao));
+      this.workOperations.splice(index, 1, this.inputValues);
+
       this.$swal({
         type: 'success',
-        title: 'Alterado com Sucesso',
+        title: 'Editado com Sucesso',
         confirmButtonColor: '#F34336',
-      })
-      const index =  this.workComponent.indexOf(this.workComponent.find(i => i.idComponente === this.inputValues.idComponente));
-      this.workComponent.splice(index,1 , this.inputValues);
-      this.workEquipment = this.workEquipmentEdit;
+      });
       this.closeEditing();
     } catch (err) {
       return this.$swal({
-              type: 'warning',
-              title: getErrors(err),
-              confirmButtonColor: '#F34336',
-          }); 
+        type: 'warning',
+        title: getErrors(err),
+        confirmButtonColor: '#F34336',
+      });
     }
   },
-  getWorkEquipmentOptions() {
-    return this.workEquipment.map(i => ({ id: String(i.idEquipamento), description: i.equipamento }));
-  }
+
+  },
+  resetModel() {
+    this.inputValues = {};
   },
 };
 </script>

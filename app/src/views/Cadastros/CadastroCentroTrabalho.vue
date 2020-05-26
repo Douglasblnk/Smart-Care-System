@@ -88,6 +88,8 @@ export default {
 
   mounted() {
     this.getWorkCenter();
+    this.$store.commit('addPageName', 'Cadastro de Centro de Trabalho ');
+    this.switchLabelPage('list');
   },
 
   methods: {
@@ -95,7 +97,17 @@ export default {
       if (this.isEditing) return 'Alterar';
       return 'Cadastrar';
     },
-
+    switchLabelPage(labelPage) {
+      if (labelPage === 'list') {
+        this.switchListRegister = 'list';
+        return this.$store.commit('addPageName', `Cadastro de Centro de Trabalho | Listagem`);
+      } else if (labelPage === 'register') {
+        this.switchListRegister = 'register';
+        return this.$store.commit('addPageName', `Cadastro de Centro de Trabalho | Cadastrar`);
+      } else {
+        return this.$store.commit('addPageName', `Cadastro de Centro de Trabalho | Editar`);
+      }
+    },
     getWorkCenter() {
       this.$http.get('centro-trabalho/get', getLocalStorageToken())
         .then(res => {
@@ -167,9 +179,10 @@ export default {
     },
 
     editWorkCenter(workCenter) {
-      this.inputValues = { ...workCenter };
-      
-      this.switchListRegister = 'register';
+      this.switchLabelPage('edit');
+      this.inputValues = { ...workCenter }
+      console.log(this.inputValues);
+      this.switchListRegister = 'register'
       this.isEditing = true;
     },
 
@@ -201,7 +214,8 @@ export default {
     },
 
     closeEditing() {
-      this.switchListRegister = 'list';
+      this.switchLabelPage('list');
+      this.switchListRegister = 'list'
       this.isEditing = false;
       this.resetModel();
     },

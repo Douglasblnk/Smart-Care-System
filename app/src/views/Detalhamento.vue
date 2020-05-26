@@ -68,92 +68,106 @@
             </div>
           </div>
 
-          <div class="col-md-5">
-            <div class="col-md-12 text-center">
-              <span style="font-size: 20px">Ações</span>
+          <div class="col-md-5 d-flex justify-content-between flex-column">
+            <div>
+              <div class="col-md-12 text-center">
+                <span style="font-size: 20px">Ações</span>
+              </div>
+              <div class="d-flex justify-content-center">
+                <div class="options-wrapper">
+                  <!-- // ? CARD PARA QUANDO A ORDEM ESTIVER COM STATUS ABERTA -->
+                  <div
+                    v-if="verifyOrderStatus === 'open'"
+                    class="options"
+                    @click="orderMovimentations('assume')"
+                  >
+                    <i class="fa fa-hard-hat fa-lg mb-2" />
+
+                    <i v-if="isLoading.assume" class="fa fa-spinner fa-spin fa-lg m-2" />
+                    <span v-else>Assumir</span>
+                  </div>
+
+                  <!-- // ? CARD PARA QUANDO A ORDEM FOR ASSUMIDA POR ALGUÉM -->
+                  <div
+                    v-if="verifyOrderStatus === 'assumed' || verifyOrderStatus === 'paused'"
+                    class="options"
+                    :class="verifyUserAccess ? '' : 'disable'"
+                    @click="orderMovimentations('init')"
+                  >
+                    <i class="fa fa-play fa-lg mb-2" />
+
+                    <i v-if="isLoading.init" class="fa fa-spinner fa-spin fa-lg m-2" />
+                    <span v-else>Iniciar</span>
+                  </div>
+
+                  <!-- // ? CARD PARA QUANDO FOR INICIAR POR ALGUÉM -->
+                  <div
+                    v-if="verifyOrderStatus === 'running'"
+                    class="options"
+                    :class="verifyUserAccess ? '' : 'disable'"
+                    @click="orderMovimentations('pause')"
+                  >
+                    <i class="fa fa-play fa-lg mb-2" />
+
+                    <i v-if="isLoading.pause" class="fa fa-spinner fa-spin fa-lg m-2" />
+                    <span v-else>Pausar</span>
+                  </div>
+
+                  <div
+                    class="options"
+                    :class="verifyUserAccess ? '' : 'disable'"
+                  >
+                    <i class="fa fa-hand-point-right fa-lg mb-2" />
+                    <span>Delegar</span>
+                  </div>
+
+                  <div
+                    class="options"
+                    :class="verifyUserAccess ? '' : 'disable'"
+                    @click="openIntiveTechnician()"
+                  >
+                    <i class="fa fa-users fa-lg mb-2" />
+                    <i v-if="isLoading.convidar" class="fa fa-spinner fa-spin fa-lg m-3" />
+                    <span v-else>Convidar técnico</span>
+                  </div>
+
+                  <div
+                    class="options"
+                    :class="verifyUserAccess ? '' : 'disable'"
+                    @click="openOrderNote()"
+                  >
+                    <i class="fa fa-file-signature fa-lg mb-2" />
+                    <span>Apontamentos</span>
+                  </div>
+
+                  <div
+                    class="options"
+                    :class="verifyUserAccess ? '' : 'disable'"
+                  >
+                    <i class="fa fa-check-double fa-lg mb-2" />
+                    <span>Checklist</span>
+                  </div>
+                  <div
+                    class="options"
+                    :class="verifyUserAccess ? '' : 'disable'"
+                    @click="openOrderVerification()"
+                  >
+                    <i class="fa fa-clipboard-check fa-lg mb-2" />
+                    <span>Verificação</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="d-flex justify-content-center">
-              <div class="options-wrapper">
-                <!-- // ? CARD PARA QUANDO A ORDEM ESTIVER COM STATUS ABERTA -->
-                <div
-                  v-if="verifyOrderStatus === 'open'"
-                  class="options"
-                  @click="orderMovimentations('assume')"
-                >
-                  <i class="fa fa-hard-hat fa-lg mb-2" />
 
-                  <i v-if="isLoading.assume" class="fa fa-spinner fa-spin fa-lg m-2" />
-                  <span v-else>Assumir</span>
-                </div>
+            <div class="order-options-wrapper">
+              <!-- <div class="exclude-order">
+                <i class="fa fa-edit fa-fw" />
+                <span>Editar ordem</span>
+              </div> -->
 
-                <!-- // ? CARD PARA QUANDO A ORDEM FOR ASSUMIDA POR ALGUÉM -->
-                <div
-                  v-if="verifyOrderStatus === 'assumed' || verifyOrderStatus === 'paused'"
-                  class="options"
-                  :class="verifyUserAccess ? '' : 'disable'"
-                  @click="orderMovimentations('init')"
-                >
-                  <i class="fa fa-play fa-lg mb-2" />
-
-                  <i v-if="isLoading.init" class="fa fa-spinner fa-spin fa-lg m-2" />
-                  <span v-else>Iniciar</span>
-                </div>
-
-                <!-- // ? CARD PARA QUANDO FOR INICIAR POR ALGUÉM -->
-                <div
-                  v-if="verifyOrderStatus === 'running'"
-                  class="options"
-                  :class="verifyUserAccess ? '' : 'disable'"
-                  @click="orderMovimentations('pause')"
-                >
-                  <i class="fa fa-play fa-lg mb-2" />
-
-                  <i v-if="isLoading.pause" class="fa fa-spinner fa-spin fa-lg m-2" />
-                  <span v-else>Pausar</span>
-                </div>
-
-                <div
-                  class="options"
-                  :class="verifyUserAccess ? '' : 'disable'"
-                >
-                  <i class="fa fa-hand-point-right fa-lg mb-2" />
-                  <span>Delegar</span>
-                </div>
-
-                <div
-                  class="options"
-                  :class="verifyUserAccess ? '' : 'disable'"
-                  @click="openIntiveTechnician()"
-                >
-                  <i class="fa fa-users fa-lg mb-2" />
-                  <i v-if="isLoading.convidar" class="fa fa-spinner fa-spin fa-lg m-3" />
-                  <span v-else>Convidar técnico</span>
-                </div>
-
-                <div
-                  class="options"
-                  :class="verifyUserAccess ? '' : 'disable'"
-                  @click="openOrderNote()"
-                >
-                  <i class="fa fa-file-signature fa-lg mb-2" />
-                  <span>Apontamentos</span>
-                </div>
-
-                <div
-                  class="options"
-                  :class="verifyUserAccess ? '' : 'disable'"
-                >
-                  <i class="fa fa-check-double fa-lg mb-2" />
-                  <span>Checklist</span>
-                </div>
-                <div
-                  class="options"
-                  :class="verifyUserAccess ? '' : 'disable'"
-                  @click="openOrderVerification()"
-                >
-                  <i class="fa fa-clipboard-check fa-lg mb-2" />
-                  <span>Verificação</span>
-                </div>
+              <div class="exclude-order" @click="excludeOrder()">
+                <i class="fa fa-trash fa-fw" />
+                <span>Excluir ordem</span>
               </div>
             </div>
           </div>
@@ -217,10 +231,10 @@
                   </el-table-column>
                 </el-table>
               </el-tab-pane>
-              <el-tab-pane label="Listar" >
+              <el-tab-pane label="Listar">
                 <span slot="label">Listar </span>
                 <el-table
-                  :data="manutentorInOrdem"
+                  :data="listManutentorInOrdem"
                   style="width: 100%"
                 >
                   <el-table-column
@@ -262,7 +276,7 @@
 
             <span slot="footer" class="dialog-footer">
               <!-- <el-button @click="dialogVisible = false">Cancel</el-button> -->
-              // ! TODO remove inline logic, reset modal properties
+              <!-- // ! TODO remove inline logic, reset modal properties -->
               <el-button type="primary" class="Button_close" @click="dialogVisible = false">Fechar</el-button>
             </span>
           </el-dialog>
@@ -272,45 +286,46 @@
       <div v-if="state.view === 'Verification'" key="Verification">
         <order-verification
           :order="order"
-          @state-list="closeDetail"
+          @state-list="changeViewToDetail"
+          @change-status="changeOrderVerificationStatus"
         />
       </div>
 
       <div v-if="state.view === 'Note'" key="Note">
         <order-note
           :order="order"
-          @state-list="closeDetail"
+          @state-list="changeViewToDetail"
         />
       </div>
     </transition>
-    <b-modal @hide="resetModal()" @show="checkSelectedEpis()" centered ref="my-modal" hide-footer hide-header title="Verificação de EPIs">
-        <div class="d-block text">
-          <div class="text-center">
-            <h3>Verificação de EPIs na ordem</h3>
-            <span>
-              Informe quais EPIs você esta utilizando
-            </span>
-          </div>
-          <div class="m-3">
-            <b-form-checkbox-group
-              id="checkbox-group-1"
-              v-model="selectedEpis"
-              :options="getEpiOptions()"
-              name="flavour-1"
-              stacked
-            />
-          </div>
+  <b-modal @hide="resetModal()" @show="checkSelectedEpis()" centered ref="my-modal" hide-footer hide-header title="Verificação de EPIs">
+      <div class="d-block text">
+        <div class="text-center">
+          <h3>Verificação de EPIs na ordem</h3>
+          <span>
+            Informe quais EPIs você esta utilizando
+          </span>
         </div>
-        <div v-if="modalHasError">
-          <div class="d-flex justify-content-center w-100 p-2 rounded" style="background-color: #ff4a4a5c; border: 1px solid #ff4a4aa6">
-            <span style="color: black">{{ modalErrorMessage }}</span>
-          </div>
+        <div class="m-3">
+          <b-form-checkbox-group
+            id="checkbox-group-1"
+            v-model="selectedEpis"
+            :options="getEpiOptions()"
+            name="flavour-1"
+            stacked
+          />
         </div>
-        <div class="d-flex justify-content-center">
-          <cancel-button label="Fechar" @click.native="closeModal()" />
-          <save-button label="Enviar" @click.native="alterEpiCheck()" />
+      </div>
+      <div v-if="modalHasError">
+        <div class="d-flex justify-content-center w-100 p-2 rounded" style="background-color: #ff4a4a5c; border: 1px solid #ff4a4aa6">
+          <span style="color: black">{{ modalErrorMessage }}</span>
         </div>
-      </b-modal>
+      </div>
+      <div class="d-flex justify-content-center">
+        <cancel-button label="Fechar" @click.native="closeModal()" />
+        <save-button label="Enviar" @click.native="alterEpiCheck()" />
+      </div>
+    </b-modal>
   </div>
 </template>
 
@@ -319,7 +334,7 @@
   import OrderNote from './Apontamentos.vue';
   import { getErrors, getLocalStorageToken, getPriorityClass } from '../utils/utils';
 
-  export default {
+export default {
   name: 'Detalhamento',
 
   components: {
@@ -340,11 +355,13 @@
       valuesInput: {
         idOrdemServico: this.order.idOrdemServico,
         idUsuario: '',
-        excluded: '',
+        // excluded: '',
       },
       opcao: '',
       manutentores: [],
       manutentorInOrdem: [],
+      report_requester: [],
+      listManutentorInOrdem: [],
       epiList: [],
       dialogVisible: false,
       modalHasError: false,
@@ -357,11 +374,38 @@
 
   computed: {
     verifyUserAccess() {
-      const orderManutentor = this.manutentorInOrdem.find(i => i.is_master);
-      const currentUser = this.$store.state.user;
+      const user = this.$store.state.user;
+      if (user.nivelAcesso === 2) {
+        const orderManutentor = this.manutentorInOrdem.find(i => i.is_master);
+        const currentUser = this.$store.state.user;
+        if (orderManutentor !== undefined && orderManutentor.numeroCracha === currentUser.cracha
+            && this.order.status !== 'Pendente' && this.order.status !== 'Encerrada')
+          return true;
+      } else if (this.order.status !== 'Encerrada' && (user.nivelAcesso === 1 || user.nivelAcesso === 3)) {
+        const reportRequester = this.report_requester.find(i => i.nivel_acesso === user.nivelAcesso
+                                                          && i.idUsuario === user.userId);
+        if (reportRequester !== undefined)
+          return true;
+      }
+      
+      return false;
+    },
+    verifyUserAccessLevel() {
+      const user = this.$store.state.user;
 
-      if (orderManutentor !== undefined && orderManutentor.numeroCracha === currentUser.cracha)
+      const userAccess = this.verifyUserAccess;
+
+      if (userAccess === true && (user.nivelAcesso === 2 || user.nivelAcesso === 1))
         return true;
+      
+      return false;
+    },
+    verifyUserAccessLevelOpenOrder() {
+      const user = this.$store.state.user;
+
+      if (this.order.status === 'Aberto' && (user.nivelAcesso === 2 || user.nivelAcesso === 1))
+        return true;
+      
       return false;
     },
     verifyOrderStatus() {
@@ -380,15 +424,22 @@
   mounted() {
     this.setActivity();
     this.getManutentoresInOrdem();
+    this.getReportRequester();
     this.getEpis();
   },
-
 
   methods: {
     resetModal() {
       this.modalHasError = false;
       this.modalErrorMessage = '';
       this.selectedEpis = [];
+    },
+    handleOk(bvModalEvt) {
+      // Prevent modal from closing
+      bvModalEvt.preventDefault();
+      console.log('Evento emitido');
+      // Trigger submit handler
+      this.withoutEPIs();
     },
     setActivity() {
       this.$http.setActivity(
@@ -406,6 +457,7 @@
       if (status === 'Assumida') return 'assumed';
       if (status === 'Em Andamento') return 'running';
       if (status === 'Encerrada') return 'closed';
+      if (status === 'Pendente') return 'pending';
       if (status === 'Pausada') return 'paused';
     },
     getStatusIcon(order) {
@@ -413,6 +465,7 @@
       if (order.status === 'Assumida') return 'fa-user-check';
       if (order.status === 'Em Andamento') return 'fa-tasks';
       if (order.status === 'Encerrada') return 'fa-check-circle';
+      if (order.status === 'Pendente') return 'fa-user-shield';
       if (order.status === 'Pausada') return 'fa-pause-circle';
     },
     openOrderVerification() {
@@ -421,15 +474,19 @@
       this.$set(this.state, 'view', 'Verification');
     },
     openOrderNote() {
-      if (!this.verifyUserAccess) return;
+      if (!this.verifyUserAccessLevel) return;
 
       this.$set(this.state, 'view', 'Note');
     },
-    closeDetail() {
+    changeViewToDetail() {
       this.$set(this.state, 'view', 'detail');
     },
+    changeOrderVerificationStatus(status) {
+      this.$set(this.order, 'status', status);
+      this.changeViewToDetail();
+    },
     async openIntiveTechnician() {
-      if (!this.verifyUserAccess) return;
+      if (!this.verifyUserAccessLevel) return;
 
       try {
         if (this.isLoading.convidar) return;
@@ -466,10 +523,37 @@
     async getManutentoresInOrdem() {
       try {
         const response = await this.$http.post('detalhamento', getLocalStorageToken(), this.valuesInput);
-
-        if (response.result.length === undefined)
+        console.log('-----------------------------------------------divisao----------------------');
+        console.log(response.result);
+        if (response.result.length === undefined) {
           this.manutentorInOrdem.push(response.result);
-        else this.manutentorInOrdem = [...response.result];
+          this.listManutentorInOrdem = this.manutentorInOrdem.filter( i => {
+           return i.is_master === 0 ;
+           });
+          
+          console.log(this.listManutentorInOrdem);
+        }
+        else {
+          this.manutentorInOrdem = [...response.result];
+          this.listManutentorInOrdem = this.manutentorInOrdem.filter( i => {
+            return i.is_master === 0 ;
+           });
+          
+        }
+      } catch (err) {
+        throw err;
+      }
+    },
+    // Busca o reporte e o solicitante da ordem
+    async getReportRequester() {
+      try {
+        const response = await this.$http.post('detalhamento/get-report-requester', getLocalStorageToken(), this.valuesInput);
+        console.log('RESPONSE REPORT_REQUESTER: ',response);
+        if (response.result.length === undefined)
+          this.report_requester.push(response.result);
+        else this.report_requester = [...response.result];
+        console.log('REPORT_REQUESTER: ',this.report_requester);
+
       } catch (err) {
         throw err;
       }
@@ -511,7 +595,6 @@
           this.visibleMessage = true;
         }
       } catch (err) {
-        console.log('err addManutentor :>> ', err.response || err);
 
         return this.$swal({
           type: 'warning',
@@ -548,7 +631,6 @@
           getLocalStorageToken(),
           );
       } catch (err) {
-        console.log('err removeManutentor :>> ', err.response || err);
 
         return this.$swal({
           type: 'warning',
@@ -558,22 +640,22 @@
       }
     },
     orderMovimentations(type) {
+      if (this.$store.state.user.nivelAcesso !== 2) return;
       console.log('TYPE: ', type);
       switch (type) {
-        case 'assume':
-          this.assumeOrder();
-          break;
-        case 'init':
-          this.initiateOrder();
-          break;
-        case 'pause':
-          this.pauseOrder();
-          break;
+      case 'assume':
+        this.assumeOrder();
+        break;
+      case 'init':
+        this.initiateOrder();
+        break;
+      case 'pause':
+        this.pauseOrder();
+        break;
       }
     },
     async assumeOrder() {
       if (this.isLoading.assume || this.isOrderAssumed) return;
-      
       try {
         this.$set(this.isLoading, 'assume', true);
 
@@ -590,7 +672,6 @@
         await this.getManutentoresInOrdem();
         this.$set(this.order, 'status', 'Assumida');
       } catch (err) {
-        console.log('err assumeOrder :>> ', err.response || err);
 
         this.$set(this.isLoading, 'assume', false);
 
@@ -609,29 +690,9 @@
 
         const manutentor = await this.validateActualManutentor();
 
-        // if (manutentor !== undefined) {
-        //   this.$set(this.isLoading, 'init', false);
-        //   return this.$swal({
-        //     type: 'warning',
-        //     title: 'Parece que você já iniciou essa ordem!',
-        //   });
-        // }
 
-        const response = await this.$http.post('initiate/init', getLocalStorageToken(), { ...this.$store.state.user, isMaster: true, order: this.order.idOrdemServico });
-
-
-        this.$set(this.order, 'status', 'Em Andamento');
-
-        this.$swal({
-          type: 'success',
-          title: 'Ordem iniciada com sucesso!',
-          confirmButtonColor: '#f34336',
-        }).then(() => {
-          this.$set(this.isLoading, 'init', false);
-          console.log('Modal Aberto');
-          this.showEpiModal();
+        this.showEpiModal();
           
-        })
 
       } catch (err) {
         console.log('initiateOrder :>> ', err);
@@ -644,8 +705,8 @@
         });
       }
     },
-    async pauseOrder(){
-      try{
+    async pauseOrder() {
+      try {
         this.$set(this.isLoading, 'pause', true);
 
         const response = await this.$http.post('initiate/pause', getLocalStorageToken(), { ...this.$store.state.user, isMaster: true, order: this.order.idOrdemServico });
@@ -653,21 +714,20 @@
         this.$set(this.isLoading, 'pause', false);
 
         this.$set(this.order, 'status', 'Pausada');
-      } catch(err){
+      } catch(err) {
         this.$set(this.isLoading, 'init', false);
-
         this.$swal({
-          type: 'warning',
-          title: getErrors(err),
-          confirmButtonColor: '#F34336',
-        });
+        type: 'warning',
+        title: getErrors(err),
+        confirmButtonColor: '#F34336',
+      });
       }
     },
     async listEpiCheck() {
-      let epiSelects = [];
+      const epiSelects = [];
       for (const epiSelect of this.selectedEpis) {
         console.log('epiSelect: ',epiSelect);
-        let epiOrder = this.epiList.find(i => i.Epi_idEpi === epiSelect);
+        const epiOrder = this.epiList.find(i => i.Epi_idEpi === epiSelect);
         console.log('epiOrder: ',epiOrder);
         epiSelects.push(epiOrder);
       }
@@ -675,22 +735,35 @@
     },
     async alterEpiCheck() {
       try {
-        let listEpiCheck = await this.listEpiCheck();
+        const listEpiCheck = await this.listEpiCheck();
 
-        console.log('LIST EPI CHECK: ',listEpiCheck);
+        if (listEpiCheck.length === this.epiList.length) {
+          await this.$http.post('epi/register', getLocalStorageToken(), listEpiCheck);
+        
+          await this.$http.post('initiate/init', getLocalStorageToken(),
+            { ...this.$store.state.user, isMaster: true, order: this.order.idOrdemServico });
+          
+          this.$set(this.order, 'status', 'Em Andamento');
 
-        const response = await this.$http.post('epi/register', getLocalStorageToken(), listEpiCheck);
-
-        this.$swal({
-          type: 'success',
-          title: 'EPIs checadas com sucesso!',
-          confirmButtonColor: '#f34336',
-        }).then(() => {
-          this.closeModal();
-        })
+          this.$swal({
+            type: 'success',
+            title: 'EPIs checadas e Ordem iniciada com sucesso!',
+            confirmButtonColor: '#f34336',
+          }).then(() => {
+            this.$set(this.isLoading, 'init', false);
+            console.log('Status Andamento: ', this.order);
+            this.closeModal();
+          });
+        } else {
+          this.$swal({
+            type: 'warning',
+            title: 'Faltam EPIs, ordem não pode ser iniciada!',
+            confirmButtonColor: '#F34336',
+          });
+          this.withoutEPIs();
+        }
 
       } catch (err) {
-        console.log('initiateOrder :>> ', err);
         this.$set(this.isLoading, 'init', false);
 
         this.$swal({
@@ -726,22 +799,22 @@
     closeModal() {
       this.$refs['my-modal'].hide();
     },
+    withoutEPIs() {
+      this.$set(this.isLoading, 'init', false);
+      this.$set(this.order, 'status', 'Assumida');
+      this.closeModal();
+    },
     confirmModal() {
       this.$refs['my-modal'].toggle('#toggle-btn');
       this.resetModal();
     },
     async getEpis() {
       try {
-        console.log('ORDER:',  { order: this.order.idOrdemServico })
         const { result } = await this.$http.post('epi/order', getLocalStorageToken(), { order: this.order.idOrdemServico });
-        console.log('Result', result.length);
-        if (result.length !== undefined) {
-          this.epiList = [...result];
-        }else{
-          this.epiList = [result];
-        }
         
-        console.log('EpiList: ', this.epiList);
+        if (result.length !== undefined)
+          this.epiList = [...result];
+        else this.epiList = [result];
       } catch (err) {
         console.log('err :>> ', err.response || err);
 
@@ -751,6 +824,37 @@
           confirmButtonColor: '#F34336',
         });
       }
+    },
+    excludeOrder() {
+      this.$swal({
+        title: 'Excluir ordem de manutenção',
+        text: `Tem certeza que deseja excluir a ordem ${this.order.idOrdemServico}`,
+        showCancelButton: true,
+        reverseButtons: true,
+        cancelButtonText: 'Não, sair.',
+        confirmButtonText: 'Sim, excluir!',
+      }).then( async res => {
+        console.log(this.order)
+        if (res.value) {
+          const manutentor = await this.validateActualManutentor();
+          
+          const response = await this.$http.update('ordem-manutencao', getLocalStorageToken(), {...this.$store.state.user}, this.order.idOrdemServico);
+
+          this.$swal({
+          type: 'success',
+          title: 'Cadastrado',
+          confirmButtonColor: '#F34336',
+        });
+          this.$emit('state-list');
+        }
+      }).catch(err => {
+
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      });
     }
   },
 };
@@ -816,6 +920,39 @@
             background-color: #eee !important;
             transform: scale(1) !important;
           }
+        }
+
+
+      }
+    }
+  }
+  .order-options-wrapper {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 20px;
+    .exclude-order {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      &:hover {
+        span {
+          color: var(--duas-rodas-soft)
+        }
+      }
+      i {
+        transition: .2s;
+      }
+      &:hover {
+        i {
+          transform: scale(1.18);
+        }
+      }
+      &:active {
+        i {
+          transform: scale(1);
         }
       }
     }

@@ -1,10 +1,16 @@
 import Create from '../../../../shared/dao/Create';
 import Get from '../../../../shared/dao/Get';
+import Update from "../../../../shared/dao/Update";
 import { SSUtils } from '../../../../shared/utils/utils';
+import {
+  TABLE_ORDEM_SERVICO,
+} from '../../../../shared/enums/database';
+
 const _ = require('lodash');
 
 const commitData = new Create();
 const commitDataVerify = new Get();
+const commitDataUpdate = new Update();
 const isEmpty = new SSUtils();
 
 const TABLE = 'Verificacao';
@@ -26,19 +32,43 @@ export default class RegisterVericationValidate {
       const resultVerify : any = await commitDataVerify.run(getQueryExistVerification);
       let verify_master = 1;
 
-      if(data.typeVerification = '2'){
+      if(data.typeVerification === 2){
         const getQueryIsMasterVerification = this.getQueryIsMasterVerification(data);
         const resultIsMasterVerification : any = await commitDataVerify.run(getQueryIsMasterVerification);
+
         if (resultIsMasterVerification.result.length == 0) verify_master = 0
+        if(verify_master == 0) throw 'Usuário não é o responsável pela ordem!'
+
+        const getQueryStatus = this.getQueryStatus(data);
+        const status = await commitDataUpdate.run(getQueryStatus);
+      }
+      
+      if(resultVerify.result.length !== 0) throw 'Verificação já realizada!'
+
+      if(data.typeVerification === 1){
+        const getQueryVerificationMaintainerRequester = this.getQueryExistVerificationMaintainerRequester(data);
+
+        const resultVerificationMaintainerRequester : any = await commitDataVerify.run(getQueryVerificationMaintainerRequester);
+
+        if (resultVerificationMaintainerRequester.result.length === 0
+            || resultVerificationMaintainerRequester.result.length === undefined) throw 'O manutentor não realizou!'
+
+        const getQueryStatusReport = this.getQueryStatusReport(data);
+        const status = await commitDataUpdate.run(getQueryStatusReport);
       }
 
-      if(resultVerify.result.length !== 0) throw 'Verificação já realizada!'
-      if(verify_master == 0) throw 'Usuário não é o responsável pela ordem!'
+      if(data.typeVerification === 3){
+        const getQueryVerificationMaintainerRequester = this.getQueryExistVerificationMaintainerRequester(data);
+
+        const resultVerificationMaintainerRequester : any = await commitDataVerify.run(getQueryVerificationMaintainerRequester);
+
+        if (resultVerificationMaintainerRequester.result.length === 0) throw 'O manutentor ainda não realizou a verificação!'
+      }
 
       const getQuery = this.getQuery(data);
 
       const result = await commitData.run(getQuery);
-
+      
       return result;
     } catch (err) {
       console.log(err);
@@ -89,6 +119,36 @@ export default class RegisterVericationValidate {
     const query = `INSERT INTO ${TABLE} SET ?;`;
 
     const dataQuery = { query, post, type: 'Verificação' };
+
+    console.log(dataQuery);
+
+    return dataQuery;
+  }
+
+  getQueryStatus(data: any) {
+    const values = { Status_idStatus: 6};
+    const where = data.order;
+    const query = `UPDATE ${TABLE_ORDEM_SERVICO} SET ? WHERE idOrdemServico = ?;`;
+
+    const dataQuery = { query, values, where, type: "Ordem de serviço" };
+
+    return dataQuery;
+  }
+
+  getQueryStatusReport(data: any) {
+    const values = { Status_idStatus: 3};
+    const where = data.order;
+    const query = `UPDATE ${TABLE_ORDEM_SERVICO} SET ? WHERE idOrdemServico = ?;`;
+
+    const dataQuery = { query, values, where, type: "Ordem de serviço" };
+
+    return dataQuery;
+  }
+
+  getQueryExistVerificationMaintainerRequester(data: any) {
+    const query = `SELECT * FROM ${TABLE} WHERE Verificacao.ordemServico_idOrdemServico = ${data.order};`;
+
+    const dataQuery = { query, type: 'Verificação' };
 
     console.log(dataQuery);
 

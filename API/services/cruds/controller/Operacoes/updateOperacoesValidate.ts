@@ -19,10 +19,9 @@ export default class UpdateOperacoesValidate {
       const getQuery = this.getQuery(data)
 
       const result = await commitData.run(getQuery);
-      console.log('cheguei até aqui');
+
       return result;
     } catch (err) {
-      console.log(err);
 
       throw err;
     }
@@ -36,7 +35,7 @@ export default class UpdateOperacoesValidate {
   }
 
   validateData(data: any) {
-    console.log('data cru', data);
+
     if (_.isEmpty(data)) throw {
       status: 404,
       err: 'Não existem dados!',
@@ -53,9 +52,9 @@ export default class UpdateOperacoesValidate {
       status: 400,
       err: 'Descrição da operação não informado',
     };
-    if (data.material === '') throw {
+    if (data.Material === '') throw {
       status: 400,
-      err: 'Material não informado',
+      err: 'material não informado',
     };
     if (data.quantidade_material === '') throw {
       status: 400,
@@ -77,7 +76,7 @@ export default class UpdateOperacoesValidate {
     const query = /*sql*/`UPDATE ${TABLE_OPERACAO} SET ? WHERE idoperacao = ?;`;
 
     const dataQuery = { query, values, where, type: 'Operacões' };
-    console.log(dataQuery);
+
     return dataQuery;
   }
 }

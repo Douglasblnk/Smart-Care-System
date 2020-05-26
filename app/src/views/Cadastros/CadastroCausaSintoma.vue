@@ -170,7 +170,7 @@
 </template>
 
 <script>
-import { getLocalStorageToken } from '../../utils/utils'
+import { getLocalStorageToken } from '../../utils/utils';
 
 export default {
 
@@ -183,11 +183,17 @@ export default {
       inputValuesSymptom: {
         descricaoSintomas: '',
       },
+      state: {
+        view: '',
+      },
       causes: [],
       symptons: [],
       switchListRegister: 'list',
       isEditing: false,
     };
+  },
+  mounted() {
+    this.$store.commit('addPageName', 'Cadastro de Causa e Sintoma ');
   },
 
   methods: {
@@ -202,8 +208,20 @@ export default {
       if (this.isEditing) return 'Alterar';
       return 'Cadastrar';
     },
+    switchLabelPage(labelPage) {
+      if (labelPage === 'list') {
+        this.switchListRegister = 'list';
+        return this.$store.commit('addPageName', `${this.state.view} | Listagem`);
+      } else if (labelPage === 'register') {
+        this.switchListRegister = 'register';
+        return this.$store.commit('addPageName', `${this.state.view} | Cadastrar`);
+      } else {
+        return this.$store.commit('addPageName', `${this.state.view} | Editar`);
+      }
+    },
 
     closeEditing() {
+      this.switchLabelPage('list');
       this.switchListRegister = 'list'
       this.isEditing = false;
       this.resetModel();
@@ -215,6 +233,7 @@ export default {
     },
 
     startEdition(value) {
+      this.switchLabelPage('edit');
       this.inputValuesCause = { ...value }
       this.inputValuesSymptom = { ...value }
       this.switchListRegister = 'register'

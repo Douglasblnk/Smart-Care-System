@@ -1,8 +1,8 @@
-import Delete from '../../../../shared/dao/Delete';
+import Update from '../../../../shared/dao/Update';
+import { TABLE_COMPONENTE } from '../../../../shared/enums/database';
+const comitData = new Update();
 
-const comitData = new Delete();
 
-const TABLE = 'Componente';
 
 export default class DeleteComponentValidate {
 
@@ -12,7 +12,6 @@ export default class DeleteComponentValidate {
             const data = this.getData(event);
 
             this.validateData(data);
-
             const getQuery = this.getQuery(data);
 
             const result = await comitData.run(getQuery);
@@ -24,7 +23,8 @@ export default class DeleteComponentValidate {
         }
     }
     getData(evt: any) {
-        const data = evt.params.id || undefined;
+        const data = evt.body || undefined;
+        data.id = evt.params.id || undefined
 
         return data;
     }
@@ -35,11 +35,12 @@ export default class DeleteComponentValidate {
         };
     }
     getQuery(data: any) {
-        const post = [data];
         
-        const query = `DELETE FROM ${TABLE} WHERE ${TABLE}.idComponente = ?`;
+        const values = { excluded: 1};
+        const where = data.id;
+        const query = `UPDATE ${TABLE_COMPONENTE} SET ? WHERE ${TABLE_COMPONENTE}.idComponente = ?;`;
 
-        const dataQuery = { query, post, type: 'Componente'};
+        const dataQuery = { query, values, where, type: 'Componente'};
 
         return dataQuery;
 

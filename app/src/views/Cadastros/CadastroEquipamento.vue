@@ -58,7 +58,11 @@
             <form @submit.prevent="registerEquipment()">
               <div class="cadCard">
                 <div class="input-card">
-                  <simple-input v-model="inputValues.Setor_idSetor" label="Local Instalação:" type="number" />
+                  <custom-select
+                    v-model="inputValues.Setor_idSetor"
+                    label="Setor"
+                    :options="getSectorOptions()"
+                  />
                   <simple-input v-model="inputValues.equipamento" label="Equipamento:" type="text" />
                   <simple-input v-model="inputValues.equipamentoSuperior" label="Equipamento Superior:" type="text" />
                 </div>
@@ -84,7 +88,7 @@
 </template>
 
 <script>
-import { getLocalStorageToken } from '../../utils/utils';
+import { getLocalStorageToken, getErrors } from '../../utils/utils';
 
 export default {
   name: 'CadastroEquipamento',
@@ -92,36 +96,53 @@ export default {
   data() {
     return {
       inputValues: {
-        Setor_idSetor: null,
+        Setor_idSetor: '',
         equipamento: '',
         equipamentoSuperior: '',
         descricao: '',
       },
       equipments: [],
+      selectsSector: [],
       switchListRegister: 'list',
       isEditing: false,
     };
   },
 
   mounted() {
+    this.$store.commit('addPageName', 'Cadastro de Equipamento');
     this.getEquipment();
+    this.getSector();
+    this.switchLabelPage('list');
   },
 
   methods: {
     getSaveButtonText() {
       if (this.isEditing) return 'Alterar';
-      return 'Cadastrar';
+      else return 'Cadastrar';
     },
-
+    switchLabelPage(labelPage) {
+      if (labelPage === 'list') {
+        this.switchListRegister = 'list';
+        return this.$store.commit('addPageName', `Cadastro de Equipamento | Listagem`);
+      } else if (labelPage === 'register') {
+        this.switchListRegister = 'register';
+        return this.$store.commit('addPageName', `Cadastro de Equipamento | Cadastrar`);
+      } else {
+        return this.$store.commit('addPageName', `Cadastro de Equipamento | Editar`);
+      }
+    },
     editEquipment(equipment) {
-      this.inputValues = { ...equipment };
-      
-      this.switchListRegister = 'register';
+      this.switchLabelPage('edit');
+      console.log(equipment);
+      this.inputValues = { ...equipment }
+      console.log(typeof this.inputValues.Setor_idSetor);
+      this.switchListRegister = 'register'
       this.isEditing = true;
     },
 
     closeEditing() {
-      this.switchListRegister = 'list';
+      this.switchLabelPage('list');
+      this.switchListRegister = 'list'
       this.isEditing = false;
       this.resetModel();
     },
@@ -142,7 +163,23 @@ export default {
           else this.equipments = [...res.result];
         });
     },
+    async getSector() {
+      try {
+        const response = await this.$http.get('local-instalacao/get', getLocalStorageToken());
 
+        if (response.result.length === undefined)
+          this.selectsSector.push(response.result);
+
+        else this.selectsSector = [...response.result];
+
+      } catch (err) {
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
     registerEquipment() {
       if (this.isEditing) return this.updateEquipment();
       this.$http.post('equipamento', getLocalStorageToken(), this.inputValues)
@@ -230,6 +267,9 @@ export default {
     },
     goBack() {
       this.$router.push('/cadastros');
+    },
+    getSectorOptions() {
+      return this.selectsSector.map(i => ({ id: String(i.idSetor), description: i.nome }));
     },
   },
 };
