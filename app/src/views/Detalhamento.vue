@@ -234,7 +234,7 @@
               <el-tab-pane label="Listar" >
                 <span slot="label">Listar </span>
                 <el-table
-                  :data="manutentorInOrdem"
+                  :data="listManutentorInOrdem"
                   style="width: 100%"
                 >
                   <el-table-column
@@ -276,7 +276,7 @@
 
             <span slot="footer" class="dialog-footer">
               <!-- <el-button @click="dialogVisible = false">Cancel</el-button> -->
-              // ! TODO remove inline logic, reset modal properties
+              <!-- // ! TODO remove inline logic, reset modal properties -->
               <el-button type="primary" class="Button_close" @click="dialogVisible = false">Fechar</el-button>
             </span>
           </el-dialog>
@@ -359,6 +359,7 @@ import { ToggleButton } from 'vue-js-toggle-button';
       opcao: '',
       manutentores: [],
       manutentorInOrdem: [],
+      listManutentorInOrdem: [],
       epiList: [],
       dialogVisible: false,
       modalHasError: false,
@@ -488,13 +489,32 @@ import { ToggleButton } from 'vue-js-toggle-button';
     async getManutentoresInOrdem() {
       try {
         const response = await this.$http.post('detalhamento', getLocalStorageToken(), this.valuesInput);
-
-        if (response.result.length === undefined)
+        console.log('-----------------------------------------------divisao----------------------');
+        console.log(response.result);
+        if (response.result.length === undefined) {
           this.manutentorInOrdem.push(response.result);
-        else this.manutentorInOrdem = [...response.result];
+          this.listManutentorInOrdem = this.manutentorInOrdem.filter( i => {
+           return i.is_master === 0 ;
+           });
+          
+          console.log(this.listManutentorInOrdem);
+        }
+        else {
+          this.manutentorInOrdem = [...response.result];
+          this.listManutentorInOrdem = this.manutentorInOrdem.filter( i => {
+            return i.is_master === 0 ;
+           });
+           console.log(this.listManutentorInOrdem);
+          
+        }
       } catch (err) {
         throw err;
       }
+    },
+    filterManutentorMater(array) {
+    this.listManutentorInOrdem.push(this.manutentores.filter( i => {
+      return i.is_master === 0 ;
+      }))
     },
     validaAddManutentor(User) {
       return this.manutentorInOrdem.find(element => element.idUsuario === User.idUsuario);
