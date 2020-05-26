@@ -10,17 +10,15 @@ export default class GetOperacoesValidate {
 
       return await commitData.run(getQuery);
     } catch (err) {
-      console.log(err);
 
       throw err;
     }
   }
 
   getQuery() {
-    const query = /*sql*/`SELECT * FROM ${TABLE_OPERACAO};`;
+    const query = /*sql*/`SELECT * FROM ${TABLE_OPERACAO} WHERE ${TABLE_OPERACAO}.excluded = 0;`;
 
     const dataQuery = { query, type: 'Operações' };
-    console.log(dataQuery);
     return dataQuery;
   }
 }

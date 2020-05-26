@@ -68,93 +68,106 @@
             </div>
           </div>
 
-          <div class="col-md-5">
-            <div class="col-md-12 text-center">
-              <span style="font-size: 20px">Ações</span>
+          <div class="col-md-5 d-flex justify-content-between flex-column">
+            <div>
+              <div class="col-md-12 text-center">
+                <span style="font-size: 20px">Ações</span>
+              </div>
+              <div class="d-flex justify-content-center">
+                <div class="options-wrapper">
+                  <!-- // ? CARD PARA QUANDO A ORDEM ESTIVER COM STATUS ABERTA -->
+                  <div
+                    v-if="verifyOrderStatus === 'open'"
+                    class="options"
+                    @click="orderMovimentations('assume')"
+                  >
+                    <i class="fa fa-hard-hat fa-lg mb-2" />
+
+                    <i v-if="isLoading.assume" class="fa fa-spinner fa-spin fa-lg m-2" />
+                    <span v-else>Assumir</span>
+                  </div>
+
+                  <!-- // ? CARD PARA QUANDO A ORDEM FOR ASSUMIDA POR ALGUÉM -->
+                  <div
+                    v-if="verifyOrderStatus === 'assumed' || verifyOrderStatus === 'paused'"
+                    class="options"
+                    :class="verifyUserAccess ? '' : 'disable'"
+                    @click="orderMovimentations('init')"
+                  >
+                    <i class="fa fa-play fa-lg mb-2" />
+
+                    <i v-if="isLoading.init" class="fa fa-spinner fa-spin fa-lg m-2" />
+                    <span v-else>Iniciar</span>
+                  </div>
+
+                  <!-- // ? CARD PARA QUANDO FOR INICIAR POR ALGUÉM -->
+                  <div
+                    v-if="verifyOrderStatus === 'running'"
+                    class="options"
+                    :class="verifyUserAccess ? '' : 'disable'"
+                    @click="orderMovimentations('pause')"
+                  >
+                    <i class="fa fa-play fa-lg mb-2" />
+
+                    <i v-if="isLoading.pause" class="fa fa-spinner fa-spin fa-lg m-2" />
+                    <span v-else>Pausar</span>
+                  </div>
+
+                  <div
+                    class="options"
+                    :class="verifyUserAccess ? '' : 'disable'"
+                  >
+                    <i class="fa fa-hand-point-right fa-lg mb-2" />
+                    <span>Delegar</span>
+                  </div>
+
+                  <div
+                    class="options"
+                    :class="verifyUserAccess ? '' : 'disable'"
+                    @click="openIntiveTechnician()"
+                  >
+                    <i class="fa fa-users fa-lg mb-2" />
+                    <i v-if="isLoading.convidar" class="fa fa-spinner fa-spin fa-lg m-3" />
+                    <span v-else>Convidar técnico</span>
+                  </div>
+
+                  <div
+                    class="options"
+                    :class="verifyUserAccess ? '' : 'disable'"
+                    @click="openOrderNote()"
+                  >
+                    <i class="fa fa-file-signature fa-lg mb-2" />
+                    <span>Apontamentos</span>
+                  </div>
+
+                  <div
+                    class="options"
+                    :class="verifyUserAccess ? '' : 'disable'"
+                  >
+                    <i class="fa fa-check-double fa-lg mb-2" />
+                    <span>Checklist</span>
+                  </div>
+                  <div
+                    class="options"
+                    :class="verifyUserAccess ? '' : 'disable'"
+                    @click="openOrderVerification()"
+                  >
+                    <i class="fa fa-clipboard-check fa-lg mb-2" />
+                    <span>Verificação</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="d-flex justify-content-center">
-              <div class="options-wrapper">
-                <!-- // ? CARD PARA QUANDO A ORDEM ESTIVER COM STATUS ABERTA -->
-                <div
-                  v-if="verifyOrderStatus === 'open'"
-                  class="options"
-                  :class="verifyUserAccessLevelOpenOrder ? '' : 'disable'"
-                  @click="orderMovimentations('assume')"
-                >
-                  <i class="fa fa-hard-hat fa-lg mb-2" />
 
-                  <i v-if="isLoading.assume" class="fa fa-spinner fa-spin fa-lg m-2" />
-                  <span v-else>Assumir</span>
-                </div>
+            <div class="order-options-wrapper">
+              <!-- <div class="exclude-order">
+                <i class="fa fa-edit fa-fw" />
+                <span>Editar ordem</span>
+              </div> -->
 
-                <!-- // ? CARD PARA QUANDO A ORDEM FOR ASSUMIDA POR ALGUÉM -->
-                <div
-                  v-if="verifyOrderStatus === 'assumed' || verifyOrderStatus === 'paused'"
-                  class="options"
-                  :class="verifyUserAccessLevel ? '' : 'disable'"
-                  @click="orderMovimentations('init')"
-                >
-                  <i class="fa fa-play fa-lg mb-2" />
-
-                  <i v-if="isLoading.init" class="fa fa-spinner fa-spin fa-lg m-2" />
-                  <span v-else>Iniciar</span>
-                </div>
-
-                <!-- // ? CARD PARA QUANDO FOR INICIAR POR ALGUÉM -->
-                <div
-                  v-if="verifyOrderStatus === 'running'"
-                  class="options"
-                  :class="verifyUserAccessLevel ? '' : 'disable'"
-                  @click="orderMovimentations('pause')"
-                >
-                  <i class="fa fa-play fa-lg mb-2" />
-
-                  <i v-if="isLoading.pause" class="fa fa-spinner fa-spin fa-lg m-2" />
-                  <span v-else>Pausar</span>
-                </div>
-
-                <div
-                  class="options"
-                  :class="verifyUserAccessLevel ? '' : 'disable'"
-                >
-                  <i class="fa fa-hand-point-right fa-lg mb-2" />
-                  <span>Delegar</span>
-                </div>
-
-                <div
-                  class="options"
-                  :class="verifyUserAccessLevel ? '' : 'disable'"
-                  @click="openIntiveTechnician()"
-                >
-                  <i class="fa fa-users fa-lg mb-2" />
-                  <i v-if="isLoading.convidar" class="fa fa-spinner fa-spin fa-lg m-3" />
-                  <span v-else>Convidar técnico</span>
-                </div>
-
-                <div
-                  class="options"
-                  :class="verifyUserAccessLevel ? '' : 'disable'"
-                  @click="openOrderNote()"
-                >
-                  <i class="fa fa-file-signature fa-lg mb-2" />
-                  <span>Apontamentos</span>
-                </div>
-
-                <div
-                  class="options"
-                  :class="verifyUserAccessLevel ? '' : 'disable'"
-                >
-                  <i class="fa fa-check-double fa-lg mb-2" />
-                  <span>Checklist</span>
-                </div>
-                <div
-                  class="options"
-                  :class="verifyUserAccess ? '' : 'disable'"
-                  @click="openOrderVerification()"
-                >
-                  <i class="fa fa-clipboard-check fa-lg mb-2" />
-                  <span>Verificação</span>
-                </div>
+              <div class="exclude-order" @click="excludeOrder()">
+                <i class="fa fa-trash fa-fw" />
+                <span>Excluir ordem</span>
               </div>
             </div>
           </div>
@@ -221,7 +234,7 @@
               <el-tab-pane label="Listar">
                 <span slot="label">Listar </span>
                 <el-table
-                  :data="manutentorInOrdem"
+                  :data="listManutentorInOrdem"
                   style="width: 100%"
                 >
                   <el-table-column
@@ -263,6 +276,7 @@
 
             <span slot="footer" class="dialog-footer">
               <!-- <el-button @click="dialogVisible = false">Cancel</el-button> -->
+              <!-- // ! TODO remove inline logic, reset modal properties -->
               <el-button type="primary" class="Button_close" @click="dialogVisible = false">Fechar</el-button>
             </span>
           </el-dialog>
@@ -284,39 +298,33 @@
         />
       </div>
     </transition>
-    
-    <b-modal ref="my-modal" centered hide-footer hide-header title="Verificação de EPIs"
-             :no-close-on-backdrop="true" @hide="resetModal()" @show="checkSelectedEpis()"
-    >
-      <form @submit.stop.prevent="handleOk">
-        <div class="d-block text">
-          <div class="text-center">
-            <h3>Verificação de EPIs na ordem</h3>
-            <span>
-              Informe quais EPIs você esta utilizando
-            </span>
-          </div>
-          <div class="m-3">
-            <b-form-checkbox-group
-              id="checkbox-group-1"
-              v-model="selectedEpis"
-              :options="getEpiOptions()"
-              name="flavour-1"
-              stacked
-            />
-          </div>
+  <b-modal @hide="resetModal()" @show="checkSelectedEpis()" centered ref="my-modal" hide-footer hide-header title="Verificação de EPIs">
+      <div class="d-block text">
+        <div class="text-center">
+          <h3>Verificação de EPIs na ordem</h3>
+          <span>
+            Informe quais EPIs você esta utilizando
+          </span>
         </div>
-        <div v-if="modalHasError">
-          <div class="d-flex justify-content-center w-100 p-2 rounded"
-               style="background-color: #ff4a4a5c; border: 1px solid #ff4a4aa6">
-            <span style="color: black">{{ modalErrorMessage }}</span>
-          </div>
+        <div class="m-3">
+          <b-form-checkbox-group
+            id="checkbox-group-1"
+            v-model="selectedEpis"
+            :options="getEpiOptions()"
+            name="flavour-1"
+            stacked
+          />
         </div>
-        <div class="d-flex justify-content-center">
-          <cancel-button label="Fechar" @click.native="withoutEPIs()" />
-          <save-button label="Enviar" @click.native="alterEpiCheck()" />
+      </div>
+      <div v-if="modalHasError">
+        <div class="d-flex justify-content-center w-100 p-2 rounded" style="background-color: #ff4a4a5c; border: 1px solid #ff4a4aa6">
+          <span style="color: black">{{ modalErrorMessage }}</span>
         </div>
-      </form>
+      </div>
+      <div class="d-flex justify-content-center">
+        <cancel-button label="Fechar" @click.native="closeModal()" />
+        <save-button label="Enviar" @click.native="alterEpiCheck()" />
+      </div>
     </b-modal>
   </div>
 </template>
@@ -347,12 +355,13 @@ export default {
       valuesInput: {
         idOrdemServico: this.order.idOrdemServico,
         idUsuario: '',
-        excluded: '',
+        // excluded: '',
       },
       opcao: '',
       manutentores: [],
       manutentorInOrdem: [],
       report_requester: [],
+      listManutentorInOrdem: [],
       epiList: [],
       dialogVisible: false,
       modalHasError: false,
@@ -522,10 +531,23 @@ export default {
     async getManutentoresInOrdem() {
       try {
         const response = await this.$http.post('detalhamento', getLocalStorageToken(), this.valuesInput);
-
-        if (response.result.length === undefined)
+        console.log('-----------------------------------------------divisao----------------------');
+        console.log(response.result);
+        if (response.result.length === undefined) {
           this.manutentorInOrdem.push(response.result);
-        else this.manutentorInOrdem = [...response.result];
+          this.listManutentorInOrdem = this.manutentorInOrdem.filter( i => {
+           return i.is_master === 0 ;
+           });
+          
+          console.log(this.listManutentorInOrdem);
+        }
+        else {
+          this.manutentorInOrdem = [...response.result];
+          this.listManutentorInOrdem = this.manutentorInOrdem.filter( i => {
+            return i.is_master === 0 ;
+           });
+          
+        }
       } catch (err) {
         throw err;
       }
@@ -581,7 +603,6 @@ export default {
           this.visibleMessage = true;
         }
       } catch (err) {
-        console.log('err addManutentor :>> ', err.response || err);
 
         return this.$swal({
           type: 'warning',
@@ -618,7 +639,6 @@ export default {
           getLocalStorageToken(),
           );
       } catch (err) {
-        console.log('err removeManutentor :>> ', err.response || err);
 
         return this.$swal({
           type: 'warning',
@@ -660,7 +680,6 @@ export default {
         await this.getManutentoresInOrdem();
         this.$set(this.order, 'status', 'Assumida');
       } catch (err) {
-        console.log('err assumeOrder :>> ', err.response || err);
 
         this.$set(this.isLoading, 'assume', false);
 
@@ -679,13 +698,6 @@ export default {
 
         const manutentor = await this.validateActualManutentor();
 
-        // if (manutentor !== undefined) {
-        //   this.$set(this.isLoading, 'init', false);
-        //   return this.$swal({
-        //     type: 'warning',
-        //     title: 'Parece que você já iniciou essa ordem!',
-        //   });
-        // }
 
         this.showEpiModal();
           
@@ -710,14 +722,13 @@ export default {
         this.$set(this.isLoading, 'pause', false);
 
         this.$set(this.order, 'status', 'Pausada');
-      } catch (err) {
+      } catch(err) {
         this.$set(this.isLoading, 'init', false);
-
         this.$swal({
-          type: 'warning',
-          title: getErrors(err),
-          confirmButtonColor: '#F34336',
-        });
+        type: 'warning',
+        title: getErrors(err),
+        confirmButtonColor: '#F34336',
+      });
       }
     },
     async listEpiCheck() {
@@ -761,7 +772,6 @@ export default {
         }
 
       } catch (err) {
-        console.log('initiateOrder :>> ', err);
         this.$set(this.isLoading, 'init', false);
 
         this.$swal({
@@ -808,16 +818,11 @@ export default {
     },
     async getEpis() {
       try {
-        console.log('ORDER:',  { order: this.order.idOrdemServico })
         const { result } = await this.$http.post('epi/order', getLocalStorageToken(), { order: this.order.idOrdemServico });
-        console.log('Result', result.length);
-        if (result.length !== undefined) {
-          this.epiList = [...result];
-        }else{
-          this.epiList = [result];
-        }
         
-        console.log('EpiList: ', this.epiList);
+        if (result.length !== undefined)
+          this.epiList = [...result];
+        else this.epiList = [result];
       } catch (err) {
         console.log('err :>> ', err.response || err);
 
@@ -827,6 +832,37 @@ export default {
           confirmButtonColor: '#F34336',
         });
       }
+    },
+    excludeOrder() {
+      this.$swal({
+        title: 'Excluir ordem de manutenção',
+        text: `Tem certeza que deseja excluir a ordem ${this.order.idOrdemServico}`,
+        showCancelButton: true,
+        reverseButtons: true,
+        cancelButtonText: 'Não, sair.',
+        confirmButtonText: 'Sim, excluir!',
+      }).then( async res => {
+        console.log(this.order)
+        if (res.value) {
+          const manutentor = await this.validateActualManutentor();
+          
+          const response = await this.$http.update('ordem-manutencao', getLocalStorageToken(), {...this.$store.state.user}, this.order.idOrdemServico);
+
+          this.$swal({
+          type: 'success',
+          title: 'Cadastrado',
+          confirmButtonColor: '#F34336',
+        });
+          this.$emit('state-list');
+        }
+      }).catch(err => {
+
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      });
     }
   },
 };
@@ -904,6 +940,39 @@ export default {
             background-color: #eee !important;
             transform: scale(1) !important;
           }
+        }
+
+
+      }
+    }
+  }
+  .order-options-wrapper {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 20px;
+    .exclude-order {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      &:hover {
+        span {
+          color: var(--duas-rodas-soft)
+        }
+      }
+      i {
+        transition: .2s;
+      }
+      &:hover {
+        i {
+          transform: scale(1.18);
+        }
+      }
+      &:active {
+        i {
+          transform: scale(1);
         }
       }
     }
