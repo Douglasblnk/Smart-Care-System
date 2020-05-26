@@ -78,6 +78,7 @@
                 <div
                   v-if="verifyOrderStatus === 'open'"
                   class="options"
+                  :class="verifyUserAccessLevelOpenOrder ? '' : 'disable'"
                   @click="orderMovimentations('assume')"
                 >
                   <i class="fa fa-hard-hat fa-lg mb-2" />
@@ -217,7 +218,7 @@
                   </el-table-column>
                 </el-table>
               </el-tab-pane>
-              <el-tab-pane label="Listar" >
+              <el-tab-pane label="Listar">
                 <span slot="label">Listar </span>
                 <el-table
                   :data="manutentorInOrdem"
@@ -271,18 +272,23 @@
       <div v-if="state.view === 'Verification'" key="Verification">
         <order-verification
           :order="order"
-          @state-list="closeDetail"
+          @state-list="changeViewToDetail"
+          @change-status="changeOrderVerificationStatus"
         />
       </div>
 
       <div v-if="state.view === 'Note'" key="Note">
         <order-note
           :order="order"
-          @state-list="closeDetail"
+          @state-list="changeViewToDetail"
         />
       </div>
     </transition>
-    <b-modal @hide="resetModal()" @show="checkSelectedEpis()" centered ref="my-modal" hide-footer hide-header title="Verificação de EPIs">
+    
+    <b-modal ref="my-modal" centered hide-footer hide-header title="Verificação de EPIs"
+             :no-close-on-backdrop="true" @hide="resetModal()" @show="checkSelectedEpis()"
+    >
+      <form @submit.stop.prevent="handleOk">
         <div class="d-block text">
           <div class="text-center">
             <h3>Verificação de EPIs na ordem</h3>
@@ -301,24 +307,26 @@
           </div>
         </div>
         <div v-if="modalHasError">
-          <div class="d-flex justify-content-center w-100 p-2 rounded" style="background-color: #ff4a4a5c; border: 1px solid #ff4a4aa6">
+          <div class="d-flex justify-content-center w-100 p-2 rounded"
+               style="background-color: #ff4a4a5c; border: 1px solid #ff4a4aa6">
             <span style="color: black">{{ modalErrorMessage }}</span>
           </div>
         </div>
         <div class="d-flex justify-content-center">
-          <cancel-button label="Fechar" @click.native="closeModal()" />
+          <cancel-button label="Fechar" @click.native="withoutEPIs()" />
           <save-button label="Enviar" @click.native="alterEpiCheck()" />
         </div>
-      </b-modal>
+      </form>
+    </b-modal>
   </div>
 </template>
 
 <script>
-  import orderVerification from './Verificacao.vue';
-  import OrderNote from './Apontamentos.vue';
-  import { getErrors, getLocalStorageToken } from '../utils/utils';
+import orderVerification from './Verificacao.vue';
+import OrderNote from './Apontamentos.vue';
+import { getErrors, getLocalStorageToken } from '../utils/utils';
 
-  export default {
+export default {
   name: 'Detalhamento',
 
   components: {
@@ -366,9 +374,10 @@
       if (user.nivelAcesso === 2) {
         const orderManutentor = this.manutentorInOrdem.find(i => i.is_master);
         const currentUser = this.$store.state.user;
-        if (orderManutentor !== undefined && orderManutentor.numeroCracha === currentUser.cracha)
+        if (orderManutentor !== undefined && orderManutentor.numeroCracha === currentUser.cracha
+            && this.order.status !== 'Pendente' && this.order.status !== 'Encerrada')
           return true;
-      } else if (user.nivelAcesso === 1 || user.nivelAcesso === 3) {
+      } else if (this.order.status !== 'Encerrada' && (user.nivelAcesso === 1 || user.nivelAcesso === 3)) {
         const reportRequester = this.report_requester.find(i => i.nivel_acesso === user.nivelAcesso
                                                           && i.idUsuario === user.userId);
         if (reportRequester !== undefined)
@@ -383,6 +392,14 @@
       const userAccess = this.verifyUserAccess;
 
       if (userAccess === true && (user.nivelAcesso === 2 || user.nivelAcesso === 1))
+        return true;
+      
+      return false;
+    },
+    verifyUserAccessLevelOpenOrder() {
+      const user = this.$store.state.user;
+
+      if (this.order.status === 'Aberto' && (user.nivelAcesso === 2 || user.nivelAcesso === 1))
         return true;
       
       return false;
@@ -405,15 +422,20 @@
     this.getManutentoresInOrdem();
     this.getReportRequester();
     this.getEpis();
-    console.log('USER: ', this.$store.state.user);
   },
-
 
   methods: {
     resetModal() {
       this.modalHasError = false;
       this.modalErrorMessage = '';
       this.selectedEpis = [];
+    },
+    handleOk(bvModalEvt) {
+      // Prevent modal from closing
+      bvModalEvt.preventDefault();
+      console.log('Evento emitido');
+      // Trigger submit handler
+      this.withoutEPIs();
     },
     setActivity() {
       this.$http.setActivity(
@@ -434,6 +456,7 @@
       if (status === 'Assumida') return 'assumed';
       if (status === 'Em Andamento') return 'running';
       if (status === 'Encerrada') return 'closed';
+      if (status === 'Pendente') return 'pending';
       if (status === 'Pausada') return 'paused';
     },
     getStatusIcon(order) {
@@ -441,6 +464,7 @@
       if (order.status === 'Assumida') return 'fa-user-check';
       if (order.status === 'Em Andamento') return 'fa-tasks';
       if (order.status === 'Encerrada') return 'fa-check-circle';
+      if (order.status === 'Pendente') return 'fa-user-shield';
       if (order.status === 'Pausada') return 'fa-pause-circle';
     },
     openOrderVerification() {
@@ -453,8 +477,12 @@
 
       this.$set(this.state, 'view', 'Note');
     },
-    closeDetail() {
+    changeViewToDetail() {
       this.$set(this.state, 'view', 'detail');
+    },
+    changeOrderVerificationStatus(status) {
+      this.$set(this.order, 'status', status);
+      this.changeViewToDetail();
     },
     async openIntiveTechnician() {
       if (!this.verifyUserAccessLevel) return;
@@ -603,20 +631,19 @@
       if (this.$store.state.user.nivelAcesso !== 2) return;
       console.log('TYPE: ', type);
       switch (type) {
-        case 'assume':
-          this.assumeOrder();
-          break;
-        case 'init':
-          this.initiateOrder();
-          break;
-        case 'pause':
-          this.pauseOrder();
-          break;
+      case 'assume':
+        this.assumeOrder();
+        break;
+      case 'init':
+        this.initiateOrder();
+        break;
+      case 'pause':
+        this.pauseOrder();
+        break;
       }
     },
     async assumeOrder() {
       if (this.isLoading.assume || this.isOrderAssumed) return;
-      
       try {
         this.$set(this.isLoading, 'assume', true);
 
@@ -660,21 +687,8 @@
         //   });
         // }
 
-        const response = await this.$http.post('initiate/init', getLocalStorageToken(), { ...this.$store.state.user, isMaster: true, order: this.order.idOrdemServico });
-
-
-        this.$set(this.order, 'status', 'Em Andamento');
-
-        this.$swal({
-          type: 'success',
-          title: 'Ordem iniciada com sucesso!',
-          confirmButtonColor: '#f34336',
-        }).then(() => {
-          this.$set(this.isLoading, 'init', false);
-          console.log('Modal Aberto');
-          this.showEpiModal();
+        this.showEpiModal();
           
-        })
 
       } catch (err) {
         console.log('initiateOrder :>> ', err);
@@ -687,8 +701,8 @@
         });
       }
     },
-    async pauseOrder(){
-      try{
+    async pauseOrder() {
+      try {
         this.$set(this.isLoading, 'pause', true);
 
         const response = await this.$http.post('initiate/pause', getLocalStorageToken(), { ...this.$store.state.user, isMaster: true, order: this.order.idOrdemServico });
@@ -696,7 +710,7 @@
         this.$set(this.isLoading, 'pause', false);
 
         this.$set(this.order, 'status', 'Pausada');
-      } catch(err){
+      } catch (err) {
         this.$set(this.isLoading, 'init', false);
 
         this.$swal({
@@ -707,10 +721,10 @@
       }
     },
     async listEpiCheck() {
-      let epiSelects = [];
+      const epiSelects = [];
       for (const epiSelect of this.selectedEpis) {
         console.log('epiSelect: ',epiSelect);
-        let epiOrder = this.epiList.find(i => i.Epi_idEpi === epiSelect);
+        const epiOrder = this.epiList.find(i => i.Epi_idEpi === epiSelect);
         console.log('epiOrder: ',epiOrder);
         epiSelects.push(epiOrder);
       }
@@ -718,19 +732,33 @@
     },
     async alterEpiCheck() {
       try {
-        let listEpiCheck = await this.listEpiCheck();
+        const listEpiCheck = await this.listEpiCheck();
 
-        console.log('LIST EPI CHECK: ',listEpiCheck);
+        if (listEpiCheck.length === this.epiList.length) {
+          await this.$http.post('epi/register', getLocalStorageToken(), listEpiCheck);
+        
+          await this.$http.post('initiate/init', getLocalStorageToken(),
+            { ...this.$store.state.user, isMaster: true, order: this.order.idOrdemServico });
+          
+          this.$set(this.order, 'status', 'Em Andamento');
 
-        const response = await this.$http.post('epi/register', getLocalStorageToken(), listEpiCheck);
-
-        this.$swal({
-          type: 'success',
-          title: 'EPIs checadas com sucesso!',
-          confirmButtonColor: '#f34336',
-        }).then(() => {
-          this.closeModal();
-        })
+          this.$swal({
+            type: 'success',
+            title: 'EPIs checadas e Ordem iniciada com sucesso!',
+            confirmButtonColor: '#f34336',
+          }).then(() => {
+            this.$set(this.isLoading, 'init', false);
+            console.log('Status Andamento: ', this.order);
+            this.closeModal();
+          });
+        } else {
+          this.$swal({
+            type: 'warning',
+            title: 'Faltam EPIs, ordem não pode ser iniciada!',
+            confirmButtonColor: '#F34336',
+          });
+          this.withoutEPIs();
+        }
 
       } catch (err) {
         console.log('initiateOrder :>> ', err);
@@ -768,6 +796,11 @@
     },
     closeModal() {
       this.$refs['my-modal'].hide();
+    },
+    withoutEPIs() {
+      this.$set(this.isLoading, 'init', false);
+      this.$set(this.order, 'status', 'Assumida');
+      this.closeModal();
     },
     confirmModal() {
       this.$refs['my-modal'].toggle('#toggle-btn');

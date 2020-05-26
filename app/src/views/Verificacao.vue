@@ -28,7 +28,7 @@
     </div>
     <form class="formPosition" @submit.prevent="verificationOrder()">
       <div class="d-flex justify-content-center m-3">
-        <save-button label="Verificar"/>
+        <save-button label="Verificar" />
       </div>
     </form>
   </div>
@@ -75,7 +75,13 @@ export default {
           title: `${response.result}`,
           confirmButtonColor: '#F34336',
         }).then(() =>{
-          this.$emit('state-list');
+          if (this.inputValues.typeVerification === 2)
+            this.$emit('change-status', 'Pendente');
+          else if (this.inputValues.typeVerification === 1)
+            this.$emit('change-status', 'Encerrada');
+          else if (this.inputValues.typeVerification === 3)
+            this.$emit('state-list');
+          
         });
       } catch (err) {
         console.log('verificationOrder =>', err);

@@ -58,7 +58,11 @@
             <form @submit.prevent="registerEquipment()">
               <div class="cadCard">
                 <div class="input-card">
-                  <simple-input v-model="inputValues.Setor_idSetor" label="Local Instalação:" type="number" />
+                  <custom-select
+                    v-model="inputValues.Setor_idSetor"
+                    label="Setor"
+                    :options="getSectorOptions()"
+                  />
                   <simple-input v-model="inputValues.equipamento" label="Equipamento:" type="text" />
                   <simple-input v-model="inputValues.equipamentoSuperior" label="Equipamento Superior:" type="text" />
                 </div>
@@ -84,7 +88,7 @@
 </template>
 
 <script>
-import { getLocalStorageToken } from '../../utils/utils';
+import { getLocalStorageToken, getErrors } from '../../utils/utils';
 
 export default {
   name: 'CadastroEquipamento',
@@ -92,12 +96,13 @@ export default {
   data() {
     return {
       inputValues: {
-        Setor_idSetor: null,
+        Setor_idSetor: '',
         equipamento: '',
         equipamentoSuperior: '',
         descricao: '',
       },
       equipments: [],
+      selectsSector: [],
       switchListRegister: 'list',
       isEditing: false,
     };
@@ -105,6 +110,7 @@ export default {
 
   mounted() {
     this.getEquipment();
+    this.getSector();
   },
 
   methods: {
@@ -142,7 +148,23 @@ export default {
           else this.equipments = [...res.result];
         });
     },
+    async getSector() {
+      try {
+        const response = await this.$http.get('local-instalacao/get', getLocalStorageToken());
 
+        if (response.result.length === undefined)
+          this.selectsSector.push(response.result);
+
+        else this.selectsSector = [...response.result];
+
+      } catch (err) {
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
     registerEquipment() {
       if (this.isEditing) return this.updateEquipment();
       this.$http.post('equipamento', getLocalStorageToken(), this.inputValues)
@@ -230,6 +252,9 @@ export default {
     },
     goBack() {
       this.$router.push('/cadastros');
+    },
+    getSectorOptions() {
+      return this.selectsSector.map(i => ({ id: String(i.idSetor), description: i.nome }));
     },
   },
 };
