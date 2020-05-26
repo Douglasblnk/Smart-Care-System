@@ -144,24 +144,27 @@
               </template>
 
               <div v-for="(order, index) in getFilteredOrders" :key="`order-${index}`" class="order-body">
-                <div class="col-md-1">
-                  {{ order.idOrdemServico }}
+                <div class="d-flex flex-column col-md-1">
+                  <strong>{{ order.idOrdemServico }}</strong>
+                  <div class="d-flex">
+                    <small style="background-color: #d9534f; padding: 0 10px; color: white; border-radius: 8px">{{ order.tipo_manutencao }}</small>
+                  </div>
                 </div>
 
                 <div class="col-md-3">
-                  {{ order.resumo }}
+                  <span>{{ order.resumo }}</span>
                 </div>
 
                 <div class="col-md-1">
-                  {{ order.prioridade }}
+                  <span>{{ order.prioridade }}</span>
                 </div>
 
                 <div class="col-md-2">
-                  {{ $moment(order.dataEmissao).format('DD-MM-YYYY') }}
+                  <span>{{ $moment(order.dataEmissao).format('DD-MM-YYYY') }}</span>
                 </div>
 
                 <div class="col-md-1">
-                  {{ order.status }}
+                  <span>{{ order.status }}</span>
                 </div>
 
                 <div class="col-md-2 m-2">
@@ -195,7 +198,7 @@
 
 <script>
 import Detalhamento from './Detalhamento.vue';
-import { getLocalStorageToken, getErrors } from '../utils/utils';
+import { getLocalStorageToken, getErrors, getPriorityClass } from '../utils/utils';
 
 export default {
   name: 'Consulta',
@@ -278,7 +281,7 @@ export default {
   mounted() {
     this.$store.commit('addPageName', 'Consultas');
 
-    this.getOrderMaintence();
+    this.getOrdersMaintences();
     this.getStatus();
     this.getPriority();
   },
@@ -318,17 +321,52 @@ export default {
             <span>${this.$moment(order.dataEmissao).fromNow()}</span>
           </div>
           <div class="mt-5 mx-3" style="text-align: start">
-            <div class="d-flex flex-column my-2">
-              <label class="no-margin"><strong>Ordem: </strong></label>
-              <span>
-                ${order.idOrdemServico}
-              </span>
+            <div class="d-flex">
+              <div class="col-md-6 no-padding">
+                <div class="d-flex flex-column my-2">
+                  <label class="no-margin"><strong>Ordem: </strong></label>
+                  <span>
+                    ${order.idOrdemServico}
+                  </span>
+                </div>
+              </div>
+
+              <div class="col-md-6 no-padding">
+                <div class="d-flex flex-column my-2">
+                  <label class="no-margin"><strong>Tipo da ordem: </strong></label>
+                  <span>
+                    ${order.tipo_manutencao}
+                  </span>
+                </div>
+              </div>
             </div>
+
             <div class="d-flex flex-column my-2">
               <label class="no-margin"><strong>Descrição: </strong></label>
               <span>
                 ${order.descricao}
               </span>
+            </div>
+
+            <hr>
+
+            <div class="d-flex">
+              <div class="col-md-6 no-padding">
+                <div class="d-flex flex-column my-2">
+                  <label class="no-margin"><strong>Prioridade: </strong></label>
+                  <span class="${getPriorityClass(order.prioridade)}">
+                    ${order.prioridade}
+                  </span>
+                </div>
+              </div>
+              <div class="col-md-6 no-padding">
+                <div class="d-flex flex-column my-2">
+                  <label class="no-margin"><strong>Prioridade: </strong></label>
+                  <span>
+                    ${order.status}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         `,
@@ -338,26 +376,50 @@ export default {
     openOrder(order) {
       this.$store.commit('addPageName', `Consultas | ${order.idOrdemServico}`);
 
-      this.$set(this.state, 'view', 'detail');
-      this.$set(this.detail, 'order', order);
+      this.getOrderDetail(order);
     },
     closeDetail() {
       this.$store.commit('addPageName', 'Consultas');
       this.$set(this.state, 'view', 'list');
     },
-    async getOrderMaintence() {
+    async getOrderDetail(order) {
+      if (this.isLoading) return;
+
+      try {
+        console.log('order :>> ', order);
+        this.isLoading = true;
+
+        const { result } = await this.$http.post('ordem-manutencao/detail', getLocalStorageToken(), {
+          order,
+        });
+
+        console.log('result :>> ', result);
+
+        this.$set(this.state, 'view', 'detail');
+        this.$set(this.detail, 'order', result);
+      } catch (err) {
+        console.log('err getOrderDetail :>> ', err.response || err);
+
+        this.$swal({
+          type: 'warning',
+          text: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    async getOrdersMaintences() {
       try {
         this.isLoading = true;
 
-        const response = await this.$http.get('ordem-manutencao', getLocalStorageToken());
+        const response = await this.$http.get('ordem-manutencao/summary', getLocalStorageToken());
 
         if (response.result.length === 0) return;
 
         if (response.result.length === undefined)
           this.maintenainceOrders.push(response.result);
         else this.maintenainceOrders = [...response.result];
-
-        this.isLoading = false;
 
         this.$http.setActivity(
           'orderMaintanceQuery',
@@ -377,6 +439,8 @@ export default {
           text: getErrors(err),
           confirmButtonColor: '#F34336',
         });
+      } finally {
+        this.isLoading = false;
       }
     },
     async getStatus() {

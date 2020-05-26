@@ -60,7 +60,10 @@
       </template>
 
       <template v-if="state.view === 'Rota'">
-        <ordem-rota key="rota" />
+        <ordem-rota
+          key="rota"
+          @reset:closeOrderMaintenance="resetOrder"
+        />
       </template>
 
       <template v-if="state.view === 'Lista'">

@@ -41,8 +41,8 @@
                 <span>Requer parada: {{ order.requerParada === 1 ? 'Sim' : 'Não' }}</span>
               </div>
               <div class="my-3 d-flex align-items-center">
-                <i class="fa fa-exclamation-triangle mr-2" :class="getPriorityClass()" />
-                <span :class="getPriorityClass()">Prioridade: {{ order.prioridade }}</span>
+                <i class="fa fa-exclamation-triangle mr-2" :class="getPriorityClass(order.prioridade)" />
+                <span :class="getPriorityClass(order.prioridade)">Prioridade: {{ order.prioridade }}</span>
               </div>
               <div class="my-3 d-flex align-items-center">
                 <i class="fa fa-laptop mr-2" />
@@ -317,7 +317,7 @@
 <script>
   import orderVerification from './Verificacao.vue';
   import OrderNote from './Apontamentos.vue';
-  import { getErrors, getLocalStorageToken } from '../utils/utils';
+  import { getErrors, getLocalStorageToken, getPriorityClass } from '../utils/utils';
 
   export default {
   name: 'Detalhamento',
@@ -351,12 +351,7 @@
       search: '',
       isLoading: {},
       selectedEpis: [],
-      priorityClass: {
-        'Baixa': 'low-priority',
-        'Media': 'medium-priority',
-        'Alta': 'high-priority',
-        'Muito Alta': 'very-high-priority',
-      },
+      getPriorityClass,
     };
   },
 
@@ -405,9 +400,6 @@
         },
         getLocalStorageToken()
       );
-    },
-    getPriorityClass() {
-      return this.priorityClass[this.order.prioridade];
     },
     translateStatus(status) {
       if (status === 'Aberto') return 'open';
@@ -786,18 +778,6 @@
         justify-content: center;
         width: 20px;
         color: var(--duas-rodas-soft)
-      }
-      .low-priority {
-        color: #53c46d !important;
-      }
-      .medium-priority {
-        color: #FFCC00 !important;
-      }
-      .high-priority {
-        color: var(--duas-rodas-soft) !important;
-      }
-      .very-high-priority {
-        color: var(--duas-rodas) !important;
       }
       .options-wrapper {
         display: flex;

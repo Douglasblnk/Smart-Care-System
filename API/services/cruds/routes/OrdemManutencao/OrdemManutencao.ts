@@ -2,20 +2,21 @@ const { Router } = require("express");
 import RegisterOrderMaintenanceValidate from '../../controller/OrderMaintenance/RegisterOrderMaintenanceValidate'
 import RegisterOrderMaintenanceRouteValidate from '../../controller/OrderMaintenance/RegisterOrderMaintenceRouteValidate'
 import RegisterOrderMaintenanceListValidate from '../../controller/OrderMaintenance/RegisterOrderMaintenceListValidate'
-import GetOrderMaintenanceValidate from '../../controller/OrderMaintenance/getOrdemMaintenanceValidate'
+import GetOrderMaintenanceSummaryValidate from '../../controller/OrderMaintenance/getOrderMaintenanceSummaryValidate'
+import GetOrderMaintenanceDetailValidate from '../../controller/OrderMaintenance/getOrderMaintenanceDetailValidate'
 import Auth from '../../../../shared/auth/auth'
 
 const router = Router();
 const registerOrderMaintenance = new RegisterOrderMaintenanceValidate();
 const registerOrderMaintenanceRoute = new RegisterOrderMaintenanceRouteValidate();
 const registerOrderMaintenanceListValidate = new RegisterOrderMaintenanceListValidate();
-const getOrderMaintenance = new GetOrderMaintenanceValidate();
+const getOrderMaintenanceSummary = new GetOrderMaintenanceSummaryValidate();
+const getOrderMaintenanceDetail = new GetOrderMaintenanceDetailValidate();
 const jwt = new Auth();
 
 /** 
- *  ROTA DE CADASTRO DE ORDEM DE MANUTENÇÃO
- * */ 
-
+ *  ROTA DE CADASTRO DE ORDEM DE MANUTENÇÃO DO TIPO CORRETIVA
+ **/ 
 router.post('/', async (req: any, res: any) => {
   try {
     await jwt.jwtVerify(req)
@@ -30,13 +31,12 @@ router.post('/', async (req: any, res: any) => {
 });
 
 /** 
- *  ROTA DE LISTAGEM DE ORDEM DE MANUTENÇÃO
- * */ 
-
-router.get('/', async (req: any, res: any) => {
+ *  ROTA DE LISTAGEM RESUMIDA DAS ORDENS DE MANUTENÇÃO DO TIPO CORRETIVA
+ */ 
+router.get('/summary', async (req: any, res: any) => {
   try {
     await jwt.jwtVerify(req)
-    const response = await getOrderMaintenance.run(req);
+    const response = await getOrderMaintenanceSummary.run(req);
 
     res.status(200).send(response);
   } catch (err) {
@@ -45,6 +45,25 @@ router.get('/', async (req: any, res: any) => {
     res.status(404).send(err);
   }
 });
+
+
+/**
+ * ROTA DE DETALHAMENTO DA ORDEM DE MANUTENÇÃO DO TIPO CORRETIVA
+ */
+router.post('/detail', async (req: any, res: any) => {
+  try {
+    await jwt.jwtVerify(req)
+    const response = await getOrderMaintenanceDetail.run(req);
+
+    res.status(200).send(response);
+  } catch (err) {
+    console.log('deu erro mesmo', err);
+
+    res.status(404).send(err);
+  }
+});
+
+
 
 router.post('/route', async (req: any, res: any) => {
   try {
@@ -73,3 +92,5 @@ router.post('/list', async (req: any, res: any) => {
 });
 
 module.exports = router;
+
+// todo refatorar endpoints de ordem, cada tipo de ordem deve ter um arquivo separado para os endpoints

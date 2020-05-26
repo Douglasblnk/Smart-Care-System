@@ -80,11 +80,11 @@
          -->
         <tab-content  title="Equipamentos" icon="fas fa-check">
           <div class="w-100 d-flex justify-content-center">
-            <span style="font-size: 22px">Selecione os equipamentos</span>
+            <span style="font-size: 22px">Selecione o setor e os equipamentos</span>
           </div>
-          <div class="equipament-items">
+          <div>
             <custom-select
-              v-model="sector"
+              v-model="selectedSector"
               label="Setor"
               :options="getSectorOptions()"
             />
@@ -94,21 +94,66 @@
               :options="getEquipmentOptions()"
             />
             <div>
-                <div class="operations-title">
-                    <span class="text-center">Selecione o setor e as operações para os equipamentos</span>
+              <div class="operations-title">
+                <span class="text-center">Selecione as operações para os equipamentos</span>
+              </div>
+
+              <div class="d-flex justify-content-center">
+                <save-button id="show-btn" label="Adicionar Operação" @click.native="showOperationModal()" />
+              </div>
+
+              <div class="operations-items">
+                <label>Operações selecionadas:</label>
+                <div v-if="inputValues.operations.length > 0" class="d-flex flex-column">
+                  <div v-for="(operation, index) in inputValues.operations" :key="`epi-${index}`">
+                    <div class="seleted-operation-item">
+                      <div class="d-flex flex-column">
+                        <span>Operação: {{ getOperationName(operation.Operacao) }}</span>
+                        <span>Sequencia: {{ operation.sequencia_operacao }}</span>
+                      </div>
+                      <div>
+                        <i class="fa fa-trash fa-lg scalable-btn" @click="removeOperation(index)" />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="operations-items">
-                    <label>Equipamentos</label>
-                    <b-form-checkbox-group
-                        id="checkbox-operations"
-                        v-model="selectedOperations"
-                        :options="getOperationsOptions()"
-                        name="flavour-1"
-                        stacked
-                    />
+                <div v-else>
+                  <span>Nenhuma operação selecionada.</span>
                 </div>
+              </div>
             </div>
-            <save-button label="Adicionar" @click.native="addEquipmentSectorOperations(sector,equipment,selectedOperations)" />
+            <div class="d-flex justify-content-center">
+              <simple-button label="Vincular equipamento com a operação" @click.native="addEquipmentSectorOperations()" />
+            </div>
+
+            <div v-if="inputValues.equipments_sectors_operations.length > 0" class="operations-equipment-list-wrapper">
+              <label>Operações vinculadas: </label>
+              <div class="">
+                <div
+                  v-for="(vinculatedOperation, index) in inputValues.equipments_sectors_operations"
+                  :key="`vinculatedOperation-${index}`"
+                  class="operation-equipment-itens"
+                >
+                  <div class="d-flex flex-column">
+                    <strong>{{ getEquipmentName(vinculatedOperation.Equipamento) }}</strong>
+                    <span>{{ getSectorName(vinculatedOperation.Local) }}</span>
+
+                    <accordion icon="fa fa-cogs" title="Operações">
+                      <div class="ml-3 mr-3 d-flex flex-wrap">
+                        <div
+                          v-for="(op, index) in vinculatedOperation.operationList"
+                          :key="`operation-${index}`"
+                        >
+                          <div class="selected-operation-wrapper">
+                            <span>{{ op.sequencia_operacao }} - {{ getOperationName(op.Operacao) }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </accordion>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </tab-content>
 
@@ -148,7 +193,15 @@
       </form-wizard>
     </div>
 
-    <b-modal ref="my-modal" centered hide-footer hide-header title="Cadastrar Epi na Ordem" @hide="resetModal()" @show="checkSelectedEpis()">
+    <b-modal
+      ref="epi-modal"
+      centered
+      hide-footer
+      hide-header
+      title="Cadastrar Epi na Ordem"
+      @hide="resetModal()"
+      @show="checkSelectedEpis()"
+    >
       <div class="d-block text">
         <div class="text-center">
           <h3>Adicionar EPIs à ordem</h3>
@@ -172,8 +225,48 @@
         </div>
       </div>
       <div class="d-flex justify-content-center">
-        <cancel-button label="Fechar" @click.native="closeModal()" />
+        <cancel-button label="Fechar" @click.native="closeEpiModal()" />
         <save-button label="Adicionar" @click.native="addEpi()" />
+      </div>
+    </b-modal>
+
+    <!--
+      Modal para adicionar Operações
+      -->
+    <b-modal
+      ref="operation-modal"
+      centered
+      hide-footer
+      hide-header
+      title="Cadastrar operações na Ordem"
+      @hide="resetModal()"
+      @show="checkSelectedOperations()"
+    >
+      <div class="d-block text">
+        <div class="text-center">
+          <h3>Adicionar Operações à ordem</h3>
+          <span>
+            Informe quais operações serão executas nesta ordem.
+          </span>
+        </div>
+        <div class="m-3" style="overflow: auto; max-height: 300px;">
+          <b-form-checkbox-group
+            id="checkbox-operations"
+            v-model="selectedOperations"
+            :options="getOperationsOptions()"
+            name="flavour-1"
+            stacked
+          />
+        </div>
+      </div>
+      <div v-if="modalHasError">
+        <div class="d-flex justify-content-center w-100 p-2 rounded" style="background-color: #ff4a4a5c; border: 1px solid #ff4a4aa6">
+          <span style="color: black">{{ modalErrorMessage }}</span>
+        </div>
+      </div>
+      <div class="d-flex justify-content-center">
+        <cancel-button label="Fechar" @click.native="closeOperationModal()" />
+        <save-button label="Adicionar" @click.native="addOperation()" />
       </div>
     </b-modal>
   </div>
@@ -208,13 +301,13 @@ export default {
         plannedTime: '',
         operations: [],
         epis: [],
-        equipments_sectors_operations: []
+        equipments_sectors_operations: [],
       },
       selectedEpis: [],
       workEquipment: [],
       selectsPriority: [],
-      selectsSector: [],
-      sector: '',
+      sectors: [],
+      selectedSector: '',
       equipment: '',
       selectsRequireStop: [
         {
@@ -249,29 +342,46 @@ export default {
       this.modalHasError = false;
       this.modalErrorMessage = '';
       this.selectedEpis = [];
+      this.selectedOperations = [];
     },
-    async addEquipmentSectorOperations(sector,equipment,operations){
-        try{
-        let operationList = await this.addOperation(operations);
+    async addEquipmentSectorOperations() {
+      try {
+        this.validateSelectedFields();
 
-        let obj = { Equipamento: equipment, Local: sector, operationList}
-        this.inputValues.equipments_sectors_operations.push(obj);
+        const EquipmentSectorOperations = { Equipamento: this.equipment, Local: this.selectedSector, operationList: this.inputValues.operations };
+
+        this.inputValues.equipments_sectors_operations.push(EquipmentSectorOperations);
         
         this.$swal({
-            type: 'success',
-            title: 'Equipamento e Setor adicionados a lista',
-            confirmButtonColor: '#F34336',
+          type: 'success',
+          title: 'Equipamento e Setor vinculados as operações!',
+          confirmButtonColor: '#F34336',
         });
-        console.log('Equipments_sectors_operations', this.inputValues);
-        } catch (err) {
-        console.log('err :>> ', err.response || err);
 
-        return this.$swal({
-            type: 'warning',
-            title: getErrors(err),
-            confirmButtonColor: '#F34336',
+        this.resetVinculateOperation();
+      } catch (err) {
+        console.log('err addEquipmentSectorOperations :>> ', err);
+
+        this.$swal({
+          type: 'warning',
+          title: err,
         });
-        }
+      }
+    },
+    resetVinculateOperation() {
+      this.equipment = '';
+      this.selectedSector = '';
+      this.$set(this.inputValues, 'operations', []);
+    },
+    validateSelectedFields() {
+      if (!this.selectedSector)
+        throw 'Nenhum setor selecionado!';
+      
+      if (!this.equipment)
+        throw 'Nenhum equipamento selecionado!';
+
+      if (this.inputValues.operations.length === 0)
+        throw 'Nenhuma operação selecionada!';
     },
     getEpiOptions() {
       return this.epiList.map(i => ({ text: i.descricaoEpi, value: i.idEpi }));
@@ -286,6 +396,40 @@ export default {
       const { descricaoEpi } = this.epiList.find(i => i.idEpi === epi);
       return descricaoEpi;
     },
+    getOperationName(operation) {
+      const { descricao_operacao } = this.operationsList.find(i => i.idoperacao === operation);
+      return descricao_operacao;
+    },
+    getEquipmentName(equipment) {
+      const { descricao } = this.workEquipment.find(i => i.idEquipamento === Number(equipment));
+      return descricao;
+    },
+    getSectorName(sector) {
+      const { nome } = this.sectors.find(i => i.idSetor === Number(sector));
+      return nome;
+    },
+    removeOperation(index) {
+      this.inputValues.operations.splice(index, 1);
+      this.updateCurrentOperations();
+    },
+    updateCurrentOperations() {
+      const updatedOperations = [];
+      let sequenceOperation = 0;
+
+      for (const option of this.inputValues.operations) {
+        sequenceOperation += 10;
+
+        const incrementOperationZero = this.incrementZero(sequenceOperation);
+
+        const operationOption = {
+          Operacao: option.Operacao,
+          sequencia_operacao: incrementOperationZero + sequenceOperation,
+        };
+
+        updatedOperations.push(operationOption);
+      }
+      this.inputValues.operations = [...updatedOperations];
+    },
     removeEpi(index) {
       this.inputValues.epis.splice(index, 1);
       this.$set(this.showRemoveEpi, [index], false);
@@ -293,14 +437,28 @@ export default {
     async showEpiModal() {
       await this.getEpis();
 
-      this.$refs['my-modal'].show();
+      this.$refs['epi-modal'].show();
     },
-    closeModal() {
-      this.$refs['my-modal'].hide();
+    closeEpiModal() {
+      this.$refs['epi-modal'].hide();
     },
-    confirmModal() {
-      this.$refs['my-modal'].toggle('#toggle-btn');
+    confirmEpiModal() {
+      this.$refs['epi-modal'].toggle('#toggle-btn');
       this.resetModal();
+    },
+    closeOperationModal() {
+      this.$refs['operation-modal'].hide();
+    },
+    confirmOperationModal() {
+      this.$refs['operation-modal'].toggle('#toggle-btn');
+      this.resetModal();
+    },
+    showOperationModal() {
+      this.$refs['operation-modal'].show();
+    },
+    checkSelectedOperations() {
+      if (this.inputValues.operations.length > 0)
+        this.selectedOperations = this.inputValues.operations.map(i => i.Operacao);
     },
     async getEpis() {
       try {
@@ -323,28 +481,44 @@ export default {
         this.modalErrorMessage = 'Selecione uma EPI antes de continuar';
       } else {
         this.inputValues.epis = this.selectedEpis.map(i => ({ Epi_idEpi: i }));
-        this.confirmModal();
+        this.confirmEpiModal();
       }
     },
-    resetInputValues() {
-      this.inputValues.operations = [];
-      this.sequenceOperation = 0;
-      this.selectedEpis = [];
-      this.selectedOperations = [];
-      this.workEquipment = [];
-    },
-    async addOperation(selectedOperations) {
-        let listSelectedOperations = [];
-        for (const option of selectedOperations) {
-            this.sequenceOperation += 10;
-            const incrementOperationZero = this.incrementZero(this.sequenceOperation);
+    async addOperation() {
+      if (this.selectedOperations.length === 0) {
+        this.modalHasError = true;
+        this.modalErrorMessage = 'Selecione uma operação antes de continuar';
+      } else {
+        const nonSelectedOperations = this.selectedOperations.filter((operation, index) => {
+          if (!_.get(this.inputValues.operations[index], 'Operacao', ''))
+            return operation;
+          return '';
+        });
+        
+        if (nonSelectedOperations.length === 0) return this.confirmOperationModal();
 
-            const operationOption = { Operacao: option, sequencia_operacao: incrementOperationZero + this.sequenceOperation };
+        let sequenceOperation = this.getLastSequence();
 
-            listSelectedOperations.push(operationOption);
+        for (const option of nonSelectedOperations) {
+          sequenceOperation += 10;
 
+          const incrementOperationZero = this.incrementZero(sequenceOperation);
+
+          const operationOption = {
+            Operacao: option,
+            sequencia_operacao: incrementOperationZero + sequenceOperation,
+          };
+
+          this.inputValues.operations.push(operationOption);
         }
-        return listSelectedOperations;
+        this.confirmOperationModal();
+      }
+    },
+    getLastSequence() {
+      const lastSequencie = _.get(this.inputValues.operations[this.inputValues.operations.length - 1], 'sequencia_operacao', '');
+      if (lastSequencie)
+        return Number(lastSequencie.slice(2));
+      return 0;
     },
     incrementZero(sequenceOperation) {
       if (sequenceOperation >= 100) return '0';
@@ -356,17 +530,19 @@ export default {
     },
     async registerOrderMaintenance() {
       try {
-        this.$set(this.inputValues, 'beginData', this.$moment().format('YYYY-MM-DD'));
-        console.log('this.inputValues :>> ', this.inputValues);
-        const response = await this.$http.post('ordem-manutencao/route', getLocalStorageToken(), this.inputValues);
+        // this.$set(this.inputValues, 'beginData', this.$moment().format('YYYY-MM-DD'));
+
+        // const response = await this.$http.post('ordem-manutencao/route', getLocalStorageToken(), this.inputValues);
         
-        console.log('response :>> ', response);
+        // console.log('response :>> ', response);
 
         this.$swal({
           type: 'success',
           title: 'Ordem de Serviço cadastrada com Sucesso',
           confirmButtonColor: '#F34336',
         });
+
+        this.$emit('reset:closeOrderMaintenance');
       } catch (err) {
         console.log('err :>> ', err.response || err);
         return this.$swal({
@@ -401,9 +577,9 @@ export default {
         const response = await this.$http.get('local-instalacao/get', getLocalStorageToken());
 
         if (response.result.length === undefined)
-          this.selectsSector.push(response.result);
+          this.sectors.push(response.result);
 
-        else this.selectsSector = [...response.result];
+        else this.sectors = [...response.result];
       } catch (err) {
         return this.$swal({
           type: 'warning',
@@ -413,7 +589,7 @@ export default {
       }
     },
     getSectorOptions() {
-      return this.selectsSector.map(i => ({ id: String(i.idSetor), description: i.nome }));
+      return this.sectors.map(i => ({ id: String(i.idSetor), description: i.nome }));
     },
     async getPriority() {
       try {
@@ -465,7 +641,7 @@ export default {
     border-radius: 10px;
     padding: 25px;
     margin: 20px 0;
-    .step-by-step{
+    .step-by-step {
       width:100%;
       .maintenanceCause{
         display: grid;
@@ -490,13 +666,26 @@ export default {
         display: flex;
         justify-content: center;
         font-size: 22px;
+        margin-top: 20px;
       }
       .operations-items {
-        max-height: 300px;
+        max-height: 350px;
+        overflow: auto;
         margin: 20px;
       }
-      .equipament-items {
-        margin: 20px;
+      .seleted-operation-item {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 8px;
+        padding: 20px;
+        i {
+          color: #555;
+        }
+        &:hover {
+          background-color: #eee;
+        }
       }
       .selected-epi-wrapper {
         min-width: 50px;
@@ -526,6 +715,24 @@ export default {
             i { color: white; }
           }
           i { font-size: 14px; }
+        }
+      }
+      .selected-operation-wrapper {
+        min-width: 50px;
+        padding: 5px 20px;
+        margin: 5px;
+        border-radius: 100px;
+        background-color: #ddd;
+        user-select: none;
+      }
+      .operations-equipment-list-wrapper {
+        margin: 20px 0;
+        .operation-equipment-itens {
+          padding: 10px 20px;
+          border-radius: 9px;
+          &:hover {
+            background-color: #eee;
+          }
         }
       }
     }

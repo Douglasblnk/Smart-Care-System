@@ -34,6 +34,19 @@ span, p, strong {
   padding: 0 !important;
 }
 
+.low-priority {
+  color: #53c46d !important;
+}
+.medium-priority {
+  color: #FFCC00 !important;
+}
+.high-priority {
+  color: var(--duas-rodas-soft) !important;
+}
+.very-high-priority {
+  color: var(--duas-rodas) !important;
+}
+
 .custom-control {
   position: relative;
   display: flex !important;
