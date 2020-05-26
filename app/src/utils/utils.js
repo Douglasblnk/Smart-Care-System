@@ -83,11 +83,18 @@ const getErrors = err => {
 };
 
 const getAccessLevelName = accessNum => {
-  let num = Number.isNaN(accessNum) ? accessNum : String(accessNum);
+  const num = Number.isNaN(accessNum) ? accessNum : String(accessNum);
 
   if (num === '1') return 'Administrador';
   if (num === '2') return 'Manutentor';
   if (num === '3') return 'Solicitante';
+};
+
+const getPriorityClass = priority => {
+  if (priority === 'Baixa') return 'low-priority';
+  if (priority === 'Média') return 'medium-priority';
+  if (priority === 'Alta') return 'high-priority';
+  if (priority === 'Muito Alta') return 'very-high-priority';
 };
 
 module.exports = {
@@ -96,4 +103,5 @@ module.exports = {
   validateSession,
   getErrors,
   getAccessLevelName,
+  getPriorityClass,
 };

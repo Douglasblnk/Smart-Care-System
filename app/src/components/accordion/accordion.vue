@@ -3,10 +3,11 @@
     <div
       class="header-info"
       :class="{ 'active-class' : !collapsed}"
+      :style="`background-color: ${headerColor}`"
       @click="collapsed = !collapsed"
     >
       <div class="title">
-        <i :class="icon" class="text-muted fa-fw" />
+        <i v-if="icon" :class="icon" class="text-muted fa-fw" />
         <p class="text-muted ml-3">{{ title }}</p>
       </div>
       <i :class="getCollapseIcon" />
@@ -24,6 +25,8 @@ export default {
   props: {
     title: { type: String, default: '' },
     icon: { type: String, default: '' },
+    headerColor: { type: String, default: '' },
+    active: { type: Boolean, default: false },
   },
 
   data() {
