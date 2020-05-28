@@ -842,7 +842,7 @@ export default {
 
           this.$swal({
           type: 'success',
-          title: 'Cadastrado',
+          title: 'Ordem excluída',
           confirmButtonColor: '#F34336',
         });
           this.$emit('state-list');
