@@ -21,6 +21,13 @@ const dashboard = [
         web: false,
     },
     {
+        name: 'Verificações',
+        link: '/consulta-verificacoes',
+        icon: 'fa fa-search',
+        mobile: true,
+        web: true,
+    },
+    {
         name: 'Consultas',
         link: '/consultas',
         icon: 'fa fa-search',

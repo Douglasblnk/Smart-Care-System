@@ -53,7 +53,7 @@
                 <span>Tipo de Manutenção: {{ order.tipo_manutencao }}</span>
               </div>
               <div class="my-3 d-flex align-items-center">
-                <i class="fa fa-calendar-alt mr-2" />
+                <i class="fa fa-calendar--alt mr-2" />
                 <div class="d-flex flex-column">
                   <span>
                     Inicio planejado:
@@ -298,7 +298,8 @@
         />
       </div>
     </transition>
-  <b-modal @hide="resetModal()" @show="checkSelectedEpis()" centered ref="my-modal" hide-footer hide-header title="Verificação de EPIs">
+    <b-modal ref="my-modal" centered
+             hide-footer hide-header title="Verificação de EPIs" @hide="resetModal()" @show="checkSelectedEpis()">
       <div class="d-block text">
         <div class="text-center">
           <h3>Verificação de EPIs na ordem</h3>
@@ -317,7 +318,9 @@
         </div>
       </div>
       <div v-if="modalHasError">
-        <div class="d-flex justify-content-center w-100 p-2 rounded" style="background-color: #ff4a4a5c; border: 1px solid #ff4a4aa6">
+        <div class="d-flex justify-content-center w-100 p-2 rounded"
+             style="background-color: #ff4a4a5c; border: 1px solid #ff4a4aa6"
+        >
           <span style="color: black">{{ modalErrorMessage }}</span>
         </div>
       </div>
@@ -434,13 +437,6 @@ export default {
       this.modalErrorMessage = '';
       this.selectedEpis = [];
     },
-    handleOk(bvModalEvt) {
-      // Prevent modal from closing
-      bvModalEvt.preventDefault();
-      console.log('Evento emitido');
-      // Trigger submit handler
-      this.withoutEPIs();
-    },
     setActivity() {
       this.$http.setActivity(
         'orderDetail',
@@ -548,12 +544,9 @@ export default {
     async getReportRequester() {
       try {
         const response = await this.$http.post('detalhamento/get-report-requester', getLocalStorageToken(), this.valuesInput);
-        console.log('RESPONSE REPORT_REQUESTER: ',response);
         if (response.result.length === undefined)
           this.report_requester.push(response.result);
         else this.report_requester = [...response.result];
-        console.log('REPORT_REQUESTER: ',this.report_requester);
-
       } catch (err) {
         throw err;
       }

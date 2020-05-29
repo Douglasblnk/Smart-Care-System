@@ -7,6 +7,7 @@ import Configurações from '../views/Configurações.vue';
 import Verificacao from '../views/Verificacao.vue';
 import Consulta from '../views/Consulta.vue';
 import Profile from '../views/Profile.vue';
+import ConsultaVerificacoes from '../views/ConsultaVerificacoes';
 
 import CadastroEquipamento from '../views/Cadastros/CadastroEquipamento';
 import CadastroLocalInstalacao from '../views/Cadastros/CadastroLocalInstalacao';
@@ -111,6 +112,12 @@ const routes = [
     path: '/relatorios',
     name: 'Relatórios',
     component: Dashboard,
+    meta: { requireAuth: true },
+  },
+  {
+    path: '/consulta-verificacoes',
+    name: 'Consulta-Verificações',
+    component: ConsultaVerificacoes,
     meta: { requireAuth: true },
   },
   {

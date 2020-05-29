@@ -21,7 +21,7 @@ import 'sweetalert2/dist/sweetalert2.min.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
-// import { ClientTable } from 'vue-tables-2';
+import { ClientTable, Event } from 'vue-tables-2';
 import { validateSession } from './utils/utils';
 import importedComponents from './plugins/importedComponents';
 import locale from 'element-ui/lib/locale/lang/pt-br';
@@ -35,7 +35,7 @@ Vue.use(Lodash);
 Vue.use(BootstrapVue);
 Vue.use(VueSweetalert2);
 Vue.use(Vuex);
-// Vue.use(ClientTable);
+Vue.use(ClientTable);
 Vue.use(VueFormWizard);
 
 Vue.use(importedComponents);
