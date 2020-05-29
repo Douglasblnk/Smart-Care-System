@@ -1,74 +1,78 @@
 <template>
-  <div class="root-centro-trabalho-view">
-    <div class="list-option">
-      <div class="d-flex justify-content-between">
-        <div class="option d-flex align-items-center m-4" @click="switchLabelPage('list')">
-          <i class="fas fa-list-alt" />
-          <span>Listar</span>
+  <div class="root-cadastro-operacao-view">
+    <div class="content-wrapper">
+      <div>
+        <div class="list-option">
+          <div class="d-flex justify-content-between">
+            <div class="option d-flex align-items-center m-4" @click="switchLabelPage('list')">
+              <i class="fas fa-list-alt" />
+              <span>Listar</span>
+            </div>
+            <div class="option d-flex align-items-center m-4" @click="switchLabelPage('register')">
+              <i class="fas fa-edit" />
+              <span>Cadastrar</span>
+            </div>
+          </div>
         </div>
-        <div class="option d-flex align-items-center m-4" @click="switchLabelPage('register')">
-          <i class="fas fa-edit" />
-          <span>Cadastrar</span>
-        </div>
+
+        <transition name="slide-fade" mode="out-in">
+          <template v-if="switchListRegister === 'list'">
+            <div class="d-flex w-100 justify-content-center">
+              <div class="table-content bg-white p-4 w-100">
+                <div class="table-responsive">
+                  <table class="table table table-striped table-borderless table-hover" cellspacing="0">
+                    <thead class="table-head">
+                      <tr>
+                        <th scope="col">Componente</th>
+                        <!-- <th scope="col">Máquina</th> -->
+                        <th scope="col">Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-body">
+                      <tr v-for="(component, index) in workOperations" value="component.descricao_operacao" :key="`component-${index}`">
+                        <td>{{ component.descricao_operacao }}</td>
+                      
+                        <!-- <td>{{ workCenter.DescricaoComponente}}</td> -->
+                        <td style="width: 50px">
+                          <div class="d-flex table-action">
+                            <i class="fas fa-edit text-muted" @click="editOperations(component)"></i>
+                            <i class="fas fa-trash text-muted" @click="deleteOperations(component, index)"></i>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <template v-if="switchListRegister === 'register'">
+            <form @submit.prevent="registerOperations()" class="formPosition">
+              <div class="cadCard">
+                <div class="inputs">
+                  <!-- <custom-select v-model="selectValue" :options="getWorkEquipmentOptions()"></custom-select> -->
+                  <!--<tranfer-select v-model="inputValues.Equipamento_idEquipamento" :selects="selectsEquipament" :label="'Máquina'" ></tranfer-select>     
+                  -->
+                  <simple-input v-model="inputValues.descricao_operacao" label="Descrição Operaçao:" type="text" ></simple-input>
+                  <simple-input v-model="inputValues.material" label="Material:" type="text" ></simple-input>
+                  <simple-input v-model="inputValues.quantidade_material" label="Quantidade:" type="number"></simple-input>
+                  <simple-input v-model="inputValues.unidade_material" label="Unidade:" type="text "></simple-input>
+                  <simple-input v-model="inputValues.tempo_planejado" label="Tempo Planejado:" type="time"></simple-input>
+                </div>
+              </div>
+              <!-- <div class="d-flex justify-content-center m-3">
+                <b-button type="submit" value="send" variant="danger">Cadastrar</b-button>
+              </div> -->
+              <div class="d-flex justify-content-center m-3">
+                <save-button :label="getSaveButtonText()" />
+                <cancel-button v-if="isEditing" @click.native="closeEditing" label="Cancelar" />
+              </div>
+            </form>
+          </template>
+        </transition>
       </div>
     </div>
-
-    <transition name="slide-fade" mode="out-in">
-      <template v-if="switchListRegister === 'list'">
-        <div class="d-flex w-100 justify-content-center">
-          <div class="table-content bg-white p-4 w-100">
-            <div class="table-responsive">
-              <table class="table table table-striped table-borderless table-hover" cellspacing="0">
-                <thead class="table-head">
-                  <tr>
-                    <th scope="col">Componente</th>
-                    <!-- <th scope="col">Máquina</th> -->
-                    <th scope="col">Ações</th>
-                  </tr>
-                </thead>
-                <tbody class="table-body">
-                  <tr v-for="(component, index) in workOperations" value="component.descricao_operacao" :key="`component-${index}`">
-                    <td>{{ component.descricao_operacao }}</td>
-                  
-                    <!-- <td>{{ workCenter.DescricaoComponente}}</td> -->
-                    <td style="width: 50px">
-                      <div class="d-flex table-action">
-                        <i class="fas fa-edit text-muted" @click="editOperations(component)"></i>
-                        <i class="fas fa-trash text-muted" @click="deleteOperations(component, index)"></i>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </template>
-
-      <template v-if="switchListRegister === 'register'">
-        <form @submit.prevent="registerOperations()" class="formPosition">
-          <div class="cadCard">
-            <div class="inputs">
-              <!-- <custom-select v-model="selectValue" :options="getWorkEquipmentOptions()"></custom-select> -->
-              <!--<tranfer-select v-model="inputValues.Equipamento_idEquipamento" :selects="selectsEquipament" :label="'Máquina'" ></tranfer-select>     
-              -->
-              <simple-input v-model="inputValues.descricao_operacao" label="Descrição Operaçao:" type="text" ></simple-input>
-              <simple-input v-model="inputValues.material" label="Material:" type="text" ></simple-input>
-              <simple-input v-model="inputValues.quantidade_material" label="Quantidade:" type="number"></simple-input>
-              <simple-input v-model="inputValues.unidade_material" label="Unidade:" type="text "></simple-input>
-              <simple-input v-model="inputValues.tempo_planejado" label="Tempo Planejado:" type="time"></simple-input>
-            </div>
-          </div>
-          <!-- <div class="d-flex justify-content-center m-3">
-            <b-button type="submit" value="send" variant="danger">Cadastrar</b-button>
-          </div> -->
-          <div class="d-flex justify-content-center m-3">
-            <save-button :label="getSaveButtonText()" />
-            <cancel-button v-if="isEditing" @click.native="closeEditing" label="Cancelar" />
-          </div>
-        </form>
-      </template>
-    </transition>
   </div>
 </template>
 <script>
@@ -225,71 +229,77 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.root-centro-trabalho-view {
-  width: 70%;
-  .list-option {
+.root-cadastro-operacao-view {
+  width: 100%;
+  .content-wrapper {
     display: flex;
-    justify-content: flex-start;
-    .option {
-      cursor: pointer;
-      color: var(--duas-rodas-soft);
-      transition: .2s;
-      &:hover {
-        transform: scale(1.2)
-      }
-      &:active {
-        transform: scale(1)
-      }
-      i {
-        
-        cursor: pointer;
-        font-size: 1.4rem;
-        margin: 0 5px;
-      }
-    }
-  }
-  .formPosition{
-    display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    .cadCard {
-      width: 80%;
-      padding: 20px;
+    .list-option {
+      width: 50vw;
       display: flex;
-      flex-direction: column;
-      border-radius: 10px;
-      background-color: #ffffff;
-    }
-  }
-  .table-content {
-    border-radius: 10px;
-    table {
-      overflow:hidden;
-      border-collapse:separate;
-      border-radius: 10px;
-    }
-    .table-head {
-      background-color: var(--duas-rodas);
-      color: white;
-      th {
-        padding: 20px;
-      }
-    }
-    .table-body {
-      td {
-        padding: 20px;
-      }
-    }
-    .table-action {
-      i {
-        margin: 0 10px;
+      justify-content: flex-start;
+      .option {
         cursor: pointer;
-        transition: .1s;
+        color: var(--duas-rodas-soft);
+        transition: .2s;
         &:hover {
-          transform: scale(1.3);
+          transform: scale(1.2)
         }
         &:active {
-          transform: scale(1);
+          transform: scale(1)
+        }
+        i {
+          
+          cursor: pointer;
+          font-size: 1.4rem;
+          margin: 0 5px;
+        }
+      }
+    }
+    .formPosition{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      .cadCard {
+        width: 80%;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        border-radius: 10px;
+        background-color: #ffffff;
+      }
+    }
+    .table-content {
+      border-radius: 10px;
+      table {
+        overflow:hidden;
+        border-collapse:separate;
+        border-radius: 10px;
+      }
+      .table-head {
+        background-color: var(--duas-rodas);
+        color: white;
+        th {
+          padding: 20px;
+        }
+      }
+      .table-body {
+        td {
+          padding: 20px;
+        }
+      }
+      .table-action {
+        i {
+          margin: 0 10px;
+          cursor: pointer;
+          transition: .1s;
+          &:hover {
+            transform: scale(1.3);
+          }
+          &:active {
+            transform: scale(1);
+          }
         }
       }
     }

@@ -1,9 +1,9 @@
 const { Router } = require("express");
-import RegisterComponent from '../../controller/registerComponent/registerComponent';
-import GetComponentValidate from '../../controller/registerComponent/getComponentValidate';
-import  DeleteComponentValidate  from '../../controller/registerComponent/deleteComponentValidate';
+import RegisterComponent from '../../controller/Component/registerComponent';
+import GetComponentValidate from '../../controller/Component/getComponentValidate';
+import  DeleteComponentValidate  from '../../controller/Component/deleteComponentValidate';
 import Auth from '../../../../shared/auth/auth';
-import UpdateComponentValidate from '../../controller/registerComponent/updateComponentValidate';
+import UpdateComponentValidate from '../../controller/Component/updateComponentValidate';
 
 const router = Router();
 const registerComponent = new RegisterComponent();
