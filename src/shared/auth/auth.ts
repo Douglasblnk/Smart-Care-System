@@ -1,9 +1,14 @@
 import jwt from 'jsonwebtoken';
 
 export default class Auth {
+  _key: any;
+  constructor() {
+    this._key = process.env.JWT_KEY;
+  }
+
   jwtToken(res: any) {
     return new Promise((resolve, reject) => {
-      jwt.sign(res.result, 'twoWheelsSenai', { expiresIn: '12h' }, (err: any, token: any) => {
+      jwt.sign(res.result, this._key, { expiresIn: '12h' }, (err: any, token: any) => {
         if (err) reject(err);
 
         resolve({ status: 200, token });
@@ -17,7 +22,7 @@ export default class Auth {
 
       console.log('bearer: ', bearer);
 
-      jwt.verify(bearer, 'twoWheelsSenai', (err: any, authData: any) => {
+      jwt.verify(bearer, this._key, (err: any, authData: any) => {
         console.log('Autenticação error:', err );
 
         if (err) reject({ status: 401, msg: 'Erro ao autenticar!', ...err });
