@@ -1,3 +1,6 @@
+import ConnectionFactory from './shared/connectionFactory/ConnectionFactory';
+import Auth from './shared/auth/auth';
+
 require('dotenv').config({ path: '.env' });
 
 const express = require('express');
@@ -5,14 +8,18 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 
 const app = express();
+const connectionFactory = new ConnectionFactory();
+const auth = new Auth();
 
 app.use(cors());
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+app.use(auth.run.bind(auth));
+app.use(connectionFactory.createConnection.bind(connectionFactory));
+
 // CRUDS
-// const user = require('./services/cruds/routes/Usuario/User');
+const user = require('./services/cruds/v1/User');
 // const equipamento = require('./services/cruds/routes/Equipamento/Equipamento');
 // const localInstalacao = require('./services/cruds/routes/LocalInstalacao/LocalInstalacao');
 // const centroTrabalho = require('./services/cruds/routes/CentroTrabalho/CentroTrabalho');
@@ -34,7 +41,7 @@ app.use(bodyParser.json());
 // const initiate = require('./services/movimentations/routes/Iniciar/InitiateOrder');
 // const orderNote = require('./services/movimentations/routes/Apontar/OrderNote');
 
-// app.use('/users', user);
+app.use('/users', user);
 // app.use('/equipamento', equipamento);
 // app.use('/local-instalacao', localInstalacao);
 // app.use('/centro-trabalho', centroTrabalho);
@@ -58,6 +65,8 @@ app.use(bodyParser.json());
 app.get('/', (req: any, res: any) => {
   res.send('Smart Care API');
 });
+
+app.use(connectionFactory.closeConnection.bind(connectionFactory));
 
 app.listen(process.env.PORT, () => {
   console.log(`Ouvindo na porta ${process.env.PORT}!`);

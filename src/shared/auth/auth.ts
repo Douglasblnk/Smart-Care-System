@@ -1,46 +1,64 @@
+// eslint-disable-next-line no-unused-vars
+import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+// eslint-disable-next-line no-unused-vars
 
 export default class Auth {
-  _key: any;
+  private _key: any;
+  private _noAuth: any;
+
   constructor() {
     this._key = process.env.JWT_KEY;
+    this._noAuth = process.env.NO_AUTH_ROUTE;
+  }
+
+  async run(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (req.url === this._noAuth)
+        return next();
+
+      
+      next();
+    } catch (err) {
+      console.log('err Auth :>> ', err);
+      throw err;
+    }
   }
 
   jwtToken(res: any) {
     return new Promise((resolve, reject) => {
-      jwt.sign(res.result, this._key, { expiresIn: '12h' }, (err: any, token: any) => {
-        if (err) reject(err);
+      jwt.sign(res.result, this._key, { expiresIn: '10h' }, (err: any, token: any) => {
+        if (err) return reject(err);
 
-        resolve({ status: 200, token });
+        return resolve({ status: 200, token });
       });
     });
   }
 
-  jwtVerify(token: any) {
-    return new Promise(async (resolve, reject) => {
-      const bearer: any = await this.getBearerToken(token);
-
-      console.log('bearer: ', bearer);
+  private jwtVerify(token: any) {
+    return new Promise((resolve, reject) => {
+      const bearer: any = this.getBearerToken(token);
 
       jwt.verify(bearer, this._key, (err: any, authData: any) => {
-        console.log('Autenticação error:', err );
-
-        if (err) reject({ status: 401, msg: 'Erro ao autenticar!', ...err });
-
-        resolve({ body: authData });
+        if (err) {
+          console.log('Authentication error:', err );
+          return reject({ status: 401, msg: 'Erro ao autenticar!', ...err });
+        }
+        return resolve({ body: authData });
       });
     });
   }
 
-  getBearerToken(token: any) {
+  private getBearerToken(token: any) {
     return new Promise((resolve, reject) => {
       const bearerHeader = token.headers['authorization'];
 
-      if (typeof bearerHeader === undefined) reject('token inválido!');
+      if (typeof bearerHeader === undefined) return reject('token inválido!');
+      if (!bearerHeader.includes('Bearer')) return reject('token inválido');
 
       const bearer = bearerHeader.split(' ')[1];
       
-      resolve(bearer);
+      return resolve(bearer);
     });
   }
 }
