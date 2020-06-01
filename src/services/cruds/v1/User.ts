@@ -1,6 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import { Response, Request } from 'express';
-// import LoginValidate from '../../controller/user/loginValidate';
+import { errorResponseTreatment } from '../../../shared/utils/utils';
+import LoginValidate from '../session/user/LoginValidate';
 // import RegisterUserValidate from '../../controller/user/registerUserValidate';
 // import GetUsersValidate from '../../controller/user/getUsersValidate';
 // import GetUserRequester from '../../controller/user/getUserRequesterValidate';
@@ -14,7 +15,6 @@ const { Router } = require('express');
 // const RateLimit = require('express-rate-limit');
 
 const router = Router();
-// const login = new LoginValidate();
 // const register = new RegisterUserValidate();
 // const getUser = new GetUsersValidate();
 // const getUserRequester = new GetUserRequester();
@@ -38,13 +38,13 @@ const router = Router();
  */
 router.post('/', async (req: any, res: any) => {
   try {
-    const response : any = await login.run(req);
+    const response : any = await new LoginValidate().run(req);
 
     res.status(200).send(response);
   } catch (err) {
-    console.log('deu erro mesmo', err);
-
-    res.status(404).send(err);
+    const responseError = errorResponseTreatment(err);
+    
+    res.status(404).send(responseError);
   }
 });
 

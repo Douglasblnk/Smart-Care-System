@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import { createConnection, Connection } from 'mysql2/promise';
 
 export default class ConnectionFactory {
