@@ -326,7 +326,26 @@
         <save-button label="Enviar" @click.native="alterEpiCheck()" />
       </div>
     </b-modal>
+    <!-- modalConvida tecnico -->
+    <div>
+      <b-button v-b-modal.modal-lg> convida tecnico</b-button>
+
+      <b-modal id="modal-lg" size="lg" title="BootstrapVue">
+        <div>
+          <b-tabs content-class="mt-3">
+            <b-tab title="First" active>
+              <template v-slot:title>
+                <p>Cylon animation:</p>
+                <b-icon icon="list-ul" animation="cylon" font-scale="4"></b-icon>
+              </template>
+             </b-tab>
+            <b-tab title="Second"><p>I'm the second tab</p></b-tab>
+          </b-tabs>
+        </div>
+      </b-modal>
+    </div>
   </div>
+
 </template>
 
 <script>
