@@ -1,13 +1,14 @@
-import { isObject } from 'lodash';
 export const errorResponseTreatment = (err: any) => {
   const error = {
     status: '',
     msg: '',
   };
 
-  if (err.status)
-  if (err?.response) return err.response;
-  if (err?.result) return err.result;
+  if (err?.status) error.status = err.status;
+  if (err?.response) error.msg = err.response;
+  if (err?.result) error.msg = err.result;
+  if (err?.msg) error.msg = err.msg;
+  else error.msg = err;
 
   return error;
 };

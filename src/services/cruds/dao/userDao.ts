@@ -10,10 +10,10 @@ export default class UserDao extends GenericDao {
   _mysql: Connection;
   
   constructor({
-    numeroCracha,
-    senha,
+    numeroCracha = '',
+    senha = '',
     mysql,
-  }: { numeroCracha: string, senha: string, mysql: Connection }) {
+  }: { numeroCracha?: string, senha?: string, mysql: Connection }) {
     super();
 
     this._numeroCracha = numeroCracha;
@@ -29,6 +29,18 @@ export default class UserDao extends GenericDao {
       WHERE ${TABLE_USUARIO}.numeroCracha = ?
         AND ${TABLE_USUARIO}.excluded = ?
       `, [this._numeroCracha, 0],
+    );
+
+    return this.parseResponse(rows);
+  }
+
+  async getUsers() {
+    const [rows] = await this._mysql.query(/* SQL */`
+      SELECT
+        *
+      FROM ${TABLE_USUARIO}
+        WHERE ${TABLE_USUARIO}.excluded = ?
+      `, [0],
     );
 
     return this.parseResponse(rows);

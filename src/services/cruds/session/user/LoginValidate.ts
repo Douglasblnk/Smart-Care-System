@@ -1,5 +1,6 @@
 import userDao from '../../dao/userDao';
 import Criptografy from '../../../../shared/guard/cryptography';
+import JwtToken from '../../../../shared/auth/auth';
 
 // eslint-disable-next-line no-unused-vars
 import { Connection } from 'mysql2/promise';
@@ -30,10 +31,11 @@ export default class LoginValidate {
       if (Object.values(errors).length > 0) throw errors;
 
       const user = await new userDao(parameters).makeLogin();
-      console.log('user :>> ', user);
+
       await this.validateUser(parameters, user);
-      
-      return this.parseResult(user);
+      const token = await this.createToken(user);
+
+      return this.parseResult(user, token);
     } catch (err) {
       console.log('err loginValidate :>> ', err);
 
@@ -41,16 +43,21 @@ export default class LoginValidate {
     }
   }
 
+  createToken(user: any) {
+    return new JwtToken().jwtToken(user);
+  }
+
   async validateUser(parameters: { senha: string }, user: { senha: string, }) {
     await new Criptografy().compareHash(parameters.senha, user.senha);
   }
 
-  parseResult = (user: any) => ({
+  parseResult = (user: any, token: any) => ({
     idUsuario: user.idUsuario,
     numeroCracha: user.numeroCracha,
     nome: user.nome,
     email: user.email,
     funcao: user.funcao,
     nivel_acesso: user.nivel_acesso,
+    token,
   })
 }

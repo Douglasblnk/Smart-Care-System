@@ -1,9 +1,10 @@
 // eslint-disable-next-line no-unused-vars
 import { Response, Request } from 'express';
 import { errorResponseTreatment } from '../../../shared/utils/utils';
+
 import LoginValidate from '../session/user/LoginValidate';
+import GetUsers from '../session/user/GetUsers';
 // import RegisterUserValidate from '../../controller/user/registerUserValidate';
-// import GetUsersValidate from '../../controller/user/getUsersValidate';
 // import GetUserRequester from '../../controller/user/getUserRequesterValidate';
 // import GetUserReport from '../../controller/user/getUserReportValidate';
 // import DeleteUserValidate from '../../controller/user/deleteUserValidate';
@@ -44,7 +45,7 @@ router.post('/', async (req: any, res: any) => {
   } catch (err) {
     const responseError = errorResponseTreatment(err);
     
-    res.status(404).send(responseError);
+    res.status(responseError.status).send(responseError);
   }
 });
 
@@ -89,20 +90,15 @@ router.post('/', async (req: any, res: any) => {
 /**
  *  ROTA PARA PEGAR TODOS OS USUÁRIOS CADASTRADOS
  */
-router.get('/get', async (req: Request, res: Response) => {
+router.get('/', async (req: any, res: any) => {
   try {
-    // const response : any = await getUser.run(req);
-    
-    // response.result.forEach((user : any) => {
-    //   delete user.senha;
-    // });
+    const response : any = await new GetUsers().run(req);
 
-    console.log('user response');
-    res.status(200).send('poxa');
+    res.status(200).send(response);
   } catch (err) {
-    console.log('deu erro mesmo', err);
+    const responseError = errorResponseTreatment(err);
 
-    res.status(404).send(err);
+    res.status(responseError.status).send(responseError);
   }
 });
 
