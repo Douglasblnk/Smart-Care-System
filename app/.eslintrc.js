@@ -48,9 +48,9 @@ module.exports = {
     "vue/order-in-components": "warn",
     "vue/attributes-order": "warn",
     "no-else-return": "warn",
-    "indent": ["warn", 2],
     "vue/html-closing-bracket-spacing": "warn",
-    "no-unreachable": "warn"
+    "no-unreachable": "warn",
+    "indent": ["warn", 2],
   },
   parserOptions: {
     parser: 'babel-eslint'

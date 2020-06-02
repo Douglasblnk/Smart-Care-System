@@ -1,7 +1,7 @@
-const importComponent = path => () => import(/* webpackChunkName: "component_" */`@/components/${path}.vue`);
+const importComponent = path => () => import(`@/components/${path}.vue`);
 
 export default {
-  install(Vue, options) {
+  install(Vue) {
     Vue.component('save-button', importComponent('button/save-button'));
     Vue.component('simple-button', importComponent('button/simple-button'));
     Vue.component('cancel-button', importComponent('button/cancel-button'));
@@ -19,6 +19,5 @@ export default {
     Vue.component('top-bar', importComponent('top-bar/topbarDash'));
     Vue.component('mobile-topbar', importComponent('top-bar/mobile-topbar'));
     Vue.component('mobile-dashboard-items', importComponent('dashboard-items/dashboard-items'));
-
   },
 };
