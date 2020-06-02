@@ -1,15 +1,18 @@
 <template>
   <div class="content-verifications">
+    <div class="card-title d-flex justify-content-center align-items-center">
+      <span>Análise de Verificações</span>
+    </div>
     <div class="table-verifications">
       <v-client-table v-model="tableData" :columns="columns" :options="options">
-        <span slot="Solicitante" slot-scope="props">
-          <i :class="props.row.icon_requester"></i>
+        <span slot="Solicitante" slot-scope="{row}">
+          <i :class="row.icon_requester"></i>
         </span>
-        <span slot="Reporte" slot-scope="props">
-          <i :class="props.row.icon_report"></i>
+        <span slot="Reporte" slot-scope="{row}">
+          <i :class="row.icon_report"></i>
         </span>
-        <span slot="Manutentor" slot-scope="props">
-          <i :class="props.row.icon_maintainer"></i>
+        <span slot="Manutentor" slot-scope="{row}">
+          <i :class="row.icon_maintainer"></i>
         </span>
         
         <div slot="actions" slot-scope="props">
@@ -20,7 +23,7 @@
     </div>
     
     <b-modal ref="my-modal" centered
-             hide-footer hide-header title="Verificação de EPIs" @hide="resetModal()" @show="checkSelectedEpis()"
+             hide-footer hide-header title="Verificação de EPIs" @hide="resetModal()"
     >
       <div class="d-block text">
         <div class="text-center">
@@ -83,78 +86,105 @@
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-        columns: ['Ordem', 'Solicitante', 'Reporte', 'Manutentor','actions'],
-        tableData: [
-            { Ordem: 1, Solicitante: 'Pedro', Reporte: 'Fernando Marques',
-              Manutentor: 'Marcos', link: 'https://www.google.com.br/',
-              icon_requester: 'fas fa-check', icon_report: 'fas fa-check',
-              icon_maintainer: 'fas fa-times',
-            },
-            { Ordem: 2, Solicitante: 'Joana', Reporte: 'Fernando Marques',
-              Manutentor: 'Marcos', link: 'https://www.google.com.br/',
-              icon_requester: 'fas fa-times', icon_report: 'fas fa-check',
-              icon_maintainer: 'fas fa-check',
-            },
-            { Ordem: 3, Solicitante: 'Bruno', Reporte: 'Fernando Marques',
-              Manutentor: 'Marcos', link: 'https://www.google.com.br/',
-              icon_requester: 'fas fa-check', icon_report: 'fas fa-times',
-              icon_maintainer: 'fas fa-times',
-            },
-            { Ordem: 4, Solicitante: 'Joice', Reporte: 'Fernando Marques',
-              Manutentor: 'Marcos', link: 'https://www.google.com.br/',
-              icon_requester: 'fas fa-times', icon_report: 'fas fa-check',
-              icon_maintainer: 'fas fa-check',
-            },
-            { Ordem: 5, Solicitante: 'Johnatan', Reporte: 'Fernando Marques',
-              Manutentor: 'Marcos', link: 'https://www.google.com.br/',
-              icon_requester: 'fas fa-check', icon_report: 'fas fa-times',
-              icon_maintainer: 'fas fa-times',
-            },
-        ],
-        options: {
-            headings: {
-                Ordem: 'Ordem',
-                Solicitante: 'Solicitante',
-                Reporte: 'Reporte',
-                Manutentor: 'Manutentor',
-                actions: 'Ações',
-            },
-            texts: {
-                filter: '',
-                filterPlaceholder: 'Buscar',
-                count: 'Mostrando {from} até {to} de {count} registros|{count} Registros|Um Registro',
-                limit: 'Registros:',
-                page: 'Páginas:',
-                noResults: 'Nenhum registro encontrado',
-                loading: 'Carregando...',
-            },            
-        },
-        modalHasError: false,
-    };
-  },
+  import { getErrors, getLocalStorageToken } from '../utils/utils';
 
-  methods: {
-    openModalDetailVerifications(props) {
-        console.log('Props: ', props);
-        this.showVerificationModal();
+  export default {
+    data() {
+      return {
+          columns: ['Ordem', 'Solicitante', 'Reporte', 'Manutentor','actions'],
+          tableData: [
+              { Ordem: 1, Solicitante: 'Pedro', Reporte: 'Fernando Marques',
+                Manutentor: 'Marcos', link: 'https://www.google.com.br/',
+                icon_requester: 'fas fa-check', icon_report: 'fas fa-check',
+                icon_maintainer: 'fas fa-times',
+              },
+              { Ordem: 2, Solicitante: 'Joana', Reporte: 'Fernando Marques',
+                Manutentor: 'Marcos', link: 'https://www.google.com.br/',
+                icon_requester: 'fas fa-times', icon_report: 'fas fa-check',
+                icon_maintainer: 'fas fa-check',
+              },
+              { Ordem: 3, Solicitante: 'Bruno', Reporte: 'Fernando Marques',
+                Manutentor: 'Marcos', link: 'https://www.google.com.br/',
+                icon_requester: 'fas fa-check', icon_report: 'fas fa-times',
+                icon_maintainer: 'fas fa-times',
+              },
+              { Ordem: 4, Solicitante: 'Joice', Reporte: 'Fernando Marques',
+                Manutentor: 'Marcos', link: 'https://www.google.com.br/',
+                icon_requester: 'fas fa-times', icon_report: 'fas fa-check',
+                icon_maintainer: 'fas fa-check',
+              },
+              { Ordem: 5, Solicitante: 'Johnatan', Reporte: 'Fernando Marques',
+                Manutentor: 'Marcos', link: 'https://www.google.com.br/',
+                icon_requester: 'fas fa-check', icon_report: 'fas fa-times',
+                icon_maintainer: 'fas fa-times',
+              },
+          ],
+          verifications_list: [],
+          options: {
+              headings: {
+                  Ordem: create => create('span', {
+                    domProps: { innerHTML: 'Ordem <i class="fas fa-sort"></i>' },
+                  }),
+                  Solicitante: 'Solicitante',
+                  Reporte: 'Reporte',
+                  Manutentor: 'Manutentor',
+                  actions: 'Ações',
+              },
+              texts: {
+                  filter: '',
+                  filterPlaceholder: 'Buscar',
+                  count: 'Mostrando {from} até {to} de {count} registros|{count} Registros|Um Registro',
+                  limit: 'Registros:',
+                  page: 'Páginas:',
+                  noResults: 'Nenhum registro encontrado',
+                  loading: 'Carregando...',
+              },
+              sortable: ['Ordem'],
+          },
+          modalHasError: false,
+      };
     },
-    getVerificationOption() {
-      return [
-            { text: 'Pedro', value: 1 },
-            { text: 'Joana', value: 2 },
-        ];
+
+    mounted() {
+      this.listVerifications();
     },
-    async showVerificationModal() {
-      this.$refs['my-modal'].show();
+
+    methods: {
+      async listVerifications() {
+        try {
+          const result = await this.$http.get('verificacao/list-verification', getLocalStorageToken());
+          console.log('RESULT', result);
+          if (result.length !== undefined)
+            this.verifications_list = [...result];
+          else this.verifications_list = [result];
+        } catch (err) {
+          console.log('err :>> ', err.response || err);
+
+          return this.$swal({
+            type: 'warning',
+            title: getErrors(err),
+            confirmButtonColor: '#F34336',
+          });
+        }
+      },
+      openModalDetailVerifications(props) {
+          console.log('Props: ', props);
+          this.showVerificationModal();
+      },
+      getVerificationOption() {
+        return [
+              { text: 'Pedro', value: 1 },
+              { text: 'Joana', value: 2 },
+          ];
+      },
+      async showVerificationModal() {
+        this.$refs['my-modal'].show();
+      },
+      resetModal() {
+        this.modalHasError = false;
+      },
     },
-    resetModal() {
-      this.modalHasError = false;
-    },
-  },
-};
+  };
 </script>
 
 <style lang="scss">
@@ -162,6 +192,13 @@ export default {
         font-family: "Avenir", Helvetica, Arial, sans-serif;
         text-align: center;
         color: #2c3e50;
+        .card-title{
+          span {
+            font-family: 'roboto';
+            font-size: 23px;
+            color: #E66E6D;
+          }
+        }
         .eye{
             padding-left: 20px;
             padding-right: 20px;
