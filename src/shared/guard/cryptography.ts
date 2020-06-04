@@ -12,9 +12,9 @@ export default class Cryptography {
     });
   }
 
-  generateHash(password: any) {
+  generateHash(password: any): Promise<string> {
     return new Promise((resolve, reject) => {
-      bcrypt.hash(password, process.env.SALT, (err: any, hash: any) => {
+      bcrypt.hash(password, Number(process.env.SALT), (err: any, hash: any) => {
         if (err || hash === undefined) {
           return reject({
             status: 401,

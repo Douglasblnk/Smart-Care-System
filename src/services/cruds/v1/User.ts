@@ -4,6 +4,7 @@ import { errorResponseTreatment } from '../../../shared/utils/utils';
 
 import LoginValidate from '../session/user/LoginValidate';
 import GetUsers from '../session/user/GetUsers';
+import RegisterUser from '../session/user/RegisterUser';
 // import RegisterUserValidate from '../../controller/user/registerUserValidate';
 // import GetUserRequester from '../../controller/user/getUserRequesterValidate';
 // import GetUserReport from '../../controller/user/getUserReportValidate';
@@ -52,21 +53,17 @@ router.post('/', async (req: any, res: any) => {
 /**
  *  ROTA DE REGISTRO DE USUÁRIO
  */
-// router.post('/register', async (req: any, res: any) => {
-//   try {
-//     await jwt.jwtVerify(req);
-//     console.log('DEU CERTO');
-//     const response = await register.run(req);
-
-//     // console.log('user response', response);
+router.post('/register', async (req: any, res: any) => {
+  try {
+    const response = await new RegisterUser().run(req);
     
-//     res.status(200).send(response);
-//   } catch (err) {
-//     console.log('deu erro mesmo', err);
-
-//     res.status(404).send(err);
-//   }
-// });
+    res.status(200).send(response);
+  } catch (err) {
+    const responseError = errorResponseTreatment(err);
+    
+    res.status(responseError.status).send(responseError);
+  }
+});
 
 /**
  *  ROTA PARA DELETAR USUÁRIO
