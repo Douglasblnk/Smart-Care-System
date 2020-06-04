@@ -5,13 +5,13 @@ import { Connection } from 'mysql2/promise';
 import { get } from 'lodash';
 
 export default class GetUsers {
-  getParameters = (req: { body: any, mysql: Connection }): {
+  private getParameters = (req: { body: any, mysql: Connection }): {
     mysql: Connection,
   } => ({
     mysql: get(req, 'mysql'),
   })
 
-  checkParameters = ({ mysql }: { mysql?: Connection }) => ({
+  private checkParameters = ({ mysql }: { mysql?: Connection }) => ({
     ...(!mysql ? { mysql: 'Conexão não estabelecida' } : ''),
   })
 
@@ -26,13 +26,13 @@ export default class GetUsers {
 
       return this.parseResult(user);
     } catch (err) {
-      console.log('err loginValidate :>> ', err);
+      console.log('err getUsers :>> ', err);
 
       throw err;
     }
   }
 
-  parseResult = (user: any) => {
+  private parseResult = (user: any) => {
     return user.map((i: any) => ({
       idUsuario: i.idUsuario,
       numeroCracha: i.numeroCracha,

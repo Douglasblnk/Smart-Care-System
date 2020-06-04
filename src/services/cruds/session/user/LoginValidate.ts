@@ -7,7 +7,7 @@ import { Connection } from 'mysql2/promise';
 import { get } from 'lodash';
 
 export default class LoginValidate {
-  getParameters = (req: { body: any, mysql: Connection }): {
+  private getParameters = (req: { body: any, mysql: Connection }): {
     numeroCracha: string,
     senha: string,
     mysql: Connection,
@@ -17,7 +17,11 @@ export default class LoginValidate {
     mysql: get(req, 'mysql'),
   })
 
-  checkParameters = ({ numeroCracha, senha, mysql }: { numeroCracha: string, senha: string, mysql?: Connection }) => ({
+  private checkParameters = ({ numeroCracha, senha, mysql }: {
+    numeroCracha: string,
+    senha: string,
+    mysql?: Connection
+  }) => ({
     ...(!numeroCracha ? { numeroCracha: 'Crachá não informado' } : ''),
     ...(!senha ? { senha: 'Senha não informada' } : ''),
     ...(!mysql ? { mysql: 'Conexão não estabelecida' } : ''),
@@ -34,7 +38,7 @@ export default class LoginValidate {
 
       await this.validateUser(parameters, user);
       const token = await this.createToken(user);
-
+      console.log('validated :>> ', user);
       return this.parseResult(user, token);
     } catch (err) {
       console.log('err loginValidate :>> ', err);
@@ -43,15 +47,15 @@ export default class LoginValidate {
     }
   }
 
-  createToken(user: any) {
+  private createToken(user: any) {
     return new JwtToken().jwtToken(user);
   }
 
-  async validateUser(parameters: { senha: string }, user: { senha: string, }) {
+  private async validateUser(parameters: { senha: string }, user: { senha: string, }) {
     await new Criptografy().compareHash(parameters.senha, user.senha);
   }
 
-  parseResult = (user: any, token: any) => ({
+  private parseResult = (user: any, token: any) => ({
     idUsuario: user.idUsuario,
     numeroCracha: user.numeroCracha,
     nome: user.nome,

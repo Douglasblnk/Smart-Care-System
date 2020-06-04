@@ -12,4 +12,8 @@ export default class GenericDao {
 
     return resultMapped;
   }
+
+  parseInsertResponse(resultSet: any) {
+    return Object.assign({}, resultSet);
+  }
 }

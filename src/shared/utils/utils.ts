@@ -1,6 +1,6 @@
 export const errorResponseTreatment = (err: any) => {
   const error = {
-    status: '',
+    status: 404,
     msg: '',
   };
 
