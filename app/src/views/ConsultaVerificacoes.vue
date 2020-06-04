@@ -4,7 +4,7 @@
       <span>Análise de Verificações</span>
     </div>
     <div class="table-verifications">
-      <v-client-table v-model="tableData" :columns="columns" :options="options">
+      <v-client-table v-model="listVerificationsStatus" :columns="columns" :options="options">
         <span slot="Solicitante" slot-scope="{row}">
           <i :class="row.icon_requester"></i>
         </span>
@@ -86,105 +86,102 @@
 </template>
 
 <script>
-  import { getErrors, getLocalStorageToken } from '../utils/utils';
+import { getErrors, getLocalStorageToken } from '../utils/utils';
 
-  export default {
-    data() {
-      return {
-          columns: ['Ordem', 'Solicitante', 'Reporte', 'Manutentor','actions'],
-          tableData: [
-              { Ordem: 1, Solicitante: 'Pedro', Reporte: 'Fernando Marques',
-                Manutentor: 'Marcos', link: 'https://www.google.com.br/',
-                icon_requester: 'fas fa-check', icon_report: 'fas fa-check',
-                icon_maintainer: 'fas fa-times',
-              },
-              { Ordem: 2, Solicitante: 'Joana', Reporte: 'Fernando Marques',
-                Manutentor: 'Marcos', link: 'https://www.google.com.br/',
-                icon_requester: 'fas fa-times', icon_report: 'fas fa-check',
-                icon_maintainer: 'fas fa-check',
-              },
-              { Ordem: 3, Solicitante: 'Bruno', Reporte: 'Fernando Marques',
-                Manutentor: 'Marcos', link: 'https://www.google.com.br/',
-                icon_requester: 'fas fa-check', icon_report: 'fas fa-times',
-                icon_maintainer: 'fas fa-times',
-              },
-              { Ordem: 4, Solicitante: 'Joice', Reporte: 'Fernando Marques',
-                Manutentor: 'Marcos', link: 'https://www.google.com.br/',
-                icon_requester: 'fas fa-times', icon_report: 'fas fa-check',
-                icon_maintainer: 'fas fa-check',
-              },
-              { Ordem: 5, Solicitante: 'Johnatan', Reporte: 'Fernando Marques',
-                Manutentor: 'Marcos', link: 'https://www.google.com.br/',
-                icon_requester: 'fas fa-check', icon_report: 'fas fa-times',
-                icon_maintainer: 'fas fa-times',
-              },
-          ],
-          verifications_list: [],
-          options: {
-              headings: {
-                  Ordem: create => create('span', {
-                    domProps: { innerHTML: 'Ordem <i class="fas fa-sort"></i>' },
-                  }),
-                  Solicitante: 'Solicitante',
-                  Reporte: 'Reporte',
-                  Manutentor: 'Manutentor',
-                  actions: 'Ações',
-              },
-              texts: {
-                  filter: '',
-                  filterPlaceholder: 'Buscar',
-                  count: 'Mostrando {from} até {to} de {count} registros|{count} Registros|Um Registro',
-                  limit: 'Registros:',
-                  page: 'Páginas:',
-                  noResults: 'Nenhum registro encontrado',
-                  loading: 'Carregando...',
-              },
-              sortable: ['Ordem'],
-          },
-          modalHasError: false,
-      };
-    },
+export default {
+  data() {
+    return {
+      columns: ['ordemServico_idOrdemServico', 'Solicitante', 'Reporte', 'Manutentor','actions'],
+      verifications_list: [],
+      options: {
+        headings: {
+          ordemServico_idOrdemServico: create => create('span', {
+            domProps: { innerHTML: 'Ordem <i class="fas fa-sort"></i>' },
+          }),
+          Solicitante: 'Solicitante',
+          Reporte: 'Reporte',
+          Manutentor: 'Manutentor',
+          actions: 'Ações',
+        },
+        texts: {
+          filter: '',
+          filterPlaceholder: 'Buscar',
+          count: 'Mostrando {from} até {to} de {count} registros|{count} Registros|Um Registro',
+          limit: 'Registros:',
+          page: 'Páginas:',
+          noResults: 'Nenhum registro encontrado',
+          loading: 'Carregando...',
+        },
+        sortable: ['ordemServico_idOrdemServico'],
+      },
+      typeVerifications: [1,2,3],
+      modalHasError: false,
+    };
+  },
+  computed: {
+    listVerificationsStatus() {
+      const orders = this.verifications_list.map(i => ( i.ordemServico_idOrdemServico));
 
-    mounted() {
-      this.listVerifications();
-    },
+      const orders_exist = [...new Set(orders)];
 
-    methods: {
-      async listVerifications() {
-        try {
-          const result = await this.$http.get('verificacao/list-verification', getLocalStorageToken());
-          console.log('RESULT', result);
-          if (result.length !== undefined)
-            this.verifications_list = [...result];
-          else this.verifications_list = [result];
-        } catch (err) {
-          console.log('err :>> ', err.response || err);
+      const data_table = orders_exist.map(i => ({ ordemServico_idOrdemServico: i }));
 
-          return this.$swal({
-            type: 'warning',
-            title: getErrors(err),
-            confirmButtonColor: '#F34336',
-          });
+      for (const order of orders_exist) {
+        for (const round_order of this.typeVerifications) {
+          const exist = this.verifications_list.find(i => i.ordemServico_idOrdemServico === order &&
+                                                        i.tipoVerificacao === round_order);
+          const order_id = data_table.findIndex(i => i.ordemServico_idOrdemServico === order);
+          if (exist !== undefined && round_order === 1)
+            data_table[order_id].icon_report = 'fas fa-check';
+          else if (exist === undefined && round_order === 1)
+            data_table[order_id].icon_report = 'fas fa-times';
+          else if (exist !== undefined && round_order === 2)
+            data_table[order_id].icon_maintainer = 'fas fa-check';
+          else if (exist === undefined && round_order === 2)
+            data_table[order_id].icon_maintainer = 'fas fa-times';
+          else if (exist !== undefined && round_order === 3)
+            data_table[order_id].icon_requester = 'fas fa-check';
+          else if (exist === undefined && round_order === 3)
+            data_table[order_id].icon_requester = 'fas fa-times';
+          data_table[order_id].link = 'https://www.google.com.br/';
         }
-      },
-      openModalDetailVerifications(props) {
-          console.log('Props: ', props);
-          this.showVerificationModal();
-      },
-      getVerificationOption() {
-        return [
-              { text: 'Pedro', value: 1 },
-              { text: 'Joana', value: 2 },
-          ];
-      },
-      async showVerificationModal() {
-        this.$refs['my-modal'].show();
-      },
-      resetModal() {
-        this.modalHasError = false;
-      },
+      }
+
+      return data_table;
     },
-  };
+  },
+  mounted() {
+    this.listVerifications();
+  },
+
+  methods: {
+    async listVerifications() {
+      try {
+        const { result } = await this.$http.get('verificacao/list-verification', getLocalStorageToken());
+        if (result.length !== undefined)
+          this.verifications_list = [...result];
+        else this.verifications_list = [result];
+        console.log('RESULT2', this.verifications_list);
+      } catch (err) {
+        console.log('err :>> ', err.response || err);
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
+    openModalDetailVerifications(props) {
+      this.showVerificationModal();
+    },
+    async showVerificationModal() {
+      this.$refs['my-modal'].show();
+    },
+    resetModal() {
+      this.modalHasError = false;
+    },
+  },
+};
 </script>
 
 <style lang="scss">
