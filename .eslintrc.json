@@ -54,6 +54,7 @@
         "no-unreachable": "warn",
         "indent": ["warn", 2],
         "comma-spacing": "warn",
-        "no-useless-catch": "off"
+        "no-useless-catch": "off",
+        "no-useless-escape": "off"
     }
 }
