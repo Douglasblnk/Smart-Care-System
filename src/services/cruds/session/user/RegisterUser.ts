@@ -1,12 +1,14 @@
 import userDao from '../../dao/userDao';
-
-// eslint-disable-next-line no-unused-vars
-import { Connection } from 'mysql2/promise';
-import { get } from 'lodash';
 import Cryptography from '../../../../shared/guard/cryptography';
 
-export default class LoginValidate {  
-  private validateEmail = (email: string) => {
+import { ADMINISTRADOR_ID } from '../../../../shared/constants/accessLevel';
+import { authData } from '../../../../shared/types';
+import { Connection } from 'mysql2/promise';
+import { get } from 'lodash';
+import { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } from '../../../../shared/constants/HTTPResponse';
+
+export default class LoginValidate {
+  private validateEmail = (email: string): boolean => {
     if (!email) return false;
     
     const regExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -21,6 +23,7 @@ export default class LoginValidate {
     email: string,
     nivelAcesso: string,
     mysql: Connection,
+    authData: authData,
   } => ({
     numeroCracha: get(req.body, 'numeroCracha', ''),
     senha: get(req.body, 'senha', ''),
@@ -29,17 +32,19 @@ export default class LoginValidate {
     email: get(req.body, 'email', ''),
     nivelAcesso: get(req.body, 'nivelAcesso', ''),
     mysql: get(req, 'mysql'),
+    authData: get(req, 'authData', ''),
   })
 
-  private checkParameters = ({ numeroCracha, senha, nome, funcao, email, nivelAcesso, mysql }: {
+  private checkParameters = ({ numeroCracha, senha, nome, funcao, email, nivelAcesso, mysql, authData }: {
     numeroCracha: string,
     senha: string,
     nome: string,
     funcao: string,
     email: string,
     nivelAcesso: string,
-    mysql?: Connection
-  }) => ({
+    mysql?: Connection,
+    authData: authData,
+  }): Record<string, unknown> => ({
     ...(!numeroCracha ? { numeroCracha: 'Crachá não informado' } : ''),
     ...(!senha ? { senha: 'Senha não informada' } : ''),
     ...(!nome ? { nome: 'Nome não informado' } : ''),
@@ -47,21 +52,24 @@ export default class LoginValidate {
     ...(!this.validateEmail(email) ? { email: 'E-mail não informado ou inválido' } : ''),
     ...(!nivelAcesso ? { nivelAcesso: 'Nivel de acesso não informado' } : ''),
     ...(!mysql ? { mysql: 'Conexão não estabelecida' } : ''),
+    ...(!authData ? { authData: 'Dados de autenticação não encontrados' } : ''),
   })
 
-  async run(req: { body: any, mysql: Connection }) {
+  async run(req: { body: any, mysql: Connection }): Promise<any> {
     try {
       const parameters = this.getParameters(req);
-  
+
       const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
+      
+      await this.validateGroups(parameters);
 
       const user = await this.getPasswordHash(parameters);
 
       const response = await new userDao(user).registerUser();
 
       console.log('user registered :>> ', response);
-      return this.parseResult(response);
+      return response;
     } catch (err) {
       console.log('err registerUser :>> ', err);
 
@@ -91,12 +99,8 @@ export default class LoginValidate {
     };
   }
 
-  private parseResult = (user: any) => ({
-    idUsuario: user.idUsuario,
-    numeroCracha: user.numeroCracha,
-    nome: user.nome,
-    email: user.email,
-    funcao: user.funcao,
-    nivel_acesso: user.nivel_acesso,
-  })
+  private async validateGroups({ authData }: { authData: authData}) {
+    if (authData.nivel_acesso !== ADMINISTRADOR_ID)
+      throw { status: STATUS_UNAUTHORIZED, message: MESSAGE_UNAUTHORIZED };
+  }
 }

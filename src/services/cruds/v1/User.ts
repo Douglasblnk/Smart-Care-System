@@ -13,7 +13,7 @@ import RegisterUser from '../session/user/RegisterUser';
 // import Auth from '../../../../shared/auth/auth';
 // import TokenValidate from '../../controller/user/tokenValidate';
 
-const { Router } = require('express');
+import Router = require('express');
 // const RateLimit = require('express-rate-limit');
 
 const router = Router();
@@ -38,7 +38,7 @@ const router = Router();
 /**
  *  ROTA DE VALIDAÇÃO DE LOGIN
  */
-router.post('/', async (req: any, res: any) => {
+router.post('/', async (req: Request, res: Response) => {
   try {
     const response : any = await new LoginValidate().run(req);
 
@@ -87,7 +87,7 @@ router.post('/register', async (req: any, res: any) => {
 /**
  *  ROTA PARA PEGAR TODOS OS USUÁRIOS CADASTRADOS
  */
-router.get('/', async (req: any, res: any) => {
+router.get('/', async (req: Request, res: Response) => {
   try {
     const response : any = await new GetUsers().run(req);
 

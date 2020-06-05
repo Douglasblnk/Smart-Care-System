@@ -5,7 +5,9 @@
     },
     "extends": [
         "eslint:recommended",
-        "plugin:@typescript-eslint/eslint-recommended"
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended"
+
     ],
     "globals": {
         "Atomics": "readonly",
@@ -55,6 +57,7 @@
         "indent": ["warn", 2],
         "comma-spacing": "warn",
         "no-useless-catch": "off",
-        "no-useless-escape": "off"
+        "no-useless-escape": "off",
+        "@typescript-eslint/no-explicit-any": "off"
     }
 }

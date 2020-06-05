@@ -1,21 +1,22 @@
 import userDao from '../../dao/userDao';
 
 // eslint-disable-next-line no-unused-vars
-import { Connection } from 'mysql2/promise';
+import { Connection, QueryError } from 'mysql2/promise';
 import { get } from 'lodash';
+import { Request } from 'express';
 
 export default class GetUsers {
-  private getParameters = (req: { body: any, mysql: Connection }): {
+  private getParameters = (req: Request | { body: any, mysql: Connection }): {
     mysql: Connection,
   } => ({
     mysql: get(req, 'mysql'),
   })
 
-  private checkParameters = ({ mysql }: { mysql?: Connection }) => ({
+  private checkParameters = ({ mysql }: { mysql?: Connection }): Record<string, any> => ({
     ...(!mysql ? { mysql: 'Conexão não estabelecida' } : ''),
   })
 
-  async run(req: { body: any, mysql: Connection }) {
+  async run(req: Request | { body: any, mysql: Connection }): Promise<any | QueryError> {
     try {
       const parameters = this.getParameters(req);
   
@@ -32,7 +33,14 @@ export default class GetUsers {
     }
   }
 
-  private parseResult = (user: any) => {
+  private parseResult = (user: Record<string, any>): {
+    idUsuario: number
+    numeroCracha: string
+    nome: string
+    email: string
+    funcao: string
+    nivel_acesso: number
+  } => {
     return user.map((i: any) => ({
       idUsuario: i.idUsuario,
       numeroCracha: i.numeroCracha,
