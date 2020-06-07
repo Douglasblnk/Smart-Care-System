@@ -3,9 +3,9 @@ import Auth from './shared/auth/auth';
 
 require('dotenv').config({ path: '.env' });
 
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
+import express = require('express');
+import cors = require('cors');
+import bodyParser = require('body-parser');
 
 const app = express();
 const connectionFactory = new ConnectionFactory();
@@ -15,11 +15,12 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use(auth.run.bind(auth));
 app.use(connectionFactory.createConnection.bind(connectionFactory));
+app.use(auth.run.bind(auth));
 
 // CRUDS
-const user = require('./services/cruds/v1/User');
+import user from './services/cruds/v1/User';
+
 // const equipamento = require('./services/cruds/routes/Equipamento/Equipamento');
 // const localInstalacao = require('./services/cruds/routes/LocalInstalacao/LocalInstalacao');
 // const centroTrabalho = require('./services/cruds/routes/CentroTrabalho/CentroTrabalho');

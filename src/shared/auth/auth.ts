@@ -1,7 +1,7 @@
-// eslint-disable-next-line no-unused-vars
-import { Response, NextFunction, Request } from 'express';
+import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-// eslint-disable-next-line no-unused-vars
+
+import TokenValidate from './TokenValidate';
 
 export default class Auth {
   private _key: any;
@@ -14,12 +14,13 @@ export default class Auth {
     this._urlMethod = process.env.URL_METHOD;
   }
 
-  async run(req: Request, res: Response, next: NextFunction): Promise<any> {
+  async run(req: any, res: Response, next: NextFunction) {
     try {
       if (req.url === this._noAuthUrl && req.method === this._urlMethod)
         return next();
 
       await this.jwtVerify(req);
+      await new TokenValidate(req.authData, req.mysql).run();
       next();
     } catch (err) {
       console.log('err Auth :>> ', err);
@@ -27,7 +28,7 @@ export default class Auth {
     }
   }
 
-  jwtToken(user: Record<string, unknown>): Promise<string> {
+  jwtToken(user: any): Promise<string> {
     return new Promise((resolve, reject) => {
       jwt.sign(user, this._key, { expiresIn: '10h' }, (err: any, token: any) => {
         if (err) return reject(err);
@@ -45,7 +46,7 @@ export default class Auth {
         if (err)
           throw { status: 401, msg: 'Erro ao autenticar!', ...err };
         
-        req.authData = { ...authData };
+        req.authData = this.parseAuthData(authData);
         return;
       });
     } catch (err) {
@@ -67,4 +68,14 @@ export default class Auth {
       throw err;
     }
   }
+
+  private parseAuthData = (authData: any) => ({
+    idUsuario: authData.idUsuario,
+    numeroCracha: authData.numeroCracha,
+    nome: authData.nome,
+    email: authData.email,
+    funcao: authData.funcao,
+    nivel_acesso: authData.nivel_acesso,
+    excluded: authData.excluded,
+  })
 }

@@ -1,31 +1,37 @@
 import userDao from '../../dao/userDao';
 
-// eslint-disable-next-line no-unused-vars
-import { Connection, QueryError } from 'mysql2/promise';
+import { Connection } from 'mysql2/promise';
 import { get } from 'lodash';
-import { Request } from 'express';
 
 export default class GetUsers {
-  private getParameters = (req: Request | { body: any, mysql: Connection }): {
+  _queryResult: any
+
+  constructor() {
+    this._queryResult;
+  }
+  
+  private getParameters = (req: { headers: any, mysql: Connection }): {
+    type?: string,
     mysql: Connection,
   } => ({
+    type: get(req.headers, 'type', ''),
     mysql: get(req, 'mysql'),
   })
 
-  private checkParameters = ({ mysql }: { mysql?: Connection }): Record<string, any> => ({
+  private checkParameters = ({ mysql }: { mysql?: Connection }) => ({
     ...(!mysql ? { mysql: 'Conexão não estabelecida' } : ''),
   })
 
-  async run(req: Request | { body: any, mysql: Connection }): Promise<any | QueryError> {
+  async run(req: { headers: any, mysql: Connection }) {
     try {
       const parameters = this.getParameters(req);
   
       const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
 
-      const user = await new userDao(parameters).getUsers();
+      await this.getUsers(parameters);
 
-      return this.parseResult(user);
+      return this.parseResult(this._queryResult);
     } catch (err) {
       console.log('err getUsers :>> ', err);
 
@@ -33,14 +39,28 @@ export default class GetUsers {
     }
   }
 
-  private parseResult = (user: Record<string, any>): {
-    idUsuario: number
-    numeroCracha: string
-    nome: string
-    email: string
-    funcao: string
-    nivel_acesso: number
-  } => {
+  private async getUsers(parameters: { type?: string, mysql: Connection; }) {
+    if (parameters.type === 'reporter')
+      this._queryResult = await new userDao(parameters).getReporterUser();
+
+    else if (parameters.type === 'requester')
+      this._queryResult = await new userDao(parameters).getRequesterUser();
+    
+    else this._queryResult = await new userDao(parameters).getUsers();
+  }
+
+  private parseResult = (user: any) => {
+    if (!Array.isArray(user) && user.length === undefined) {
+      return {
+        idUsuario: user.idUsuario,
+        numeroCracha: user.numeroCracha,
+        nome: user.nome,
+        email: user.email,
+        funcao: user.funcao,
+        nivel_acesso: user.nivel_acesso,
+      };
+    }
+    
     return user.map((i: any) => ({
       idUsuario: i.idUsuario,
       numeroCracha: i.numeroCracha,

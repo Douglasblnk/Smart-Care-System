@@ -1,5 +1,5 @@
 export default class GenericDao {
-  parseResponse(resultSet: any = []) {
+  parseSelectResponse(resultSet: any = []) {
     const resultMapped: any = resultSet.reduce((acc: any, i: any) => {
       const newItem = { ...i };
 

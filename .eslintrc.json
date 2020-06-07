@@ -45,6 +45,7 @@
         "prefer-const": "warn",
         "prefer-arrow-callback": "warn",
         "no-param-reassign": "warn",
+        "no-return-assign": "warn",
         "curly": ["warn", "multi-or-nest", "consistent"],
         "space-before-function-paren": ["warn", {
         "anonymous": "never",
@@ -58,6 +59,7 @@
         "comma-spacing": "warn",
         "no-useless-catch": "off",
         "no-useless-escape": "off",
-        "@typescript-eslint/no-explicit-any": "off"
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/explicit-module-boundary-types": "off"
     }
 }
