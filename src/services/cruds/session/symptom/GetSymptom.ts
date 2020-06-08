@@ -1,9 +1,9 @@
-import statusDao from '../../dao/StatusDao';
+import SymptomDao from '../../dao/SymptomDao';
 
 import { Connection } from 'mysql2/promise';
 import { get } from 'lodash';
 
-export default class GetStatus {
+export default class GetSymptom {
   _queryResult: any
 
   constructor() {
@@ -27,17 +27,17 @@ export default class GetStatus {
       const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
 
-      await this.getStatus(parameters);
+      await this.getSymptom(parameters);
 
       return this._queryResult;
     } catch (err) {
-      console.log('err getStatus :>> ', err);
+      console.log('err GetSymptom :>> ', err);
 
       throw err;
     }
   }
 
-  private async getStatus(parameters: { mysql: Connection; }) {
-    this._queryResult = await new statusDao(parameters).getStatus();
+  private async getSymptom(parameters: { mysql: Connection; }) {
+    this._queryResult = await new SymptomDao(parameters).getSymptom();
   }
 }

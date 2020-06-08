@@ -51,7 +51,7 @@ export default class RegisterUpdateUser {
     email: string,
     nivelAcesso: string,
     updateId: string,
-    mysql?: Connection,
+    mysql: Connection,
     authData: authData,
   }, type?: string) => ({
     ...(!numeroCracha ? { numeroCracha: 'Crachá não informado' } : ''),
@@ -120,7 +120,6 @@ export default class RegisterUpdateUser {
   }
 
   private async validateGroups({ authData }: { authData: authData}) {
-    console.log('authData :>> ', authData);
     if (authData.nivel_acesso !== ADMINISTRADOR_ID)
       throw { status: STATUS_UNAUTHORIZED, message: MESSAGE_UNAUTHORIZED };
   }

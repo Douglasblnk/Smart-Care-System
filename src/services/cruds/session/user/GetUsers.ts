@@ -18,7 +18,7 @@ export default class GetUsers {
     mysql: get(req, 'mysql'),
   })
 
-  private checkParameters = ({ mysql }: { mysql?: Connection }) => ({
+  private checkParameters = ({ mysql }: { mysql: Connection }) => ({
     ...(!mysql ? { mysql: 'Conexão não estabelecida' } : ''),
   })
 

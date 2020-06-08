@@ -13,6 +13,7 @@ export const TABLE_NIVEL_ACESSO = 'NivelAcesso';
 export const TABLE_OPERACOES = 'Operacoes';
 export const TABLE_PRIORIDADE = 'Prioridade';
 export const TABLE_SETOR = 'Setor';
+export const TABLE_SINTOMAS = 'Sintomas';
 export const TABLE_STATUS = 'Status';
 export const TABLE_TOKEN = 'Token';
 export const TABLE_USUARIO = 'Usuario';

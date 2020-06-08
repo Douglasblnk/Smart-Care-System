@@ -26,7 +26,7 @@ export default class LoginValidate {
   private checkParameters = ({ numeroCracha, senha, mysql }: {
     numeroCracha: string,
     senha: string,
-    mysql?: Connection
+    mysql: Connection
   }) => ({
     ...(!numeroCracha ? { numeroCracha: 'Crachá não informado' } : ''),
     ...(!senha ? { senha: 'Senha não informada' } : ''),

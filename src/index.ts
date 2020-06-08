@@ -21,13 +21,13 @@ app.use(auth.run.bind(auth));
 // CRUDS
 import user from './services/cruds/v1/User';
 import status from './services/cruds/v1/Status';
+import sintoma from './services/cruds/v1/Symptom';
 
 // const equipamento = require('./services/cruds/routes/Equipamento/Equipamento');
 // const localInstalacao = require('./services/cruds/routes/LocalInstalacao/LocalInstalacao');
 // const centroTrabalho = require('./services/cruds/routes/CentroTrabalho/CentroTrabalho');
 // const tipoOrdem = require('./services/cruds/routes/TipoOrdem/TipoOrdem');
 // const causa = require('./services/cruds/routes/Causa/Causa');
-// const sintoma = require('./services/cruds/routes/Sintoma/Sintoma');
 // const componente = require('./services/cruds/routes/Componente/Componente');
 // const ordemManutencao = require('./services/cruds/routes/OrdemManutencao/OrdemManutencao');
 // const tipoManutencao = require('./services/cruds/routes/TipoOrdem/TipoOrdem');
@@ -44,12 +44,12 @@ import status from './services/cruds/v1/Status';
 
 app.use('/users', user);
 app.use('/status', status);
+app.use('/sintoma', sintoma);
 // app.use('/equipamento', equipamento);
 // app.use('/local-instalacao', localInstalacao);
 // app.use('/centro-trabalho', centroTrabalho);
 // app.use('/tipo-ordem', tipoOrdem);
 // app.use('/causa', causa);
-// app.use('/sintoma', sintoma);
 // app.use('/componente', componente);
 // app.use('/ordem-manutencao', ordemManutencao);
 // app.use('/tipo-manutencao', tipoManutencao);
