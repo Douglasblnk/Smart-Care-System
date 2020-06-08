@@ -1,4 +1,4 @@
-import userDao from '../../dao/userDao';
+import userDao from '../../dao/UserDao';
 
 import { ADMINISTRADOR_ID } from '../../../../shared/constants/accessLevel';
 import { authData } from '../../../../shared/types';

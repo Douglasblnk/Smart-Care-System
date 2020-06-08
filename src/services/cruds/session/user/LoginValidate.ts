@@ -1,4 +1,4 @@
-import userDao from '../../dao/userDao';
+import userDao from '../../dao/UserDao';
 import Criptografy from '../../../../shared/guard/cryptography';
 import JwtToken from '../../../../shared/auth/auth';
 

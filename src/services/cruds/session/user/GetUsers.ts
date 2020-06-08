@@ -1,4 +1,4 @@
-import userDao from '../../dao/userDao';
+import userDao from '../../dao/UserDao';
 
 import { Connection } from 'mysql2/promise';
 import { get } from 'lodash';

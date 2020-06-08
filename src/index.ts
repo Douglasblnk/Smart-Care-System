@@ -1,4 +1,4 @@
-import ConnectionFactory from './shared/connectionFactory/ConnectionFactory';
+import ConnectionFactory from './shared/database/ConnectionFactory';
 import Auth from './shared/auth/auth';
 
 require('dotenv').config({ path: '.env' });
@@ -20,6 +20,7 @@ app.use(auth.run.bind(auth));
 
 // CRUDS
 import user from './services/cruds/v1/User';
+import status from './services/cruds/v1/Status';
 
 // const equipamento = require('./services/cruds/routes/Equipamento/Equipamento');
 // const localInstalacao = require('./services/cruds/routes/LocalInstalacao/LocalInstalacao');
@@ -31,7 +32,6 @@ import user from './services/cruds/v1/User';
 // const ordemManutencao = require('./services/cruds/routes/OrdemManutencao/OrdemManutencao');
 // const tipoManutencao = require('./services/cruds/routes/TipoOrdem/TipoOrdem');
 // const prioridade = require('./services/cruds/routes/Prioridade/Prioridade');
-// const status = require('./services/cruds/routes/Status/Status');
 // const epi = require('./services/cruds/routes/Epi/Epi');
 // const nivelAcesso = require('./services/cruds/routes/NivelAcesso/nivelAcesso');
 // const operacoes = require('./services/cruds/routes/Operacoes/Operacoes');
@@ -43,6 +43,7 @@ import user from './services/cruds/v1/User';
 // const orderNote = require('./services/movimentations/routes/Apontar/OrderNote');
 
 app.use('/users', user);
+app.use('/status', status);
 // app.use('/equipamento', equipamento);
 // app.use('/local-instalacao', localInstalacao);
 // app.use('/centro-trabalho', centroTrabalho);
@@ -53,7 +54,6 @@ app.use('/users', user);
 // app.use('/ordem-manutencao', ordemManutencao);
 // app.use('/tipo-manutencao', tipoManutencao);
 // app.use('/prioridade', prioridade);
-// app.use('/status', status);
 // app.use('/epi', epi);
 // app.use('/detalhamento', detalhamento);
 // app.use('/verificacao', verificacao);
