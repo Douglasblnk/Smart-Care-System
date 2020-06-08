@@ -19,8 +19,9 @@ A API, desenvolvida pelo grupo Smart Solution da faculdade de tecnologia SENAI J
           v1/                     | Rotas de endpoints express
       shared/                     | Tudo o que é compartilhado entre os services
         auth/                     | Autenticação do token
-        connectionFactory/        | Middleware de conexão com o banco de dados
         constants/                | Constantes/Enums globais
-        cryptography/             | Criptografia dos usuários
+        database/                 | Middleware de conexão com o banco de dados
+        guard/                    | Criptografia dos usuários
         utils/                    | Tem funções uteis para diversas partes do sistema
+        types.ts                  | Interfaces para os tipos de parametros
       index.ts                    | Ponto inicial do sistema
