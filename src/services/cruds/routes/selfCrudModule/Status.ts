@@ -1,9 +1,9 @@
-import { errorResponseTreatment } from '../../../shared/utils/utils';
+import { errorResponseTreatment } from '../../../../shared/utils/utils';
 
 import Router = require('express');
 const router = Router();
 
-import GetStatus from '../session/status/getStatus';
+import GetStatus from '../../session/selfCrudModule/status/getStatus';
 
 /**
  *  ROTA PARA BUSCAR OS STATUS

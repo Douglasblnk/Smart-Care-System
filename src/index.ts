@@ -19,9 +19,9 @@ app.use(connectionFactory.createConnection.bind(connectionFactory));
 app.use(auth.run.bind(auth));
 
 // CRUDS
-import user from './services/cruds/v1/User';
-import status from './services/cruds/v1/Status';
-import sintoma from './services/cruds/v1/Symptom';
+import user from './services/cruds/routes/userModule/User';
+import status from './services/cruds/routes/selfCrudModule/Status';
+import sintoma from './services/cruds/routes/selfCrudModule/Symptom';
 
 // const equipamento = require('./services/cruds/routes/Equipamento/Equipamento');
 // const localInstalacao = require('./services/cruds/routes/LocalInstalacao/LocalInstalacao');

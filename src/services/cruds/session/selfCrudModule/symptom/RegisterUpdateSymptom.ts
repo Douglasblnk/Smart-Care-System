@@ -1,10 +1,10 @@
-import SymptomDao from '../../dao/SymptomDao';
+import SymptomDao from '../../../dao/selfCrudModule/SymptomDao';
 
-import { ADMINISTRADOR_ID } from '../../../../shared/constants/accessLevel';
-import { authData } from '../../../../shared/types';
+import { ADMINISTRADOR_ID } from '../../../../../shared/constants/accessLevel';
+import { authData } from '../../../../../shared/types';
 import { Connection } from 'mysql2/promise';
 import { get } from 'lodash';
-import { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } from '../../../../shared/constants/HTTPResponse';
+import { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } from '../../../../../shared/constants/HTTPResponse';
 
 export default class RegisterUpdateSymptom {
   _queryReturn: any;

@@ -1,28 +1,28 @@
-import GenericDao from './GenericDao';
+import GenericDao from '../selfCrudModule/GenericDao';
 
 // eslint-disable-next-line no-unused-vars
 import { Connection } from 'mysql2/promise';
-import { TABLE_USUARIO } from '../../../shared/constants/database';
-import { userDao } from '../../../shared/types';
+import { TABLE_USUARIO } from '../../../../shared/constants/database';
+import { userDao } from '../../../../shared/types';
 
 export default class UserDao extends GenericDao {
-  _numeroCracha: string;
-  _senha: string;
-  _nome: string;
-  _funcao: string;
-  _email: string;
-  _nivelAcesso: string;
+  _numeroCracha?: string;
+  _senha?: string;
+  _nome?: string;
+  _funcao?: string;
+  _email?: string;
+  _nivelAcesso?: string;
   _updateId?: string;
   _mysql: Connection;
   
   constructor({
-    numeroCracha = '',
-    senha = '',
-    nome = '',
-    funcao = '',
-    email = '',
-    nivelAcesso = '',
-    updateId = '',
+    numeroCracha,
+    senha,
+    nome,
+    funcao,
+    email,
+    nivelAcesso,
+    updateId,
     mysql,
   }: userDao) {
     super();

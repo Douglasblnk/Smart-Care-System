@@ -1,11 +1,11 @@
-import { errorResponseTreatment } from '../../../shared/utils/utils';
+import { errorResponseTreatment } from '../../../../shared/utils/utils';
 
 import Router = require('express');
 const router = Router();
 
-import GetSymptom from '../session/symptom/GetSymptom';
-import RegisterUpdateSymptom from '../session/symptom/RegisterUpdateSymptom';
-import DeleteUser from '../session/user/DeleteUser';
+import GetSymptom from '../../session/selfCrudModule/symptom/GetSymptom';
+import RegisterUpdateSymptom from '../../session/selfCrudModule/symptom/RegisterUpdateSymptom';
+import DeleteUser from '../../session/userModule/user/DeleteUser';
 
 
 /**

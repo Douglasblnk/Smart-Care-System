@@ -1,5 +1,5 @@
 import GenericDao from './GenericDao';
-import { TABLE_STATUS } from '../../../shared/constants/database';
+import { TABLE_STATUS } from '../../../../shared/constants/database';
 import { Connection } from 'mysql2/promise';
 
 export default class StatusDao extends GenericDao {
