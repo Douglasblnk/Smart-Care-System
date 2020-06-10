@@ -7,7 +7,7 @@ export default class AccessLevel extends GenericDao {
   
   constructor({
     mysql,
-  }: { nivel_acesso: number, nivel_acesso_description: string, mysql: Connection }) {
+  }: { mysql: Connection }) {
     super();
 
     this._mysql = mysql;

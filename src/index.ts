@@ -22,6 +22,7 @@ app.use(auth.run.bind(auth));
 import user from './services/cruds/routes/userModule/User';
 import status from './services/cruds/routes/selfCrudModule/Status';
 import sintoma from './services/cruds/routes/selfCrudModule/Symptom';
+import nivelAcesso from './services/cruds/routes/selfCrudModule/AccessLevel';
 
 // const equipamento = require('./services/cruds/routes/Equipamento/Equipamento');
 // const localInstalacao = require('./services/cruds/routes/LocalInstalacao/LocalInstalacao');
@@ -33,7 +34,6 @@ import sintoma from './services/cruds/routes/selfCrudModule/Symptom';
 // const tipoManutencao = require('./services/cruds/routes/TipoOrdem/TipoOrdem');
 // const prioridade = require('./services/cruds/routes/Prioridade/Prioridade');
 // const epi = require('./services/cruds/routes/Epi/Epi');
-// const nivelAcesso = require('./services/cruds/routes/NivelAcesso/nivelAcesso');
 // const operacoes = require('./services/cruds/routes/Operacoes/Operacoes');
 
 // MOVIMENTATIONS
@@ -45,6 +45,7 @@ import sintoma from './services/cruds/routes/selfCrudModule/Symptom';
 app.use('/users', user);
 app.use('/status', status);
 app.use('/sintoma', sintoma);
+app.use('/nivel-acesso', nivelAcesso);
 // app.use('/equipamento', equipamento);
 // app.use('/local-instalacao', localInstalacao);
 // app.use('/centro-trabalho', centroTrabalho);
@@ -57,7 +58,6 @@ app.use('/sintoma', sintoma);
 // app.use('/epi', epi);
 // app.use('/detalhamento', detalhamento);
 // app.use('/verificacao', verificacao);
-// app.use('/nivel-acesso', nivelAcesso);
 // app.use('/operacoes', operacoes);
 // app.use('/initiate', initiate);
 // app.use('/order-note', orderNote);
