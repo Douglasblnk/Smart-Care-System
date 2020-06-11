@@ -51,6 +51,11 @@ module.exports = {
     "vue/html-closing-bracket-spacing": "warn",
     "no-unreachable": "warn",
     "indent": ["warn", 2],
+    "comma-spacing": "warn",
+    "no-return-assign": "warn",
+    "operator-linebreak": "warn",
+    "spaced-comment": "warn",
+    "eqeqeq": "warn",
   },
   parserOptions: {
     parser: 'babel-eslint'
