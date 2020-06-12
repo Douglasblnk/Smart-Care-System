@@ -1,6 +1,6 @@
 <template>
   <div class="ordem-corretiva-root">
-    <div class="content-wrapper">
+    <card>
       <form-wizard
         class="step-by-step"
         title="Cadastro de Ordem de serviço"
@@ -12,7 +12,7 @@
       >
         <!--
           Step para informar o titulo, resumo e descrição da ordem
-         -->
+        -->
         <tab-content title="Causa Manutenção" icon="fas fa-user" class="maintenanceCause">
           <div class="firstInput">
             <simple-input v-model="inputValues.title" :label="'Título:'" :type="'text'" />
@@ -41,7 +41,7 @@
 
         <!--
           Step para informada o inicio planejado e o fim planejado da ordem
-         -->
+        -->
         <tab-content title="Datas" icon="fa fa-cog" class="maintenanceCause">
           <div>
             <simple-input
@@ -61,7 +61,7 @@
 
         <!--
           Step para selecionar os equipamentos, prioridade, setor e se querer parada
-         -->
+        -->
         <tab-content title="Informações Gerais" icon="fas fa-check" class="maintenanceCause">
           <custom-select
             v-model="inputValues.equipment"
@@ -97,7 +97,7 @@
 
         <!--
           Step para definir quais as operações que a ordem deve ter
-         -->
+        -->
         <tab-content title="Operações" icon="fa fa-cog">
           <div class="operations-title">
             <span>Selecione as operações para está ordem</span>
@@ -131,7 +131,7 @@
 
         <!--
           Step para definir quais EPIs são necessárias para a ordem
-         -->
+        -->
         <tab-content title="Epi" icon="fa fa-cog">
           <div class="operations-title">
             <span>Selecione as EPIs para está ordem</span>
@@ -167,7 +167,7 @@
           </div>
         </tab-content>
       </form-wizard>
-    </div>
+    </card>
 
     <!--
       Modal para adicionar EPIS
@@ -618,81 +618,74 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  .content-wrapper {
-    width: 70%;
-    background-color: #ffffff;
-    border-radius: 10px;
-    padding: 25px;
-    margin: 20px 0;
-    .step-by-step{
-      width:100%;
-      .maintenanceCause{
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: 1fr 1fr;
-        .inputMaintenance{
-          padding: 0.5rem;
-          grid-column-start: 1;
-          grid-column-end: 3;
-        }
-
-        .firstInput{
-          grid-column-start:1;
-          grid-column-end:1;
-        }
-        .secondInput{
-          grid-column-start:2;
-          grid-column-end:2;
-        }
+  .step-by-step{
+    width:100%;
+    .maintenanceCause{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      .inputMaintenance{
+        padding: 0.5rem;
+        grid-column-start: 1;
+        grid-column-end: 3;
       }
-      .operations-title {
+
+      .firstInput{
+        grid-column-start:1;
+        grid-column-end:1;
+      }
+      .secondInput{
+        grid-column-start:2;
+        grid-column-end:2;
+      }
+    }
+    .operations-title {
+      display: flex;
+      justify-content: center;
+      font-size: 22px;
+    }
+    .seleted-operation-item {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 8px;
+      padding: 20px;
+      i {
+        color: #555;
+      }
+      &:hover {
+        background-color: #eee;
+      }
+    }
+    .selected-epi-wrapper {
+      min-width: 50px;
+      padding: 5px 20px;
+      margin: 5px;
+      border-radius: 100px;
+      background-color: #eee;
+      user-select: none;
+      position: relative;
+      &:hover {
+        background-color: #ddd;
+      }
+      .selected-epi-remove {
+        position: absolute;
         display: flex;
         justify-content: center;
-        font-size: 22px;
-      }
-      .seleted-operation-item {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
         align-items: center;
-        border-radius: 8px;
-        padding: 20px;
-        i {
-          color: #555;
-        }
-        &:hover {
-          background-color: #eee;
-        }
-      }
-      .selected-epi-wrapper {
-        min-width: 50px;
-        padding: 5px 20px;
-        margin: 5px;
+        right: -10px;
+        top: -10px;
+        width: 30px;
+        height: 30px;
         border-radius: 100px;
         background-color: #eee;
-        user-select: none;
-        position: relative;
+        cursor: pointer;
         &:hover {
-          background-color: #ddd;
+          background-color: var(--duas-rodas-soft);
+          i { color: white; }
         }
-        .selected-epi-remove {
-          position: absolute;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          right: -10px;
-          top: -10px;
-          width: 30px;
-          height: 30px;
-          border-radius: 100px;
-          background-color: #eee;
-          cursor: pointer;
-          &:hover {
-            background-color: var(--duas-rodas-soft);
-            i { color: white; }
-          }
-          i { font-size: 14px; }
-        }
+        i { font-size: 14px; }
       }
     }
   }
