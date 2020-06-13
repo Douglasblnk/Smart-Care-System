@@ -12,38 +12,50 @@
           </div>
         </div>
 
-        <div class="p-3" style="max-width: 600px">
-          <simple-input
+        <div class="p-3">
+          <!-- <simple-input
             v-model="filters.search"
             white
             placeholder="Buscar por ordem de manutenção..."
             label="Buscar: "
-          />
+          /> -->
           <div class="p-2 filters">
             <p>Filtros: </p>
 
             <span
-              :class="(filters.status.idStatus || option === 'status') ? 'selected' : ''"
-              @click="setFilters('status')"
+              :class="(filters.status || option === 'status') ? 'selected' : ''"
+              @click="setFiltersType('status')"
             >
               Status
             </span>
 
             <span
               :class="(filters.data || option === 'data') ? 'selected' : ''"
-              @click="setFilters('data')"
+              @click="setFiltersType('data')"
             >
               Data
             </span>
 
             <span
-              :class="(filters.priority.idPrioridade || option === 'priority') ? 'selected' : ''"
-              @click="setFilters('priority')"
+              :class="(filters.priority || option === 'priority') ? 'selected' : ''"
+              @click="setFiltersType('priority')"
             >
               Prioridade
             </span>
 
-            <span>Minhas OS</span>
+            <span
+              :class="(filters.orderType || option === 'orderType') ? 'selected' : ''"
+              @click="setFiltersType('orderType')"
+            >
+              Tipo de Manutenção
+            </span>
+
+            <span
+              :class="(filters.myOrders) ? 'selected' : ''"
+              @click="setFilter('myOrders', $store.state.user.cracha)"
+            >
+              Minhas OS
+            </span>
           </div>
 
           <transition name="slide-down" mode="out-in">
@@ -53,9 +65,9 @@
                   <div v-for="(status, index) in optionsData.status" :key="`status-${index}`">
                     <div class="filters">
                       <span
-                        :class="filters.status.idStatus === status.idStatus ? 'selected' : ''"
+                        :class="filters.status === status.tipoStatus ? 'selected' : ''"
                         style="border: 1px solid #dddddd"
-                        @click="setStatusFilter(status)"
+                        @click="setFilter('status', status.tipoStatus)"
                       >
                         {{ status.tipoStatus }}
                       </span>
@@ -63,7 +75,7 @@
                   </div>
                 </div>
 
-                <div v-if="option === 'data'" key="data" class="col-md-12">
+                <div v-if="option === 'data'" key="data" class="col-md-3">
                   <simple-button label="Limpar campo" @click.native="() => filters.data = ''" />
                   <simple-input v-model="filters.data" white type="date" />
                 </div>
@@ -72,9 +84,9 @@
                   <div v-for="(priority, index) in optionsData.priority" :key="`status-${index}`">
                     <div class="filters">
                       <span
-                        :class="filters.priority.idPrioridade === priority.idPrioridade ? 'selected' : ''"
+                        :class="filters.priority === priority.descricaoPrioridade ? 'selected' : ''"
                         style="border: 1px solid #dddddd"
-                        @click="setPriorityFilter(priority)"
+                        @click="setFilter('priority', priority.descricaoPrioridade)"
                       >
                         {{ priority.descricaoPrioridade }}
                       </span>
@@ -82,8 +94,18 @@
                   </div>
                 </div>
 
-                <div v-if="option === 'myOrders'" key="myOrders" class="d-flex flex-row">
-                  // todo
+                <div v-if="option === 'orderType'" key="orderType" class="d-flex flex-row">
+                  <div v-for="(type, index) in optionsData.orderType" :key="`status-${index}`">
+                    <div class="filters">
+                      <span
+                        :class="filters.orderType === type.tipoManutencao ? 'selected' : ''"
+                        style="border: 1px solid #dddddd"
+                        @click="setFilter('orderType', type.tipoManutencao)"
+                      >
+                        {{ type.tipoManutencao }}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </transition>
             </div>
@@ -95,16 +117,24 @@
             <div>
               <span class="mx-2">Filtros selecionados: </span>
 
-              <span class="mx-1">
-                {{ filters.status.tipoStatus ? `Status: ${filters.status.tipoStatus}` : '' }}
+              <span v-if="filters.status" class="mx-1">
+                <strong>Status: </strong> {{ filters.status }}
               </span>
 
-              <span class="mx-1">
-                {{ filters.data ? `Data: ${$moment(filters.data).format('DD-MM-YYYY')}` : '' }}
+              <span v-if="filters.data" class="mx-1">
+                <strong>Data: </strong> {{ $moment(filters.data).format('DD-MM-YYYY') }}
               </span>
 
-              <span class="mx-1">
-                {{ filters.priority.descricaoPrioridade ? `Prioridade: ${filters.priority.descricaoPrioridade}` : '' }}
+              <span v-if="filters.priority" class="mx-1">
+                <strong>Prioridade: </strong> {{ filters.priority }}
+              </span>
+
+              <span v-if="filters.orderType" class="mx-1">
+                <strong>Tipo de manutenção: </strong> {{ filters.orderType }}
+              </span>
+
+              <span v-if="filters.myOrders" class="mx-1">
+                <strong>Manutentor: </strong> {{ filters.myOrders }}
               </span>
             </div>
             <div class="mx-2">
@@ -112,77 +142,68 @@
             </div>
           </div>
 
-          <div class="orders-container m-2 p-3">
-            <template v-if="!maintenainceOrders">
-              <div class="d-flex justify-content-center">
-                <span style="color: #E66E6D">Não há nenhuma Ordem de Manutenção cadastrada no sistema.</span>
+          <div v-if="!maintenainceOrders">
+            <card centered>
+              <span style="color: #E66E6D">Não há nenhuma Ordem de Manutenção cadastrada no sistema.</span>
+            </card>
+          </div>
+
+          <div v-if="isLoading">
+            <card centered>
+              <div class="d-flex align-items-center">
+                <i style="color: #E66E6D" class="fa fa-spinner fa-spin mr-2 fa-lg" />
+                <span style="color: #E66E6D">Buscando ordens de manutenção, aguarde...</span>
               </div>
-            </template>
+            </card>
+          </div>
 
-            <template v-if="maintenainceOrders">
-              <div class="orders-header">
-                <div v-for="(items, index) in tableHeader" :key="`items-${index}`" :class="items.class">
-                  <span>{{ items.title }}</span>
-                </div>
-              </div>
-
-              <template v-if="getFilteredOrders.length === 0 && !isLoading">
-                <div class="m-4 d-flex justify-content-center">
-                  <strong class="text-muted">Nenhuma ordem de manutenção encontrada!</strong>
-                </div>
-              </template>
-
-              <template v-if="isLoading">
-                <div class="m-4 d-flex justify-content-center">
-                  <div class="mx-2 d-flex align-items-center justify-content-center">
-                    <i class="fa fa-spinner fa-spin text-muted" />
+          <div v-if="maintenainceOrders && !isLoading" class="custom-orders-table">
+            <card fullWidth>
+              <v-client-table
+                ref="consultOrderTable"
+                v-model="getFilteredOrders"
+                :columns="consultOrderTable.fields"
+                :options="consultOrderTable.options"
+              >
+                <template slot="resumo" slot-scope="{ row }">
+                  <div class="d-flex flex-column">
+                    <span>{{ row.resumo }}</span>
+                    <div class="d-flex">
+                      <small class="order-type">{{ row.tipo_manutencao }}</small>
+                    </div>
                   </div>
-                  <strong class="text-muted">
-                    Buscando as ordens...
-                  </strong>
-                </div>
-              </template>
+                </template>
 
-              <div v-for="(order, index) in getFilteredOrders" :key="`order-${index}`" class="order-body">
-                <div class="d-flex flex-column col-md-1">
-                  <strong>{{ order.idOrdemServico }}</strong>
-                  <div class="d-flex">
-                    <small style="background-color: #d9534f; padding: 0 10px; color: white; border-radius: 8px">{{ order.tipo_manutencao }}</small>
-                  </div>
-                </div>
+                <template slot="dataEmissao" slot-scope="{ row }">
+                  <span>{{ moment(row.dataEmissao).format('DD-MM-YYYY') }}</span>
+                </template>
 
-                <div class="col-md-3">
-                  <span>{{ order.resumo }}</span>
-                </div>
+                <template slot="prioridade" slot-scope="{ row }">
+                  <i class="fa fa-circle fa-fw" :class="getPriorityClass(row.prioridade)" />
+                  <span :class="getPriorityClass(row.prioridade)">{{ row.prioridade }}</span>
+                </template>
 
-                <div class="col-md-1">
-                  <span>{{ order.prioridade }}</span>
-                </div>
+                <template slot="actions" slot-scope="{ row }">
+                  <smart-button
+                    simple
+                    class="mb-2"
+                    :loading="isLoadingOrder[String(row.idOrdemServico)]"
+                    @click.native="openOrder(row)"
+                  >
+                    <i class="fa fa-file-alt mr-2" />
+                    <span>Detalhar</span>
+                  </smart-button>
 
-                <div class="col-md-2">
-                  <span>{{ $moment(order.dataEmissao).format('DD-MM-YYYY') }}</span>
-                </div>
-
-                <div class="col-md-1">
-                  <span>{{ order.status }}</span>
-                </div>
-
-                <div class="col-md-2 m-2">
-                  <div class="">
-                    <simple-button
-                      prefix="fa-file-alt"
-                      label="Detalhar"
-                      @click.native="openOrder(order)"
-                    />
-                    <simple-button
-                      prefix="fa-eye"
-                      label="Resumo"
-                      @click.native="openSummary(order)"
-                    />
-                  </div>
-                </div>
-              </div>
-            </template>
+                  <smart-button
+                    simple
+                    @click.native="openSummary(row)"
+                  >
+                    <i class="fa fa-eye mr-2" />
+                    <span>Resumo</span>
+                  </smart-button>
+                </template>
+              </v-client-table>
+            </card>
           </div>
         </div>
       </div>
@@ -209,6 +230,8 @@ export default {
 
   data() {
     return {
+      moment: this.$moment,
+      getPriorityClass,
       state: {
         view: 'list',
       },
@@ -216,26 +239,62 @@ export default {
         order: {},
       },
       isLoading: false,
+      isLoadingOrder: {},
       maintenainceOrders: [],
       filters: {
-        search: '',
-        status: {},
+        status: '',
         data: '',
-        priority: {},
+        priority: '',
+        myOrders: '',
+        orderType: '',
       },
       showOptions: false,
       option: '',
       optionsData: {
-        status: {},
+        status: [],
+        priority: [],
+        orderType: [],
       },
-      tableHeader: [
-        { title: 'Ordem', class: 'col-md-1' },
-        { title: 'Titulo', class: 'col-md-3' },
-        { title: 'Prioridade', class: 'col-md-1' },
-        { title: 'Emissão', class: 'col-md-2' },
-        { title: 'Status', class: 'col-md-1' },
-        { title: 'Ações', class: 'col-md-2' },
-      ],
+      consultOrderTable: {
+        options: {
+          headings: {
+            idOrdemServico: 'Ordem',
+            resumo: 'Título',
+            prioridade: 'Prioridade',
+            dataEmissao: 'Emissão',
+            status: 'Status',
+            actions: 'Ações',
+          },
+          texts: {
+            filter: '',
+            filterPlaceholder: 'Buscar ordem...',
+            noResults: 'Nenhum registro encontrado!',
+            count: '{count} registros',
+            loading: 'Carregando...',
+            limit: '',
+            first: 'Primeiro',
+            last: 'Último',
+          },
+          columnsClasses: {
+            idOrdemServico: 'idOrdemServico-class',
+            resumo: 'resumo-class',
+            prioridade: 'prioridade-class',
+            dataEmissao: 'dataEmissao-class',
+            status: 'status-class',
+            actions: 'actions-class',
+          },
+          perPage: 25,
+          perPageValues: [25, 50, 100],
+          sortable: ['idOrdemServico', 'dataEmissao'],
+          sortIcon: {
+            base: 'fa fa-fw',
+            is: 'fa-sort',
+            up: 'fa-chevron-up',
+            down: 'fa-chevron-down',
+          },
+        },
+        fields: ['idOrdemServico', 'resumo', 'dataEmissao', 'prioridade', 'status', 'actions'],
+      },
     };
   },
 
@@ -244,8 +303,8 @@ export default {
     getFilteredOrders() {
       let filteredOrder = this.maintenainceOrders;
 
-      if (this.filters.status.idStatus)
-        filteredOrder = filteredOrder.filter(order => order.Status_idStatus === this.filters.status.idStatus);
+      if (this.filters.status)
+        filteredOrder = filteredOrder.filter(order => order.status === this.filters.status);
 
       if (this.filters.data) {
         filteredOrder = filteredOrder.filter(
@@ -253,25 +312,34 @@ export default {
         );
       }
 
-      if (this.filters.priority.idPrioridade) {
+      if (this.filters.priority) {
         filteredOrder = filteredOrder.filter(
-          order => order.Prioridade_idPrioridade === this.filters.priority.idPrioridade
+          order => order.prioridade === this.filters.priority
         );
       }
 
-      return filteredOrder.filter(order => {
-        const searchableString = this.getSearchableString(order);
+      if (this.filters.myOrders) {
+        filteredOrder = filteredOrder.filter(
+          order => order.Manutentor === this.filters.myOrders,
+        );
+      }
+      
+      if (this.filters.orderType) {
+        filteredOrder = filteredOrder.filter(
+          order => order.tipo_manutencao === this.filters.orderType,
+        );
+      }
 
-        if (searchableString.match(this.filters.search.toLowerCase()))
-          return order;
-      });
+      return filteredOrder;
     },
     isFilterSetted() {
-      if (this.filters.status.idStatus)
-        return true;
-      if (this.filters.data)
-        return true;
-      if (this.filters.priority.idPrioridade)
+      if (
+        this.filters.status ||
+        this.filters.data ||
+        this.filters.priority ||
+        this.filters.myOrders ||
+        this.filters.orderType
+      )
         return true;
 
       return false;
@@ -284,10 +352,11 @@ export default {
     this.getOrdersMaintences();
     this.getStatus();
     this.getPriority();
+    this.getOrderType();
   },
 
   methods: {
-    async setFilters(type) {
+    async setFiltersType(type) {
       if (!this.option) this.option = type;
 
       if (this.showOptions === false)
@@ -300,15 +369,10 @@ export default {
 
       this.option = type;
     },
-    setStatusFilter(status) {
-      if (this.filters.status.idStatus === status.idStatus)
-        return this.filters.status = {};
-      this.filters.status = status;
-    },
-    setPriorityFilter(priority) {
-      if (this.filters.priority.idPrioridade === priority.idPrioridade)
-        return this.filters.priority = {};
-      this.filters.priority = priority;
+    setFilter(type, filter) {
+      if (this.filters[type] === filter)
+        this.filters[type] = '';
+      else this.filters[type] = filter;
     },
     openSummary(order) {
       this.$swal({
@@ -383,17 +447,14 @@ export default {
       this.$set(this.state, 'view', 'list');
     },
     async getOrderDetail(order) {
-      if (this.isLoading) return;
+      if (this.isLoadingOrder[String(order.idOrdemServico)]) return;
 
       try {
-        console.log('order :>> ', order);
-        this.isLoading = true;
+        this.isLoadingOrder[String(order.idOrdemServico)] = true;
 
         const { result } = await this.$http.post('ordem-manutencao/detail', getLocalStorageToken(), {
           order,
         });
-
-        console.log('result :>> ', result);
 
         this.$set(this.state, 'view', 'detail');
         this.$set(this.detail, 'order', result);
@@ -406,7 +467,7 @@ export default {
           confirmButtonColor: '#F34336',
         });
       } finally {
-        this.isLoading = false;
+        this.isLoadingOrder[String(order.idOrdemServico)] = false;
       }
     },
     async getOrdersMaintences() {
@@ -447,9 +508,10 @@ export default {
       try {
         const response = await this.$http.get('status/get', getLocalStorageToken());
 
-        if (response.result.length === 0) throw 'Não foi possível buscar os status ou não há nenhuma status cadastrado';
+        if (response.result.length === 0)
+          throw 'Não foi possível buscar os status ou não há nenhuma status cadastrado';
 
-        return this.optionsData.status = [...response.result];
+        this.optionsData.status = [...response.result];
       } catch (err) {
         console.log('error getStatus :', err.response || err);
 
@@ -464,7 +526,7 @@ export default {
       try {
         const response = await this.$http.get('prioridade/get', getLocalStorageToken());
 
-        return this.optionsData.priority = [...response.result];
+        this.optionsData.priority = [...response.result];
       } catch (err) {
         console.log('err getPriority => :', err.response || err);
 
@@ -475,10 +537,27 @@ export default {
         });
       }
     },
+    async getOrderType() {
+      try {
+        const response = await this.$http.get('tipo-ordem/get', getLocalStorageToken());
+
+        this.optionsData.orderType = [...response.result];
+      } catch (err) {
+        console.log('err getOrderType => :', err.response || err);
+
+        return this.$swal({
+          type: 'warning',
+          text: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
     clearFilters() {
-      this.$set(this.filters, 'status', {});
+      this.$set(this.filters, 'status', '');
       this.$set(this.filters, 'data', '');
-      this.$set(this.filters, 'priority', {});
+      this.$set(this.filters, 'priority', '');
+      this.$set(this.filters, 'myOrders', '');
+      this.$set(this.filters, 'orderType', '');
 
       this.option = '';
       this.showOptions = false;
@@ -524,37 +603,9 @@ export default {
       margin: 0;
     }
   }
-  .orders-container {
-    background-color: white;
-    border-radius: 10px;
-    .orders-header {
-      position: sticky;
-      top: 0;
-      z-index: 999;
-      background-color: var(--duas-rodas);
-      border-top-left-radius: 10px;
-      border-top-right-radius: 10px;
-      padding: 20px 0;
-      display: flex;
-      justify-content: space-between;
-      border-bottom: 1px solid rgb(216, 216, 216);
-      span{
-        color: white;
-      }
-    }
-    .order-body {
-      background-color: rgb(241, 241, 241);
-      // border-radius: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      &:nth-child(odd) {
-        background-color: white;
-      }
-      &:hover {
-        background-color: #ebebeb;
-      }
-    }
+  .priority-pointer {
+    border-radius: 100%;
+    padding: 5px;
   }
   .selected {
     background-color: var(--duas-rodas-soft) !important;
@@ -564,4 +615,90 @@ export default {
     color: var(--gray)
   }
 }
+</style>
+
+<style lang="scss">
+.custom-orders-table {
+  table {
+    border-radius: 8px;
+    thead {
+      th {
+        background-color: var(--duas-rodas-soft);
+        span {
+          cursor: pointer;
+          color: white !important;
+        }
+        border: 0 !important;
+        outline: none;
+      }
+    }
+    tbody {
+      tr {
+        td {
+          border: 0 !important;
+          vertical-align: middle;
+          outline: none;
+        }
+      }
+    }
+  }
+  .order-type {
+    background-color: #d9534f;
+    padding: 0 10px;
+    color: white !important;
+    border-radius: 8px;
+  }
+  .col-md-12 {
+    justify-content: space-between;
+    display: flex !important;
+    .VueTables__search-field {
+      width: 30vw !important;
+      input {
+        width: 100%;
+      }
+    }
+  }
+  .VuePagination {
+    display: flex;
+    justify-content: center;
+    p {
+      display: flex;
+      justify-content: center;
+    }
+  }
+  .page-item .active {
+    color: white !important;
+    border-color: #ddd !important;
+    background-color: var(--duas-rodas-soft) !important;
+    &:focus {
+      box-shadow: none !important;
+    }
+  }
+  .page-link {
+    color: #555 !important;
+    &:focus {
+      box-shadow: none !important;
+    }
+  }
+  .idOrdemServico-class {
+    width: 100px !important;
+  }
+  .resumo-class {
+    width: 300px !important;
+    min-width: 200px !important;
+  }
+  .prioridade-class {
+    width: 130px !important;
+  }
+  .dataEmissao-class {
+    width: 100px !important;
+  }
+  .status-class {
+    width: 100px !important;
+  }
+  .actions-class {
+    width: 100px !important;
+  }
+}
+
 </style>
