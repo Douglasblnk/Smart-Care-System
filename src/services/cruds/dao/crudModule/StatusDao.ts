@@ -1,4 +1,4 @@
-import GenericDao from './GenericDao';
+import GenericDao from '../GenericDao';
 import { TABLE_STATUS } from '../../../../shared/constants/database';
 import { Connection } from 'mysql2/promise';
 

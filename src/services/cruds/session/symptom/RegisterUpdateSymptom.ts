@@ -1,4 +1,4 @@
-import SymptomDao from '../../dao/selfCrudModule/SymptomDao';
+import SymptomDao from '../../dao/crudModule/SymptomDao';
 
 import { ADMINISTRADOR_ID } from '../../../../shared/constants/accessLevel';
 import { authData } from '../../../../shared/types';

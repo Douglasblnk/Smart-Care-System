@@ -1,4 +1,4 @@
-import AccessLevelDao from '../../dao/selfCrudModule/AccessLevelDao';
+import AccessLevelDao from '../../dao/crudModule/AccessLevelDao';
 
 import { Connection } from 'mysql2/promise';
 import { get } from 'lodash';

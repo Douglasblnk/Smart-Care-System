@@ -1,4 +1,4 @@
-import GenericDao from '../selfCrudModule/GenericDao';
+import GenericDao from '../GenericDao';
 
 // eslint-disable-next-line no-unused-vars
 import { Connection } from 'mysql2/promise';

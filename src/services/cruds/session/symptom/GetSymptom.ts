@@ -1,4 +1,4 @@
-import SymptomDao from '../../dao/selfCrudModule/SymptomDao';
+import SymptomDao from '../../dao/crudModule/SymptomDao';
 
 import { Connection } from 'mysql2/promise';
 import { get } from 'lodash';

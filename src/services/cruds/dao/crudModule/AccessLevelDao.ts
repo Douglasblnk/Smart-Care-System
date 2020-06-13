@@ -1,8 +1,8 @@
-import GenericDao from './GenericDao';
+import GenericDao from '../GenericDao';
 import { TABLE_NIVEL_ACESSO } from '../../../../shared/constants/database';
 import { Connection } from 'mysql2/promise';
 
-export default class AccessLevel extends GenericDao {
+export default class AccessLevelDao extends GenericDao {
   _mysql: Connection;
   
   constructor({
