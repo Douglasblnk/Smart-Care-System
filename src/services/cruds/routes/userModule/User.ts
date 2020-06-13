@@ -6,10 +6,10 @@ const RateLimit = require('express-rate-limit');
 import Router = require('express');
 const router = Router();
 
-import LoginValidate from '../../session/userModule/user/LoginValidate';
-import GetUsers from '../../session/userModule/user/GetUsers';
-import RegisterUpdateUser from '../../session/userModule/user/RegisterUpdateUser';
-import DeleteUser from '../../session/userModule/user/DeleteUser';
+import LoginValidate from '../../session/user/LoginValidate';
+import GetUsers from '../../session/user/GetUsers';
+import RegisterUpdateUser from '../../session/user/RegisterUpdateUser';
+import DeleteUser from '../../session/user/DeleteUser';
 
 
 /**

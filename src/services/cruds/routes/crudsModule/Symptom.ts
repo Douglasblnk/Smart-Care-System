@@ -3,9 +3,9 @@ import { errorResponseTreatment } from '../../../../shared/utils/utils';
 import Router = require('express');
 const router = Router();
 
-import GetSymptom from '../../session/selfCrudModule/symptom/GetSymptom';
-import RegisterUpdateSymptom from '../../session/selfCrudModule/symptom/RegisterUpdateSymptom';
-import DeleteUser from '../../session/userModule/user/DeleteUser';
+import GetSymptom from '../../session/symptom/GetSymptom';
+import RegisterUpdateSymptom from '../../session/symptom/RegisterUpdateSymptom';
+import DeleteSymptom from '../../session/symptom/DeleteSymptom';
 
 
 /**
@@ -28,7 +28,7 @@ router.post('/', async (req: any, res: any) => {
  */
 router.delete('/:id', async (req: any, res: any) => {
   try {
-    const response = await new DeleteUser().run(req);
+    const response = await new DeleteSymptom().run(req);
     
     res.status(200).send(response);
   } catch (err) {

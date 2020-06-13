@@ -1,4 +1,4 @@
-import statusDao from '../../../dao/selfCrudModule/StatusDao';
+import statusDao from '../../dao/crudModule/StatusDao';
 
 import { Connection } from 'mysql2/promise';
 import { get } from 'lodash';

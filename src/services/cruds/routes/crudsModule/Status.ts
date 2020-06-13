@@ -3,14 +3,14 @@ import { errorResponseTreatment } from '../../../../shared/utils/utils';
 import Router = require('express');
 const router = Router();
 
-import GetAccessLevel from '../../session/selfCrudModule/accessLevel/GetAccessLevel';
+import GetStatus from '../../session/status/getStatus';
 
 /**
- *  ROTA PARA BUSCAR OS NIVEIS DE ACESSO
+ *  ROTA PARA BUSCAR OS STATUS
  */
 router.get('/', async (req: any, res: any) => {
   try {
-    const response : any = await new GetAccessLevel().run(req);
+    const response : any = await new GetStatus().run(req);
 
     res.status(200).send(response);
   } catch (err) {

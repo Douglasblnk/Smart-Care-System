@@ -1,12 +1,12 @@
-import userDao from '../../../dao/userModule/UserDao';
+import SymptomDao from '../../dao/crudModule/SymptomDao';
 
-import { ADMINISTRADOR_ID } from '../../../../../shared/constants/accessLevel';
-import { authData } from '../../../../../shared/types';
+import { ADMINISTRADOR_ID } from '../../../../shared/constants/accessLevel';
+import { authData } from '../../../../shared/types';
 import { Connection } from 'mysql2/promise';
 import { get } from 'lodash';
-import { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } from '../../../../../shared/constants/HTTPResponse';
+import { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } from '../../../../shared/constants/HTTPResponse';
 
-export default class DeleteUser {
+export default class DeleteSymptom {
   _queryReturn: any;
 
   constructor() {
@@ -28,7 +28,7 @@ export default class DeleteUser {
     mysql: Connection,
     authData: authData,
   }) => ({
-    ...(!updateId ? { numeroCracha: 'Crachá não informado' } : ''),
+    ...(!updateId ? { numeroCracha: 'ID do sintoma não infomado' } : ''),
     ...(!mysql ? { mysql: 'Conexão não estabelecida' } : ''),
     ...(!authData ? { authData: 'Dados de autenticação não encontrados' } : ''),
   })
@@ -41,21 +41,21 @@ export default class DeleteUser {
       if (Object.values(errors).length > 0) throw errors;
       
       await this.validateGroups(parameters);
-      await this.deleteUser(parameters);
+      await this.deleteSymptom(parameters);
       
       if (!this._queryReturn.affectedRows)
-        throw 'Não foi possível deletar o usuário';
+        throw 'Não foi possível deletar o sintoma';
       
       return this._queryReturn;
     } catch (err) {
-      console.log('err registerUser :>> ', err);
+      console.log('err DeleteSymptom :>> ', err);
 
       throw err;
     }
   }
   
-  private async deleteUser(user: any) {
-    this._queryReturn = await new userDao(user).deleteUser();
+  private async deleteSymptom(user: any) {
+    this._queryReturn = await new SymptomDao(user).deleteSymptom();
   }
 
   private async validateGroups({ authData }: { authData: authData}) {
