@@ -1,87 +1,94 @@
 <template>
-  <div class="content-verifications">
-    <div class="card-title d-flex justify-content-center align-items-center">
-      <span>Análise de Verificações</span>
-    </div>
-    <div class="table-verifications">
-      <v-client-table v-model="listVerificationsStatus" :columns="columns" :options="options">
-        <span slot="Solicitante" slot-scope="{row}">
-          <i :class="row.icon_requester"></i>
-        </span>
-        <span slot="Reporte" slot-scope="{row}">
-          <i :class="row.icon_report"></i>
-        </span>
-        <span slot="Manutentor" slot-scope="{row}">
-          <i :class="row.icon_maintainer"></i>
-        </span>
+  <div class="content-consult-verification">
+    <transition name="slide-side" mode="out-in">
+      <div v-if="state.view === 'verifications'" key="verifications" class="content-verifications">
+        <div class="card-title d-flex justify-content-center align-items-center">
+          <span>Análise de Verificações</span>
+        </div>
+        <div class="table-verifications">
+          <v-client-table v-model="listVerificationsStatus" :columns="columns" :options="options">
+            <span slot="Solicitante" slot-scope="{row}">
+              <i :class="row.icon_requester"></i>
+            </span>
+            <span slot="Reporte" slot-scope="{row}">
+              <i :class="row.icon_report"></i>
+            </span>
+            <span slot="Manutentor" slot-scope="{row}">
+              <i :class="row.icon_maintainer"></i>
+            </span>
+            
+            <div slot="actions" slot-scope="props">
+              <a target="_blank" class="fas fa-eye fa-lg mb-2 eye"
+                 @click="openOrder(props.row)"
+              ></a>
+              <i class="fas fa-edit fa-lg mb-2" @click="openModalDetailVerifications(props.row)"></i>
+            </div>
+          </v-client-table>
+        </div>
         
-        <div slot="actions" slot-scope="props">
-          <a target="_blank" :href="props.row.link" class="fas fa-eye fa-lg mb-2 eye"></a>
-          <i class="fas fa-edit fa-lg mb-2" @click="openModalDetailVerifications(props.row)"></i>
-        </div>
-      </v-client-table>
-    </div>
-    
-    <b-modal ref="my-modal" centered
-             hide-footer hide-header title="Verificação de EPIs" @hide="resetModal()"
-    >
-      <div class="d-block text">
-        <div class="text-center">
-          <h3>Detalhes</h3>
-        </div>
-        <h4>
-          Solicitante:
-        </h4>
-        <div class="my-3 d-flex flex-column">
-          <span>
-            Data Verificação:
-            {{ this.$moment().format('DD-MM-YYYY') }}
-          </span>
-          <span>
-            Problema Resolvido: Sim
-          </span>
-          <div class="pt-2">
+        <b-modal ref="my-modal" centered
+                 hide-footer hide-header title="Verificação de EPIs" @hide="resetModal()"
+        >
+          <div class="d-block text">
+            <div class="text-center">
+              <h3>Detalhes Verificações</h3>
+            </div>
             <h4>
-              Administrador:
+              Solicitante:
             </h4>
+            <div class="my-3 d-flex flex-column">
+              <span>
+                Data Verificação:
+                {{ this.$moment().format('DD-MM-YYYY') }}
+              </span>
+              <span>
+                Problema Resolvido: Sim
+              </span>
+              <div class="pt-2">
+                <h4>
+                  Administrador:
+                </h4>
+              </div>
+              <div class="my-3 d-flex flex-column">
+                <span>
+                  Data Verificação:
+                  {{ this.$moment().format('DD-MM-YYYY') }}
+                  
+                </span>
+                <span>
+                  Problema Resolvido: Sim
+                </span>
+              </div>
+              <div class="pt-2">
+                <h4>
+                  Manutentor:
+                </h4>
+              </div>
+              <div v-if="data_modal[1] != undefined" class="my-3 d-flex flex-column">
+                <span>
+                  Data Verificação:
+                  {{ data_modal[1].dataVerificacao }}
+                </span>
+                <span>
+                  Problema Resolvido: Sim
+                </span>
+              </div>
+            </div>
+            <div v-if="modalHasError">
+              <div class="d-flex justify-content-center w-100 p-2 rounded"
+                   style="background-color: #ff4a4a5c; border: 1px solid #ff4a4aa6"
+              >
+                <span style="color: black">{{ modalErrorMessage }}</span>
+              </div>
+            </div>
+            <div class="d-flex justify-content-center">
+              <cancel-button label="Fechar" @click.native="closeModal()" />
+              <save-button label="Enviar" @click.native="alterEpiCheck()" />
+            </div>
           </div>
-          <div class="my-3 d-flex flex-column">
-            <span>
-              Data Verificação:
-              {{ this.$moment().format('DD-MM-YYYY') }}
-            </span>
-            <span>
-              Problema Resolvido: Sim
-            </span>
-          </div>
-          <div class="pt-2">
-            <h4>
-              Manutentor:
-            </h4>
-          </div>
-          <div class="my-3 d-flex flex-column">
-            <span>
-              Data Verificação:
-              {{ this.$moment().format('DD-MM-YYYY') }}
-            </span>
-            <span>
-              Problema Resolvido: Sim
-            </span>
-          </div>
-        </div>
-        <div v-if="modalHasError">
-          <div class="d-flex justify-content-center w-100 p-2 rounded"
-               style="background-color: #ff4a4a5c; border: 1px solid #ff4a4aa6"
-          >
-            <span style="color: black">{{ modalErrorMessage }}</span>
-          </div>
-        </div>
-        <div class="d-flex justify-content-center">
-          <cancel-button label="Fechar" @click.native="closeModal()" />
-          <save-button label="Enviar" @click.native="alterEpiCheck()" />
-        </div>
+        </b-modal>
       </div>
-    </b-modal>
+    </transition>
   </div>
 </template>
 
@@ -91,6 +98,13 @@ import { getErrors, getLocalStorageToken } from '../utils/utils';
 export default {
   data() {
     return {
+      state: {
+        view: 'verifications',
+      },
+      detail: {
+        order: {},
+      },
+      data_modal: [],
       columns: ['ordemServico_idOrdemServico', 'Solicitante', 'Reporte', 'Manutentor','actions'],
       verifications_list: [],
       options: {
@@ -124,13 +138,14 @@ export default {
 
       const orders_exist = [...new Set(orders)];
 
-      const data_table = orders_exist.map(i => ({ ordemServico_idOrdemServico: i }));
+      const data_table = orders_exist.map(i => this.verifications_list.find(j => j.ordemServico_idOrdemServico === i));
 
       for (const order of orders_exist) {
         for (const round_order of this.typeVerifications) {
           const exist = this.verifications_list.find(i => i.ordemServico_idOrdemServico === order &&
                                                         i.tipoVerificacao === round_order);
           const order_id = data_table.findIndex(i => i.ordemServico_idOrdemServico === order);
+
           if (exist !== undefined && round_order === 1)
             data_table[order_id].icon_report = 'fas fa-check';
           else if (exist === undefined && round_order === 1)
@@ -143,7 +158,6 @@ export default {
             data_table[order_id].icon_requester = 'fas fa-check';
           else if (exist === undefined && round_order === 3)
             data_table[order_id].icon_requester = 'fas fa-times';
-          data_table[order_id].link = 'https://www.google.com.br/';
         }
       }
 
@@ -152,6 +166,7 @@ export default {
   },
   mounted() {
     this.listVerifications();
+    this.$store.commit('addPageName', 'Verificações');
   },
 
   methods: {
@@ -171,7 +186,25 @@ export default {
         });
       }
     },
-    openModalDetailVerifications(props) {
+    openModalDetailVerifications(row) {
+      this.data_modal = [];
+      for (let i = 1; i <= 3; i++) {
+        console.log(i);
+        console.log(row);
+        console.log('Verification list: ', this.verifications_list);
+        this.data_modal.push(this.verifications_list.find(
+          j => j.ordemServico_idOrdemServico === row.ordemServico_idOrdemServico &&
+               j.tipoVerificacao === i));
+        console.log('data modal: ', this.data_modal);
+        if (this.data_modal[i-1] !== undefined) {
+          console.log('valor de i:', i);
+          this.data_modal[i-1].dataVerificacao = this.$moment(this.data_modal[i-1].dataVerificacao)
+            .format('DD-MM-YYYY');
+          console.log('modal list: ', this.data_modal[i-1].dataVerificacao);
+        }
+      
+      }
+      console.log('row: ', this.data_modal);
       this.showVerificationModal();
     },
     async showVerificationModal() {
@@ -180,11 +213,49 @@ export default {
     resetModal() {
       this.modalHasError = false;
     },
+    openOrder(props) {
+      this.getOrderDetail(props);
+    },
+    async getOrderDetail(props) {
+      try {
+        const order = { idOrdemServico: props.ordemServico_idOrdemServico };
+
+        const { result } = await this.$http.post('ordem-manutencao/detail', getLocalStorageToken(), {
+          order,
+        });
+
+        console.log('result :>> ', result);
+
+        this.$set(this.detail, 'order', result);
+        this.$store.commit('addPageName', `Consultas | ${props.ordemServico_idOrdemServico}`);
+
+        this.$router.push({
+          name: 'Consultas',
+          params: {
+            type_route: 'verification',
+            order_verification: result,
+          },
+        });
+      } catch (err) {
+        console.log('err getOrderDetail :>> ', err.response || err);
+
+        this.$swal({
+          type: 'warning',
+          text: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
+    closeDetail() {
+      this.$store.commit('addPageName', 'Verificações');
+      this.$set(this.state, 'view', 'verifications');
+    },
   },
 };
 </script>
 
 <style lang="scss">
+  .content-consult-verification{
     .content-verifications {
         font-family: "Avenir", Helvetica, Arial, sans-serif;
         text-align: center;
@@ -209,4 +280,5 @@ export default {
           color: var(--duas-rodas)
         }
     }
+  }
 </style>

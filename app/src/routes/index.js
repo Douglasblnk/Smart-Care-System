@@ -107,6 +107,7 @@ const routes = [
     name: 'Consultas',
     component: Consulta,
     meta: { requireAuth: true },
+    props: true,
   },
   {
     path: '/relatorios',
