@@ -175,8 +175,7 @@ export default {
         const { result } = await this.$http.get('verificacao/list-verification', getLocalStorageToken());
         if (result.length !== undefined)
           this.verifications_list = [...result];
-        else this.verifications_list = [result];
-        console.log('RESULT2', this.verifications_list);
+        else this.verifications_list.push(result);
       } catch (err) {
         console.log('err :>> ', err.response || err);
         return this.$swal({
@@ -187,24 +186,15 @@ export default {
       }
     },
     openModalDetailVerifications(row) {
-      this.data_modal = [];
       for (let i = 1; i <= 3; i++) {
-        console.log(i);
-        console.log(row);
-        console.log('Verification list: ', this.verifications_list);
-        this.data_modal.push(this.verifications_list.find(
+        this.data_modal.push({ ...this.verifications_list.find(
           j => j.ordemServico_idOrdemServico === row.ordemServico_idOrdemServico &&
-               j.tipoVerificacao === i));
-        console.log('data modal: ', this.data_modal);
+               j.tipoVerificacao === i) });
         if (this.data_modal[i-1] !== undefined) {
-          console.log('valor de i:', i);
           this.data_modal[i-1].dataVerificacao = this.$moment(this.data_modal[i-1].dataVerificacao)
             .format('DD-MM-YYYY');
-          console.log('modal list: ', this.data_modal[i-1].dataVerificacao);
         }
-      
       }
-      console.log('row: ', this.data_modal);
       this.showVerificationModal();
     },
     async showVerificationModal() {
@@ -212,6 +202,7 @@ export default {
     },
     resetModal() {
       this.modalHasError = false;
+      this.data_modal = [];
     },
     openOrder(props) {
       this.getOrderDetail(props);
