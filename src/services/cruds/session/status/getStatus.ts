@@ -1,9 +1,9 @@
-import AccessLevelDao from '../../../dao/selfCrudModule/AccessLevelDao';
+import statusDao from '../../dao/selfCrudModule/StatusDao';
 
 import { Connection } from 'mysql2/promise';
 import { get } from 'lodash';
 
-export default class GetAccessLevel {
+export default class GetStatus {
   _queryResult: any
 
   constructor() {
@@ -27,17 +27,17 @@ export default class GetAccessLevel {
       const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
 
-      await this.getAccessLevel(parameters);
+      await this.getStatus(parameters);
 
       return this._queryResult;
     } catch (err) {
-      console.log('err GetAccessLevel :>> ', err);
+      console.log('err getStatus :>> ', err);
 
       throw err;
     }
   }
 
-  private async getAccessLevel(parameters: { mysql: Connection; }) {
-    this._queryResult = await new AccessLevelDao(parameters).getAccessLevel();
+  private async getStatus(parameters: { mysql: Connection; }) {
+    this._queryResult = await new statusDao(parameters).getStatus();
   }
 }

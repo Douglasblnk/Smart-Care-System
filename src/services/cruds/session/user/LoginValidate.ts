@@ -1,6 +1,6 @@
-import userDao from '../../../dao/userModule/UserDao';
-import Criptografy from '../../../../../shared/guard/cryptography';
-import JwtToken from '../../../../../shared/auth/auth';
+import userDao from '../../dao/userModule/UserDao';
+import Criptografy from '../../../../shared/guard/cryptography';
+import JwtToken from '../../../../shared/auth/auth';
 
 // eslint-disable-next-line no-unused-vars
 import { Connection } from 'mysql2/promise';

@@ -4,7 +4,7 @@ import { Connection } from 'mysql2/promise';
 
 export default class SymptomDao extends GenericDao {
   _symptomDescription?: string;
-  _updateId?: number; // todo
+  _updateId?: number;
   _mysql: Connection;
   
   constructor({
@@ -60,6 +60,24 @@ export default class SymptomDao extends GenericDao {
   async updateSymptom() {
     const values = {
       descricaoSintomas: this._symptomDescription,
+    };
+
+    const [rows] = await this._mysql.query(/* SQL */`
+      UPDATE ${TABLE_SINTOMAS} SET ?
+        WHERE idSintomas = ?;
+    `, [values, this._updateId]);
+
+    return this.parseInsertResponse(rows);
+  }
+
+  /**
+   * deleteSymptom
+   * remove um sintoma do sistema
+   * @return {Array} parsed array com as informações de deleção
+   */
+  async deleteSymptom() {
+    const values = {
+      excluded: 1,
     };
 
     const [rows] = await this._mysql.query(/* SQL */`

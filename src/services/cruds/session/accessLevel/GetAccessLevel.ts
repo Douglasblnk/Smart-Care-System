@@ -1,9 +1,9 @@
-import SymptomDao from '../../../dao/selfCrudModule/SymptomDao';
+import AccessLevelDao from '../../dao/selfCrudModule/AccessLevelDao';
 
 import { Connection } from 'mysql2/promise';
 import { get } from 'lodash';
 
-export default class GetSymptom {
+export default class GetAccessLevel {
   _queryResult: any
 
   constructor() {
@@ -27,17 +27,17 @@ export default class GetSymptom {
       const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
 
-      await this.getSymptom(parameters);
+      await this.getAccessLevel(parameters);
 
       return this._queryResult;
     } catch (err) {
-      console.log('err GetSymptom :>> ', err);
+      console.log('err GetAccessLevel :>> ', err);
 
       throw err;
     }
   }
 
-  private async getSymptom(parameters: { mysql: Connection; }) {
-    this._queryResult = await new SymptomDao(parameters).getSymptom();
+  private async getAccessLevel(parameters: { mysql: Connection; }) {
+    this._queryResult = await new AccessLevelDao(parameters).getAccessLevel();
   }
 }

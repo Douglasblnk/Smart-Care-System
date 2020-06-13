@@ -20,9 +20,10 @@ app.use(auth.run.bind(auth));
 
 // CRUDS
 import user from './services/cruds/routes/userModule/User';
-import status from './services/cruds/routes/selfCrudModule/Status';
-import sintoma from './services/cruds/routes/selfCrudModule/Symptom';
-import nivelAcesso from './services/cruds/routes/selfCrudModule/AccessLevel';
+import status from './services/cruds/routes/crudsModule/Status';
+import sintoma from './services/cruds/routes/crudsModule/Symptom';
+import nivelAcesso from './services/cruds/routes/crudsModule/AccessLevel';
+// import ordemManutencao from './services/cruds/routes/orderModule/MaintenanceOrder';
 
 // const equipamento = require('./services/cruds/routes/Equipamento/Equipamento');
 // const localInstalacao = require('./services/cruds/routes/LocalInstalacao/LocalInstalacao');
@@ -30,7 +31,6 @@ import nivelAcesso from './services/cruds/routes/selfCrudModule/AccessLevel';
 // const tipoOrdem = require('./services/cruds/routes/TipoOrdem/TipoOrdem');
 // const causa = require('./services/cruds/routes/Causa/Causa');
 // const componente = require('./services/cruds/routes/Componente/Componente');
-// const ordemManutencao = require('./services/cruds/routes/OrdemManutencao/OrdemManutencao');
 // const tipoManutencao = require('./services/cruds/routes/TipoOrdem/TipoOrdem');
 // const prioridade = require('./services/cruds/routes/Prioridade/Prioridade');
 // const epi = require('./services/cruds/routes/Epi/Epi');

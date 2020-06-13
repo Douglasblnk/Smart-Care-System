@@ -1,10 +1,10 @@
-import SymptomDao from '../../../dao/selfCrudModule/SymptomDao';
+import SymptomDao from '../../dao/selfCrudModule/SymptomDao';
 
-import { ADMINISTRADOR_ID } from '../../../../../shared/constants/accessLevel';
-import { authData } from '../../../../../shared/types';
+import { ADMINISTRADOR_ID } from '../../../../shared/constants/accessLevel';
+import { authData } from '../../../../shared/types';
 import { Connection } from 'mysql2/promise';
 import { get } from 'lodash';
-import { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } from '../../../../../shared/constants/HTTPResponse';
+import { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } from '../../../../shared/constants/HTTPResponse';
 
 export default class RegisterUpdateSymptom {
   _queryReturn: any;
@@ -32,7 +32,7 @@ export default class RegisterUpdateSymptom {
     authData: authData,
   }, type?: string) => ({
     ...(!symptomDescription ? { symptomDescription: 'Descrição do sintoma não informado' } : ''),
-    ...(type === 'update' && !updateId ? { updateId: 'Id da descrição a ser alterada não informada' } : ''),
+    ...(type === 'update' && !updateId ? { updateId: 'Id do sintoma a ser alterado não informado' } : ''),
     ...(!mysql ? { mysql: 'Conexão não estabelecida' } : ''),
     ...(!authData ? { authData: 'Dados de autenticação não encontrados' } : ''),
   })
@@ -53,7 +53,7 @@ export default class RegisterUpdateSymptom {
 
       return this._queryReturn;
     } catch (err) {
-      console.log('err registerUser :>> ', err);
+      console.log('err RegisterUpdateSymptom :>> ', err);
 
       throw err;
     }
