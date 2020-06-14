@@ -1,4 +1,4 @@
-import EquipmentsDao from '../../dao/crudModule/EquipmentsDao';
+import InstallationLocationDao from '../../dao/crudModule/InstallationLocationDao';
 
 import { ADMINISTRADOR_ID } from '../../../../shared/constants/accessLevel';
 import { authData } from '../../../../shared/types';
@@ -6,7 +6,7 @@ import { Connection } from 'mysql2/promise';
 import { get } from 'lodash';
 import { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } from '../../../../shared/constants/HTTPResponse';
 
-export default class RegisterUpdateEquipments {
+export default class RegisterUpdateInstallationLocation {
   _queryReturn: any;
 
   constructor() {
@@ -14,40 +14,25 @@ export default class RegisterUpdateEquipments {
   }
 
   private getParameters = (req: { body: any, params: any, mysql: Connection }): {
-    sectorId: number,
-    equipment: string,
-    superiorEquipment: string,
-    descriptionEquipment: string,
+    sector: string,
     updateId: string,
     mysql: Connection,
     authData: authData,
   } => ({
-    sectorId: get(req.body, 'Setor_idSetor', ''),
-    equipment: get(req.body, 'equipamento', ''),
-    superiorEquipment: get(req.body, 'equipamentoSuperior', ''),
-    descriptionEquipment: get(req.body, 'descricao', ''),
+    sector: get(req.body, 'nome', ''),
     updateId: get(req.params, 'id', ''),
     mysql: get(req, 'mysql'),
     authData: get(req, 'authData', ''),
   })
 
-  private checkParameters = ({
-    sectorId, equipment, superiorEquipment, descriptionEquipment,
-    updateId, mysql, authData,
-  }: {
-    sectorId: number,
-    equipment: string,
-    superiorEquipment: string,
-    descriptionEquipment: string,
+  private checkParameters = ({ sector, updateId, mysql, authData }: {
+    sector: string,
     updateId: string,
     mysql: Connection,
     authData: authData,
   }, type?: string) => ({
-    ...(!sectorId ? { sectorId: 'Id do setor não informado' } : ''),
-    ...(!equipment ? { equipment: 'Equipamento não informado' } : ''),
-    ...(!superiorEquipment ? { superiorEquipment: 'Equipamento superior não informado' } : ''),
-    ...(!descriptionEquipment ? { descriptionEquipment: 'Descrição do Equipamento não informado' } : ''),
-    ...(type === 'update' && !updateId ? { updateId: 'Id do Equipamento a ser alterado não informado' } : ''),
+    ...(!sector ? { sector: 'Setor não informado' } : ''),
+    ...(type === 'update' && !updateId ? { updateId: 'Id do Setor a ser alterado não informado' } : ''),
     ...(!mysql ? { mysql: 'Conexão não estabelecida' } : ''),
     ...(!authData ? { authData: 'Dados de autenticação não encontrados' } : ''),
   })
@@ -61,24 +46,24 @@ export default class RegisterUpdateEquipments {
       
       await this.validateGroups(parameters);
 
-      await this.registerUpdateEquipment(parameters, type);
+      await this.registerUpdateInstallationLocation(parameters, type);
       
       if (!this._queryReturn.affectedRows)
         throw type ? 'Nenhum registro foi alterado' : 'Nenhum registro foi inserido';
 
       return this._queryReturn;
     } catch (err) {
-      console.log('err registerUpdateEquipment :>> ', err);
+      console.log('err RegisterUpdateInstallationLocation :>> ', err);
 
       throw err;
     }
   }
   
-  private async registerUpdateEquipment(parameters: any, type?: string) {
+  private async registerUpdateInstallationLocation(parameters: any, type?: string) {
     if (type === 'update')
-      this._queryReturn = await new EquipmentsDao(parameters).updateEquipment();
+      this._queryReturn = await new InstallationLocationDao(parameters).updateSector();
 
-    else this._queryReturn = await new EquipmentsDao(parameters).registerEquipment();
+    else this._queryReturn = await new InstallationLocationDao(parameters).registerSector();
   }
 
   private async validateGroups({ authData }: { authData: authData}) {

@@ -35,58 +35,52 @@ export default class InstallationLocationDao extends GenericDao {
   }
 
   /**
-   * registerEquipment
-   * Registra um equipamento no sistema
+   * registerSector
+   * Registra um setor no sistema
    * @return {Array} parsed array com dados da inserção
    */
-//   async registerEquipment() {
-//     const values = {
-//       Setor_idSetor: this._sectorId,
-//       descricao: this._descriptionEquipment,
-//       equipamento: this._equipment,
-//       equipamentoSuperior: this._superiorEquipment,
-//     };
-//     const [rows] = await this._mysql.query(/* SQL */`
-//       INSERT INTO ${TABLE_EQUIPAMENTO} SET ?;
-//     `, [values]);
+  async registerSector() {
+    const values = {
+      nome: this._sector,
+    };
+    const [rows] = await this._mysql.query(/* SQL */`
+      INSERT INTO ${TABLE_SETOR} SET ?;
+    `, [values]);
 
-//     return this.parseInsertResponse(rows);
-//   }
+    return this.parseInsertResponse(rows);
+  }
 
   /**
-   * updateEquipment
-   * Altera um equipamento no sistema
+   * updateSector
+   * Altera um setor no sistema
    * @return {Array} parsed array com dados da alteração
    */
-//   async updateEquipment() {
-//     const values = {
-//       Setor_idSetor: this._sectorId,
-//       descricao: this._descriptionEquipment,
-//       equipamento: this._equipment,
-//       equipamentoSuperior: this._superiorEquipment,
-//     };
-//     const [rows] = await this._mysql.query(/* SQL */`
-//     UPDATE ${TABLE_EQUIPAMENTO} SET ? WHERE idEquipamento = ?;
-//     `, [values, this._updateId]);
+  async updateSector() {
+    const values = {
+      nome: this._sector,
+    };
+    const [rows] = await this._mysql.query(/* SQL */`
+    UPDATE ${TABLE_SETOR} SET ? WHERE idSetor = ?;
+    `, [values, this._updateId]);
 
-//     return this.parseInsertResponse(rows);
-//   }
+    return this.parseInsertResponse(rows);
+  }
 
   /**
-   * deleteEquipment
-   * remove um equipamento do sistema
+   * deleteSector
+   * remove um setor do sistema
    * @return {Array} parsed array com as informações de deleção
    */
-//   async deleteEquipment() {
-//     const values = {
-//       excluded: 1,
-//     };
+  async deleteSector() {
+    const values = {
+      excluded: 1,
+    };
 
-//     const [rows] = await this._mysql.query(/* SQL */`
-//       UPDATE ${TABLE_EQUIPAMENTO} SET ?
-//       WHERE ${TABLE_EQUIPAMENTO}.idEquipamento = ?;
-//     `, [values, this._updateId]);
+    const [rows] = await this._mysql.query(/* SQL */`
+      UPDATE ${TABLE_SETOR} SET ?
+      WHERE ${TABLE_SETOR}.idSetor = ?;
+    `, [values, this._updateId]);
 
-//     return this.parseInsertResponse(rows);
-//   }
+    return this.parseInsertResponse(rows);
+  }
 }
