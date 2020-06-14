@@ -26,7 +26,7 @@ import nivelAcesso from './services/cruds/routes/crudsModule/AccessLevel';
 import ordemManutencao from './services/cruds/routes/orderModule/MaintenanceOrder';
 import equipamento from './services/cruds/routes/crudsModule/Equipment';
 
-// const localInstalacao = require('./services/cruds/routes/LocalInstalacao/LocalInstalacao');
+import localInstalacao from './services/cruds/routes/crudsModule/InstallationLocation';
 // const centroTrabalho = require('./services/cruds/routes/CentroTrabalho/CentroTrabalho');
 // const tipoOrdem = require('./services/cruds/routes/TipoOrdem/TipoOrdem');
 // const causa = require('./services/cruds/routes/Causa/Causa');
@@ -48,7 +48,7 @@ app.use('/sintoma', sintoma);
 app.use('/nivel-acesso', nivelAcesso);
 app.use('/ordem-manutencao', ordemManutencao);
 app.use('/equipments', equipamento);
-// app.use('/local-instalacao', localInstalacao);
+app.use('/local-instalacao', localInstalacao);
 // app.use('/centro-trabalho', centroTrabalho);
 // app.use('/tipo-ordem', tipoOrdem);
 // app.use('/causa', causa);
