@@ -23,7 +23,7 @@ const dashboard = [
     {
         name: 'Verificações',
         link: '/consulta-verificacoes',
-        icon: 'fa fa-search',
+        icon: 'fas fa-clipboard-list',
         mobile: true,
         web: true,
     },

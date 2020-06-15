@@ -288,8 +288,6 @@ export default {
             status: 'status-class',
             actions: 'actions-class',
           },
-          perPage: 25,
-          perPageValues: [25, 50, 100],
           sortable: ['idOrdemServico', 'dataEmissao'],
           sortIcon: {
             base: 'fa fa-fw',
