@@ -1,8 +1,10 @@
-const importComponent = path => () => import(`@/components/${path}.vue`);
+const importComponent = path => () => import('@/components/' + path + '.vue');
 
 export default {
   install(Vue) {
     Vue.component('save-button', importComponent('button/save-button'));
+    Vue.component('smart-button', importComponent('button/smart-button'));
+    Vue.component('card', importComponent('card/card'));
     Vue.component('simple-button', importComponent('button/simple-button'));
     Vue.component('cancel-button', importComponent('button/cancel-button'));
     Vue.component('mobile-save-button', importComponent('button/mobile-save-button'));
