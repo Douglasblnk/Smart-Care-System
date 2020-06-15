@@ -298,7 +298,7 @@
         />
       </div>
     </transition>
-  <b-modal @hide="resetModal()" @show="checkSelectedEpis()" centered ref="my-modal" hide-footer hide-header title="Verificação de EPIs">
+    <b-modal @hide="resetModal()" @show="checkSelectedEpis()" centered ref="my-modal" hide-footer hide-header title="Verificação de EPIs">
       <div class="d-block text">
         <div class="text-center">
           <h3>Verificação de EPIs na ordem</h3>
@@ -327,25 +327,119 @@
       </div>
     </b-modal>
     <!-- modalConvida tecnico -->
-    <div>
-      <b-button v-b-modal.modal-lg> convida tecnico</b-button>
+    <div class="invite-technical-modal">
+      <save-button @click.native="showAddModal()" label="convida tecnico"></save-button>
 
-      <b-modal id="modal-lg" size="lg" title="BootstrapVue">
+      <b-modal ref="convida tecnico" size="lg" title="Convidar Tecnico" hide-header hide-footer centered class="d-block text-center">
         <div>
+          <h3 class="text-center">Convidar Tecnico</h3>
           <b-tabs content-class="mt-3">
             <b-tab title="First" active>
               <template v-slot:title>
-                <p>Cylon animation:</p>
-                <b-icon icon="list-ul" animation="cylon" font-scale="4"></b-icon>
+                <i class="fa fa-list fa-fw mr-1 fa-sm" aria-hidden="true" style="color:#555" />
+                <span>Listagem dos técnicos</span>
               </template>
-             </b-tab>
-            <b-tab title="Second"><p>I'm the second tab</p></b-tab>
+
+              <b-container fluid>
+                <!-- User Interface controls -->
+                <b-row>
+                  <b-col lg="6" class="my-1">
+                    <b-form-group
+                      label="Usuario"
+                      label-cols-sm="3"
+                      label-align-sm="right"
+                      label-size="sm"
+                      label-for="filterInput"
+                      class="mb-0"
+                    >
+                      <b-input-group size="sm" class="filter-mecanic-add-in-order">
+                        <b-form-input
+                          v-model="filterUser"
+                          type="search"
+                          id="filterInput"
+                          placeholder="Pesquisa nome mecanico"
+                        ></b-form-input>
+                        <b-input-group-append>
+                          <b-button :disabled="!filter" @click="filter = ''">Clear</b-button>
+                        </b-input-group-append>
+                      </b-input-group>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+
+                <!-- Main table element -->
+                <b-table
+                  id="my-table"
+                  show-empty
+                  small
+                  fixed
+                  stacked="md"
+                  responsive
+                  :items="manutentores"
+                  :fields="fields"
+                  :current-page="currentPage"
+                  :per-page="perPage"
+                  :filter="filter"
+                  :filterIncludedFields="filterOn"
+                  :sort-by.sync="sortBy"
+                  :sort-desc.sync="sortDesc"
+                  :sort-direction="sortDirection"
+                  @filtered="onFiltered"
+                >
+                  <template v-slot:cell(name)="row">
+                    {{ row.item.nome }}
+                     <!-- {{ row }} -->
+                  </template>
+
+                  <template v-slot:cell(actions)="row">
+                    <cancel-button label="Adicionar"  @click.native="info(row.item, row.index, $event.target)">
+                    </cancel-button>
+                  <!-- <b-button size="sm" @click="row.toggleDetails">
+                    {{ row.detailsShowing ? 'Hide' : 'Show' }} Details
+        </b-button> -->
+                  </template>
+                  <template v-slot:row-details="row">
+                    <b-card>
+                      <ul>
+                        <li v-for="(value, key) in row.item" :key="key">{{ key }}: {{ value }}</li>
+                      </ul>
+                    </b-card>
+                  </template>
+                </b-table>
+                <div class="overflow-auto">
+                  <div>
+                    <b-pagination
+                      v-model="currentPage"
+                      :total-rows="rows"
+                      :per-page="perPage"
+                      align="center"
+                      pills
+                      class="my-0 "
+                      aria-controls="my-table"
+                    ></b-pagination>
+                  </div>
+                </div>
+                <!-- Info modal -->
+                <b-modal :id="infoModal.id" :title="infoModal.title" ok-only @hide="resetInfoModal">
+                  <pre>{{ infoModal.content }}</pre>
+                </b-modal>
+              </b-container>
+            </b-tab>
+            <b-tab title="Second">
+              <template v-slot:title>
+                <i class="fa fa-users fa-fw mr-1" aria-hidden="true" style="color:#555" />
+                <span>Técnicos convidados</span>
+              </template>
+              sdfsdfsdf
+            </b-tab>
           </b-tabs>
+        </div>
+        <div class="container-button-modal">
+          <save-button label="Fechar" />
         </div>
       </b-modal>
     </div>
   </div>
-
 </template>
 
 <script>
@@ -367,6 +461,26 @@ export default {
 
   data() {
     return {
+      fields: [
+        { key: 'name', label: 'Nome', sortable: true, sortDirection: 'desc' },
+        // { key: 'age', label: 'Person age', sortable: true, class: 'text-center' },
+        { key: 'actions', label: 'Ações', class: 'texte-class' },
+      ],
+      totalRows: 5,
+      currentPage: 1,
+      perPage: 5,
+      pageOptions: [5, 5, 5],
+      sortBy: '',
+      sortDesc: false,
+      sortDirection: 'asc',
+      filter: null,
+      filterUser: null,
+      filterOn: [],
+      infoModal: {
+        id: 'info-modal',
+        title: '',
+        content: '',
+      },
       state: {
         view: 'detail',
       },
@@ -392,6 +506,17 @@ export default {
   },
 
   computed: {
+    rows() {
+      return this.manutentores.length;
+    },
+    sortOptions() {
+      // Create an options list from our fields
+      return this.fields
+        .filter(f => f.sortable)
+        .map(f => {
+          return { text: f.label, value: f.key };
+        });
+    },
     verifyUserAccess() {
       const user = this.$store.state.user;
       if (user.nivelAcesso === 2) {
@@ -441,6 +566,7 @@ export default {
   },
   
   mounted() {
+    this.totalRows = this.items.length;
     this.setActivity();
     this.getManutentoresInOrdem();
     this.getReportRequester();
@@ -448,6 +574,28 @@ export default {
   },
 
   methods: {
+    showAddModal() {
+      this.getManutentor();
+      this.$refs['convida tecnico'].show();
+      
+    },
+    closeAddModal() {
+      this.$refs['convida tecnico'].hide();
+    },
+    info(item, index, button) {
+      this.infoModal.title = `Row index: ${index}`;
+      this.infoModal.content = JSON.stringify(item, null, 2);
+      this.$root.$emit('bv::show::modal', this.infoModal.id, button);
+    },
+    resetInfoModal() {
+      this.infoModal.title = '';
+      this.infoModal.content = '';
+    },
+    onFiltered(filteredItems) {
+      // Trigger pagination to update the number of buttons/pages due to filtering
+      this.totalRows = filteredItems.length;
+      this.currentPage = 1 ;
+    },
     resetModal() {
       this.modalHasError = false;
       this.modalErrorMessage = '';
@@ -602,12 +750,12 @@ export default {
 
           this.$http.setActivity(
             'registerUser',
-              {
-                ...this.$store.state.user,
-                date: this.$moment().format('DD-MM-YYYY HH-mm'),
-                descricao: `${this.$store.state.user.nome}
-                registerUser o usuário ${row.nome} para ajudar na ordem serviço`,
-              },
+            {
+              ...this.$store.state.user,
+              date: this.$moment().format('DD-MM-YYYY HH-mm'),
+              descricao: `${this.$store.state.user.nome}
+              registerUser o usuário ${row.nome} para ajudar na ordem serviço`,
+            },
             getLocalStorageToken(),
           );
         } else {
@@ -940,11 +1088,10 @@ export default {
             transform: scale(1) !important;
           }
         }
-
-
       }
     }
   }
+
   .order-options-wrapper {
     display: flex;
     justify-content: space-around;
@@ -976,7 +1123,7 @@ export default {
       }
     }
   }
-  .Button_close{
+  .Button_close {
     color:#030303;
   }
   @media screen and (max-width: 1366px) {
@@ -985,8 +1132,80 @@ export default {
     }
   }
 }
+
+.container-button-modal {
+  padding: 0.5rem;
+  display: flex;
+  justify-content: center;
+}
+
 .Span_lerta {
   color: #ff0303;
   font-family: 'Montserrat';
 }
+
+.root-save-button-componenet {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center!important;
+
+}
+
+.root-save-button-componenet .save-button {
+  padding: 3px 8px !important;
+  border-radius: 15px !important;
+
+}
+.root-save-button-componenet .save-button .m-3 {
+  margin: 0.5rem !important;
+}
+</style>
+<style lang="scss">
+.page-item.active, .page-link {
+  border-color: #ddd !important;
+}
+.pagination > li.active > a,
+.pagination > li > a:hover {
+  color: white !important;
+  background-color: var(--duas-rodas-soft) !important;
+}
+.page-link {
+  color: #555 !important;
+  &:focus {
+    background-color: var(--duas-rodas-soft) !important;
+    box-shadow: none !important;
+  }
+}
+.filter-mecanic-add-in-order {
+  display: flex !important;
+  justify-content:center !important;
+}
+v-link {
+  color: #555 !important
+}
+// @media (min-width: 576px)
+.row {
+  margin-right: 15px !important;
+  margin-left: -43px !important;
+}
+.table th, .table td {
+  vertical-align: middle !important;
+
+}
+.texte-class {
+  color: purple;
+  display: flex;
+  justify-content: flex-end;
+  
+  
+}
+// .table-sm th {
+//   text-align: center;
+// }
+// .table thead th  {
+//   text-align: center;
+// }
+// .table th, .table td  {
+//   text-align: center;
+// }
 </style>
