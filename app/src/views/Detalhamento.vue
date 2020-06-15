@@ -4,12 +4,10 @@
       <div class="detail-content" v-if="state.view === 'detail'">
         <div class="d-flex">
           <div>
-            <simple-button
-              :no-margin="true"
-              label="Voltar"
-              prefix="fa-arrow-left"
-              @click.native="() => $emit('state-list')"
-            />
+            <smart-button @click.native="() => $emit('state-list')" simple  class="mb-2 back-button">
+              <i class="fa fa-arrow-left mr-2"/>
+              <span>Voltar</span>
+            </smart-button>
           </div>
         </div>
         <div class="detail-container bg-white p-3 d-flex">
@@ -322,8 +320,12 @@
         </div>
       </div>
       <div class="d-flex justify-content-center">
-        <cancel-button label="Fechar" @click.native="closeModal()" />
-        <save-button label="Enviar" @click.native="alterEpiCheck()" />
+        <smart-button @click.native="closeModal()">
+          <span>Fechar</span>
+        </smart-button>
+        <smart-button @click.native="alterEpiCheck()">
+          <span>Enviar</span>
+        </smart-button>
       </div>
     </b-modal>
   </div>

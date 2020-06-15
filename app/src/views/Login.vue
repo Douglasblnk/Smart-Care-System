@@ -19,7 +19,9 @@
               </div>
             </div>
             <div class="d-flex justify-content-center m-3">
-              <save-button label="Entrar" :loading="isLoading" />
+              <smart-button :loading="isLoading" primary>
+                <span>Entrar</span>
+              </smart-button>
             </div>
           </form>
         </div>

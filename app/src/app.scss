@@ -155,23 +155,8 @@ span, p, strong {
 }
 
 .back-button {
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-  border-radius: 8px;
-  transition: .2s;
   color: var(--duas-rodas-soft);
-  font-size: 20px;
-  cursor: pointer;
-  span {
-    margin: 0 5px
-  }
-  &:hover {
-    background-color: #ddd;
-  }
-  &:active {
-    background-color: #c7c7c7;
-  }
+  font-size: 18px;
 }
 
 .slide-fade-enter-active {

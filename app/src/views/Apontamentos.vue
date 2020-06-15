@@ -1,12 +1,9 @@
 <template>
   <div class="root-note-view">
     <div class="my-3">
-      <simple-button
-        :no-margin="true"
-        label="Voltar"
-        prefix="fa-arrow-left"
-        @click.native="() => $emit('state-list')"
-      />
+      <smart-button simple @click.native="() => $emit('state-list')">
+        <span>Voltar</span>
+      </smart-button>
     </div>
     <div class="note-content p-3 d-flex">
       <div class="note-title">
@@ -36,7 +33,9 @@
     </div>
     <form class="formPosition" @submit.prevent="NoteOrder()">
       <div class="d-flex justify-content-center m-3">
-        <save-button label="Apontar" />
+        <smart-button>
+          <span>Apontar</span>
+        </smart-button>
       </div>
     </form>
   </div>

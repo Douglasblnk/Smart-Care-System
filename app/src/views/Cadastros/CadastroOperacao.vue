@@ -65,8 +65,12 @@
                 <b-button type="submit" value="send" variant="danger">Cadastrar</b-button>
               </div> -->
               <div class="d-flex justify-content-center m-3">
-                <save-button :label="getSaveButtonText()" />
-                <cancel-button v-if="isEditing" @click.native="closeEditing" label="Cancelar" />
+                  <smart-button primary class="mr-2">
+                    {{getSaveButtonText()}}
+                  </smart-button>
+                <smart-button v-if="isEditing" @click.native="closeEditing">
+                  <span>Cancelar</span>
+                </smart-button>
               </div>
             </form>
           </template>

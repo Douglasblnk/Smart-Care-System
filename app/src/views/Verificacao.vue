@@ -1,12 +1,9 @@
 <template>
   <div class="root-verification-view">
     <div class="my-3">
-      <simple-button
-        :no-margin="true"
-        label="Voltar"
-        prefix="fa-arrow-left"
-        @click.native="() => $emit('state-list')"
-      />
+      <smart-button simple @click.native="() => $emit('state-list')">
+        <span>Voltar</span>
+      </smart-button>
     </div>
     <div class="verification-content p-3 d-flex">
       <div class="verification-title">
@@ -28,7 +25,9 @@
     </div>
     <form class="formPosition" @submit.prevent="verificationOrder()">
       <div class="d-flex justify-content-center m-3">
-        <save-button label="Verificar" />
+        <smart-button>
+          <span>Verificar</span>          
+        </smart-button>
       </div>
     </form>
   </div>
