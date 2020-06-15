@@ -28,7 +28,7 @@ export default class InstallationLocationDao extends GenericDao {
       SELECT 
         * 
       FROM ${TABLE_SETOR}
-      WHERE ${TABLE_SETOR}.excluded = 0;
+      WHERE ${TABLE_SETOR}.excluded = ?;
     `, [0]);
 
     return this.parseSelectResponse(rows);

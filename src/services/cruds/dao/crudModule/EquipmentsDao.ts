@@ -38,7 +38,7 @@ export default class EquipmentsDao extends GenericDao {
       SELECT 
         * 
       FROM ${TABLE_EQUIPAMENTO}
-      WHERE ${TABLE_EQUIPAMENTO}.excluded = 0;
+      WHERE ${TABLE_EQUIPAMENTO}.excluded = ?;
     `, [0]);
 
     return this.parseSelectResponse(rows);
