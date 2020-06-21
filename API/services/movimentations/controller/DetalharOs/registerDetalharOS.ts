@@ -33,6 +33,7 @@ export default class RegisterDetalharOS {
                 return result2;
                 
             }else {
+                // colocar um if e ul selse qui para uma segunda condiçao de inserçao so podemndo adm e manutentor
                 const queryInsert = this.getQuery(data);
                 const resulta = await commitData.run(queryInsert)
                 return resulta; 

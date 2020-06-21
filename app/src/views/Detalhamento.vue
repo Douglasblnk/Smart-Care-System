@@ -328,7 +328,7 @@
     </b-modal>
     <!-- modalConvida tecnico -->
     <div class="invite-technical-modal">
-      <save-button @click.native="showAddModal()" label="convida tecnico"></save-button>
+      <smart-button @click.native="showAddModal()">convida tecnico</smart-button>
 
       <b-modal ref="convida tecnico" size="lg" title="Convidar Tecnico" hide-header hide-footer centered class="d-block text-center">
         <div>
@@ -392,8 +392,9 @@
                   </template>
 
                   <template v-slot:cell(actions)="row">
-                    <cancel-button label="Adicionar"  @click.native="info(row.item, row.index, $event.target)">
-                    </cancel-button>
+                    <smart-button @click.native="addManutentor(row.item, row.index, $event.target)">
+                      Adicionar
+                    </smart-button>
                   <!-- <b-button size="sm" @click="row.toggleDetails">
                     {{ row.detailsShowing ? 'Hide' : 'Show' }} Details
         </b-button> -->
@@ -430,12 +431,101 @@
                 <i class="fa fa-users fa-fw mr-1" aria-hidden="true" style="color:#555" />
                 <span>Técnicos convidados</span>
               </template>
-              sdfsdfsdf
+              <template v-slot:title>
+                <i class="fa fa-list fa-fw mr-1 fa-sm" aria-hidden="true" style="color:#555" />
+                <span>Listagem dos técnicos</span>
+              </template>
+
+              <b-container fluid>
+                <!-- User Interface controls -->
+                <b-row>
+                  <b-col lg="6" class="my-1">
+                    <b-form-group
+                      label="Usuario"
+                      label-cols-sm="3"
+                      label-align-sm="right"
+                      label-size="sm"
+                      label-for="filterInput"
+                      class="mb-0"
+                    >
+                      <b-input-group size="sm" class="filter-mecanic-add-in-order">
+                        <b-form-input
+                          v-model="filterUser"
+                          type="search"
+                          id="filterInput"
+                          placeholder="Pesquisa nome mecanico"
+                        ></b-form-input>
+                        <b-input-group-append>
+                          <b-button :disabled="!filter" @click="filter = ''">Clear</b-button>
+                        </b-input-group-append>
+                      </b-input-group>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+
+                <!-- Main table element -->
+                <b-table
+                  id="my-table"
+                  show-empty
+                  small
+                  fixed
+                  stacked="md"
+                  responsive
+                  :items="listManutentorInOrdem"
+                  :fields="fields"
+                  :current-page="currentPage"
+                  :per-page="perPage"
+                  :filter="filter"
+                  :filterIncludedFields="filterOn"
+                  :sort-by.sync="sortBy"
+                  :sort-desc.sync="sortDesc"
+                  :sort-direction="sortDirection"
+                  @filtered="onFiltered"
+                >
+                  <template v-slot:cell(name)="row">
+                    {{ row.item.nome }}
+                     <!-- {{ row }} -->
+                  </template>
+
+                  <template v-slot:cell(actions)="row">
+                    <smart-button @click.native="removeManutentor(row.item, row.index, $event.target)">
+                      Remover
+                    </smart-button>
+                  <!-- <b-button size="sm" @click="row.toggleDetails">
+                    {{ row.detailsShowing ? 'Hide' : 'Show' }} Details
+        </b-button> -->
+                  </template>
+                  <template v-slot:row-details="row">
+                    <b-card>
+                      <ul>
+                        <li v-for="(value, key) in row.item" :key="key">{{ key }}: {{ value }}</li>
+                      </ul>
+                    </b-card>
+                  </template>
+                </b-table>
+                <div class="overflow-auto">
+                  <div>
+                    <b-pagination
+                      v-model="currentPage"
+                      :total-rows="rowsManutentorInOrder"
+                      :per-page="perPage"
+                      align="center"
+                      pills
+                      class="my-0 "
+                      aria-controls="my-table"
+                    ></b-pagination>
+                  </div>
+                </div>
+                <!-- Info modal -->
+                <b-modal :id="infoModal.id" :title="infoModal.title" ok-only @hide="resetInfoModal">
+                  <pre>{{ infoModal.content }}</pre>
+                </b-modal>
+              </b-container>
             </b-tab>
           </b-tabs>
         </div>
         <div class="container-button-modal">
-          <save-button label="Fechar" />
+          <smart-button primary @click.native="closeAddModal()">Ok</smart-button>
         </div>
       </b-modal>
     </div>
@@ -462,9 +552,9 @@ export default {
   data() {
     return {
       fields: [
-        { key: 'name', label: 'Nome', sortable: true, sortDirection: 'desc' },
+        { key: 'name', label: 'Nome' },
         // { key: 'age', label: 'Person age', sortable: true, class: 'text-center' },
-        { key: 'actions', label: 'Ações', class: 'texte-class' },
+        { key: 'actions', label: 'Ações', class: 'modal-th-td-style' },
       ],
       totalRows: 5,
       currentPage: 1,
@@ -508,6 +598,9 @@ export default {
   computed: {
     rows() {
       return this.manutentores.length;
+    },
+    rowsManutentorInOrder() {
+      return this.listManutentorInOrdem.length;
     },
     sortOptions() {
       // Create an options list from our fields
@@ -661,7 +754,7 @@ export default {
         this.$set(this.isLoading, 'convidar', true);
         await this.getManutentor();
 
-        this.dialogVisible = true;
+        this.$refs['convida tecnico'].show();
       } catch (err) {
         console.log('err openIntiveTechnician :>> ', err.response || err);
 
@@ -1134,7 +1227,7 @@ export default {
 }
 
 .container-button-modal {
-  padding: 0.5rem;
+  padding: 1rem;
   display: flex;
   justify-content: center;
 }
@@ -1144,21 +1237,21 @@ export default {
   font-family: 'Montserrat';
 }
 
-.root-save-button-componenet {
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center!important;
+// .root-save-button-componenet {
+//   display: flex !important;
+//   justify-content: center !important;
+//   align-items: center!important;
 
-}
+// }
 
-.root-save-button-componenet .save-button {
-  padding: 3px 8px !important;
-  border-radius: 15px !important;
+// .root-save-button-componenet .save-button {
+//   padding: 3px 8px !important;
+//   border-radius: 15px !important;
 
-}
-.root-save-button-componenet .save-button .m-3 {
-  margin: 0.5rem !important;
-}
+// }
+// .root-save-button-componenet .save-button .m-3 {
+//   margin: 0.5rem !important;
+// }
 </style>
 <style lang="scss">
 .page-item.active, .page-link {
@@ -1192,11 +1285,12 @@ v-link {
   vertical-align: middle !important;
 
 }
-.texte-class {
-  color: purple;
+.modal-th-td-style {
+  // color: purple;
   display: flex;
   justify-content: flex-end;
-  
+
+  // align-items: center !important;
   
 }
 // .table-sm th {
@@ -1205,7 +1299,11 @@ v-link {
 // .table thead th  {
 //   text-align: center;
 // }
-// .table th, .table td  {
-//   text-align: center;
-// }
+.table th, .table td  {
+  // margin-right: 0.5rem;
+}
+.table th {
+   // margin-right: 0.5rem;
+   padding-right: 2rem !important;
+}
 </style>
