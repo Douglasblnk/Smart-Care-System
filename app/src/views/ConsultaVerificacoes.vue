@@ -2,12 +2,12 @@
   <div class="content-consult-verification">
     <transition name="slide-side" mode="out-in">
       <div v-if="state.view === 'verifications'" key="verifications" class="content-verifications">
+        <div class="card-title d-flex justify-content-center align-items-center">
+          <h3>Análise de Verificações</h3>
+        </div>
         <card fullWidth>
-          <div class="card-title d-flex justify-content-center align-items-center">
-            <span>Análise de Verificações</span>
-          </div>
           <div class="table-verifications">
-            <v-client-table v-model="listVerificationsStatus" :columns="columns" :options="options">
+            <v-client-table ref="table_verification" v-model="listVerificationsStatus" :columns="columns" :options="options">
               <span slot="Solicitante" slot-scope="{row}" style="font-size: 2em;">
                 <i :class="row.icon_requester"></i>
               </span>
@@ -32,47 +32,30 @@
           >
             <div class="d-block text">
               <div class="text-center">
-                <h3>Detalhes Verificações</h3>
+                <h3>Situação de Verificações</h3>
               </div>
-              <h4>
-                Solicitante:
-              </h4>
               <div class="my-3 d-flex flex-column">
-                <span>
-                  Data Verificação:
-                  {{ this.$moment().format('DD-MM-YYYY') }}
-                </span>
-                <span>
-                  Problema Resolvido: Sim
-                </span>
-                <div class="pt-2">
-                  <h4>
-                    Administrador:
-                  </h4>
-                </div>
-                <div class="my-3 d-flex flex-column">
-                  <span>
-                    Data Verificação:
-                    {{ this.$moment().format('DD-MM-YYYY') }}
-                    
-                  </span>
-                  <span>
-                    Problema Resolvido: Sim
-                  </span>
-                </div>
-                <div class="pt-2">
-                  <h4>
-                    Manutentor:
-                  </h4>
-                </div>
-                <div v-if="data_modal[1] != undefined" class="my-3 d-flex flex-column">
-                  <span>
-                    Data Verificação:
-                    {{ data_modal[1].dataVerificacao }}
-                  </span>
-                  <span>
-                    Problema Resolvido: Sim
-                  </span>
+                <div v-if="rowModalOpen.ordemServico_idOrdemServico !== undefined">
+                  <div v-for="(item, index) in modalData" :key="`ìtem-${index}`">
+                    <h3>
+                      {{ item.user_description }}:
+                    </h3>
+                    <div v-if="item.problemaResolvido !== undefined">
+                      <span class="user_detail_verification">
+                        <i class="fas fa-calendar-alt"></i>
+                        {{ item.dataVerificacao }}
+                      </span>
+                      <div>
+                        <span class="user_detail_verification">
+                          <i class="fas fa-lightbulb"></i>
+                          Problema: {{ item.problemaResolvidoDescricao }}
+                        </span>
+                      </div>
+                    </div>
+                    <div v-if="item.problemaResolvido == undefined" class="user_detail_verification">
+                      <p>Verificação Pendente</p>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div v-if="modalHasError">
@@ -84,7 +67,6 @@
               </div>
               <div class="d-flex justify-content-center">
                 <cancel-button label="Fechar" @click.native="closeModal()" />
-                <save-button label="Enviar" @click.native="alterEpiCheck()" />
               </div>
             </div>
           </b-modal>
@@ -107,6 +89,7 @@ export default {
         order: {},
       },
       data_modal: [],
+      rowModalOpen: {},
       columns: ['ordemServico_idOrdemServico', 'Solicitante', 'Reporte', 'Manutentor','actions'],
       verifications_list: [],
       options: {
@@ -132,7 +115,7 @@ export default {
         perPageValues: [10, 25, 50],
         sortable: ['ordemServico_idOrdemServico'],
       },
-      typeVerifications: [1,2,3],
+      typeVerifications: [1, 2, 3],
       modalHasError: false,
     };
   },
@@ -166,6 +149,33 @@ export default {
       }
       return data_table;
     },
+    modalData() {
+      const data_modal = [];
+      if (this.rowModalOpen.ordemServico_idOrdemServico !== undefined) {
+        for (const i of this.typeVerifications) {
+          data_modal.push({ ...this.verifications_list.find(
+            j => j.ordemServico_idOrdemServico === this.rowModalOpen.ordemServico_idOrdemServico &&
+                j.tipoVerificacao === i) });
+          if (data_modal[i-1] !== undefined) {
+            data_modal[i-1].dataVerificacao = this.$moment(data_modal[i-1].dataVerificacao)
+              .format('DD-MM-YYYY');
+          }
+          if (data_modal[i-1].problemaResolvido === '0')
+            data_modal[i-1].problemaResolvidoDescricao = 'Não Resolvido';
+          else if (data_modal[i-1].problemaResolvido === '1')
+            data_modal[i-1].problemaResolvidoDescricao = 'Resolvido';
+          
+          if (i === 1)
+            data_modal[i-1].user_description = 'Administrador';
+          if (i === 2)
+            data_modal[i-1].user_description = 'Manutentor';
+          if (i === 3)
+            data_modal[i-1].user_description = 'Solicitante';
+        }
+        return data_modal;
+      }
+      return false;
+    },
   },
   mounted() {
     this.listVerifications();
@@ -179,6 +189,7 @@ export default {
         if (result.length !== undefined)
           this.verifications_list = [...result];
         else this.verifications_list.push(result);
+        console.log('Verification List: ', this.verifications_list);
       } catch (err) {
         console.log('err :>> ', err.response || err);
         return this.$swal({
@@ -188,16 +199,9 @@ export default {
         });
       }
     },
-    openModalDetailVerifications(row) {
-      for (let i = 1; i <= 3; i++) {
-        this.data_modal.push({ ...this.verifications_list.find(
-          j => j.ordemServico_idOrdemServico === row.ordemServico_idOrdemServico &&
-               j.tipoVerificacao === i) });
-        if (this.data_modal[i-1] !== undefined) {
-          this.data_modal[i-1].dataVerificacao = this.$moment(this.data_modal[i-1].dataVerificacao)
-            .format('DD-MM-YYYY');
-        }
-      }
+    async openModalDetailVerifications(row) {
+      console.log('pagination.chunk: ', this.options.pagination);
+      this.rowModalOpen = row;
       this.showVerificationModal();
     },
     async showVerificationModal() {
@@ -210,6 +214,9 @@ export default {
     openOrder(props) {
       this.getOrderDetail(props);
     },
+    closeModal() {
+      this.$refs['my-modal'].hide();
+    },
     async getOrderDetail(props) {
       try {
         const order = { idOrdemServico: props.ordemServico_idOrdemServico };
@@ -217,8 +224,6 @@ export default {
         const { result } = await this.$http.post('ordem-manutencao/detail', getLocalStorageToken(), {
           order,
         });
-
-        console.log('result :>> ', result);
 
         this.$set(this.detail, 'order', result);
         this.$store.commit('addPageName', `Consultas | ${props.ordemServico_idOrdemServico}`);
@@ -249,6 +254,9 @@ export default {
 </script>
 
 <style lang="scss">
+  .user_detail_verification{
+    font-size: 20px;
+  }
   .content-consult-verification{
     .content-verifications {
         font-family: "Avenir", Helvetica, Arial, sans-serif;
@@ -294,7 +302,11 @@ export default {
             display: flex;
             justify-content: center;
           }
+          li {
+            width:50px;
+          }
         }
+        //.VuePagination__pagination-item page-item
         .page-item .active {
           color: white !important;
           border-color: #ddd !important;
@@ -310,9 +322,8 @@ export default {
           }
         }
         .card-title{
-          span {
+          h3 {
             font-family: 'roboto';
-            font-size: 23px;
             color: #E66E6D;
           }
         }
