@@ -7,15 +7,13 @@
     
     <div class="items-wrapper p-3 w-100 d-flex flex-column justify-content-center">
       <div v-for="(routes, index) in dashboard" :key="`routes-${index}`" class="button-wrapper">
-        <router-link :to="routes.link ? routes.link : '/'">
-          <div v-if="routes.web">
-            <menu-button
-              :label="routes.name"
-              :active="currentRoute(routes.name, $route)"
-              :icon="routes.icon"
-            />
-          </div>
-        </router-link>
+        <div v-if="routes.web" @click="goToRoute(routes)">
+          <menu-button
+            :label="routes.name"
+            :active="currentRoute(routes.name, $route)"
+            :icon="routes.icon"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -39,6 +37,11 @@ export default {
     getRouteName(router) {
       if (router.matched.length)
         return router.matched[0].name;
+    },
+    goToRoute(routes) {
+      if (routes)
+        this.$router.push(routes.link);
+      else this.$router.push('/');
     },
   },
 };
