@@ -32,9 +32,10 @@ export default class LoginValidate {
     ...(!senha ? { senha: 'Senha não informada' } : ''),
     ...(!mysql ? { mysql: 'Conexão não estabelecida' } : ''),
   })
-
+  
   async run(req: { body: any, mysql: Connection }) {
     try {
+      console.log('Req: ', req);
       const parameters = this.getParameters(req);
 
       const errors = this.checkParameters(parameters);
