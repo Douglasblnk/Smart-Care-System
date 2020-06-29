@@ -42,8 +42,9 @@ router.post("/get-report-requester", async (req: any, res: any) => {
 
 router.post("/register", async (req: any, res: any) => {
   try {
+    await console.log('descriçao----------->', req.body );
     await jwt.jwtVerify(req);
-    console.log("chegou addmanutentor");
+
     const response = await register.run(req);
 
     res.status(200).send(response);

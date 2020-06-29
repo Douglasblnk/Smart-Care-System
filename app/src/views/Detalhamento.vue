@@ -171,115 +171,6 @@
               </div>
             </div>
           </div>
-          <el-dialog
-            title="Convidar Técnico"
-            :visible.sync="dialogVisible"
-            width="40vw"
-          >
-            <p class="Span_lerta" v-show="visibleMessage">
-              Usuario Já Está na ordem. Consulte lista dos usuarios da ordem
-            </p>
-            <el-tabs type="border-card" >
-              <el-tab-pane label="Convidar">
-                <span slot="label">Convidar </span>
-                <el-table
-                  :data="manutentores.filter(
-                    data => !search || data.nome.toLowerCase()
-                      .includes(search.toLowerCase())
-                  )"
-                  style="width: 100%"
-                >
-                  <el-table-column
-                    label="Name"
-                    prop="nome"
-                  >
-                  </el-table-column>
-
-                  <el-table-column
-                    label="Area"
-                    prop="funcao"
-                  >
-                  </el-table-column>
-
-                  <el-table-column
-                    align="right"
-                  >
-                    <template slot="header" slot-scope="scope">
-                      <el-input
-                        v-model="search"
-                        size="mini"
-                        placeholder="Pesquise nome"
-                      />
-                    </template>
-                    <template slot-scope="scope">
-                      <el-popconfirm
-                        confirmButtonText='Confirmar'
-                        cancelButtonText='Cancelar'
-                        icon="el-icon-info"
-                        iconColor="red"
-                        title="Você tem certeza?"
-                        @onConfirm="addManutentor(scope.$index, scope.row)"
-                      >
-                        <el-button
-                          slot="reference"
-                          size="mini"
-                        >
-                          Adicionar
-                        </el-button>
-                      </el-popconfirm>
-                    </template>
-                  </el-table-column>
-                </el-table>
-              </el-tab-pane>
-              <el-tab-pane label="Listar">
-                <span slot="label">Listar </span>
-                <el-table
-                  :data="listManutentorInOrdem"
-                  style="width: 100%"
-                >
-                  <el-table-column
-                    label="Name"
-                    prop="nome"
-                  >
-                  </el-table-column>
-
-                  <el-table-column
-                    label="Area"
-                    prop="funcao"
-                  >
-                  </el-table-column>
-
-                  <el-table-column
-                    align="right"
-                  >
-                    <template slot-scope="scope">
-                      <el-popconfirm
-                        confirmButtonText='Confirmar'
-                        cancelButtonText='Cancelar'
-                        icon="el-icon-info"
-                        iconColor="red"
-                        title="Você tem certeza?"
-                        @onConfirm="removeManutentor(scope.$index, scope.row)"
-                      >
-                        <el-button
-                          slot="reference"
-                          size="mini"
-                        >
-                          Remove
-                        </el-button>
-                      </el-popconfirm>
-                    </template>
-                  </el-table-column>
-                </el-table>
-              </el-tab-pane>
-            </el-tabs>
-
-            <span slot="footer" class="dialog-footer">
-              <!-- <el-button @click="dialogVisible = false">Cancel</el-button> -->
-              <!-- // ! TODO remove inline logic, reset modal properties -->
-              <el-button type="primary" class="Button_close" @click="dialogVisible = false">Fechar</el-button>
-            </span>
-          </el-dialog>
         </div>
       </div>
 
@@ -328,7 +219,7 @@
     </b-modal>
     <!-- modalConvida tecnico -->
     <div class="invite-technical-modal">
-      <smart-button @click.native="showAddModal()">convida tecnico</smart-button>
+      <!-- <smart-button @click.native="showAddModal()">convida tecnico</smart-button> -->
 
       <b-modal ref="convida tecnico" size="lg" title="Convidar Tecnico" hide-header hide-footer centered class="d-block text-center">
         <div>
@@ -386,12 +277,15 @@
                   :sort-direction="sortDirection"
                   @filtered="onFiltered"
                 >
+                  <p class="Span_lerta" v-show="visibleMessage">
+                    Usuario Já Está na ordem. Consulte lista dos usuarios da ordem
+                  </p>
                   <template v-slot:cell(name)="row">
                     {{ row.item.nome }}
                      <!-- {{ row }} -->
                   </template>
 
-                  <template v-slot:cell(actions)="row">
+                  <template v-if="button_add_and_remove_visibility" v-slot:cell(actions)="row">
                     <smart-button @click.native="addManutentor(row.item, row.index, $event.target)">
                       Adicionar
                     </smart-button>
@@ -421,9 +315,6 @@
                   </div>
                 </div>
                 <!-- Info modal -->
-                <b-modal :id="infoModal.id" :title="infoModal.title" ok-only @hide="resetInfoModal">
-                  <pre>{{ infoModal.content }}</pre>
-                </b-modal>
               </b-container>
             </b-tab>
             <b-tab title="Second">
@@ -487,7 +378,7 @@
                      <!-- {{ row }} -->
                   </template>
 
-                  <template v-slot:cell(actions)="row">
+                  <template v-if="button_add_and_remove_visibility" v-slot:cell(actions)="row">
                     <smart-button @click.native="removeManutentor(row.item, row.index, $event.target)">
                       Remover
                     </smart-button>
@@ -517,9 +408,6 @@
                   </div>
                 </div>
                 <!-- Info modal -->
-                <b-modal :id="infoModal.id" :title="infoModal.title" ok-only @hide="resetInfoModal">
-                  <pre>{{ infoModal.content }}</pre>
-                </b-modal>
               </b-container>
             </b-tab>
           </b-tabs>
@@ -551,8 +439,10 @@ export default {
 
   data() {
     return {
+      // por classe em name apra deixar um padding igual a do action:
       fields: [
         { key: 'name', label: 'Nome' },
+        
         // { key: 'age', label: 'Person age', sortable: true, class: 'text-center' },
         { key: 'actions', label: 'Ações', class: 'modal-th-td-style' },
       ],
@@ -578,8 +468,10 @@ export default {
       valuesInput: {
         idOrdemServico: this.order.idOrdemServico,
         idUsuario: '',
+        user: this.$store.state.user,
         // excluded: '',
       },
+      button_add_and_remove_visibility: true,
       opcao: '',
       manutentores: [],
       manutentorInOrdem: [],
@@ -664,13 +556,29 @@ export default {
     this.getManutentoresInOrdem();
     this.getReportRequester();
     this.getEpis();
+    
   },
 
   methods: {
     showAddModal() {
       this.getManutentor();
+      const user = this.$store.state.user;
+      console.log("metodo de abrir modal ------------------------");
+      console.log(user.nivelAcesso);
+      this.verifyUserActions();
+      // button_add_and_remove_visibility
+      // this.validateActualManutentor();
       this.$refs['convida tecnico'].show();
       
+    },
+    verifyUserActions() {
+      const user = this.$store.state.user;
+
+      if (user.nivelAcesso === 3) {
+        this.button_add_and_remove_visibility = false;
+        return;
+      }
+      this.button_add_and_remove_visibility = true;
     },
     closeAddModal() {
       this.$refs['convida tecnico'].hide();
@@ -821,15 +729,17 @@ export default {
     validaAddManutentor(User) {
       return this.manutentorInOrdem.find(element => element.idUsuario === User.idUsuario);
     },
-    async addManutentor(index, row) {
+    async addManutentor(index, row, event ) {
       try {
+        console.log("------------oi------------");
+        console.log(index.idUsuario,"lalala", row,"lolo", event);
         const validManutentorAdd = this.validaAddManutentor(row);
 
         if (validManutentorAdd === undefined) {
           this.dialogVisible = false;
           this.visibleMessage = false;
           this.valuesInput.excluded = 0;
-          this.valuesInput.idUsuario = row.idUsuario;
+          this.valuesInput.idUsuario = index.idUsuario;
 
           const response = await this.$http.post('detalhamento/register', getLocalStorageToken(), this.valuesInput);
 
@@ -863,9 +773,9 @@ export default {
         })
       }
     },
-    async removeManutentor(index, row) {
+    async removeManutentor(index, row, event) {
       try {
-        this.valuesInput.idUsuario = row.idUsuario;
+        this.valuesInput.idUsuario = index.idUsuario;
         this.valuesInput.excluded = 1;
         this.dialogVisible = false;
 
@@ -1038,7 +948,8 @@ export default {
         await this.getManutentoresInOrdem();
 
         const user = this.$store.state.user;
-
+        console.log('separa---------------------------------------------separa');
+        console.log(user);
         return this.manutentorInOrdem.find(i => i.numeroCracha === user.cracha);
       } catch (err) {
         throw err;
@@ -1285,6 +1196,9 @@ v-link {
   vertical-align: middle !important;
 
 }
+.table-sm td {
+  min-height: 55px !important;
+}
 .modal-th-td-style {
   // color: purple;
   display: flex;
@@ -1306,4 +1220,5 @@ v-link {
    // margin-right: 0.5rem;
    padding-right: 2rem !important;
 }
+
 </style>

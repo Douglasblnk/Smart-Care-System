@@ -17,23 +17,27 @@ export default class RegisterDetalharOS {
 
     async run(event: any) {
         try {
-
+            await console.log('descriçao 2.0----------->', event.body );
             const data = this.getData(event);
 
             this.validateData(data);
 
             const queryGet = this.queryGet(data);
 
+
             const { result } : any = await commitDataGet.run(queryGet);
 
-            if(result.length === undefined && result.excluded === 1) {
-                console.log('oi ai');
+            if(result.length === undefined && result.excluded === 1 && event.body.user !== 3) {
+
                 const queryUpdate = this.queryUpdate(data);
                 const result2 = await commitDataUpdate.run(queryUpdate);
                 return result2;
                 
             }else {
                 // colocar um if e ul selse qui para uma segunda condiçao de inserçao so podemndo adm e manutentor
+                if(event.body.user === 3) {
+                    return {mensagem: "usuario não autorizado"};
+                }
                 const queryInsert = this.getQuery(data);
                 const resulta = await commitData.run(queryInsert)
                 return resulta; 
@@ -46,6 +50,7 @@ export default class RegisterDetalharOS {
         }
     }
     getData(evt: any) {
+
         const data = evt.body || undefined;
 
         return data;
