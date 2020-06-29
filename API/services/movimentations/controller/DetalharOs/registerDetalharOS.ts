@@ -35,8 +35,9 @@ export default class RegisterDetalharOS {
                 
             }else {
                 // colocar um if e ul selse qui para uma segunda condiçao de inserçao so podemndo adm e manutentor
-                if(event.body.user === 3) {
-                    return {mensagem: "usuario não autorizado"};
+                if(event.body.user === 3) throw {
+                    status:404,
+                    err: 'usuario não autorizado'
                 }
                 const queryInsert = this.getQuery(data);
                 const resulta = await commitData.run(queryInsert)
