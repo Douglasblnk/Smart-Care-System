@@ -285,7 +285,7 @@
                      <!-- {{ row }} -->
                   </template>
 
-                  <template v-if="button_add_and_remove_visibility" v-slot:cell(actions)="row">
+                  <template v-if="button_Add_And_Remove_Visibility" v-slot:cell(actions)="row">
                     <smart-button @click.native="addManutentor(row.item, row.index, $event.target)">
                       Adicionar
                     </smart-button>
@@ -378,7 +378,7 @@
                      <!-- {{ row }} -->
                   </template>
 
-                  <template v-if="button_add_and_remove_visibility" v-slot:cell(actions)="row">
+                  <template v-if="button_Add_And_Remove_Visibility" v-slot:cell(actions)="row">
                     <smart-button @click.native="removeManutentor(row.item, row.index, $event.target)">
                       Remover
                     </smart-button>
