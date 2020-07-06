@@ -17,7 +17,6 @@ export default class RegisterDetalharOS {
 
     async run(event: any) {
         try {
-            await console.log('descriçao 2.0----------->', event.body );
             const data = this.getData(event);
 
             this.validateData(data);

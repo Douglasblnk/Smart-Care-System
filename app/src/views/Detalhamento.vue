@@ -221,7 +221,7 @@
     <div class="invite-technical-modal">
       <!-- <smart-button @click.native="showAddModal()">convida tecnico</smart-button> -->
 
-      <b-modal ref="convida tecnico" size="lg" title="Convidar Tecnico" hide-header hide-footer centered class="d-block text-center">
+      <b-modal ref="convidaTecnico" size="lg" title="Convidar Tecnico" hide-header hide-footer centered class="d-block text-center">
         <div>
           <h3 class="text-center">Convidar Tecnico</h3>
           <b-tabs content-class="mt-3">
@@ -248,10 +248,10 @@
                           v-model="filterUser"
                           type="search"
                           id="filterInput"
-                          placeholder="Pesquisa nome mecanico"
+                          placeholder="Pesquisar mecânico"
                         ></b-form-input>
                         <b-input-group-append>
-                          <b-button :disabled="!filter" @click="filter = ''">Clear</b-button>
+                          <b-button :disabled="!filter" @click="filter = ''">Limpar</b-button>
                         </b-input-group-append>
                       </b-input-group>
                     </b-form-group>
@@ -278,7 +278,7 @@
                   @filtered="onFiltered"
                 >
                   <p class="Span_lerta" v-show="visibleMessage">
-                    Usuario Já Está na ordem. Consulte lista dos usuarios da ordem
+                    O manutentor já está presente na ordem, verifique a listagem dos manutentores
                   </p>
                   <template v-slot:cell(name)="row">
                     {{ row.item.nome }}
@@ -344,10 +344,10 @@
                           v-model="filterUser"
                           type="search"
                           id="filterInput"
-                          placeholder="Pesquisa nome mecanico"
+                          placeholder="Pesquisar mecânico"
                         ></b-form-input>
                         <b-input-group-append>
-                          <b-button :disabled="!filter" @click="filter = ''">Clear</b-button>
+                          <b-button :disabled="!filter" @click="filter = ''">Limpar</b-button>
                         </b-input-group-append>
                       </b-input-group>
                     </b-form-group>
@@ -560,17 +560,7 @@ export default {
   },
 
   methods: {
-    showAddModal() {
-      this.getManutentor();
-      const user = this.$store.state.user;
-      console.log("metodo de abrir modal ------------------------");
-      console.log(user.nivelAcesso);
-      this.verifyUserActions();
-      // button_add_and_remove_visibility
-      // this.validateActualManutentor();
-      this.$refs['convida tecnico'].show();
-      
-    },
+
     verifyUserActions() {
       const user = this.$store.state.user;
 
@@ -580,18 +570,12 @@ export default {
       }
       this.button_add_and_remove_visibility = true;
     },
-    closeAddModal() {
-      this.$refs['convida tecnico'].hide();
-    },
     info(item, index, button) {
       this.infoModal.title = `Row index: ${index}`;
       this.infoModal.content = JSON.stringify(item, null, 2);
       this.$root.$emit('bv::show::modal', this.infoModal.id, button);
     },
-    resetInfoModal() {
-      this.infoModal.title = '';
-      this.infoModal.content = '';
-    },
+
     onFiltered(filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length;
@@ -605,7 +589,6 @@ export default {
     handleOk(bvModalEvt) {
       // Prevent modal from closing
       bvModalEvt.preventDefault();
-      console.log('Evento emitido');
       // Trigger submit handler
       this.withoutEPIs();
     },
@@ -662,7 +645,7 @@ export default {
         this.$set(this.isLoading, 'convidar', true);
         await this.getManutentor();
 
-        this.$refs['convida tecnico'].show();
+        this.$refs['convidaTecnico'].show();
       } catch (err) {
         console.log('err openIntiveTechnician :>> ', err.response || err);
 
@@ -691,8 +674,6 @@ export default {
     async getManutentoresInOrdem() {
       try {
         const response = await this.$http.post('detalhamento', getLocalStorageToken(), this.valuesInput);
-        console.log('-----------------------------------------------divisao----------------------');
-        console.log(response.result);
         if (response.result.length === undefined) {
           this.manutentorInOrdem.push(response.result);
           this.listManutentorInOrdem = this.manutentorInOrdem.filter( i => {
@@ -729,10 +710,8 @@ export default {
     validaAddManutentor(User) {
       return this.manutentorInOrdem.find(element => element.idUsuario === User.idUsuario);
     },
-    async addManutentor(index, row, event ) {
+    async addManutentor(index, row ) {
       try {
-        console.log("------------oi------------");
-        console.log(index.idUsuario,"lalala", row,"lolo", event);
         const validManutentorAdd = this.validaAddManutentor(row);
 
         if (validManutentorAdd === undefined) {
@@ -773,7 +752,7 @@ export default {
         })
       }
     },
-    async removeManutentor(index, row, event) {
+    async removeManutentor(index, row) {
       try {
         this.valuesInput.idUsuario = index.idUsuario;
         this.valuesInput.excluded = 1;
@@ -948,8 +927,6 @@ export default {
         await this.getManutentoresInOrdem();
 
         const user = this.$store.state.user;
-        console.log('separa---------------------------------------------separa');
-        console.log(user);
         return this.manutentorInOrdem.find(i => i.numeroCracha === user.cracha);
       } catch (err) {
         throw err;
