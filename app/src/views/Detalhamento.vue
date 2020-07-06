@@ -471,7 +471,7 @@ export default {
         user: this.$store.state.user,
         // excluded: '',
       },
-      button_add_and_remove_visibility: true,
+      button_Add_And_Remove_Visibility: true,
       opcao: '',
       manutentores: [],
       manutentorInOrdem: [],
@@ -565,10 +565,10 @@ export default {
       const user = this.$store.state.user;
 
       if (user.nivelAcesso === 3) {
-        this.button_add_and_remove_visibility = false;
+        this.button_Add_And_Remove_Visibility = false;
         return;
       }
-      this.button_add_and_remove_visibility = true;
+      this.button_Add_And_Remove_Visibility = true;
     },
     info(item, index, button) {
       this.infoModal.title = `Row index: ${index}`;
