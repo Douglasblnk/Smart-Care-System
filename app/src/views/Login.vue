@@ -19,7 +19,7 @@
               </div>
             </div>
             <div class="d-flex justify-content-center m-3">
-              <save-button label="Entrar" :loading="isLoading" />
+              <save-button id="entra"  label="Entrar" :loading="isLoading" />
             </div>
           </form>
         </div>
@@ -33,7 +33,7 @@
               <mobile-input v-model="inputValues.numeroCracha" placeholder="Crachá" icon="fa-user" type="text" />
               <mobile-input v-model="inputValues.senha" placeholder="Senha" icon="fa-lock" type="password" />
 
-              <mobile-save-button label="Entrar" />
+              <mobile-save-button id="entrar" label="Entrar" />
             </div>
           </form>
         </div>
