@@ -233,7 +233,7 @@
 
               <b-container fluid>
                 <!-- User Interface controls -->
-                <b-row>
+                <b-row class="filter-mecanic">
                   <b-col lg="6" class="my-1">
                     <b-form-group
                       label="Usuario"
@@ -329,7 +329,7 @@
 
               <b-container fluid>
                 <!-- User Interface controls -->
-                <b-row>
+                <b-row class="filter-mecanic">
                   <b-col lg="6" class="my-1">
                     <b-form-group
                       label="Usuario"
@@ -575,7 +575,10 @@ export default {
       this.infoModal.content = JSON.stringify(item, null, 2);
       this.$root.$emit('bv::show::modal', this.infoModal.id, button);
     },
+    closeAddModal() {
 
+      this.$refs['convidaTecnico'].hide();
+    },
     onFiltered(filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length;
@@ -1165,7 +1168,7 @@ v-link {
   color: #555 !important
 }
 // @media (min-width: 576px)
-.row {
+.filter-mecanic {
   margin-right: 15px !important;
   margin-left: -43px !important;
 }
