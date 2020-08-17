@@ -1,7 +1,7 @@
 # Smart Solution API
 
 ### Overview
-A API, desenvolvida pelo grupo Smart Solution da faculdade de tecnologia SENAI Jaraguá do Sul, foi estruturada na linguagem de programação TypeScript e diversas bibliotecas que possibilitam a comunicação e manipulação das informações do banco de dados
+A API, desenvolvida pelo grupo Smart Solution da faculdade de tecnologia SENAI Jaraguá do Sul, foi estruturada na linguagem de programação JavaScript e diversas bibliotecas que possibilitam a comunicação e manipulação das informações do banco de dados
 
 ### Estrutura da API
 
