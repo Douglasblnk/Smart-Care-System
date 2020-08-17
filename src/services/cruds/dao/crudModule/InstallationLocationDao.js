@@ -1,16 +1,12 @@
-import GenericDao from '../GenericDao';
-import { TABLE_SETOR } from '../../../../shared/constants/database';
-import { Connection } from 'mysql2/promise';
+const GenericDao = require('../GenericDao');
+const { TABLE_SETOR } = require('../../../../shared/constants/database');
 
 export default class InstallationLocationDao extends GenericDao {
-  _mysql: Connection;
-  _sector?: string;
-  _updateId?: string;
   constructor({
     mysql,
     sector,
     updateId,
-  }: { mysql: Connection, sector?: string, updateId?: string }) {
+  } = {}) {
     super();
 
     this._mysql = mysql;

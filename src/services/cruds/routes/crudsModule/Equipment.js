@@ -1,18 +1,18 @@
-import { errorResponseTreatment } from '../../../../shared/utils/utils';
+const errorResponseTreatment = require('../../../../shared/utils/utils');
 
-import Router = require('express');
+const Router = require('express');
 const router = Router();
 
-import GetEquipments from '../../session/equipments/GetEquipments';
-import RegisterUpdateEquipments from '../../session/equipments/RegisterUpdateEquipments';
-import DeleteEquipments from '../../session/equipments/DeleteEquipments';
+const GetEquipments = require('../../session/equipments/GetEquipments');
+const RegisterUpdateEquipments = require('../../session/equipments/RegisterUpdateEquipments');
+const DeleteEquipments = require('../../session/equipments/DeleteEquipments');
 
 /**
  *  ROTA PARA BUSCAR OS EQUIPAMENTOS
 */
-router.get('/', async (req: any, res: any) => {
+router.get('/', async (req, res) => {
   try {
-    const response : any = await new GetEquipments().run(req);
+    const response = await new GetEquipments().run(req);
 
     res.status(200).send(response);
   } catch (err) {
@@ -25,9 +25,9 @@ router.get('/', async (req: any, res: any) => {
 /**
  *  ROTA PARA REGISTRAR UM EQUIPAMENTO
 */
-router.post('/', async (req: any, res: any) => {
+router.post('/', async (req, res) => {
   try {
-    const response : any = await new RegisterUpdateEquipments().run(req);
+    const response = await new RegisterUpdateEquipments().run(req);
 
     res.status(200).send(response);
   } catch (err) {
@@ -40,9 +40,9 @@ router.post('/', async (req: any, res: any) => {
 /**
  *  ROTA PARA ALTERAR UM EQUIPAMENTO
 */
-router.put('/:id', async (req: any, res: any) => {
+router.put('/:id', async (req, res) => {
   try {
-    const response : any = await new RegisterUpdateEquipments().run(req, 'update');
+    const response = await new RegisterUpdateEquipments().run(req, 'update');
 
     res.status(200).send(response);
   } catch (err) {
@@ -55,7 +55,7 @@ router.put('/:id', async (req: any, res: any) => {
 /**
  *  ROTA PARA DELETAR UM EQUIPAMENTO
 */
-router.delete('/:id', async (req: any, res: any) => {
+router.delete('/:id', async (req, res) => {
   try {
     const response = await new DeleteEquipments().run(req);
 

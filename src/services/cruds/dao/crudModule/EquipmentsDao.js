@@ -1,14 +1,7 @@
-import GenericDao from '../GenericDao';
-import { TABLE_EQUIPAMENTO } from '../../../../shared/constants/database';
-import { Connection } from 'mysql2/promise';
+const GenericDao = require('../GenericDao');
+const { TABLE_EQUIPAMENTO } = require('../../../../shared/constants/database');
 
 export default class EquipmentsDao extends GenericDao {
-  _mysql: Connection;
-  _sectorId?: number;
-  _equipment?: string;
-  _superiorEquipment?: string;
-  _descriptionEquipment?: string;
-  _updateId?: string;
   constructor({
     mysql,
     sectorId,
@@ -16,8 +9,7 @@ export default class EquipmentsDao extends GenericDao {
     superiorEquipment,
     descriptionEquipment,
     updateId,
-  }: { mysql: Connection, sectorId?: number, equipment?: string, superiorEquipment?: string,
-       descriptionEquipment?: string, updateId?: string }) {
+  } = {}) {
     super();
 
     this._mysql = mysql;
@@ -56,6 +48,7 @@ export default class EquipmentsDao extends GenericDao {
       equipamento: this._equipment,
       equipamentoSuperior: this._superiorEquipment,
     };
+
     const [rows] = await this._mysql.query(/* SQL */`
       INSERT INTO ${TABLE_EQUIPAMENTO} SET ?;
     `, [values]);
@@ -75,8 +68,9 @@ export default class EquipmentsDao extends GenericDao {
       equipamento: this._equipment,
       equipamentoSuperior: this._superiorEquipment,
     };
+
     const [rows] = await this._mysql.query(/* SQL */`
-    UPDATE ${TABLE_EQUIPAMENTO} SET ? WHERE idEquipamento = ?;
+      UPDATE ${TABLE_EQUIPAMENTO} SET ? WHERE idEquipamento = ?;
     `, [values, this._updateId]);
 
     return this.parseInsertResponse(rows);
