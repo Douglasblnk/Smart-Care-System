@@ -169,115 +169,6 @@
               </div>
             </div>
           </div>
-          <el-dialog
-            title="Convidar Técnico"
-            :visible.sync="dialogVisible"
-            width="40vw"
-          >
-            <p class="Span_lerta" v-show="visibleMessage">
-              Usuario Já Está na ordem. Consulte lista dos usuarios da ordem
-            </p>
-            <el-tabs type="border-card" >
-              <el-tab-pane label="Convidar">
-                <span slot="label">Convidar </span>
-                <el-table
-                  :data="manutentores.filter(
-                    data => !search || data.nome.toLowerCase()
-                      .includes(search.toLowerCase())
-                  )"
-                  style="width: 100%"
-                >
-                  <el-table-column
-                    label="Name"
-                    prop="nome"
-                  >
-                  </el-table-column>
-
-                  <el-table-column
-                    label="Area"
-                    prop="funcao"
-                  >
-                  </el-table-column>
-
-                  <el-table-column
-                    align="right"
-                  >
-                    <template slot="header" slot-scope="scope">
-                      <el-input
-                        v-model="search"
-                        size="mini"
-                        placeholder="Pesquise nome"
-                      />
-                    </template>
-                    <template slot-scope="scope">
-                      <el-popconfirm
-                        confirmButtonText='Confirmar'
-                        cancelButtonText='Cancelar'
-                        icon="el-icon-info"
-                        iconColor="red"
-                        title="Você tem certeza?"
-                        @onConfirm="addManutentor(scope.$index, scope.row)"
-                      >
-                        <el-button
-                          slot="reference"
-                          size="mini"
-                        >
-                          Adicionar
-                        </el-button>
-                      </el-popconfirm>
-                    </template>
-                  </el-table-column>
-                </el-table>
-              </el-tab-pane>
-              <el-tab-pane label="Listar">
-                <span slot="label">Listar </span>
-                <el-table
-                  :data="listManutentorInOrdem"
-                  style="width: 100%"
-                >
-                  <el-table-column
-                    label="Name"
-                    prop="nome"
-                  >
-                  </el-table-column>
-
-                  <el-table-column
-                    label="Area"
-                    prop="funcao"
-                  >
-                  </el-table-column>
-
-                  <el-table-column
-                    align="right"
-                  >
-                    <template slot-scope="scope">
-                      <el-popconfirm
-                        confirmButtonText='Confirmar'
-                        cancelButtonText='Cancelar'
-                        icon="el-icon-info"
-                        iconColor="red"
-                        title="Você tem certeza?"
-                        @onConfirm="removeManutentor(scope.$index, scope.row)"
-                      >
-                        <el-button
-                          slot="reference"
-                          size="mini"
-                        >
-                          Remove
-                        </el-button>
-                      </el-popconfirm>
-                    </template>
-                  </el-table-column>
-                </el-table>
-              </el-tab-pane>
-            </el-tabs>
-
-            <span slot="footer" class="dialog-footer">
-              <!-- <el-button @click="dialogVisible = false">Cancel</el-button> -->
-              <!-- // ! TODO remove inline logic, reset modal properties -->
-              <el-button type="primary" class="Button_close" @click="dialogVisible = false">Fechar</el-button>
-            </span>
-          </el-dialog>
         </div>
       </div>
 
@@ -296,7 +187,7 @@
         />
       </div>
     </transition>
-  <b-modal @hide="resetModal()" @show="checkSelectedEpis()" centered ref="my-modal" hide-footer hide-header title="Verificação de EPIs">
+    <b-modal @hide="resetModal()" @show="checkSelectedEpis()" centered ref="my-modal" hide-footer hide-header title="Verificação de EPIs">
       <div class="d-block text">
         <div class="text-center">
           <h3>Verificação de EPIs na ordem</h3>
@@ -328,6 +219,206 @@
         </smart-button>
       </div>
     </b-modal>
+    <!-- modalConvida tecnico -->
+    <div class="invite-technical-modal">
+      <!-- <smart-button @click.native="showAddModal()">convida tecnico</smart-button> -->
+
+      <b-modal ref="convidaTecnico" size="lg" title="Convidar Tecnico" hide-header hide-footer centered class="d-block text-center">
+        <div>
+          <h3 class="text-center">Convidar Tecnico</h3>
+          <b-tabs content-class="mt-3">
+            <b-tab title="First" active>
+              <template v-slot:title>
+                <i class="fa fa-list fa-fw mr-1 fa-sm" aria-hidden="true" style="color:#555" />
+                <span>Listagem dos técnicos</span>
+              </template>
+
+              <b-container fluid>
+                <!-- User Interface controls -->
+                <b-row class="filter-mecanic">
+                  <b-col lg="6" class="my-1">
+                    <b-form-group
+                      label="Usuario"
+                      label-cols-sm="3"
+                      label-align-sm="right"
+                      label-size="sm"
+                      label-for="filterInput"
+                      class="mb-0"
+                    >
+                      <b-input-group size="sm" class="filter-mecanic-add-in-order">
+                        <b-form-input
+                          v-model="filterUser"
+                          type="search"
+                          id="filterInput"
+                          placeholder="Pesquisar mecânico"
+                        ></b-form-input>
+                        <b-input-group-append>
+                          <b-button :disabled="!filter" @click="filter = ''">Limpar</b-button>
+                        </b-input-group-append>
+                      </b-input-group>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+
+                <!-- Main table element -->
+                <b-table
+                  id="my-table"
+                  show-empty
+                  small
+                  fixed
+                  stacked="md"
+                  responsive
+                  :items="manutentores"
+                  :fields="fields"
+                  :current-page="currentPage"
+                  :per-page="perPage"
+                  :filter="filter"
+                  :filterIncludedFields="filterOn"
+                  :sort-by.sync="sortBy"
+                  :sort-desc.sync="sortDesc"
+                  :sort-direction="sortDirection"
+                  @filtered="onFiltered"
+                >
+                  <p class="Span_lerta" v-show="visibleMessage">
+                    O manutentor já está presente na ordem, verifique a listagem dos manutentores
+                  </p>
+                  <template v-slot:cell(name)="row">
+                    {{ row.item.nome }}
+                     <!-- {{ row }} -->
+                  </template>
+
+                  <template v-if="button_Add_And_Remove_Visibility" v-slot:cell(actions)="row">
+                    <smart-button @click.native="addManutentor(row.item, row.index, $event.target)">
+                      Adicionar
+                    </smart-button>
+                  <!-- <b-button size="sm" @click="row.toggleDetails">
+                    {{ row.detailsShowing ? 'Hide' : 'Show' }} Details
+        </b-button> -->
+                  </template>
+                  <template v-slot:row-details="row">
+                    <b-card>
+                      <ul>
+                        <li v-for="(value, key) in row.item" :key="key">{{ key }}: {{ value }}</li>
+                      </ul>
+                    </b-card>
+                  </template>
+                </b-table>
+                <div class="overflow-auto">
+                  <div>
+                    <b-pagination
+                      v-model="currentPage"
+                      :total-rows="rows"
+                      :per-page="perPage"
+                      align="center"
+                      pills
+                      class="my-0 "
+                      aria-controls="my-table"
+                    ></b-pagination>
+                  </div>
+                </div>
+                <!-- Info modal -->
+              </b-container>
+            </b-tab>
+            <b-tab title="Second">
+              <template v-slot:title>
+                <i class="fa fa-users fa-fw mr-1" aria-hidden="true" style="color:#555" />
+                <span>Técnicos convidados</span>
+              </template>
+              <template v-slot:title>
+                <i class="fa fa-list fa-fw mr-1 fa-sm" aria-hidden="true" style="color:#555" />
+                <span>Listagem dos técnicos</span>
+              </template>
+
+              <b-container fluid>
+                <!-- User Interface controls -->
+                <b-row class="filter-mecanic">
+                  <b-col lg="6" class="my-1">
+                    <b-form-group
+                      label="Usuario"
+                      label-cols-sm="3"
+                      label-align-sm="right"
+                      label-size="sm"
+                      label-for="filterInput"
+                      class="mb-0"
+                    >
+                      <b-input-group size="sm" class="filter-mecanic-add-in-order">
+                        <b-form-input
+                          v-model="filterUser"
+                          type="search"
+                          id="filterInput"
+                          placeholder="Pesquisar mecânico"
+                        ></b-form-input>
+                        <b-input-group-append>
+                          <b-button :disabled="!filter" @click="filter = ''">Limpar</b-button>
+                        </b-input-group-append>
+                      </b-input-group>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+
+                <!-- Main table element -->
+                <b-table
+                  id="my-table"
+                  show-empty
+                  small
+                  fixed
+                  stacked="md"
+                  responsive
+                  :items="listManutentorInOrdem"
+                  :fields="fields"
+                  :current-page="currentPage"
+                  :per-page="perPage"
+                  :filter="filter"
+                  :filterIncludedFields="filterOn"
+                  :sort-by.sync="sortBy"
+                  :sort-desc.sync="sortDesc"
+                  :sort-direction="sortDirection"
+                  @filtered="onFiltered"
+                >
+                  <template v-slot:cell(name)="row">
+                    {{ row.item.nome }}
+                     <!-- {{ row }} -->
+                  </template>
+
+                  <template v-if="button_Add_And_Remove_Visibility" v-slot:cell(actions)="row">
+                    <smart-button @click.native="removeManutentor(row.item, row.index, $event.target)">
+                      Remover
+                    </smart-button>
+                  <!-- <b-button size="sm" @click="row.toggleDetails">
+                    {{ row.detailsShowing ? 'Hide' : 'Show' }} Details
+        </b-button> -->
+                  </template>
+                  <template v-slot:row-details="row">
+                    <b-card>
+                      <ul>
+                        <li v-for="(value, key) in row.item" :key="key">{{ key }}: {{ value }}</li>
+                      </ul>
+                    </b-card>
+                  </template>
+                </b-table>
+                <div class="overflow-auto">
+                  <div>
+                    <b-pagination
+                      v-model="currentPage"
+                      :total-rows="rowsManutentorInOrder"
+                      :per-page="perPage"
+                      align="center"
+                      pills
+                      class="my-0 "
+                      aria-controls="my-table"
+                    ></b-pagination>
+                  </div>
+                </div>
+                <!-- Info modal -->
+              </b-container>
+            </b-tab>
+          </b-tabs>
+        </div>
+        <div class="container-button-modal">
+          <smart-button primary @click.native="closeAddModal()">Ok</smart-button>
+        </div>
+      </b-modal>
+    </div>
   </div>
 </template>
 
@@ -350,6 +441,28 @@ export default {
 
   data() {
     return {
+      // por classe em name apra deixar um padding igual a do action:
+      fields: [
+        { key: 'name', label: 'Nome' },
+        
+        // { key: 'age', label: 'Person age', sortable: true, class: 'text-center' },
+        { key: 'actions', label: 'Ações', class: 'modal-th-td-style' },
+      ],
+      totalRows: 5,
+      currentPage: 1,
+      perPage: 5,
+      pageOptions: [5, 5, 5],
+      sortBy: '',
+      sortDesc: false,
+      sortDirection: 'asc',
+      filter: null,
+      filterUser: null,
+      filterOn: [],
+      infoModal: {
+        id: 'info-modal',
+        title: '',
+        content: '',
+      },
       state: {
         view: 'detail',
       },
@@ -357,8 +470,10 @@ export default {
       valuesInput: {
         idOrdemServico: this.order.idOrdemServico,
         idUsuario: '',
+        user: this.$store.state.user,
         // excluded: '',
       },
+      button_Add_And_Remove_Visibility: true,
       opcao: '',
       manutentores: [],
       manutentorInOrdem: [],
@@ -375,6 +490,20 @@ export default {
   },
 
   computed: {
+    rows() {
+      return this.manutentores.length;
+    },
+    rowsManutentorInOrder() {
+      return this.listManutentorInOrdem.length;
+    },
+    sortOptions() {
+      // Create an options list from our fields
+      return this.fields
+        .filter(f => f.sortable)
+        .map(f => {
+          return { text: f.label, value: f.key };
+        });
+    },
     verifyUserAccess() {
       const user = this.$store.state.user;
       if (user.nivelAcesso === 2) {
@@ -424,13 +553,39 @@ export default {
   },
   
   mounted() {
+    this.totalRows = this.items.length;
     this.setActivity();
     this.getManutentoresInOrdem();
     this.getReportRequester();
     this.getEpis();
+    
   },
 
   methods: {
+
+    verifyUserActions() {
+      const user = this.$store.state.user;
+
+      if (user.nivelAcesso === 3) {
+        this.button_Add_And_Remove_Visibility = false;
+        return;
+      }
+      this.button_Add_And_Remove_Visibility = true;
+    },
+    info(item, index, button) {
+      this.infoModal.title = `Row index: ${index}`;
+      this.infoModal.content = JSON.stringify(item, null, 2);
+      this.$root.$emit('bv::show::modal', this.infoModal.id, button);
+    },
+    closeAddModal() {
+
+      this.$refs['convidaTecnico'].hide();
+    },
+    onFiltered(filteredItems) {
+      // Trigger pagination to update the number of buttons/pages due to filtering
+      this.totalRows = filteredItems.length;
+      this.currentPage = 1 ;
+    },
     resetModal() {
       this.modalHasError = false;
       this.modalErrorMessage = '';
@@ -439,7 +594,6 @@ export default {
     handleOk(bvModalEvt) {
       // Prevent modal from closing
       bvModalEvt.preventDefault();
-      console.log('Evento emitido');
       // Trigger submit handler
       this.withoutEPIs();
     },
@@ -496,7 +650,7 @@ export default {
         this.$set(this.isLoading, 'convidar', true);
         await this.getManutentor();
 
-        this.dialogVisible = true;
+        this.$refs['convidaTecnico'].show();
       } catch (err) {
         console.log('err openIntiveTechnician :>> ', err.response || err);
 
@@ -525,8 +679,6 @@ export default {
     async getManutentoresInOrdem() {
       try {
         const response = await this.$http.post('detalhamento', getLocalStorageToken(), this.valuesInput);
-        console.log('-----------------------------------------------divisao----------------------');
-        console.log(response.result);
         if (response.result.length === undefined) {
           this.manutentorInOrdem.push(response.result);
           this.listManutentorInOrdem = this.manutentorInOrdem.filter( i => {
@@ -563,7 +715,7 @@ export default {
     validaAddManutentor(User) {
       return this.manutentorInOrdem.find(element => element.idUsuario === User.idUsuario);
     },
-    async addManutentor(index, row) {
+    async addManutentor(index, row ) {
       try {
         const validManutentorAdd = this.validaAddManutentor(row);
 
@@ -571,7 +723,7 @@ export default {
           this.dialogVisible = false;
           this.visibleMessage = false;
           this.valuesInput.excluded = 0;
-          this.valuesInput.idUsuario = row.idUsuario;
+          this.valuesInput.idUsuario = index.idUsuario;
 
           const response = await this.$http.post('detalhamento/register', getLocalStorageToken(), this.valuesInput);
 
@@ -585,12 +737,12 @@ export default {
 
           this.$http.setActivity(
             'registerUser',
-              {
-                ...this.$store.state.user,
-                date: this.$moment().format('DD-MM-YYYY HH-mm'),
-                descricao: `${this.$store.state.user.nome}
-                registerUser o usuário ${row.nome} para ajudar na ordem serviço`,
-              },
+            {
+              ...this.$store.state.user,
+              date: this.$moment().format('DD-MM-YYYY HH-mm'),
+              descricao: `${this.$store.state.user.nome}
+              registerUser o usuário ${row.nome} para ajudar na ordem serviço`,
+            },
             getLocalStorageToken(),
           );
         } else {
@@ -607,7 +759,7 @@ export default {
     },
     async removeManutentor(index, row) {
       try {
-        this.valuesInput.idUsuario = row.idUsuario;
+        this.valuesInput.idUsuario = index.idUsuario;
         this.valuesInput.excluded = 1;
         this.dialogVisible = false;
 
@@ -780,7 +932,6 @@ export default {
         await this.getManutentoresInOrdem();
 
         const user = this.$store.state.user;
-
         return this.manutentorInOrdem.find(i => i.numeroCracha === user.cracha);
       } catch (err) {
         throw err;
@@ -923,11 +1074,10 @@ export default {
             transform: scale(1) !important;
           }
         }
-
-
       }
     }
   }
+
   .order-options-wrapper {
     display: flex;
     justify-content: space-around;
@@ -959,7 +1109,7 @@ export default {
       }
     }
   }
-  .Button_close{
+  .Button_close {
     color:#030303;
   }
   @media screen and (max-width: 1366px) {
@@ -968,8 +1118,89 @@ export default {
     }
   }
 }
+
+.container-button-modal {
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
 .Span_lerta {
   color: #ff0303;
   font-family: 'Montserrat';
 }
+
+// .root-save-button-componenet {
+//   display: flex !important;
+//   justify-content: center !important;
+//   align-items: center!important;
+
+// }
+
+// .root-save-button-componenet .save-button {
+//   padding: 3px 8px !important;
+//   border-radius: 15px !important;
+
+// }
+// .root-save-button-componenet .save-button .m-3 {
+//   margin: 0.5rem !important;
+// }
+</style>
+<style lang="scss">
+.page-item.active, .page-link {
+  border-color: #ddd !important;
+}
+.pagination > li.active > a,
+.pagination > li > a:hover {
+  color: white !important;
+  background-color: var(--duas-rodas-soft) !important;
+}
+.page-link {
+  color: #555 !important;
+  &:focus {
+    background-color: var(--duas-rodas-soft) !important;
+    box-shadow: none !important;
+  }
+}
+.filter-mecanic-add-in-order {
+  display: flex !important;
+  justify-content:center !important;
+}
+v-link {
+  color: #555 !important
+}
+// @media (min-width: 576px)
+.filter-mecanic {
+  margin-right: 15px !important;
+  margin-left: -43px !important;
+}
+.table th, .table td {
+  vertical-align: middle !important;
+
+}
+.table-sm td {
+  min-height: 55px !important;
+}
+.modal-th-td-style {
+  // color: purple;
+  display: flex;
+  justify-content: flex-end;
+
+  // align-items: center !important;
+  
+}
+// .table-sm th {
+//   text-align: center;
+// }
+// .table thead th  {
+//   text-align: center;
+// }
+.table th, .table td  {
+  // margin-right: 0.5rem;
+}
+.table th {
+   // margin-right: 0.5rem;
+   padding-right: 2rem !important;
+}
+
 </style>
