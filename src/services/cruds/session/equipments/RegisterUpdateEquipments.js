@@ -4,7 +4,7 @@ const { ADMINISTRADOR_ID } = require('../../../../shared/constants/accessLevel')
 const { get } = require('lodash');
 const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../shared/constants/HTTPResponse');
 
-export default class RegisterUpdateEquipments {
+module.exports = class RegisterUpdateEquipments {
   constructor() {
     this._queryReturn;
   }
@@ -74,4 +74,4 @@ export default class RegisterUpdateEquipments {
     if (authData.nivel_acesso !== ADMINISTRADOR_ID)
       throw { status: STATUS_UNAUTHORIZED, message: MESSAGE_UNAUTHORIZED };
   }
-}
+};

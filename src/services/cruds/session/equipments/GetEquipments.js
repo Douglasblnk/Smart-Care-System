@@ -2,7 +2,7 @@ const EquipmentsDao = require('../../dao/crudModule/EquipmentsDao');
 
 const { get } = require('lodash');
 
-export default class GetEquipments {
+module.exports = class GetEquipments {
   constructor() {
     this._queryResult;
   }
@@ -39,4 +39,4 @@ export default class GetEquipments {
   async getEquipments(parameters) {
     this._queryResult = await new EquipmentsDao(parameters).getEquipments();
   }
-}
+};

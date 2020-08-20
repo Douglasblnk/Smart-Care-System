@@ -1,7 +1,7 @@
 const GenericDao = require('../GenericDao');
 const { TABLE_SETOR } = require('../../../../shared/constants/database');
 
-export default class InstallationLocationDao extends GenericDao {
+module.exports = class InstallationLocationDao extends GenericDao {
   constructor({
     mysql,
     sector,

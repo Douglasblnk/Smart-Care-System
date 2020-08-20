@@ -4,7 +4,7 @@ const { ADMINISTRADOR_ID } = require('../../../../shared/constants/accessLevel')
 const { get } = require('lodash');
 const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../shared/constants/HTTPResponse');
 
-export default class DeleteInstallationLocation {
+module.exports = class DeleteInstallationLocation {
   constructor() {
     this._queryReturn;
   }
@@ -54,4 +54,4 @@ export default class DeleteInstallationLocation {
     if (authData.nivel_acesso !== ADMINISTRADOR_ID)
       throw { status: STATUS_UNAUTHORIZED, message: MESSAGE_UNAUTHORIZED };
   }
-}
+};

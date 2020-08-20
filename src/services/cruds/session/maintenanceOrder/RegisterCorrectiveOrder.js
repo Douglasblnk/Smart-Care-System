@@ -86,7 +86,7 @@ module.exports = class RegisterCorrectiveMaintenanceOrder {
 
       await this.registerCorrectiveMaintenanceOrder(parameters);
       
-      if (!this._queryReturn.affectedRows)
+      if (this._queryReturn.status !== 200 && this._queryReturn.msg !== 'OK')
         throw 'Nenhum registro foi inserido';
 
       return this._queryReturn;
