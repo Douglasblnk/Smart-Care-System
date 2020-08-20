@@ -2,7 +2,7 @@ const InstallationLocationDao = require('../../dao/crudModule/InstallationLocati
 
 const { get } = require('lodash');
 
-export default class GetInstallationLocation {
+module.exports = class GetInstallationLocation {
   constructor() {
     this._queryResult;
   }
@@ -39,4 +39,4 @@ export default class GetInstallationLocation {
   async getEquipments(parameters) {
     this._queryResult = await new InstallationLocationDao(parameters).getSector();
   }
-}
+};

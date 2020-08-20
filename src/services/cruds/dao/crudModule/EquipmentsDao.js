@@ -1,7 +1,7 @@
 const GenericDao = require('../GenericDao');
 const { TABLE_EQUIPAMENTO } = require('../../../../shared/constants/database');
 
-export default class EquipmentsDao extends GenericDao {
+module.exports = class EquipmentsDao extends GenericDao {
   constructor({
     mysql,
     sectorId,
