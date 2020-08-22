@@ -157,7 +157,7 @@ router.beforeEach(async (to, from, next) => {
       localStorage.removeItem('token');
       Swal.fire({
         type: 'warning',
-        title: 'Erro ao autentizar! Por favor, entre novamente!',
+        title: 'Erro ao autenticar! Por favor, entre novamente!',
         confirmButtonColor: '#F34336',
       });
       next('/');

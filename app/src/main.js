@@ -10,8 +10,6 @@ import moment from 'moment';
 import App from './App.vue';
 import router from './routes';
 import ToggleButton from 'vue-js-toggle-button';
-import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
 import Services from './utils/services';
 import VueFormWizard from 'vue-form-wizard';
 import 'vue-form-wizard/dist/vue-form-wizard.min.css';
@@ -24,10 +22,6 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 import { ClientTable } from 'vue-tables-2';
 import { validateSession } from './utils/utils';
 import importedComponents from './plugins/importedComponents';
-import locale from 'element-ui/lib/locale/lang/pt-br';
-
-
-Vue.use(ElementUI, { locale });
 
 Vue.use(ToggleButton);
 Vue.use(Fontawesome);
@@ -82,7 +76,7 @@ new Vue({
 function throwError() {
   Swal.fire({
     type: 'warning',
-    title: 'Erro ao autentizar! Por favor, tente novamente.',
+    title: 'Erro ao autenticar! Por favor, tente novamente.',
     confirmButtonColor: '#F34336',
   });
 
