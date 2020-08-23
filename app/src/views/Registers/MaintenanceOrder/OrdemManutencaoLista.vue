@@ -232,7 +232,7 @@ export default {
         plannedTime: '',
         operations: [],
         epis: [],
-        equipments_sectors: []
+        equipments_sectors: [],
       },
       selectedEpis: [],
       workEquipment: [],
@@ -278,9 +278,9 @@ export default {
       this.modalErrorMessage = '';
       this.selectedEpis = [];
     },
-    addEquipmentSector(sector,equipment){
-      try{
-        let obj = { Equipamento: equipment, Local: sector}
+    addEquipmentSector(sector, equipment) {
+      try {
+        const obj = { Equipamento: equipment, Local: sector };
         this.inputValues.equipments_sectors.push(obj);
         
         this.$swal({
@@ -403,7 +403,7 @@ export default {
     async getEquipments() {
       try {
         const response = await this.$http.get('equipamento/get', getLocalStorageToken());
-        console.log('EQUIPAMENTOS RETURN: ',response);
+        console.log('EQUIPAMENTOS RETURN: ', response);
         if (response.result.length === undefined)
           this.workEquipment.push(response.result);
 
@@ -424,7 +424,6 @@ export default {
         if (response.result.length === undefined)
           this.selectsRequesterOptions.push(response.result);
         else this.selectsRequesterOptions = [...response.result];
-        
       } catch (err) {
         return this.$swal({
           type: 'warning',
@@ -440,7 +439,6 @@ export default {
         if (response.result.length === undefined)
           this.selectsReports.push(response.result);
         else this.selectsReports = [...response.result];
-        
       } catch (err) {
         return this.$swal({
           type: 'warning',
@@ -455,7 +453,7 @@ export default {
     selectsRequestersOptions() {
       return this.selectsRequesterOptions.map(i => ({ id: String(i.idUsuario), description: i.nome }));
     },
-    selectsReportOptions(){
+    selectsReportOptions() {
       return this.selectsReports.map(i => ({ id: String(i.idUsuario), description: i.nome }));
     },
     async getSector() {

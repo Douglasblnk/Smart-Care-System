@@ -1,29 +1,29 @@
 <template>
-    <div class="rectangle">
-        <div class="containerWrapper"> 
-            <div class="tituloTop">
-                Cadastro
-            </div>
-            <div class="name-notification">
-            <i class="fas fa-bell"></i>
-            <span>|</span>
-            <i class="fas fa-user"></i>  
-            </div>
-        </div>
+  <div class="rectangle">
+    <div class="containerWrapper">
+      <div class="tituloTop">
+        Cadastro
+      </div>
+      <div class="name-notification">
+        <i class="fas fa-bell"></i>
+        <span>|</span>
+        <i class="fas fa-user"></i>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
 export default {
-    props: {
+  props: {
 
-    },
-    data(){
-        return {
+  },
+  data() {
+    return {
             
-        }
-    }
-}
+    };
+  },
+};
 </script>
 
 

@@ -83,7 +83,7 @@ export default {
   },
 
   created() {
-    if (window.innerWidth <= '600') this.$router.replace('/dashboard');
+    if (window.innerWidth <= '1024') this.$router.replace('/dashboard');
     return;
   },
 

@@ -29,7 +29,7 @@
                       </tr>
                     </thead>
                     <tbody class="table-body">
-                      <tr v-for="(component, index) in workOperations" value="component.descricao_operacao" :key="`component-${index}`">
+                      <tr v-for="(component, index) in workOperations" :key="`component-${index}`" value="component.descricao_operacao">
                         <td>{{ component.descricao_operacao }}</td>
                       
                         <!-- <td>{{ workCenter.DescricaoComponente}}</td> -->
@@ -48,14 +48,14 @@
           </template>
 
           <template v-if="switchListRegister === 'register'">
-            <form @submit.prevent="registerOperations()" class="formPosition">
+            <form class="formPosition" @submit.prevent="registerOperations()">
               <div class="cadCard">
                 <div class="inputs">
                   <!-- <custom-select v-model="selectValue" :options="getWorkEquipmentOptions()"></custom-select> -->
-                  <!--<tranfer-select v-model="inputValues.Equipamento_idEquipamento" :selects="selectsEquipament" :label="'Máquina'" ></tranfer-select>     
+                  <!--<tranfer-select v-model="inputValues.Equipamento_idEquipamento" :selects="selectsEquipament" :label="'Máquina'" ></tranfer-select>
                   -->
-                  <simple-input v-model="inputValues.descricao_operacao" label="Descrição Operaçao:" type="text" ></simple-input>
-                  <simple-input v-model="inputValues.material" label="Material:" type="text" ></simple-input>
+                  <simple-input v-model="inputValues.descricao_operacao" label="Descrição Operaçao:" type="text"></simple-input>
+                  <simple-input v-model="inputValues.material" label="Material:" type="text"></simple-input>
                   <simple-input v-model="inputValues.quantidade_material" label="Quantidade:" type="number"></simple-input>
                   <simple-input v-model="inputValues.unidade_material" label="Unidade:" type="text "></simple-input>
                   <simple-input v-model="inputValues.tempo_planejado" label="Tempo Planejado:" type="time"></simple-input>
@@ -65,9 +65,10 @@
                 <b-button type="submit" value="send" variant="danger">Cadastrar</b-button>
               </div> -->
               <div class="d-flex justify-content-center m-3">
-                  <smart-button primary class="mr-2">
-                    {{getSaveButtonText()}}
-                  </smart-button>
+                <smart-button primary class="mr-2">
+                  {{ getSaveButtonText() }}
+                </smart-button>
+
                 <smart-button v-if="isEditing" @click.native="closeEditing">
                   <span>Cancelar</span>
                 </smart-button>
@@ -80,7 +81,7 @@
   </div>
 </template>
 <script>
-import { getLocalStorageToken,getErrors } from '../../utils/utils';
+import { getLocalStorageToken, getErrors } from '../../../utils/utils';
 
 
 export default {
@@ -107,23 +108,21 @@ export default {
     this.getOperations();
     this.$store.commit('addPageName', 'Cadastro de Operações');
     this.switchLabelPage('list');
-    
   },
   methods: {
     getSaveButtonText() {
       if (this.isEditing) return 'Alterar';
-      else return 'Cadastrar';
+      return 'Cadastrar';
     },
     switchLabelPage(labelPage) {
       if (labelPage === 'list') {
         this.switchListRegister = 'list';
-        return this.$store.commit('addPageName', `Cadastro de Operações | Listagem`);
+        return this.$store.commit('addPageName', 'Cadastro de Operações | Listagem');
       } else if (labelPage === 'register') {
         this.switchListRegister = 'register';
-        return this.$store.commit('addPageName', `Cadastro de Operações | Cadastrar`);
-      } else {
-        return this.$store.commit('addPageName', `Cadastro de Operações | Editar`);
+        return this.$store.commit('addPageName', 'Cadastro de Operações | Cadastrar');
       }
+      return this.$store.commit('addPageName', 'Cadastro de Operações | Editar');
     },
     async registerOperations() {
       if (this.isEditing) return this.updateOperations();
@@ -158,72 +157,71 @@ export default {
           title: getErrors(err),
           confirmButtonColor: '#F34336',
         });
-      }  
+      }
     },
 
     resetModel() {
       this.inputValues = {};
     },
   
-  deleteOperations(component, index) {
-
-  try {
-    this.$swal({
-      type: 'question',
-      title: `Deseja mesmo remover o Componente ${component.descricao_operacao}`,
-      showCancelButton: true,
-      confirmButtonColor: '#F34336',
-      preConfirm: async() => {
-        const response = await this.$http.delete('operacoes', getLocalStorageToken(), component.idoperacao);
-          this.$swal({
-            type: 'success',
-            title: 'Removido com sucesso',
-            confirmButtonColor: '#F34336',
-          }),
-          this.workOperations.splice(index, 1);
+    deleteOperations(component, index) {
+      try {
+        this.$swal({
+          type: 'question',
+          title: `Deseja mesmo remover o Componente ${component.descricao_operacao}`,
+          showCancelButton: true,
+          confirmButtonColor: '#F34336',
+          preConfirm: async () => {
+            const response = await this.$http.delete('operacoes', getLocalStorageToken(), component.idoperacao);
+            this.$swal({
+              type: 'success',
+              title: 'Removido com sucesso',
+              confirmButtonColor: '#F34336',
+            }),
+            this.workOperations.splice(index, 1);
+          },
+        });
+      } catch (err) {
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
       }
-    })
-  } catch (err) {
-      return this.$swal({
-        type: 'warning',
-        title: getErrors(err),
-        confirmButtonColor: '#F34336',
-      });
-  }
-  },
-  editOperations(component) {
-    this.switchLabelPage('edit');
-    this.inputValues = { ...component };
-    this.switchListRegister = 'register';
-    this.isEditing = true;
-  },
-  closeEditing() {
-    this.switchLabelPage('list');
-    this.switchListRegister = 'list';
-    this.isEditing = false;
-    this.resetModel();
     },
-  async updateOperations() {
-    try {
-      const response = await this.$http.update('operacoes', getLocalStorageToken(), this.inputValues, this.inputValues.idoperacao);
+    editOperations(component) {
+      this.switchLabelPage('edit');
+      this.inputValues = { ...component };
+      this.switchListRegister = 'register';
+      this.isEditing = true;
+    },
+    closeEditing() {
+      this.switchLabelPage('list');
+      this.switchListRegister = 'list';
+      this.isEditing = false;
+      this.resetModel();
+    },
+    async updateOperations() {
+      try {
+        const response = await this.$http.update('operacoes', getLocalStorageToken(), this.inputValues, this.inputValues.idoperacao);
       
-      const index = this.workOperations.indexOf(this.workOperations.find(i => i.idoperacao === this.inputValues.idoperacao));
-      this.workOperations.splice(index, 1, this.inputValues);
+        const index = this.workOperations.indexOf(this.workOperations.find(i => i.idoperacao === this.inputValues.idoperacao));
+        this.workOperations.splice(index, 1, this.inputValues);
 
-      this.$swal({
-        type: 'success',
-        title: 'Editado com Sucesso',
-        confirmButtonColor: '#F34336',
-      });
-      this.closeEditing();
-    } catch (err) {
-      return this.$swal({
-        type: 'warning',
-        title: getErrors(err),
-        confirmButtonColor: '#F34336',
-      });
-    }
-  },
+        this.$swal({
+          type: 'success',
+          title: 'Editado com Sucesso',
+          confirmButtonColor: '#F34336',
+        });
+        this.closeEditing();
+      } catch (err) {
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
 
   },
   resetModel() {

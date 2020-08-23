@@ -76,7 +76,7 @@
   </div>
 </template>
 <script>
-import { getLocalStorageToken, getErrors } from '../../utils/utils';
+import { getLocalStorageToken, getErrors } from '../../../utils/utils';
 
 export default {
   name: 'CadastroEpi',
@@ -99,23 +99,21 @@ export default {
 
   methods: {
     getSaveButtonText() {
-        if(this.isEditing) return 'Alterar';
-        else return 'Cadastro';
+      if (this.isEditing) return 'Alterar';
+      return 'Cadastro';
     },
     switchLabelPage(labelPage) {
       if (labelPage === 'list') {
         this.switchListRegister = 'list';
-        return this.$store.commit('addPageName', `Cadastro de EPI | Listagem`);
+        return this.$store.commit('addPageName', 'Cadastro de EPI | Listagem');
       } else if (labelPage === 'register') {
         this.switchListRegister = 'register';
-        return this.$store.commit('addPageName', `Cadastro de EPI | Cadastrar`);
-      } else {
-        return this.$store.commit('addPageName', `Cadastro de EPI | Editar`);
+        return this.$store.commit('addPageName', 'Cadastro de EPI | Cadastrar');
       }
+      return this.$store.commit('addPageName', 'Cadastro de EPI | Editar');
     },
     async getEpi() {
       try {
-
         const response = await this.$http.get('epi/get', getLocalStorageToken());
 
         if (response.result.length === undefined)

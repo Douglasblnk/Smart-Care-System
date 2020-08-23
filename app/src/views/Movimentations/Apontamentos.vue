@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { getLocalStorageToken, getErrors } from '../utils/utils';
+import { getLocalStorageToken, getErrors } from '../../utils/utils';
 
 export default {
   name: 'Apontamentos',

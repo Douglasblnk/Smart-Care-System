@@ -16,14 +16,14 @@
             <i class="fas fa-user" />
           </template>
 
-          <b-dropdown-item href="#">
+          <b-dropdown-item @click="openProfile()">
             <i class="fas fa-id-card-alt" />
             <span>
               Meu perfil
             </span>
           </b-dropdown-item>
 
-          <b-dropdown-item @click="logoff()" toggle-class="red">
+          <b-dropdown-item @click="logoff()">
             <i class="fas fa-sign-out-alt" />
             <span>
               Sair
@@ -35,7 +35,7 @@
             {{ $store.state.user.nome }}
           </span>
           <small class="text-danger">
-            {{ $store.state.user.funcao}}
+            {{ $store.state.user.funcao }}
           </small>
         </div>
       </div>
@@ -58,11 +58,13 @@ export default {
     getPageName() {
       return this.$store.state.page;
     },
+    getUserBadge() {
+      return this.$store.state.user.cracha;
+    },
   },
 
   methods: {
     logoff() {
-      console.log(this.$route);
       this.$swal({
         type: 'question',
         title: 'Deseja realmente sair do sistema?',
@@ -76,6 +78,11 @@ export default {
           this.$router.replace('/');
         }
       });
+    },
+    async openProfile() {
+      if (this.$route.matched.some(({ name }) => name === 'Meu Perfil')) return;
+      
+      this.$router.push({ path: `/perfil/${this.getUserBadge}` });
     },
   },
 };

@@ -1,5 +1,5 @@
 <template>
-  <div class="root-local-instalacao-view">
+  <div class="root-centro-trabalho-view">
     <div class="d-flex align-items-center">
       <div class="back-button ml-3" @click="goBack">
         <i
@@ -9,7 +9,6 @@
         <span>Voltar</span>
       </div>
     </div>
-
 
     <div class="content-wrapper">
       <div>
@@ -28,21 +27,21 @@
 
         <transition name="slide-fade" mode="out-in">
           <template v-if="switchListRegister === 'list'">
-            <div class="table-content list-option bg-white p-4">
+            <div class="table-content bg-white p-4">
               <table class="table table table-striped table-borderless table-hover" cellspacing="0">
                 <thead class="table-head">
                   <tr>
-                    <th scope="col">Setor</th>
+                    <th scope="col">Centro de trabalho</th>
                     <th scope="col">Ações</th>
                   </tr>
                 </thead>
                 <tbody class="table-body">
-                  <tr v-for="(sector, index) in instalationLocal" :key="`sector-${index}`">
-                    <td>{{ sector.nome }}</td>
+                  <tr v-for="(workCenter, index) in workCenters" :key="`workCenter-${index}`">
+                    <td>{{ workCenter.descricao }}</td>
                     <td style="width: 50px">
                       <div class="d-flex table-action">
-                        <i class="fas fa-edit text-muted" @click="editSector(sector)"></i>
-                        <i class="fas fa-trash text-muted" @click="deleteSector(sector, index)"></i>
+                        <i class="fas fa-edit text-muted" @click="editWorkCenter(workCenter)"></i>
+                        <i class="fas fa-trash text-muted" @click="deleteWorkCenter(workCenter, index)"></i>
                       </div>
                     </td>
                   </tr>
@@ -52,16 +51,16 @@
           </template>
 
           <template v-if="switchListRegister === 'register'">
-            <form @submit.prevent="registerSector()">
+            <form @submit.prevent="registerWorkCenter()">
               <div class="cadCard">
                 <div class="inputs">
-                  <simple-input v-model="inputValues.nome" :label="'Local Instalação:'" :type="'text'" />
+                  <simple-input v-model="inputValues.descricao" :label="'Centro de Trabalho:'" :type="'text'" />
                 </div>
               </div>
               <div class="d-flex justify-content-center m-3">
-                <smart-button primary class="mr-2">
-                  {{getSaveButtonText()}}
-                </smart-button>
+                  <smart-button primary class="mr-2">
+                    {{getSaveButtonText()}}
+                  </smart-button>
                 <smart-button v-if="isEditing" @click.native="closeEditing">
                   <span>Cancelar</span>
                 </smart-button>
@@ -75,32 +74,25 @@
 </template>
 
 <script>
-import { getLocalStorageToken, getErrors } from '../../utils/utils';
-import saveButton from '../../components/button/save-button';
-import cancelButton from '../../components/button/cancel-button';
-import simpleInput from '../../components/inputs/simple-input';
+import { getLocalStorageToken } from '../../../utils/utils';
 
 export default {
-  components: {
-    'simple-input': simpleInput,
-    'save-button': saveButton,
-    'cancel-button': cancelButton,
-  },
+  name: 'CadastroCentroTrabalho',
+
   data() {
     return {
       inputValues: {
-        idSetor: '',
-        nome: '',
+        descricao: '',
       },
       switchListRegister: 'list',
       isEditing: false,
-      instalationLocal: [],
+      workCenters: [],
     };
   },
 
   mounted() {
-    this.getSector();
-    this.$store.commit('addPageName', 'Cadastro de Local Instalação ');
+    this.getWorkCenter();
+    this.$store.commit('addPageName', 'Cadastro de Centro de Trabalho ');
     this.switchLabelPage('list');
   },
 
@@ -109,132 +101,129 @@ export default {
       if (this.isEditing) return 'Alterar';
       return 'Cadastrar';
     },
-    editSector(sector) {
-      this.switchLabelPage('edit');
-      this.inputValues = { ...sector };
-      this.switchListRegister = 'register';
-      this.isEditing = true;
-    },
     switchLabelPage(labelPage) {
       if (labelPage === 'list') {
         this.switchListRegister = 'list';
-        return this.$store.commit('addPageName', `Cadastro de Local Instalação | Listagem`);
+        return this.$store.commit('addPageName', `Cadastro de Centro de Trabalho | Listagem`);
       } else if (labelPage === 'register') {
         this.switchListRegister = 'register';
-        return this.$store.commit('addPageName', `Cadastro de Local Instalação | Cadastrar`);
+        return this.$store.commit('addPageName', `Cadastro de Centro de Trabalho | Cadastrar`);
       } else {
-        return this.$store.commit('addPageName', `Cadastro de Local Instalação | Editar`);
+        return this.$store.commit('addPageName', `Cadastro de Centro de Trabalho | Editar`);
       }
     },
-    async getSector() {
-      try {
-        const response = await this.$http.get('local-instalacao/get', getLocalStorageToken());
-
-        if (response.result.length === undefined)
-          this.instalationLocal.push(response.result);
-          
-        else this.instalationLocal = [...response.result];
-      } catch (err) {
-        console.log('err getSector => :', err.response || err);
-
-        return this.$swal({
-          type: 'warning',
-          text: getErrors(err),
-          confirmButtonColor: '#F34336',
-        });
-      }
-    },
-    async registerSector() {
-      if (this.isEditing) return this.updateSector();
-
-      try {
-        const response = await this.$http.post('local-instalacao', getLocalStorageToken(), this.inputValues);
-
-        this.$swal({
-          type: 'success',
-          title: response.result,
-          confirmButtonColor: '#F34336',
-        }).then(() => {
-          this.instalationLocal.push(this.inputValues);
-
-          this.resetModel();
-          this.getSector();
-        });
-      } catch (err) {
-        console.log('err registerSector => :', err.response || err);
-
-        return this.$swal({
-          type: 'warning',
-          text: getErrors(err),
-          confirmButtonColor: '#F34336',
-        });
-      }
-    },
-    async updateSector() {
-      try {
-        console.log('INPUT VALUES: ',this.inputValues);
-        const response = await this.$http.update(
-          'local-instalacao', getLocalStorageToken(), this.inputValues, this.inputValues.idSetor,
-        );
-
-        this.$swal({
-          type: 'success',
-          title: response.result,
-          confirmButtonColor: '#F34336',
-        }).then(() => {
-          const index = this.instalationLocal.indexOf(
-            this.instalationLocal.find(i => i.idSetor === this.inputValues.idSetor)
-          );
-
-          this.instalationLocal.splice(index, 1, this.inputValues);
-
-          this.closeEditing();
-        });
-      } catch (err) {
-        console.log('err updateSector => :', err.response || err);
-
-        return this.$swal({
-          type: 'error',
-          text: getErrors(err),
-          confirmButtonColor: '#F34336',
-        });
-      }
-    },
-    deleteSector(sector, index) {
-      this.$swal({
-        type: 'question',
-        title: `Deseja mesmo remover o setor de ${sector.nome}?`,
-        showCancelButton: true,
-        confirmButtonColor: '#F34336',
-        preConfirm: async () => {
-          try {
-            const response = await this.$http.delete('local-instalacao', getLocalStorageToken(), sector.idSetor);
-
-            return this.$swal({
-              type: 'success',
-              title: response.result,
-              confirmButtonColor: '#F34336',
-            }).then(() => {
-              this.instalationLocal.splice(index, 1);
-            });
-          } catch (err) {
-            console.log('err deleteSector => :', err.response || err);
-
-            return this.$swal({
-              type: 'error',
-              text: getErrors(err),
+    getWorkCenter() {
+      this.$http.get('centro-trabalho/get', getLocalStorageToken())
+        .then(res => {
+          if (res.result.length === 0) {
+            this.$swal({
+              type: 'warning',
+              title: 'Não foi encontrado nenhum centro de trabalho!',
               confirmButtonColor: '#F34336',
             });
           }
+
+          if (res.result.length === undefined)
+            this.workCenters.push(res.result);
+          else this.workCenters = [...res.result];
+        });
+    },
+
+    registerWorkCenter() {
+      if (this.isEditing) return this.updateWorkCenter();
+      this.$http.post('centro-trabalho', getLocalStorageToken(), this.inputValues)
+        .then(res => {
+          if (res.status !== 200) {
+            return this.$swal({
+              type: 'error',
+              title: `Ops! ${res.err}`,
+              confirmButtonColor: '#F34336',
+            });
+          }
+          this.$swal({
+            type: 'success',
+            title: `${res.result}`,
+            confirmButtonColor: '#F34336',
+          }).then(() => {
+            this.workCenters.push(this.inputValues);
+
+            this.resetModel();
+            this.getWorkCenter();
+          });
+        });
+    },
+
+    deleteWorkCenter(workCenter, index) {
+      this.$swal({
+        type: 'question',
+        title: `Deseja mesmo remover o centro de trabalho ${workCenter.descricao}?`,
+        showCancelButton: true,
+        confirmButtonColor: '#F34336',
+        preConfirm: () => {
+          this.$http.delete('centro-trabalho', getLocalStorageToken(), workCenter.id_centro_trabalho)
+            .then(res => {
+              if (res.status !== 200) {
+                return this.$swal({
+                  type: 'error',
+                  title: `Ops! ${res.err}`,
+                  text: res.detailErr || '',
+                  confirmButtonColor: '#F34336',
+                });
+              }
+              this.$swal({
+                type: 'success',
+                title: `${res.result}`,
+                confirmButtonColor: '#F34336',
+              }).then(() => {
+                this.workCenters.splice(index, 1);
+              });
+            });
         },
       });
     },
+
+    editWorkCenter(workCenter) {
+      this.switchLabelPage('edit');
+      this.inputValues = { ...workCenter }
+      console.log(this.inputValues);
+      this.switchListRegister = 'register'
+      this.isEditing = true;
+    },
+
+    updateWorkCenter() {
+      this.$http.update('centro-trabalho', getLocalStorageToken(), this.inputValues, this.inputValues.idCentro_Trabalho )
+        .then(res => {
+          if (res.status !== 200) {
+            return this.$swal({
+              type: 'error',
+              title: `Ops! ${res.err}`,
+              confirmButtonColor: '#F34336',
+            });
+          }
+          this.$swal({
+            type: 'success',
+            title: `${res.result}`,
+            confirmButtonColor: '#F34336',
+          }).then(() => {
+            const index = this.workCenters.indexOf(
+              this.workCenters.find(
+                i => i.idCentro_Trabalho === this.inputValues.id_centro_trabalho
+              )
+            );
+            
+            this.workCenters.splice(index, 1, this.inputValues);
+            this.closeEditing();
+          });
+        });
+    },
+
     closeEditing() {
-      this.switchLabelPage('list')
-      this.switchListRegister = 'list';
+      this.switchLabelPage('list');
+      this.switchListRegister = 'list'
       this.isEditing = false;
       this.resetModel();
     },
+
     resetModel() {
       this.inputValues = {};
     },
@@ -246,7 +235,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.root-local-instalacao-view {
+.root-centro-trabalho-view {
   width: 100%;
   .content-wrapper {
     display: flex;
@@ -275,14 +264,13 @@ export default {
       }
     }
     .cadCard {
+      width: 50vw;
       padding: 20px;
       display: flex;
       flex-direction: column;
       border-radius: 10px;
       background-color: #ffffff;
     }
-    
-
     .table-content {
       border-radius: 10px;
       table {

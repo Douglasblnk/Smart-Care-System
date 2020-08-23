@@ -7,6 +7,7 @@ export default new Vuex.Store({
   state: {
     user: {},
     page: '',
+    isMobile: false,
   },
 
   mutations: {
@@ -15,6 +16,21 @@ export default new Vuex.Store({
     },
     addPageName(state, name) {
       state.page = name;
+    },
+    setIsMobile(state, isMobile) {
+      state.isMobile = isMobile;
+    },
+  },
+
+  getters: {
+    getIsMobile(state) {
+      return state.isMobile;
+    },
+  },
+
+  actions: {
+    setIsMobile({ commit }, value) {
+      commit('setIsMobile', value);
     },
   },
 });

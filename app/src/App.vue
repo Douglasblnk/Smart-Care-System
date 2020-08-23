@@ -28,26 +28,38 @@
 </template>
 
 <script>
-import sidebar from './components/side-bar/sidebar.vue';
-import topbar from './components/top-bar/topbarDash.vue';
-
 export default {
   components: {
-    sidebar,
-    topbar,
+    sidebar: () => import('./components/side-bar/sidebar.vue'),
+    topbar: () => import('./components/top-bar/topbarDash.vue'),
   },
-
-  data: () => ({}),
-
+  data() {
+    return {
+      isMobile: false,
+    };
+  },
   computed: {
     routes() {
       if (this.$route.name === 'login') return false;
       if (this.$route.name === '404') return false;
       return true;
     },
-    isMobile() {
-      if (window.innerWidth <= '600') return true;
-      return false;
+  },
+  mounted() {
+    this.systemResponsivity();
+  },
+  methods: {
+    systemResponsivity() {
+      const width = window.innerWidth;
+
+      if (
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) &&
+        width <= 1024
+      )
+        this.isMobile = true;
+      else this.isMobile = false;
+
+      this.$store.dispatch('setIsMobile', this.isMobile);
     },
   },
 };

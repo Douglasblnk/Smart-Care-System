@@ -1,22 +1,26 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Dashboard from '../views/Dashboard';
-import Cadastros from '../views/Cadastros';
-import Login from '../views/Login';
-import Configurações from '../views/Configurações.vue';
-import Verificacao from '../views/Verificacao.vue';
-import Consulta from '../views/Consulta.vue';
-import Profile from '../views/Profile.vue';
 
-import CadastroEquipamento from '../views/Cadastros/CadastroEquipamento';
-import CadastroLocalInstalacao from '../views/Cadastros/CadastroLocalInstalacao';
-import CadastroCentroTrabalho from '../views/Cadastros/CadastroCentroTrabalho';
-import CadastroTipoOrdem from '../views/Cadastros/CadastroTipoOrdem';
-import CadastroCausaSintoma from '../views/Cadastros/CadastroCausaSintoma.vue';
-import CadastroComponente from '../views/Cadastros/CadastroComponente';
-import OrdemManutencaoWrapper from '../views/Cadastros/ordemManutencao/OrdemManutencaoWrapper.vue';
-import CadastroEpi from '../views/Cadastros/CadastroEpi';
-import CadastroOperacao from '../views/Cadastros/CadastroOperacao.vue';
+/* entry point, needs to be normal import or the main session validation wont work */
+import Login from '../views/Core/Login.vue';
+
+const Dashboard = () => import('../views/Core/Dashboard.vue');
+const Cadastros = () => import('../views/Registers/Cadastros.vue');
+const Configurações = () => import('../views/Core/Configurações.vue');
+const Verificacao = () => import('../views/Movimentations/Verificacao.vue');
+const Consulta = () => import('../views/Movimentations/Consulta.vue');
+const Profile = () => import('../views/Core/Profile.vue');
+
+const CadastroEquipamento = () => import('../views/Registers/Cruds/CadastroEquipamento.vue');
+const CadastroLocalInstalacao = () => import('../views/Registers/Cruds/CadastroLocalInstalacao.vue');
+const CadastroCentroTrabalho = () => import('../views/Registers/Cruds/CadastroCentroTrabalho.vue');
+const CadastroTipoOrdem = () => import('../views/Registers/Cruds/CadastroTipoOrdem.vue');
+const CadastroCausaSintoma = () => import('../views/Registers/Cruds/CadastroCausaSintoma.vue');
+const CadastroComponente = () => import('../views/Registers/Cruds/CadastroComponente.vue');
+const CadastroEpi = () => import('../views/Registers/Cruds/CadastroEpi.vue');
+const CadastroOperacao = () => import('../views/Registers/Cruds/CadastroOperacao.vue');
+
+const OrdemManutencaoWrapper = () => import('../views/Registers/MaintenanceOrder/OrdemManutencaoWrapper.vue');
 
 import { validateToken } from '../utils/utils';
 import Swal from 'sweetalert2';
@@ -126,7 +130,7 @@ const routes = [
     meta: { requireAuth: true },
   },
   {
-    path: '/profile',
+    path: '/perfil/:userId',
     name: 'Meu Perfil',
     component: Profile,
     meta: { requireAuth: true },
@@ -149,7 +153,7 @@ const router = new VueRouter({
 router.beforeEach(async (to, from, next) => {
   if (to.meta.requireAuth) {
     try {
-      await validateToken(apiUrl);
+      validateToken(apiUrl);
 
       next();
     } catch (err) {
@@ -157,12 +161,12 @@ router.beforeEach(async (to, from, next) => {
       localStorage.removeItem('token');
       Swal.fire({
         type: 'warning',
-        title: 'Erro ao autentizar! Por favor, entre novamente!',
+        title: 'Erro ao autenticar! Por favor, entre novamente!',
         confirmButtonColor: '#F34336',
       });
       next('/');
     }
-  } else next();
+  } else { next(); }
 });
 
 export default router;

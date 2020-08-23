@@ -16,8 +16,6 @@
     </div>
     <div v-if="!loading && !disabled">
       <button
-        type="submit"
-        value="send"
         class="save-button m-3"
         :style="noMargin ? 'margin: 0 !important' : ''"
       >

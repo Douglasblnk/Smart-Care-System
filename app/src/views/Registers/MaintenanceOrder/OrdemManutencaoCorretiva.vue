@@ -120,7 +120,7 @@
                     <span>Sequencia: {{ operation.sequencia_operacao }}</span>
                   </div>
                   <div>
-                    <i @click="removeOperation(index)" class="fa fa-trash fa-lg scalable-btn" />
+                    <i class="fa fa-trash fa-lg scalable-btn" @click="removeOperation(index)" />
                   </div>
                 </div>
               </div>
@@ -528,7 +528,6 @@ export default {
         if (response.result.length === undefined)
           this.selectsRequesterOptions.push(response.result);
         else this.selectsRequesterOptions = [...response.result];
-        
       } catch (err) {
         return this.$swal({
           type: 'warning',
@@ -540,11 +539,10 @@ export default {
     async getReporter() {
       try {
         const response = await this.$http.get('users/report', getLocalStorageToken());
-        console.log('Reporter: ',response);
+        console.log('Reporter: ', response);
         if (response.result.length === undefined)
           this.selectsReports.push(response.result);
         else this.selectsReports = [...response.result];
-        
       } catch (err) {
         return this.$swal({
           type: 'warning',
@@ -562,7 +560,7 @@ export default {
     selectsRequestersOptions() {
       return this.selectsRequesterOptions.map(i => ({ id: String(i.idUsuario), description: i.nome }));
     },
-    selectsReportOptions(){
+    selectsReportOptions() {
       return this.selectsReports.map(i => ({ id: String(i.idUsuario), description: i.nome }));
     },
     async getSector() {
@@ -573,7 +571,6 @@ export default {
           this.selectsSector.push(response.result);
 
         else this.selectsSector = [...response.result];
-
       } catch (err) {
         return this.$swal({
           type: 'warning',
@@ -593,7 +590,6 @@ export default {
           this.selectsPriority.push(response.result);
 
         else this.selectsPriority = [...response.result];
-
       } catch (err) {
         console.log('err getSectorOptions :>> ', err.response || err);
 

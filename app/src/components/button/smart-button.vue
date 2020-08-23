@@ -6,7 +6,7 @@
         'btn-disabled': disabled,
         'primary': primary,
         'btn-simple': simple,
-        'btn-small': sm,
+        'btn-small': small,
         'btn-circle': circle,
         'btn-transparent': transparent,
       }"
@@ -27,7 +27,7 @@
 export default {
   props: {
     primary: { type: Boolean, default: false },
-    sm: { type: Boolean, default: false },
+    small: { type: Boolean, default: false },
     simple: { type: Boolean, default: false },
     loading: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },

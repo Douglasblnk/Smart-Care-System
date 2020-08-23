@@ -1,84 +1,77 @@
 <template>
   <div class="root-tipo-ordem-view">
     <div class="list-option">
-        <div class="d-flex justify-content-between">
-          <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'list'">
-            <i class="fas fa-list-alt" />
-            <span>Listar</span>
-          </div>
-          <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'register'">
-            <i class="fas fa-edit" />
-            <span>Cadastrar</span>
-          </div>
+      <div class="d-flex justify-content-between">
+        <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'list'">
+          <i class="fas fa-list-alt" />
+          <span>Listar</span>
+        </div>
+        <div class="option d-flex align-items-center m-4" @click="switchListRegister = 'register'">
+          <i class="fas fa-edit" />
+          <span>Cadastrar</span>
         </div>
       </div>
+    </div>
 
-      <transition name="slide-fade" mode="out-in">
-        <template v-if="switchListRegister === 'list'">
-          <div class="d-flex w-100 justify-content-center">
-            <div class="table-content bg-white p-4 w-100">
-              <div class="table-responsive">
-                <table class="table table table-striped table-borderless table-hover" cellspacing="0">
-                  <thead class="table-head">
-                    <tr>
-                      <th scope="col">Tipo de manutenção</th>
-                      <th scope="col">Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody class="table-body">
-                    <tr v-for="(order, index) in orderTypes" :key="`order-${index}`">
-                      <td>{{ order.tipoManutencao }}</td>
-                      <td style="width: 50px">
-                        <div class="d-flex table-action">
-                          <i class="fas fa-edit text-muted" @click="startEdition(order)"></i>
-                          <i class="fas fa-trash text-muted" @click="deleteOrderType(order, index)"></i>
-                        </div> 
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+    <transition name="slide-fade" mode="out-in">
+      <template v-if="switchListRegister === 'list'">
+        <div class="d-flex w-100 justify-content-center">
+          <div class="table-content bg-white p-4 w-100">
+            <div class="table-responsive">
+              <table class="table table table-striped table-borderless table-hover" cellspacing="0">
+                <thead class="table-head">
+                  <tr>
+                    <th scope="col">Tipo de manutenção</th>
+                    <th scope="col">Ações</th>
+                  </tr>
+                </thead>
+                <tbody class="table-body">
+                  <tr v-for="(order, index) in orderTypes" :key="`order-${index}`">
+                    <td>{{ order.tipoManutencao }}</td>
+                    <td style="width: 50px">
+                      <div class="d-flex table-action">
+                        <i class="fas fa-edit text-muted" @click="startEdition(order)"></i>
+                        <i class="fas fa-trash text-muted" @click="deleteOrderType(order, index)"></i>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
-        </template>
+        </div>
+      </template>
 
-        <template v-if="switchListRegister === 'register'">
-          <form @submit.prevent="registerOrderType()" class="formPosition">
-            <div class="cadCard">
-              <div class="w-100">
-                <simple-input v-model="inputValues.tipoManutencao" :label="'Tipo de Ordem:'" :type="'text'" />
-              </div>
+      <template v-if="switchListRegister === 'register'">
+        <form class="formPosition" @submit.prevent="registerOrderType()">
+          <div class="cadCard">
+            <div class="w-100">
+              <simple-input v-model="inputValues.tipoManutencao" :label="'Tipo de Ordem:'" :type="'text'" />
             </div>
-            <div class="d-flex justify-content-center m-3">
-                  <smart-button primary>
-                    {{getSaveButtonText()}}
-                  </smart-button>
-                <smart-button v-if="isEditing" @click.native="closeEditing">
-                  <span>Cancelar</span>
-                </smart-button>
-            </div>
-          </form>
-        </template>
-      </transition>
-    </div>
+          </div>
+
+          <div class="d-flex justify-content-center m-3">
+            <smart-button primary>
+              {{ getSaveButtonText() }}
+            </smart-button>
+            <smart-button v-if="isEditing" @click.native="closeEditing">
+              <span>Cancelar</span>
+            </smart-button>
+          </div>
+        </form>
+      </template>
+    </transition>
+  </div>
 </template>
 
 <script>
-import { getLocalStorageToken, getErrors } from '../../utils/utils';
-import simpleInput from '../../components/inputs/simple-input';
-import saveButton from '../../components/button/save-button';
-import cancelButton from '../../components/button/cancel-button';
+import { getLocalStorageToken, getErrors } from '../../../utils/utils';
 
 export default {
-  components: {
-    'simple-input': simpleInput,
-    'save-button': saveButton,
-    'cancel-button': cancelButton,
-  },
   data() {
     return {
       inputValues: {
-        tipoManutencao: ''
+        tipoManutencao: '',
       },
       orderTypes: [],
       switchListRegister: 'list',
@@ -93,23 +86,23 @@ export default {
   methods: {
     getSaveButtonText() {
       if (this.isEditing) return 'Alterar';
-      else return 'Cadastrar'
+      return 'Cadastrar';
     },
 
     closeEditing() {
-      this.switchListRegister = 'list'
+      this.switchListRegister = 'list';
       this.isEditing = false;
       this.resetModel();
     },
 
     resetModel() {
-      this.inputValues = {}
+      this.inputValues = {};
     },
 
     startEdition(order) {
-      this.inputValues = { ...order }
+      this.inputValues = { ...order };
       console.log(this.inputValues);
-      this.switchListRegister = 'register'
+      this.switchListRegister = 'register';
       this.isEditing = true;
     },
 
@@ -119,7 +112,7 @@ export default {
 
         if (response.result.length === undefined)
           this.orderTypes.push(response.result);
-        else this.orderTypes = [ ...response.result ];
+        else this.orderTypes = [...response.result];
       } catch (err) {
         console.log('err getOrderType => :', err.response || err);
 

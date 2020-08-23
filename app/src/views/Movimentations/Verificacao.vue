@@ -17,8 +17,12 @@
         </div>
         <div class="form-verification-option">
           <label>O problema foi resolvido?</label>
-          <toggle-button v-model="inputValues.resolved"
-                         :labels="{checked: 'Sim', unchecked: 'Não'}" :width="70" :height="30" :font-size="14"
+          <toggle-button
+            v-model="inputValues.resolved"
+            :labels="{ checked: 'Sim', unchecked: 'Não' }"
+            :width="70"
+            :height="30"
+            :font-size="14"
           />
         </div>
       </div>
@@ -34,7 +38,7 @@
 </template>
 
 <script>
-import { getLocalStorageToken, getErrors } from '../utils/utils';
+import { getLocalStorageToken, getErrors } from '../../utils/utils';
 import { ToggleButton } from 'vue-js-toggle-button';
 
 export default {
@@ -80,7 +84,6 @@ export default {
             this.$emit('change-status', 'Encerrada');
           else if (this.inputValues.typeVerification === 3)
             this.$emit('state-list');
-          
         });
       } catch (err) {
         console.log('verificationOrder =>', err);
