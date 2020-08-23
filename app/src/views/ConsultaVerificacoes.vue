@@ -26,7 +26,6 @@
               </div>
             </v-client-table>
           </div>
-          
           <b-modal ref="my-modal" centered
                    hide-footer hide-header title="Verificação de EPIs" @hide="resetModal()"
           >
@@ -78,7 +77,6 @@
 
 <script>
 import { getErrors, getLocalStorageToken } from '../utils/utils';
-
 export default {
   data() {
     return {
@@ -189,7 +187,6 @@ export default {
         if (result.length !== undefined)
           this.verifications_list = [...result];
         else this.verifications_list.push(result);
-        console.log('Verification List: ', this.verifications_list);
       } catch (err) {
         console.log('err :>> ', err.response || err);
         return this.$swal({
@@ -200,7 +197,6 @@ export default {
       }
     },
     async openModalDetailVerifications(row) {
-      console.log('pagination.chunk: ', this.options.pagination);
       this.rowModalOpen = row;
       this.showVerificationModal();
     },
