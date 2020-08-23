@@ -103,7 +103,9 @@
               label="Equipamento"
               :options="getEquipmentOptions()"
             />
-            <save-button label="Adicionar" @click.native="addEquipmentSector(sector,equipment)" />
+            <smart-button @click.native="addEquipmentSector(sector,equipment)">
+              <span>Adicionar</span>
+            </smart-button>
           </div>
         </tab-content>
 
@@ -131,7 +133,9 @@
          -->
         <tab-content title="Epi" icon="fa fa-cog">
           <div class="d-flex justify-content-center">
-            <save-button id="show-btn" label="Adicionar EPI" @click.native="showEpiModal()" />
+            <smart-button id="show-btn" @click.native="showEpiModal()">
+              <span>Adicionar EPI</span>
+            </smart-button>
           </div>
 
           <div class="w-100">
@@ -186,8 +190,12 @@
         </div>
       </div>
       <div class="d-flex justify-content-center">
-        <cancel-button label="Fechar" @click.native="closeModal()" />
-        <save-button label="Adicionar" @click.native="addEpi()" />
+        <smart-button @click.native="closeModal()" class="mr-2">
+          <span>Fechar</span>
+        </smart-button>
+        <smart-button primary @click.native="addEpi()">
+          <span>Adicionar</span>
+        </smart-button>
       </div>
     </b-modal>
   </div>

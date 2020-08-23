@@ -1,7 +1,7 @@
 <template>
   <div class="root-sidebar">
     <div class="image-wrapper p-5 d-flex justify-content-center align-items-center">
-      <img src="../../assets/logo.png" class="img-fluid">
+      <img src="../../../assets/logo.png" class="img-fluid">
     </div>
     <div class="hr" />
     
@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import dashboard from '../../utils/dashboard-module';
+import dashboard from '../../../utils/dashboard-module';
 
 export default {
 

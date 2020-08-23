@@ -76,7 +76,6 @@
                 </div>
 
                 <div v-if="option === 'data'" key="data" class="col-md-3">
-                  <simple-button label="Limpar campo" @click.native="() => filters.data = ''" />
                   <simple-input v-model="filters.data" white type="date" />
                 </div>
 
@@ -113,7 +112,7 @@
         </div>
 
         <div class="p-3 col-md-12">
-          <div v-if="isFilterSetted" class="mx-2 d-flex justify-content-between">
+          <div v-if="isFilterSetted" class="mx-2 d-flex justify-content-between mb-2">
             <div>
               <span class="mx-2">Filtros selecionados: </span>
 
@@ -137,9 +136,9 @@
                 <strong>Manutentor: </strong> {{ filters.myOrders }}
               </span>
             </div>
-            <div class="mx-2">
-              <simple-button label="Limpar filtros" @click.native="clearFilters()" />
-            </div>
+            <smart-button @click.native="clearFilters()" primary>
+              <span>Limpar Filtros</span>
+            </smart-button>
           </div>
 
           <div v-if="!maintenainceOrders">

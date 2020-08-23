@@ -83,8 +83,12 @@
                     </div>
                   </div>
                   <div class="save d-flex justify-content-center">
-                    <save-button label="Alterar" @click="updateUser" />
-                    <cancel-button label="Cancelar" @click.native="closeEditingUser" />
+                    <smart-button primary @click="updateUser" class="mr-2">
+                      <span>Alterar</span>
+                    </smart-button>
+                    <smart-button @click.native="closeEditingUser">
+                      <span>Cancelar</span>
+                    </smart-button>
                   </div>
                 </form>
               </template>
@@ -120,7 +124,9 @@
                 </div>
               </div>
               <div class="save d-flex justify-content-center">
-                <save-button label="Cadastrar" />
+                <smart-button>
+                  <span>Cadastrar</span>
+                </smart-button>
               </div>
             </form>
           </accordion>
