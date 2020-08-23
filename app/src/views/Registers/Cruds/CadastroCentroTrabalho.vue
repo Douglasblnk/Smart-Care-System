@@ -1,5 +1,5 @@
 <template>
-  <div class="equipment-wrapper">
+  <div class="root-centro-trabalho-view">
     <div class="d-flex align-items-center">
       <div class="back-button ml-3" @click="goBack">
         <i
@@ -24,28 +24,24 @@
             </div>
           </div>
         </div>
-        
+
         <transition name="slide-fade" mode="out-in">
           <template v-if="switchListRegister === 'list'">
             <div class="table-content bg-white p-4">
               <table class="table table table-striped table-borderless table-hover" cellspacing="0">
                 <thead class="table-head">
                   <tr>
-                    <th scope="col">Local de instalação</th>
-                    <th scope="col">Equipamento</th>
-                    <th scope="col">Descrição</th>
+                    <th scope="col">Centro de trabalho</th>
                     <th scope="col">Ações</th>
                   </tr>
                 </thead>
                 <tbody class="table-body">
-                  <tr v-for="(equipment, index) in equipments" :key="`equipment-${index}`">
-                    <td>{{ equipment.Setor_idSetor }}</td>
-                    <td>{{ equipment.equipamento }}</td>
-                    <td>{{ equipment.descricao }}</td>
+                  <tr v-for="(workCenter, index) in workCenters" :key="`workCenter-${index}`">
+                    <td>{{ workCenter.descricao }}</td>
                     <td style="width: 50px">
                       <div class="d-flex table-action">
-                        <i class="fas fa-edit text-muted" @click="editEquipment(equipment)"></i>
-                        <i class="fas fa-trash text-muted" @click="deleteEquipment(equipment, index)"></i>
+                        <i class="fas fa-edit text-muted" @click="editWorkCenter(workCenter)"></i>
+                        <i class="fas fa-trash text-muted" @click="deleteWorkCenter(workCenter, index)"></i>
                       </div>
                     </td>
                   </tr>
@@ -55,24 +51,10 @@
           </template>
 
           <template v-if="switchListRegister === 'register'">
-            <form @submit.prevent="registerEquipment()">
+            <form @submit.prevent="registerWorkCenter()">
               <div class="cadCard">
-                <div class="input-card">
-                  <custom-select
-                    v-model="inputValues.Setor_idSetor"
-                    label="Setor"
-                    :options="getSectorOptions()"
-                  />
-                  <simple-input v-model="inputValues.equipamento" label="Equipamento:" type="text" />
-                  <simple-input v-model="inputValues.equipamentoSuperior" label="Equipamento Superior:" type="text" />
-                </div>
-                <div class="input-card">
-                  <description
-                    v-model="inputValues.descricao"
-                    cols="30"
-                    rows="3"
-                    label="Descrição: "
-                  />
+                <div class="inputs">
+                  <simple-input v-model="inputValues.descricao" :label="'Centro de Trabalho:'" :type="'text'" />
                 </div>
               </div>
               <div class="d-flex justify-content-center m-3">
@@ -88,56 +70,147 @@
 </template>
 
 <script>
-import { getLocalStorageToken, getErrors } from '../../utils/utils';
+import { getLocalStorageToken } from '../../../utils/utils';
 
 export default {
-  name: 'CadastroEquipamento',
+  name: 'CadastroCentroTrabalho',
 
   data() {
     return {
       inputValues: {
-        Setor_idSetor: '',
-        equipamento: '',
-        equipamentoSuperior: '',
         descricao: '',
       },
-      equipments: [],
-      selectsSector: [],
       switchListRegister: 'list',
       isEditing: false,
+      workCenters: [],
     };
   },
 
   mounted() {
-    this.$store.commit('addPageName', 'Cadastro de Equipamento');
-    this.getEquipment();
-    this.getSector();
+    this.getWorkCenter();
+    this.$store.commit('addPageName', 'Cadastro de Centro de Trabalho ');
     this.switchLabelPage('list');
   },
 
   methods: {
     getSaveButtonText() {
       if (this.isEditing) return 'Alterar';
-      else return 'Cadastrar';
+      return 'Cadastrar';
     },
     switchLabelPage(labelPage) {
       if (labelPage === 'list') {
         this.switchListRegister = 'list';
-        return this.$store.commit('addPageName', `Cadastro de Equipamento | Listagem`);
+        return this.$store.commit('addPageName', `Cadastro de Centro de Trabalho | Listagem`);
       } else if (labelPage === 'register') {
         this.switchListRegister = 'register';
-        return this.$store.commit('addPageName', `Cadastro de Equipamento | Cadastrar`);
+        return this.$store.commit('addPageName', `Cadastro de Centro de Trabalho | Cadastrar`);
       } else {
-        return this.$store.commit('addPageName', `Cadastro de Equipamento | Editar`);
+        return this.$store.commit('addPageName', `Cadastro de Centro de Trabalho | Editar`);
       }
     },
-    editEquipment(equipment) {
+    getWorkCenter() {
+      this.$http.get('centro-trabalho/get', getLocalStorageToken())
+        .then(res => {
+          if (res.result.length === 0) {
+            this.$swal({
+              type: 'warning',
+              title: 'Não foi encontrado nenhum centro de trabalho!',
+              confirmButtonColor: '#F34336',
+            });
+          }
+
+          if (res.result.length === undefined)
+            this.workCenters.push(res.result);
+          else this.workCenters = [...res.result];
+        });
+    },
+
+    registerWorkCenter() {
+      if (this.isEditing) return this.updateWorkCenter();
+      this.$http.post('centro-trabalho', getLocalStorageToken(), this.inputValues)
+        .then(res => {
+          if (res.status !== 200) {
+            return this.$swal({
+              type: 'error',
+              title: `Ops! ${res.err}`,
+              confirmButtonColor: '#F34336',
+            });
+          }
+          this.$swal({
+            type: 'success',
+            title: `${res.result}`,
+            confirmButtonColor: '#F34336',
+          }).then(() => {
+            this.workCenters.push(this.inputValues);
+
+            this.resetModel();
+            this.getWorkCenter();
+          });
+        });
+    },
+
+    deleteWorkCenter(workCenter, index) {
+      this.$swal({
+        type: 'question',
+        title: `Deseja mesmo remover o centro de trabalho ${workCenter.descricao}?`,
+        showCancelButton: true,
+        confirmButtonColor: '#F34336',
+        preConfirm: () => {
+          this.$http.delete('centro-trabalho', getLocalStorageToken(), workCenter.id_centro_trabalho)
+            .then(res => {
+              if (res.status !== 200) {
+                return this.$swal({
+                  type: 'error',
+                  title: `Ops! ${res.err}`,
+                  text: res.detailErr || '',
+                  confirmButtonColor: '#F34336',
+                });
+              }
+              this.$swal({
+                type: 'success',
+                title: `${res.result}`,
+                confirmButtonColor: '#F34336',
+              }).then(() => {
+                this.workCenters.splice(index, 1);
+              });
+            });
+        },
+      });
+    },
+
+    editWorkCenter(workCenter) {
       this.switchLabelPage('edit');
-      console.log(equipment);
-      this.inputValues = { ...equipment }
-      console.log(typeof this.inputValues.Setor_idSetor);
+      this.inputValues = { ...workCenter }
+      console.log(this.inputValues);
       this.switchListRegister = 'register'
       this.isEditing = true;
+    },
+
+    updateWorkCenter() {
+      this.$http.update('centro-trabalho', getLocalStorageToken(), this.inputValues, this.inputValues.idCentro_Trabalho )
+        .then(res => {
+          if (res.status !== 200) {
+            return this.$swal({
+              type: 'error',
+              title: `Ops! ${res.err}`,
+              confirmButtonColor: '#F34336',
+            });
+          }
+          this.$swal({
+            type: 'success',
+            title: `${res.result}`,
+            confirmButtonColor: '#F34336',
+          }).then(() => {
+            const index = this.workCenters.indexOf(
+              this.workCenters.find(
+                i => i.idCentro_Trabalho === this.inputValues.id_centro_trabalho
+              )
+            );
+            
+            this.workCenters.splice(index, 1, this.inputValues);
+            this.closeEditing();
+          });
+        });
     },
 
     closeEditing() {
@@ -147,138 +220,20 @@ export default {
       this.resetModel();
     },
 
-    getEquipment() {
-      this.$http.get('equipamento/get', getLocalStorageToken())
-        .then(res => {
-          if (res.result.length === 0) {
-            this.$swal({
-              type: 'warning',
-              title: 'Não foi encontrado nenhum equipamento cadastrado!',
-              confirmButtonColor: '#F34336',
-            });
-          }
-
-          if (res.result.length === undefined)
-            this.equipments.push(res.result);
-          else this.equipments = [...res.result];
-        });
-    },
-    async getSector() {
-      try {
-        const response = await this.$http.get('local-instalacao/get', getLocalStorageToken());
-
-        if (response.result.length === undefined)
-          this.selectsSector.push(response.result);
-
-        else this.selectsSector = [...response.result];
-
-      } catch (err) {
-        return this.$swal({
-          type: 'warning',
-          title: getErrors(err),
-          confirmButtonColor: '#F34336',
-        });
-      }
-    },
-    registerEquipment() {
-      if (this.isEditing) return this.updateEquipment();
-      this.$http.post('equipamento', getLocalStorageToken(), this.inputValues)
-        .then(res => {
-          if (res.status !== 200) {
-            return this.$swal({
-              type: 'error',
-              title: `Ops! ${res.err}`,
-              confirmButtonColor: '#F34336',
-            });
-          }
-
-          this.$swal({
-            type: 'success',
-            title: `${res.result}`,
-            confirmButtonColor: '#F34336',
-          }).then(() => {
-            this.equipments.push(this.inputValues);
-
-            this.resetModel();
-            this.getEquipment();
-          });
-        });
-    },
-
-    deleteEquipment(equipment, index) {
-      this.$swal({
-        type: 'question',
-        title: `Deseja mesmo remover o equipamento ${equipment.descricao}?`,
-        showCancelButton: true,
-        confirmButtonColor: '#F34336',
-        preConfirm: () => {
-          this.$http.delete('equipamento', getLocalStorageToken(), equipment.idEquipamento)
-            .then(res => {
-              if (res.status !== 200) {
-                return this.$swal({
-                  type: 'warning',
-                  title: res.err,
-                  confirmButtonColor: '#F34336',
-                });
-              }
-
-              this.$swal({
-                type: 'success',
-                title: res.result,
-                confirmButtonColor: '#F34336',
-              }).then(() => {
-                this.equipments.splice(index, 1);
-              });
-            });
-        },
-      });
-    },
-
-    updateEquipment() {
-      this.$http.update('equipamento', getLocalStorageToken(), this.inputValues, this.inputValues.idEquipamento)
-        .then(res => {
-          if (res.status !== 200) {
-            return this.$swal({
-              type: 'error',
-              title: 'Ops! Ocorreu um erro com a solicitação.',
-              text: res.err,
-              confirmButtonColor: '#F34336',
-            });
-          }
-          this.$swal({
-            type: 'success',
-            title: res.result,
-            confirmButtonColor: '#F34336',
-          }).then(() => {
-            const index = this.equipments.indexOf(
-              this.equipments.find(
-                i => i.idEquipamento === this.inputValues.idEquipamento
-              )
-            );
-            
-            this.equipments.splice(index, 1, this.inputValues);
-            this.closeEditing();
-          });
-        });
-    },
-
     resetModel() {
       this.inputValues = {};
     },
     goBack() {
       this.$router.push('/cadastros');
     },
-    getSectorOptions() {
-      return this.selectsSector.map(i => ({ id: String(i.idSetor), description: i.nome }));
-    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.equipment-wrapper {
+.root-centro-trabalho-view {
   width: 100%;
-  .content-wrapper{
+  .content-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -305,16 +260,13 @@ export default {
       }
     }
     .cadCard {
+      width: 50vw;
       padding: 20px;
+      display: flex;
+      flex-direction: column;
       border-radius: 10px;
       background-color: #ffffff;
-      .input-card {
-        display: flex;
-        flex-wrap: wrap;
-      }
     }
-    
-    
     .table-content {
       border-radius: 10px;
       table {
@@ -349,17 +301,17 @@ export default {
       }
     }
   }
-}
-.slide-fade-enter-active {
-  transition: all 0.1s ease;
-}
-.slide-fade-leave-active {
-  transition: all 0.1s cubic-bezier(1, 0.5, 0.8, 1);
-}
-.slide-fade-enter,
-.slide-fade-leave-to {
-  transform: translateX(10px);
-  opacity: 0;
-}
 
+  .slide-fade-enter-active {
+    transition: all 0.1s ease;
+  }
+  .slide-fade-leave-active {
+    transition: all 0.1s cubic-bezier(1, 0.5, 0.8, 1);
+  }
+  .slide-fade-enter,
+  .slide-fade-leave-to {
+    transform: translateX(10px);
+    opacity: 0;
+  }
+}
 </style>

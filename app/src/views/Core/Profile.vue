@@ -6,7 +6,7 @@
           <label class="nome1">Nome:</label>
 
           <div class="nome2">
-            <span>{{user.nome}}</span>
+            <span>{{ user.nome }}</span>
           </div>
         </div>
 
@@ -14,7 +14,7 @@
           <label class="email1">E-mail:</label>
 
           <div class="email2">
-            <span>{{user.email}}</span>
+            <span>{{ user.email }}</span>
           </div>
         </div>
       </div>
@@ -24,7 +24,7 @@
           <label class="nivel1">Nível de acesso:</label>
 
           <div class="nivel2">
-            <span>{{getAccessLevelName(user.nivelAcesso)}}</span>
+            <span>{{ getAccessLevelName(user.nivelAcesso) }}</span>
           </div>
         </div>
 
@@ -32,7 +32,7 @@
           <label class="funcao1">Função:</label>
 
           <div class="funcao2">
-            <span>{{user.funcao}}</span>
+            <span>{{ user.funcao }}</span>
           </div>
         </div>
       </div>
@@ -41,7 +41,7 @@
         <label class="cracha1">Nº Crachá:</label>
 
         <div class="cracha2">
-          {{user.cracha}}
+          {{ user.cracha }}
         </div>
       </div>
     </div>
@@ -49,25 +49,25 @@
 </template>
 
 <script>
-import { getAccessLevelName } from '../utils/utils';
+import { getAccessLevelName } from '../../utils/utils';
 
 export default {
-  name:'perfil',
+  name: 'perfil',
 
-  data(){
-    return{
+  data() {
+    return {
       getAccessLevelName,
     };
   },
-  
-	mounted(){
-    this.$store.commit('addPageName', 'Meu Perfil');
-  },
 
   computed: {
-    user(){
+    user() {
       return this.$store.state.user;
     },
+  },
+  
+  mounted() {
+    this.$store.commit('addPageName', 'Meu Perfil');
   },
 };
 </script>

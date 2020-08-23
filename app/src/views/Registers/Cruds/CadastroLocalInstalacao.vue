@@ -71,17 +71,9 @@
 </template>
 
 <script>
-import { getLocalStorageToken, getErrors } from '../../utils/utils';
-import saveButton from '../../components/button/save-button';
-import cancelButton from '../../components/button/cancel-button';
-import simpleInput from '../../components/inputs/simple-input';
+import { getLocalStorageToken, getErrors } from '../../../utils/utils';
 
 export default {
-  components: {
-    'simple-input': simpleInput,
-    'save-button': saveButton,
-    'cancel-button': cancelButton,
-  },
   data() {
     return {
       inputValues: {
@@ -114,13 +106,12 @@ export default {
     switchLabelPage(labelPage) {
       if (labelPage === 'list') {
         this.switchListRegister = 'list';
-        return this.$store.commit('addPageName', `Cadastro de Local Instalação | Listagem`);
+        return this.$store.commit('addPageName', 'Cadastro de Local Instalação | Listagem');
       } else if (labelPage === 'register') {
         this.switchListRegister = 'register';
-        return this.$store.commit('addPageName', `Cadastro de Local Instalação | Cadastrar`);
-      } else {
-        return this.$store.commit('addPageName', `Cadastro de Local Instalação | Editar`);
+        return this.$store.commit('addPageName', 'Cadastro de Local Instalação | Cadastrar');
       }
+      return this.$store.commit('addPageName', 'Cadastro de Local Instalação | Editar');
     },
     async getSector() {
       try {
@@ -168,7 +159,7 @@ export default {
     },
     async updateSector() {
       try {
-        console.log('INPUT VALUES: ',this.inputValues);
+        console.log('INPUT VALUES: ', this.inputValues);
         const response = await this.$http.update(
           'local-instalacao', getLocalStorageToken(), this.inputValues, this.inputValues.idSetor,
         );
@@ -226,7 +217,7 @@ export default {
       });
     },
     closeEditing() {
-      this.switchLabelPage('list')
+      this.switchLabelPage('list');
       this.switchListRegister = 'list';
       this.isEditing = false;
       this.resetModel();

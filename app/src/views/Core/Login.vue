@@ -4,10 +4,10 @@
       <div class="login-wrapper">
         <div v-if="!isMobile">
           <div v-if="!isMobile" class="d-flex justify-content-center">
-            <img src="../assets/logo.png" class="img-fluid w-50" />
+            <img src="../../assets/Logo-completa-dark.gif" width="300px" class="img-fluid" />
           </div>
           <form @submit.prevent="loginValidation">
-            <div class="hold-login mt-4 p-4 rounded-lg bg-white shadow-sm">
+            <div class="hold-login shadow-sm mt-4 p-4 bg-white">
               <div class="login-text d-flex justify-content-center mb-4">
                 <h4>Login</h4>
               </div>
@@ -26,7 +26,7 @@
 
         <div v-if="isMobile">
           <div v-if="isMobile" class="d-flex justify-content-center">
-            <img src="../assets/logo_white.png" class="img-fluid w-50" />
+            <img src="../../assets/Logo-completa.gif" width="300px" class="img-fluid" />
           </div>
           <form @submit.prevent="loginValidation">
             <div class="hold-login mt-5 p-4 bg-white">
@@ -43,7 +43,8 @@
 </template>
 
 <script>
-import { getErrors } from '../utils/utils';
+import { getErrors } from '../../utils/utils';
+import { mapGetters } from 'vuex';
 
 export default {
   data() {
@@ -55,12 +56,11 @@ export default {
       isLoading: false,
     };
   },
-  
+
   computed: {
-    isMobile() {
-      if (window.innerWidth <= '600') return true;
-      return false;
-    },
+    ...mapGetters({
+      isMobile: 'getIsMobile',
+    }),
   },
   
   methods: {
@@ -139,6 +139,7 @@ export default {
     min-width: 20vw;
     min-height: 100px;
     padding: 10px;
+    .hold-login { border-radius: 10px !important }
   }
   @media screen and (max-width: 1366px) {
     .login-wrapper {
@@ -153,7 +154,7 @@ export default {
     width: 100%;
   }
 }
-@media screen and (max-width: 991px) {
+@media screen and (max-width: 1024px) {
     .hold-login {
       border-radius: 10px !important;
       box-shadow: 1px 1px 10px -2px rgb(75, 75, 75) !important;
