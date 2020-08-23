@@ -1,17 +1,14 @@
 <template>
   <div class="root-topbar">
     <div class="container-wrapper">
-        <div class="screen-icon">
-      <router-link class="text-decoration-none text-muted" to="/dashboard">
+      <div class="screen-icon">
+        <router-link class="text-decoration-none text-muted" to="/dashboard">
           <i class="fa fa-home" />
-      </router-link>
-        </div>
+        </router-link>
+      </div>
       <div class="tituloTop">
-        <span v-if="$route.matched.length > 1">
-          {{ $route.matched[0].name }} |
-        </span>
-        <span :class="{'small-text' : $route.matched.length > 1}">
-          {{ $route.name }}
+        <span class="font-weight-light">
+          {{ getPageName }}
         </span>
       </div>
 
@@ -21,26 +18,20 @@
             <i class="fas fa-user icon" />
           </template>
 
-          <b-dropdown-item href="#">
+          <b-dropdown-item @click="openProfile()">
             <i class="fas fa-id-card-alt" />
             <span>
               Meu perfil
             </span>
           </b-dropdown-item>
 
-          <b-dropdown-item @click="logoff()" toggle-class="red">
+          <b-dropdown-item toggle-class="red" @click="logoff()">
             <i class="fas fa-sign-out-alt" />
             <span>
               Sair
             </span>
           </b-dropdown-item>
         </b-dropdown>
-        <!-- <div class="UserLogin">
-          <ul>
-            <li class="UserNameStyle">Ronei Roteski</li>
-            <li class="text-danger">Administrador</li>
-          </ul>
-        </div> -->
       </div>
     </div>
   </div>
@@ -48,18 +39,16 @@
 
 <script>
 export default {
-  props: {
-
+  computed: {
+    getPageName() {
+      return this.$store.state.page;
+    },
+    getUserBadge() {
+      return this.$store.state.user.cracha;
+    },
   },
-  data() {
-    return {
-
-    };
-  },
-
   methods: {
     logoff() {
-      console.log(this.$route);
       this.$swal({
         type: 'question',
         title: 'Deseja realmente sair do sistema?',
@@ -73,6 +62,12 @@ export default {
           this.$router.replace('/');
         }
       });
+    },
+
+    async openProfile() {
+      if (this.$route.matched.some(({ name }) => name === 'Meu Perfil')) return;
+      
+      this.$router.push({ path: `/perfil/${this.getUserBadge}` });
     },
   },
 };
@@ -102,24 +97,10 @@ export default {
         font-family: 'roboto';
         color: #ffffff
       }
-      .small-text {
-        font-size: 16px;
-      }
     }
     .name-notification {
       display: flex;
       align-items: center;
-      .UserLogin{
-        ul{
-          padding-left:0px;
-          padding-right:30px;
-          margin:0px;
-          list-style-type: none;
-          .UserNameStyle{
-            color:rgb(160, 160, 160);
-          }
-        }
-      }
       .fa-user {
         &:hover {
           transform: scale(1.2);

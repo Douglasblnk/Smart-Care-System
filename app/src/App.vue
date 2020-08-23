@@ -7,10 +7,10 @@
 
       <div class="wrapper">
         <div v-if="!isMobile" class="topbar-content">
-          <topbar />
+          <Header />
         </div>
         <div v-else class="mobile-topbar-content">
-          <mobile-topbar />
+          <mobile-header />
         </div>
 
         <div class="router-content">
@@ -30,8 +30,9 @@
 <script>
 export default {
   components: {
-    sidebar: () => import('./components/side-bar/sidebar.vue'),
-    topbar: () => import('./components/top-bar/topbarDash.vue'),
+    Sidebar: () => import('./components/web/side-bar/Sidebar.vue'),
+    Header: () => import('./components/web/header/Header.vue'),
+    MobileHeader: () => import('./components/mobile/header/MobileHeader.vue'),
   },
   data() {
     return {

@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import LineChart from '../../../components/chart/chartLine.vue';
+import LineChart from '../../../components/web/chart/ChartLine.vue';
 
 export default {
   name: 'DashboardWeb',

@@ -45,15 +45,6 @@
 
 <script>
 export default {
-  props: {
-
-  },
-  data() {
-    return {
-
-    };
-  },
-
   computed: {
     getPageName() {
       return this.$store.state.page;
@@ -87,7 +78,6 @@ export default {
   },
 };
 </script>
-
 
 <style lang="scss" scoped>
 .root-topbar {

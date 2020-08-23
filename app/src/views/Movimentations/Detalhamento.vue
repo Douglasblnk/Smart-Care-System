@@ -1118,23 +1118,8 @@ export default {
   color: #ff0303;
   font-family: 'Montserrat';
 }
-
-// .root-save-button-componenet {
-//   display: flex !important;
-//   justify-content: center !important;
-//   align-items: center!important;
-
-// }
-
-// .root-save-button-componenet .save-button {
-//   padding: 3px 8px !important;
-//   border-radius: 15px !important;
-
-// }
-// .root-save-button-componenet .save-button .m-3 {
-//   margin: 0.5rem !important;
-// }
 </style>
+
 <style lang="scss">
 .page-item.active, .page-link {
   border-color: #ddd !important;
