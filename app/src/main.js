@@ -51,7 +51,7 @@ new Vue({
     moment.locale('pt-BR');
     
     try {
-      if (router.currentRoute.name === 'login' || router.currentRoute.name === '404') return;
+      if (router.currentRoute.name === 'login') return;
       
       await validateSession(router.options.apiUrl);
     } catch (err) {

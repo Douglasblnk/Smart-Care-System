@@ -1,7 +1,7 @@
 <template>
   <div class="root-detalhamento-view">
     <transition name="slide-side" mode="out-in">
-      <div class="detail-content" v-if="state.view === 'detail'">
+      <div v-if="state.view === 'detail'" class="detail-content">
         <div class="d-flex">
           <div>
             <simple-button
@@ -189,7 +189,7 @@
         />
       </div>
     </transition>
-    <b-modal @hide="resetModal()" @show="checkSelectedEpis()" centered ref="my-modal" hide-footer hide-header title="Verificação de EPIs">
+    <b-modal ref="my-modal" centered hide-footer hide-header title="Verificação de EPIs" @hide="resetModal()" @show="checkSelectedEpis()">
       <div class="d-block text">
         <div class="text-center">
           <h3>Verificação de EPIs na ordem</h3>
@@ -245,9 +245,9 @@
                     >
                       <b-input-group size="sm" class="filter-mecanic-add-in-order">
                         <b-form-input
+                          id="filterInput"
                           v-model="filterUser"
                           type="search"
-                          id="filterInput"
                           placeholder="Pesquisar mecânico"
                         ></b-form-input>
                         <b-input-group-append>
@@ -277,12 +277,12 @@
                   :sort-direction="sortDirection"
                   @filtered="onFiltered"
                 >
-                  <p class="Span_lerta" v-show="visibleMessage">
+                  <p v-show="visibleMessage" class="Span_lerta">
                     O manutentor já está presente na ordem, verifique a listagem dos manutentores
                   </p>
                   <template v-slot:cell(name)="row">
                     {{ row.item.nome }}
-                     <!-- {{ row }} -->
+                    <!-- {{ row }} -->
                   </template>
 
                   <template v-if="button_Add_And_Remove_Visibility" v-slot:cell(actions)="row">
@@ -341,9 +341,9 @@
                     >
                       <b-input-group size="sm" class="filter-mecanic-add-in-order">
                         <b-form-input
+                          id="filterInput"
                           v-model="filterUser"
                           type="search"
-                          id="filterInput"
                           placeholder="Pesquisar mecânico"
                         ></b-form-input>
                         <b-input-group-append>
@@ -375,7 +375,7 @@
                 >
                   <template v-slot:cell(name)="row">
                     {{ row.item.nome }}
-                     <!-- {{ row }} -->
+                    <!-- {{ row }} -->
                   </template>
 
                   <template v-if="button_Add_And_Remove_Visibility" v-slot:cell(actions)="row">
@@ -421,9 +421,9 @@
 </template>
 
 <script>
-  import orderVerification from './Verificacao.vue';
-  import OrderNote from './Apontamentos.vue';
-  import { getErrors, getLocalStorageToken, getPriorityClass } from '../utils/utils';
+import orderVerification from './Verificacao.vue';
+import OrderNote from './Apontamentos.vue';
+import { getErrors, getLocalStorageToken, getPriorityClass } from '../../utils/utils';
 
 export default {
   name: 'Detalhamento',
@@ -507,12 +507,12 @@ export default {
       if (user.nivelAcesso === 2) {
         const orderManutentor = this.manutentorInOrdem.find(i => i.is_master);
         const currentUser = this.$store.state.user;
-        if (orderManutentor !== undefined && orderManutentor.numeroCracha === currentUser.cracha
-            && this.order.status !== 'Pendente' && this.order.status !== 'Encerrada')
+        if (orderManutentor !== undefined && orderManutentor.numeroCracha === currentUser.cracha &&
+            this.order.status !== 'Pendente' && this.order.status !== 'Encerrada')
           return true;
       } else if (this.order.status !== 'Encerrada' && (user.nivelAcesso === 1 || user.nivelAcesso === 3)) {
-        const reportRequester = this.report_requester.find(i => i.nivel_acesso === user.nivelAcesso
-                                                          && i.idUsuario === user.userId);
+        const reportRequester = this.report_requester.find(i => i.nivel_acesso === user.nivelAcesso &&
+                                                          i.idUsuario === user.userId);
         if (reportRequester !== undefined)
           return true;
       }
@@ -556,7 +556,6 @@ export default {
     this.getManutentoresInOrdem();
     this.getReportRequester();
     this.getEpis();
-    
   },
 
   methods: {
@@ -576,7 +575,6 @@ export default {
       this.$root.$emit('bv::show::modal', this.infoModal.id, button);
     },
     closeAddModal() {
-
       this.$refs['convidaTecnico'].hide();
     },
     onFiltered(filteredItems) {
@@ -601,7 +599,7 @@ export default {
         {
           ...this.$store.state.user,
           date: this.$moment().format('DD-MM-YYYY HH-mm'),
-          descricao: JSON.stringify({ order: this.order.idOrdemServico })
+          descricao: JSON.stringify({ order: this.order.idOrdemServico }),
         },
         getLocalStorageToken()
       );
@@ -680,8 +678,8 @@ export default {
         if (response.result.length === undefined) {
           this.manutentorInOrdem.push(response.result);
           this.listManutentorInOrdem = this.manutentorInOrdem.filter( i => {
-           return i.is_master === 0 ;
-           });
+            return i.is_master === 0 ;
+          });
           
           console.log(this.listManutentorInOrdem);
         }
@@ -689,8 +687,7 @@ export default {
           this.manutentorInOrdem = [...response.result];
           this.listManutentorInOrdem = this.manutentorInOrdem.filter( i => {
             return i.is_master === 0 ;
-           });
-          
+          });
         }
       } catch (err) {
         throw err;
@@ -700,12 +697,11 @@ export default {
     async getReportRequester() {
       try {
         const response = await this.$http.post('detalhamento/get-report-requester', getLocalStorageToken(), this.valuesInput);
-        console.log('RESPONSE REPORT_REQUESTER: ',response);
+        console.log('RESPONSE REPORT_REQUESTER: ', response);
         if (response.result.length === undefined)
           this.report_requester.push(response.result);
         else this.report_requester = [...response.result];
-        console.log('REPORT_REQUESTER: ',this.report_requester);
-
+        console.log('REPORT_REQUESTER: ', this.report_requester);
       } catch (err) {
         throw err;
       }
@@ -747,12 +743,11 @@ export default {
           this.visibleMessage = true;
         }
       } catch (err) {
-
         return this.$swal({
           type: 'warning',
           title: getErrors(err),
           confirmButtonColor: '#F34336',
-        })
+        });
       }
     },
     async removeManutentor(index, row) {
@@ -774,16 +769,15 @@ export default {
 
         this.$http.setActivity(
           'editUser',
-            {
-              ...this.$store.state.user,
-              date: this.$moment().format('DD-MM-YYYY HH-mm'),
-              descricao: `${this.$store.state.user.nome}
+          {
+            ...this.$store.state.user,
+            date: this.$moment().format('DD-MM-YYYY HH-mm'),
+            descricao: `${this.$store.state.user.nome}
               desabilitando o status excluded o usuário para ajudar na ordem serviço`,
-            },
+          },
           getLocalStorageToken(),
-          );
+        );
       } catch (err) {
-
         return this.$swal({
           type: 'warning',
           title: getErrors(err),
@@ -824,7 +818,6 @@ export default {
         await this.getManutentoresInOrdem();
         this.$set(this.order, 'status', 'Assumida');
       } catch (err) {
-
         this.$set(this.isLoading, 'assume', false);
 
         return this.$swal({
@@ -844,8 +837,6 @@ export default {
 
 
         this.showEpiModal();
-          
-
       } catch (err) {
         console.log('initiateOrder :>> ', err);
         this.$set(this.isLoading, 'init', false);
@@ -866,21 +857,21 @@ export default {
         this.$set(this.isLoading, 'pause', false);
 
         this.$set(this.order, 'status', 'Pausada');
-      } catch(err) {
+      } catch (err) {
         this.$set(this.isLoading, 'init', false);
         this.$swal({
-        type: 'warning',
-        title: getErrors(err),
-        confirmButtonColor: '#F34336',
-      });
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
       }
     },
     async listEpiCheck() {
       const epiSelects = [];
       for (const epiSelect of this.selectedEpis) {
-        console.log('epiSelect: ',epiSelect);
+        console.log('epiSelect: ', epiSelect);
         const epiOrder = this.epiList.find(i => i.Epi_idEpi === epiSelect);
-        console.log('epiOrder: ',epiOrder);
+        console.log('epiOrder: ', epiOrder);
         epiSelects.push(epiOrder);
       }
       return epiSelects;
@@ -914,7 +905,6 @@ export default {
           });
           this.withoutEPIs();
         }
-
       } catch (err) {
         this.$set(this.isLoading, 'init', false);
 
@@ -985,28 +975,27 @@ export default {
         cancelButtonText: 'Não, sair.',
         confirmButtonText: 'Sim, excluir!',
       }).then( async res => {
-        console.log(this.order)
+        console.log(this.order);
         if (res.value) {
           const manutentor = await this.validateActualManutentor();
           
-          const response = await this.$http.update('ordem-manutencao', getLocalStorageToken(), {...this.$store.state.user}, this.order.idOrdemServico);
+          const response = await this.$http.update('ordem-manutencao', getLocalStorageToken(), { ...this.$store.state.user }, this.order.idOrdemServico);
 
           this.$swal({
-          type: 'success',
-          title: 'Ordem excluída',
-          confirmButtonColor: '#F34336',
-        });
+            type: 'success',
+            title: 'Ordem excluída',
+            confirmButtonColor: '#F34336',
+          });
           this.$emit('state-list');
         }
       }).catch(err => {
-
         return this.$swal({
           type: 'warning',
           title: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       });
-    }
+    },
   },
 };
 </script>

@@ -170,7 +170,7 @@
 </template>
 
 <script>
-import { getLocalStorageToken } from '../../utils/utils';
+import { getLocalStorageToken } from '../../../utils/utils';
 
 export default {
 

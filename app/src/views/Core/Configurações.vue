@@ -131,9 +131,10 @@
 </template>
 
 <script>
-import { getLocalStorageToken, getErrors, getAccessLevelName } from '../utils/utils';
+import { getLocalStorageToken, getErrors, getAccessLevelName } from '../../utils/utils';
+
 export default {
-  
+  name: 'Configurações',
   data() {
     return {
       token: '',

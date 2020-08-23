@@ -20,6 +20,5 @@ export default {
     Vue.component('side-bar', importComponent('side-bar/sidebar'));
     Vue.component('top-bar', importComponent('top-bar/topbarDash'));
     Vue.component('mobile-topbar', importComponent('top-bar/mobile-topbar'));
-    Vue.component('mobile-dashboard-items', importComponent('dashboard-items/dashboard-items'));
   },
 };

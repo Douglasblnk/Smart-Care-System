@@ -218,14 +218,13 @@
 </template>
 
 <script>
-import Detalhamento from './Detalhamento.vue';
-import { getLocalStorageToken, getErrors, getPriorityClass } from '../utils/utils';
+import { getLocalStorageToken, getErrors, getPriorityClass } from '../../utils/utils';
 
 export default {
   name: 'Consulta',
 
   components: {
-    Detalhamento,
+    Detalhamento: () => import('./Detalhamento.vue'),
   },
 
   data() {
@@ -359,12 +358,15 @@ export default {
     async setFiltersType(type) {
       if (!this.option) this.option = type;
 
-      if (this.showOptions === false)
-        return this.showOptions = true;
+      if (this.showOptions === false) {
+        this.showOptions = true;
+        return;
+      }
 
       if (this.option === type) {
         this.option = '';
-        return this.showOptions = false;
+        this.showOptions = false;
+        return;
       }
 
       this.option = type;
