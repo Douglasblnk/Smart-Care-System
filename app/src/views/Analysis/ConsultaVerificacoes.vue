@@ -76,7 +76,7 @@
 </template>
 
 <script>
-import { getErrors, getLocalStorageToken } from '../utils/utils';
+import { getErrors, getLocalStorageToken } from '../../utils/utils';
 export default {
   data() {
     return {

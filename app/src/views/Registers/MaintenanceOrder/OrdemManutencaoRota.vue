@@ -111,7 +111,7 @@
               <div class="d-flex justify-content-center">
                 <smart-button id="show-btn" @click.native="showOperationModal()">
                   <span>Adicionar Operação</span>
-                <smart-button>
+                </smart-button>
               </div>
 
               <div class="operations-items">
@@ -178,7 +178,7 @@
           <div class="d-flex justify-content-center">
             <smart-button id="show-btn" @click.native="showEpiModal()">
               <span>Adicionar EPI</span>
-            </smart-button><
+            </smart-button>
           </div>
 
           <div class="w-100">
