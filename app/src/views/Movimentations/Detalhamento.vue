@@ -51,7 +51,7 @@
                 <span>Tipo de Manutenção: {{ order.tipo_manutencao }}</span>
               </div>
               <div class="my-3 d-flex align-items-center">
-                <i class="fa fa-calendar--alt mr-2" />
+                <i class="fa fa-calendar-alt mr-2" />
                 <div class="d-flex flex-column">
                   <span>
                     Inicio planejado:
