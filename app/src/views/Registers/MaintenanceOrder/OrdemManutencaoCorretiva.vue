@@ -257,7 +257,7 @@
         </smart-button>
         <smart-button @click.native="addOperation()">
           <span>Adicionar</span>
-        <smart-button>
+        </smart-button>
       </div>
     </b-modal>
   </div>

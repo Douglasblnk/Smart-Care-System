@@ -31,18 +31,15 @@ Vue.use(VueSweetalert2);
 Vue.use(Vuex);
 Vue.use(ClientTable);
 Vue.use(VueFormWizard);
-
 Vue.use(importedComponents);
 
 const service = new Services();
 
 Vue.config.productionTip = false;
-
 Vue.prototype.$http = service;
 Vue.prototype.$apiUrl = router.options.apiUrl;
 Vue.prototype.$moment = moment;
 Vue.prototype.$_ = Lodash;
-
 
 new Vue({
   router,

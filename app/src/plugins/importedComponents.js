@@ -11,7 +11,7 @@ export default {
     Vue.component('advanced-input', importComponent('web/inputs/advanced-input'));
     Vue.component('custom-select', importComponent('web/inputs/custom-select'));
     Vue.component('description', importComponent('web/inputs/description'));
-    Vue.component('mobile-input', importComponent('web/inputs/MobileInput'));
+    Vue.component('mobile-input', importComponent('mobile/inputs/MobileInput'));
     Vue.component('simple-input', importComponent('web/inputs/simple-input'));
     Vue.component('mobile-topbar', importComponent('mobile/top-bar/MobileHeader'));
   },

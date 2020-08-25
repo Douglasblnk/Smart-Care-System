@@ -206,7 +206,9 @@
         </div>
       </div>
       <div v-if="modalHasError">
-        <div class="d-flex justify-content-center w-100 p-2 rounded" style="background-color: #ff4a4a5c; border: 1px solid #ff4a4aa6">
+        <div class="d-flex justify-content-center w-100 p-2 rounded"
+             style="background-color: #ff4a4a5c; border: 1px solid #ff4a4aa6"
+        >
           <span style="color: black">{{ modalErrorMessage }}</span>
         </div>
       </div>
@@ -589,12 +591,6 @@ export default {
       this.modalErrorMessage = '';
       this.selectedEpis = [];
     },
-    handleOk(bvModalEvt) {
-      // Prevent modal from closing
-      bvModalEvt.preventDefault();
-      // Trigger submit handler
-      this.withoutEPIs();
-    },
     setActivity() {
       this.$http.setActivity(
         'orderDetail',
@@ -699,11 +695,9 @@ export default {
     async getReportRequester() {
       try {
         const response = await this.$http.post('detalhamento/get-report-requester', getLocalStorageToken(), this.valuesInput);
-        console.log('RESPONSE REPORT_REQUESTER: ', response);
         if (response.result.length === undefined)
           this.report_requester.push(response.result);
         else this.report_requester = [...response.result];
-        console.log('REPORT_REQUESTER: ', this.report_requester);
       } catch (err) {
         throw err;
       }
@@ -1169,9 +1163,6 @@ v-link {
 // .table thead th  {
 //   text-align: center;
 // }
-.table th, .table td  {
-  // margin-right: 0.5rem;
-}
 .table th {
    // margin-right: 0.5rem;
    padding-right: 2rem !important;
