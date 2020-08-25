@@ -10,6 +10,7 @@ const Configurações = () => import('../views/Core/Configurações.vue');
 const Verificacao = () => import('../views/Movimentations/Verificacao.vue');
 const Consulta = () => import('../views/Movimentations/Consulta.vue');
 const Profile = () => import('../views/Core/Profile.vue');
+const ConsultaVerificacoes = () => import('../views/Analysis/ConsultaVerificacoes');
 
 const CadastroEquipamento = () => import('../views/Registers/Cruds/CadastroEquipamento.vue');
 const CadastroLocalInstalacao = () => import('../views/Registers/Cruds/CadastroLocalInstalacao.vue');
@@ -110,11 +111,18 @@ const routes = [
     name: 'Consultas',
     component: Consulta,
     meta: { requireAuth: true },
+    props: true,
   },
   {
     path: '/relatorios',
     name: 'Relatórios',
     component: Dashboard,
+    meta: { requireAuth: true },
+  },
+  {
+    path: '/consulta-verificacoes',
+    name: 'Consulta-Verificações',
+    component: ConsultaVerificacoes,
     meta: { requireAuth: true },
   },
   {

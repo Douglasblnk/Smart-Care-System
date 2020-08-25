@@ -221,6 +221,11 @@ export default {
     Detalhamento: () => import('./Detalhamento.vue'),
   },
 
+  props: {
+    type_route: { type: String, default: '' },
+    order_verification: { type: Object, default: () => ({}) },
+  },
+
   data() {
     return {
       moment: this.$moment,
@@ -299,6 +304,10 @@ export default {
       return false;
     },
   },
+
+  created() {
+    this.verifyRoute();
+  },
   
   mounted() {
     this.$store.commit('addPageName', 'Consultas');
@@ -310,6 +319,12 @@ export default {
   },
 
   methods: {
+    async verifyRoute() {
+      if (this.type_route === 'verification') {
+        this.$set(this.detail, 'order', this.order_verification);
+        this.$set(this.state, 'view', 'detail');
+      }
+    },
     async setFiltersType(type) {
       if (!this.option) this.option = type;
 
@@ -435,6 +450,7 @@ export default {
 
         if (response.result.length === 0) return;
 
+        console.log("GET RESPONSE ORDER: ", response);
         if (response.result.length === undefined)
           this.maintenainceOrders.push(response.result);
         else this.maintenainceOrders = [...response.result];
