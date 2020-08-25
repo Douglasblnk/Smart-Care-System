@@ -13,12 +13,6 @@
         </div>
 
         <div class="p-3">
-          <!-- <simple-input
-            v-model="filters.search"
-            white
-            placeholder="Buscar por ordem de manutenção..."
-            label="Buscar: "
-          /> -->
           <div class="p-2 filters">
             <p>Filtros: </p>
 
@@ -112,7 +106,7 @@
         </div>
 
         <div class="p-3 col-md-12">
-          <div v-if="isFilterSetted" class="mx-2 d-flex justify-content-between mb-2">
+          <div v-if="isFilterSettled" class="mx-2 d-flex justify-content-between mb-2">
             <div>
               <span class="mx-2">Filtros selecionados: </span>
 
@@ -136,7 +130,7 @@
                 <strong>Manutentor: </strong> {{ filters.myOrders }}
               </span>
             </div>
-            <smart-button @click.native="clearFilters()" primary>
+            <smart-button primary @click.native="clearFilters()">
               <span>Limpar Filtros</span>
             </smart-button>
           </div>
@@ -218,6 +212,7 @@
 
 <script>
 import { getLocalStorageToken, getErrors, getPriorityClass } from '../../utils/utils';
+import { consultOrderTable } from './utils/tableConfig';
 
 export default {
   name: 'Consulta',
@@ -253,46 +248,7 @@ export default {
         priority: [],
         orderType: [],
       },
-      consultOrderTable: {
-        options: {
-          headings: {
-            idOrdemServico: 'Ordem',
-            resumo: 'Título',
-            prioridade: 'Prioridade',
-            dataEmissao: 'Emissão',
-            status: 'Status',
-            actions: 'Ações',
-          },
-          texts: {
-            filter: '',
-            filterPlaceholder: 'Buscar ordem...',
-            noResults: 'Nenhum registro encontrado!',
-            count: '{count} registros',
-            loading: 'Carregando...',
-            limit: '',
-            first: 'Primeiro',
-            last: 'Último',
-          },
-          columnsClasses: {
-            idOrdemServico: 'idOrdemServico-class',
-            resumo: 'resumo-class',
-            prioridade: 'prioridade-class',
-            dataEmissao: 'dataEmissao-class',
-            status: 'status-class',
-            actions: 'actions-class',
-          },
-          perPage: 25,
-          perPageValues: [25, 50, 100],
-          sortable: ['idOrdemServico', 'dataEmissao'],
-          sortIcon: {
-            base: 'fa fa-fw',
-            is: 'fa-sort',
-            up: 'fa-chevron-up',
-            down: 'fa-chevron-down',
-          },
-        },
-        fields: ['idOrdemServico', 'resumo', 'dataEmissao', 'prioridade', 'status', 'actions'],
-      },
+      consultOrderTable,
     };
   },
 
@@ -330,7 +286,7 @@ export default {
 
       return filteredOrder;
     },
-    isFilterSetted() {
+    isFilterSettled() {
       if (
         this.filters.status ||
         this.filters.data ||

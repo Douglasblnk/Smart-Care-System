@@ -1,0 +1,40 @@
+export const consultOrderTable = {
+  options: {
+    headings: {
+      idOrdemServico: 'Ordem',
+      resumo: 'Título',
+      prioridade: 'Prioridade',
+      dataEmissao: 'Emissão',
+      status: 'Status',
+      actions: 'Ações',
+    },
+    texts: {
+      filter: '',
+      filterPlaceholder: 'Buscar ordem...',
+      noResults: 'Nenhum registro encontrado!',
+      count: '{count} registros',
+      loading: 'Carregando...',
+      limit: '',
+      first: 'Primeiro',
+      last: 'Último',
+    },
+    columnsClasses: {
+      idOrdemServico: 'idOrdemServico-class',
+      resumo: 'resumo-class',
+      prioridade: 'prioridade-class',
+      dataEmissao: 'dataEmissao-class',
+      status: 'status-class',
+      actions: 'actions-class',
+    },
+    perPage: 25,
+    perPageValues: [25, 50, 100],
+    sortable: ['idOrdemServico', 'dataEmissao'],
+    sortIcon: {
+      base: 'fa fa-fw',
+      is: 'fa-sort',
+      up: 'fa-chevron-up',
+      down: 'fa-chevron-down',
+    },
+  },
+  fields: ['idOrdemServico', 'resumo', 'dataEmissao', 'prioridade', 'status', 'actions'],
+};
