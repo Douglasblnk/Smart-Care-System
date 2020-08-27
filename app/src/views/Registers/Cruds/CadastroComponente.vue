@@ -17,34 +17,29 @@
 
         <transition name="slide-fade" mode="out-in">
           <template v-if="switchListRegister === 'list'">
-            <div class="d-flex w-100 justify-content-center">
-              <div class="table-content bg-white p-4 w-100">
-                <div class="table-responsive">
-                  <table class="table table table-striped table-borderless table-hover" cellspacing="0">
-                    <thead class="table-head">
-                      <tr>
-                        <th scope="col">Componente</th>
-                        <!-- <th scope="col">Máquina</th> -->
-                        <th scope="col">Ações</th>
-                      </tr>
-                    </thead>
-                    <tbody class="table-body">
-                      <tr v-for="(component, index) in workComponent" :key="`component-${index}`" value="component.label">
-                        <td>{{ component.DescricaoComponente }}</td>
-                      
-                        <!-- <td>{{ workCenter.DescricaoComponente}}</td> -->
-                        <td style="width: 50px">
-                          <div class="d-flex table-action">
-                            <i class="fas fa-edit text-muted" @click="editComponent(component)"></i>
-                            <i class="fas fa-trash text-muted" @click="deleteComponents(component, index)"></i>
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+            <card fullWidth>
+              <div class="register-component-table">
+                <v-client-table
+                  ref="tableRegisterEpi"
+                  v-model="workComponent"
+                  :columns="columns"
+                  :options="registerComponetTable.options"
+                >
+                  <div slot="actions" slot-scope="props">
+                    <template>
+                      <div class="icons-actions-wrapper">
+                        <div class="icons-actions">
+                          <i class="fas fa-edit text-muted" @click="editComponent(props.row)"></i>
+                        </div>
+                        <div class="icons-actions">
+                          <i class="fas fa-trash text-muted" @click="deleteComponents(props.row, index)"></i>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                </v-client-table>
               </div>
-            </div>
+            </card>
           </template>
 
           <template v-if="switchListRegister === 'register'">
@@ -55,7 +50,11 @@
                 </div>
                 <div class="sideInput">
                   <div class="inputsSidePosition">
-                    <description v-model="inputValues.DescricaoComponente" :label="'Descrição Componente:'" :type="'text'" />
+                    <description
+                      v-model="inputValues.DescricaoComponente"
+                      :label="'Descrição Componente:'"
+                      :type="'text'"
+                    />
                   </div>
                 </div>
               </div>
@@ -91,6 +90,34 @@ export default {
         DescricaoComponente: '',
         Equipamento_idEquipamento: 0,
 
+      },
+      columns: ['DescricaoComponente', 'actions'],
+      registerComponetTable: {
+        options: {
+          headings: {
+            idComponente: create => create('span', {
+              domProps: { innerHTML: 'Componente <i class="fas fa-sort"></i>' },
+            }),
+            DescricaoComponente: 'Componente',
+            actions: 'Ações',
+          },
+          columnsClasses: {
+            actions: 'actions-class',
+          },
+          texts: {
+            filter: '',
+            filterPlaceholder: 'Buscar',
+            count: 'Mostrando {from} até {to} de {count} registros|{count} Registros|Um Registro',
+            limit: '',
+            page: 'Páginas:',
+            noResults: 'Nenhum registro encontrado',
+            loading: 'Carregando...',
+          },
+          perPage: 10,
+          perPageValues: [10, 25, 50],
+          sortable: ['idComponente'],
+        },
+        
       },
       workEquipment: [],
       workEquipmentEdit: [],
@@ -331,7 +358,38 @@ export default {
       }
     }
   }
-
+  .icons-actions-wrapper{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    
+    .icons-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      &:hover {
+        span {
+          color: var(--duas-rodas-soft)
+        }
+      }
+      i {
+        transition: .2s;
+      }
+      &:hover {
+        i {
+          transform: scale(1.18);
+        }
+      }
+      &:active {
+        i {
+          transform: scale(1);
+        }
+      }
+      // padding: 2%;
+    }
+  }
   .slide-fade-enter-active {
     transition: all 0.1s ease;
   }
@@ -344,4 +402,70 @@ export default {
     opacity: 0;
   }
 }
+</style>
+<style lang="scss">
+.register-component-table {
+  table {
+    border-radius: 8px;
+    thead {
+      th {
+        background-color: var(--duas-rodas-soft);
+        span {
+          cursor: pointer;
+          color: white !important;
+        }
+        border: 0 !important;
+        outline: none;
+      }
+    }
+    tbody {
+      tr {
+        td {
+          border: 0 !important;
+          vertical-align: middle;
+          outline: none;
+        }
+      }
+    }
+  }
+  .col-md-12 {
+    justify-content: space-between;
+    display: flex !important;
+    .VueTables__search-field {
+      width: 30vw !important;
+      input {
+        width: 100%;
+      }
+    }
+  }
+
+  .VuePagination {
+    display: flex;
+    justify-content: center;
+
+    p {
+      display: flex;
+      justify-content: center;
+    }
+  }
+  .page-item .active {
+    color: white !important;
+    border-color: #ddd !important;
+    background-color: var(--duas-rodas-soft) !important;
+    &:focus {
+      box-shadow: none !important;
+    }
+  }
+  .page-link {
+    color: #555 !important;
+    &:focus {
+      box-shadow: none !important;
+    }
+  }
+  .actions-class {
+    width: 100px !important;
+  }
+
+}
+
 </style>

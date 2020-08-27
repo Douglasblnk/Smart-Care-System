@@ -28,7 +28,7 @@
         <transition name="slide-fade" mode="out-in">
           <template v-if="switchListRegister === 'list'">
             <card fullWidth>
-              <div class="register-epi-table">
+              <div class="register-equipament-table">
                 <v-client-table
                   ref="tableRegisterEpi"
                   v-model="equipments"
@@ -424,7 +424,7 @@ export default {
 
 </style>
 <style lang="scss">
-.register-epi-table {
+.register-equipament-table {
   table {
     border-radius: 8px;
     thead {
