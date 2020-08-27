@@ -27,31 +27,6 @@
 
         <transition name="slide-fade" mode="out-in">
           <template v-if="switchListRegister === 'list'">
-            <!-- <div class="list-option">
-              <div class="table-content bg-white p-4 w-100">
-                <div class="table-responsive">
-                  <table class="table table table-striped table-borderless table-hover" cellspacing="0">
-                    <thead class="table-head">
-                      <tr>
-                        <th scope="col">Epi</th>
-                        <th scope="col">Ações</th>
-                      </tr>
-                    </thead>
-                    <tbody class="table-body">
-                      <tr v-for="(epi, index) in Epis" :key="`epi-${index}`">
-                        <td>{{ epi.descricaoEpi }}</td>
-                        <td style="width: 50px">
-                          <div class="d-flex table-action">
-                            <i class="fas fa-edit text-muted" @click="editEpi(epi)"></i>
-                            <i class="fas fa-trash text-muted" @click="deleteEpi(epi, index)"></i>
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div> -->
             <card fullWidth>
               <div class="register-epi-table">
                 <v-client-table
