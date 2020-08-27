@@ -17,7 +17,7 @@ const dashboard = [
         name: 'Cadastrar',
         link: '/cadastros/cadastro-causa-sintoma',
         icon: 'fa fa-pen',
-        mobile: true,
+        mobile: false,
         web: false,
     },
     {
@@ -31,6 +31,13 @@ const dashboard = [
         name: 'Consultas',
         link: '/consultas',
         icon: 'fa fa-search',
+        mobile: true,
+        web: true,
+    },
+    {
+        name: 'Apontamentos',
+        link: '/consultas',
+        icon: 'far fa-list-alt',
         mobile: true,
         web: true,
     },
