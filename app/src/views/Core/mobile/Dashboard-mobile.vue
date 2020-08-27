@@ -10,7 +10,7 @@
       :has-errors="hasErrors"
     />
     <hr>
-    <div class="d-flex flex-row flex-wrap">
+    <div class="d-flex flex-row flex-wrap justify-content-center">
       <div v-for="(item, index) in dashboard" :key="`ìtem-${index}`" class="card-option">
         <template v-if="item.mobile">
           <card-option :title="item.name" :icon="item.icon" :route="item.link" size="small" />
