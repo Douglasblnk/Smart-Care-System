@@ -8,6 +8,7 @@ export default new Vuex.Store({
     user: {},
     page: '',
     isMobile: false,
+    mainIcon: '',
   },
 
   mutations: {
@@ -20,11 +21,23 @@ export default new Vuex.Store({
     setIsMobile(state, isMobile) {
       state.isMobile = isMobile;
     },
+    setMainIcon(state, icon) {
+      state.mainIcon = icon;
+    },
   },
 
   getters: {
     getIsMobile(state) {
       return state.isMobile;
+    },
+    getUser(state) {
+      return state.user;
+    },
+    getMainIcon(state) {
+      return state.mainIcon;
+    },
+    getPageName(state) {
+      return state.page;
     },
   },
 

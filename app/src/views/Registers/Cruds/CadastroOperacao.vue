@@ -81,7 +81,7 @@
   </div>
 </template>
 <script>
-import { getLocalStorageToken, getErrors } from '../../../utils/utils';
+import { getToken, getErrors } from '../../../utils/utils';
 
 
 export default {
@@ -127,7 +127,7 @@ export default {
     async registerOperations() {
       if (this.isEditing) return this.updateOperations();
       try {
-        const response = await this.$http.post('operacoes', getLocalStorageToken(), this.inputValues);
+        const response = await this.$http.post('operacoes', getToken(), this.inputValues);
         this.$swal({
           type: 'success',
           title: 'Cadastrado',
@@ -146,7 +146,7 @@ export default {
     async getOperations() {
       // const token = localStorage.getItem('token')
       try {
-        const response = await this.$http.get('operacoes/get', getLocalStorageToken());
+        const response = await this.$http.get('operacoes/get', getToken());
         if (response.result.length === undefined)
           this.workOperations.push(response.result);
 
@@ -172,7 +172,7 @@ export default {
           showCancelButton: true,
           confirmButtonColor: '#F34336',
           preConfirm: async () => {
-            const response = await this.$http.delete('operacoes', getLocalStorageToken(), component.idoperacao);
+            const response = await this.$http.delete('operacoes', getToken(), component.idoperacao);
             this.$swal({
               type: 'success',
               title: 'Removido com sucesso',
@@ -203,7 +203,7 @@ export default {
     },
     async updateOperations() {
       try {
-        const response = await this.$http.update('operacoes', getLocalStorageToken(), this.inputValues, this.inputValues.idoperacao);
+        const response = await this.$http.update('operacoes', getToken(), this.inputValues, this.inputValues.idoperacao);
       
         const index = this.workOperations.indexOf(this.workOperations.find(i => i.idoperacao === this.inputValues.idoperacao));
         this.workOperations.splice(index, 1, this.inputValues);

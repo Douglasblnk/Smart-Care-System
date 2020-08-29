@@ -178,7 +178,7 @@
 </template>
 
 <script>
-import { getLocalStorageToken } from '../../../utils/utils';
+import { getToken } from '../../../utils/utils';
 
 export default {
 
@@ -249,7 +249,7 @@ export default {
     },
 
     getCause() {
-      this.$http.get('causa', getLocalStorageToken())
+      this.$http.get('causa', getToken())
         .then(res => {
           if (res.status !== 200) return this.$swal({
             type: 'error',
@@ -264,7 +264,7 @@ export default {
     },
 
     getSymptom() {
-      this.$http.get('sintoma', getLocalStorageToken())
+      this.$http.get('sintoma', getToken())
         .then(res => {
           if (res.status !== 200) return this.$swal({
             type: 'error',
@@ -280,7 +280,7 @@ export default {
 
     registerCause() {
       if (this.isEditing) return this.updateCause();
-      this.$http.post('causa', getLocalStorageToken(), this.inputValuesCause)
+      this.$http.post('causa', getToken(), this.inputValuesCause)
         .then(res => {
           if (res.status !== 200) return this.$swal({
             type: 'error',
@@ -302,7 +302,7 @@ export default {
 
     registerSymptom() {
       if (this.isEditing) return this.updateSymptom();
-      this.$http.post('sintoma', getLocalStorageToken(), this.inputValuesSymptom)
+      this.$http.post('sintoma', getToken(), this.inputValuesSymptom)
         .then(res => {
           if (res.status !== 200) return this.$swal({
             type: 'error',
@@ -330,7 +330,7 @@ export default {
         showCancelButton: true,
         confirmButtonColor: '#F34336',
         preConfirm: () => {
-          this.$http.delete('causa', getLocalStorageToken(), cause.idCausa)
+          this.$http.delete('causa', getToken(), cause.idCausa)
             .then(res => {
               console.log(res);
               if (res.status !== 200) return this.$swal({
@@ -359,7 +359,7 @@ export default {
         showCancelButton: true,
         confirmButtonColor: '#F34336',
         preConfirm: () => {
-          this.$http.delete('sintoma', getLocalStorageToken(), symptom.idSintomas)
+          this.$http.delete('sintoma', getToken(), symptom.idSintomas)
             .then(res => {
               console.log(res);
               if (res.status !== 200) return this.$swal({
@@ -381,7 +381,7 @@ export default {
     },
 
     updateCause() {
-      this.$http.update('causa', getLocalStorageToken(), this.inputValuesCause, this.inputValuesCause.idCausa)
+      this.$http.update('causa', getToken(), this.inputValuesCause, this.inputValuesCause.idCausa)
         .then(res => {
           if (res.status !== 200) return this.$swal({
             type: 'error',
@@ -402,7 +402,7 @@ export default {
     },
 
     updateSymptom() {
-      this.$http.update('sintoma', getLocalStorageToken(), this.inputValuesSymptom, this.inputValuesSymptom.idSintomas)
+      this.$http.update('sintoma', getToken(), this.inputValuesSymptom, this.inputValuesSymptom.idSintomas)
         .then(res => {
           if (res.status !== 200) return this.$swal({
             type: 'error',

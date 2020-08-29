@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { getLocalStorageToken, getErrors } from '../../utils/utils';
+import { getToken, getErrors } from '../../utils/utils';
 
 export default {
   name: 'Apontamentos',
@@ -68,7 +68,7 @@ export default {
         this.inputValues.user = this.$store.state.user.userId;
         this.inputValues.order = this.order.idOrdemServico;
 
-        const response = await this.$http.post('order-note', getLocalStorageToken(), this.inputValues);
+        const response = await this.$http.post('order-note', getToken(), this.inputValues);
         
         this.$swal({
           type: 'success',

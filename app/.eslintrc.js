@@ -56,6 +56,7 @@ module.exports = {
     "operator-linebreak": "warn",
     "spaced-comment": "warn",
     "eqeqeq": "warn",
+    "space-in-parens": "warn"
   },
   parserOptions: {
     parser: 'babel-eslint'

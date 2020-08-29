@@ -77,7 +77,7 @@
 </template>
 
 <script>
-import { getLocalStorageToken, getErrors } from '../../../utils/utils';
+import { getToken, getErrors } from '../../../utils/utils';
 
 
 export default {
@@ -128,7 +128,7 @@ export default {
       if (this.isEditing) return this.updateComponent();
       this.inputValues.Equipamento_idEquipamento = this.selectValue;
       try {
-        const response = await this.$http.post('componente', getLocalStorageToken(), this.inputValues);
+        const response = await this.$http.post('componente', getToken(), this.inputValues);
         this.$swal({
           type: 'success',
           title: 'Cadastrado com sucesso',
@@ -147,7 +147,7 @@ export default {
 
     async getEquipments() {
       try {
-        const response = await this.$http.get('equipamento/get', getLocalStorageToken());
+        const response = await this.$http.get('equipamento/get', getToken());
         if (response.result.length === undefined)
           this.workEquipment.push(response.result);
         else this.workEquipment = [...response.result];
@@ -162,7 +162,7 @@ export default {
 
     async getComponentes() {
       try {
-        const response = await this.$http.get('componente/get', getLocalStorageToken());
+        const response = await this.$http.get('componente/get', getToken());
         if (response.result.length === undefined)
           this.workComponent.push(response.result);
         else this.workComponent = [...response.result];
@@ -187,7 +187,7 @@ export default {
           showCancelButton: true,
           confirmButtonColor: '#F34336',
           preConfirm: async () => {
-            const response = await this.$http.delete('componente', getLocalStorageToken(), component.idComponente);
+            const response = await this.$http.delete('componente', getToken(), component.idComponente);
             return this.$swal({
               type: 'success',
               title: 'Removido com Sucesso',
@@ -230,7 +230,7 @@ export default {
     },
     async updateComponent() {
       try {
-        const response = await this.$http.update('componente', getLocalStorageToken(), this.inputValues, this.inputValues.idComponente);
+        const response = await this.$http.update('componente', getToken(), this.inputValues, this.inputValues.idComponente);
         this.$swal({
           type: 'success',
           title: 'Alterado com Sucesso',

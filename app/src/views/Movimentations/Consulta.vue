@@ -2,15 +2,9 @@
   <div class="root-consulta-view">
     <transition name="slide-side" mode="out-in">
       <div v-if="state.view === 'list'" key="list">
-        <div class="d-flex align-items-center">
-          <div class="back-button ml-3" @click="goBack">
-            <i
-              class="fa fa-arrow-left fa-fw"
-              title="Retornar"
-            />
-            <span>Voltar</span>
-          </div>
-        </div>
+        <back-button
+          @goBack="goBack"
+        />
 
         <div class="p-3">
           <div class="p-2 filters">
@@ -211,7 +205,7 @@
 </template>
 
 <script>
-import { getLocalStorageToken, getErrors, getPriorityClass } from '../../utils/utils';
+import { getToken, getErrors, getPriorityClass } from '../../utils/utils';
 import { consultOrderTable } from './utils/tableConfig';
 
 export default {
@@ -311,6 +305,7 @@ export default {
   
   mounted() {
     this.$store.commit('addPageName', 'Consultas');
+    this.$store.commit('setMainIcon', 'fa-search');
 
     this.getOrdersMaintences();
     this.getStatus();
@@ -424,7 +419,7 @@ export default {
       try {
         this.isLoadingOrder[String(order.idOrdemServico)] = true;
 
-        const { result } = await this.$http.post('ordem-manutencao/detail', getLocalStorageToken(), {
+        const { result } = await this.$http.post('ordem-manutencao/detail', getToken(), {
           order,
         });
 
@@ -446,27 +441,18 @@ export default {
       try {
         this.isLoading = true;
 
-        const response = await this.$http.get('ordem-manutencao/summary', getLocalStorageToken());
+        const response = await this.$http.get('ordem-manutencao/summary', getToken());
 
         if (response.result.length === 0) return;
 
-        console.log("GET RESPONSE ORDER: ", response);
         if (response.result.length === undefined)
           this.maintenainceOrders.push(response.result);
         else this.maintenainceOrders = [...response.result];
 
-        this.$http.setActivity(
-          'orderMaintanceQuery',
-          {
-            ...this.$store.state.user,
-            date: this.$moment().format('DD-MM-YYYY HH-mm'),
-            descricao: `${this.$store.state.user.nome} fez uma consulta de ordem de manutenção`,
-          },
-          getLocalStorageToken(),
-        );
+        this.$http.setActivity(this.$activities.ORDER_MAINTENANCE_QUERY);
       } catch (err) {
         this.isLoading = false;
-        console.log('error getOrderMaintence =>', err.response);
+        console.log('error getOrderMaintence =>', err.response || err);
 
         this.$swal({
           type: 'error',
@@ -479,7 +465,7 @@ export default {
     },
     async getStatus() {
       try {
-        const response = await this.$http.get('status/get', getLocalStorageToken());
+        const response = await this.$http.get('status/get', getToken());
 
         if (response.result.length === 0)
           throw 'Não foi possível buscar os status ou não há nenhuma status cadastrado';
@@ -497,7 +483,7 @@ export default {
     },
     async getPriority() {
       try {
-        const response = await this.$http.get('prioridade/get', getLocalStorageToken());
+        const response = await this.$http.get('prioridade/get', getToken());
 
         this.optionsData.priority = [...response.result];
       } catch (err) {
@@ -512,7 +498,7 @@ export default {
     },
     async getOrderType() {
       try {
-        const response = await this.$http.get('tipo-ordem/get', getLocalStorageToken());
+        const response = await this.$http.get('tipo-ordem/get', getToken());
 
         this.optionsData.orderType = [...response.result];
       } catch (err) {

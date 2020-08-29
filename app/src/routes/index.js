@@ -121,7 +121,7 @@ const routes = [
   },
   {
     path: '/consulta-verificacoes',
-    name: 'Consulta-Verificações',
+    name: 'Verificações',
     component: ConsultaVerificacoes,
     meta: { requireAuth: true },
   },
@@ -149,7 +149,7 @@ const routes = [
   },
 ];
 
-const apiUrl = 'http://localhost:3000';
+const apiUrl = 'http://192.168.10.5:3000';
 
 const router = new VueRouter({
   mode: 'history',

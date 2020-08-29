@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import { getLocalStorageToken, getErrors } from '../../../utils/utils';
+import { getToken, getErrors } from '../../../utils/utils';
 
 export default {
   data() {
@@ -119,7 +119,7 @@ export default {
     },
     async getSector() {
       try {
-        const response = await this.$http.get('local-instalacao/get', getLocalStorageToken());
+        const response = await this.$http.get('local-instalacao/get', getToken());
 
         if (response.result.length === undefined)
           this.instalationLocal.push(response.result);
@@ -139,7 +139,7 @@ export default {
       if (this.isEditing) return this.updateSector();
 
       try {
-        const response = await this.$http.post('local-instalacao', getLocalStorageToken(), this.inputValues);
+        const response = await this.$http.post('local-instalacao', getToken(), this.inputValues);
 
         this.$swal({
           type: 'success',
@@ -165,7 +165,7 @@ export default {
       try {
         console.log('INPUT VALUES: ', this.inputValues);
         const response = await this.$http.update(
-          'local-instalacao', getLocalStorageToken(), this.inputValues, this.inputValues.idSetor,
+          'local-instalacao', getToken(), this.inputValues, this.inputValues.idSetor,
         );
 
         this.$swal({
@@ -199,7 +199,7 @@ export default {
         confirmButtonColor: '#F34336',
         preConfirm: async () => {
           try {
-            const response = await this.$http.delete('local-instalacao', getLocalStorageToken(), sector.idSetor);
+            const response = await this.$http.delete('local-instalacao', getToken(), sector.idSetor);
 
             return this.$swal({
               type: 'success',

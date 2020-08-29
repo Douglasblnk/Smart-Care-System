@@ -2,7 +2,7 @@ const axios = require('axios');
 
 const API_URL = 'http://localhost:3000';
 
-module.exports = class GetUserAutentication {
+module.exports = class GetUserAuthentication {
   async validateSession({ token }) {
     try {
       if (!token) throw 'nenhum token informado!';
