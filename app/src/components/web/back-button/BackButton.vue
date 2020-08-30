@@ -1,7 +1,7 @@
 <template>
-  <section class="root-back-button">
+  <section v-if="!isMobile" class="root-back-button">
     <div class="d-flex align-items-center">
-      <div class="back-button ml-3" @click="goBack">
+      <div class="back-button" @click="goBack">
         <i
           class="fa fa-arrow-left fa-fw"
           title="Retornar"
@@ -13,8 +13,15 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'BackButton',
+  computed: {
+    ...mapGetters({
+      isMobile: 'getIsMobile',
+    }),
+  },
   methods: {
     goBack() {
       this.$emit('goBack');

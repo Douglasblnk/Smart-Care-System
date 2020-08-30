@@ -34,7 +34,7 @@ export default {
     async openProfile() {
       if (this.$route.matched.some(({ name }) => name === 'Meu Perfil')) return;
       
-      this.$router.push({ path: `/perfil/${this.userBadge.cracha}` });
+      this.$router.push({ path: '/perfil' });
     },
   },
 };

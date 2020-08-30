@@ -56,7 +56,8 @@ module.exports = {
     "operator-linebreak": "warn",
     "spaced-comment": "warn",
     "eqeqeq": "warn",
-    "space-in-parens": "warn"
+    "space-in-parens": "warn",
+    "vue/attribute-hyphenation": "warn",
   },
   parserOptions: {
     parser: 'babel-eslint'

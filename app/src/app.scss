@@ -3,7 +3,7 @@
   --duas-rodas-soft: #E66E6D;
   --shadow-gray: rgb(160, 160, 160);
   --gray: rgb(92, 92, 92);
-  --button-gray: #eee;
+  --button-gray: #ddd;
 }
 
 body {
@@ -35,6 +35,10 @@ span, p, strong {
   border-radius: 10px !important;
 }
 
+.no-margin {
+  margin: 0 !important
+}
+
 .no-padding {
   padding: 0 !important;
 }
@@ -55,15 +59,23 @@ span, p, strong {
 .bottom-navigation {
   display: flex;
   justify-content: flex-end;
-  width: 100%;
   position: fixed;
-  z-index: 9999;
+  z-index: 10;
   bottom: 0;
+  right: 0;
 }
 
-.dark {
+.config-blurred-background {
   -webkit-backdrop-filter: blur(2px);
   backdrop-filter: blur(2px);
+  background-color: rgba(68, 68, 68, 0.356);
+  position: absolute;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+.filter-dark-background {
   background-color: rgba(68, 68, 68, 0.356);
   position: absolute;
   top: 0;

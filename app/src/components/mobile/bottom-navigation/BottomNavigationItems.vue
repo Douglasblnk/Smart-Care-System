@@ -5,7 +5,7 @@
         <div
           v-for="(options, index) in getRecommendedItems"
           :key="`options-${index}`"
-          class="d-flex justify-content-center align-items-center"
+          class="d-flex justify-content-end align-items-center"
         >
           <div class="action-text">
             <small>{{ options.name }}</small>
@@ -33,6 +33,7 @@ export default {
   computed: {
     getRecommendedItems() {
       const currentPath = this.$route.path;
+      
       return (recommendedItems[currentPath].options);
     },
   },
@@ -49,8 +50,6 @@ export default {
 .root-bottom-navigation-item {
   position: relative;
   .action-text {
-    position: absolute;
-    right: 60px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -59,7 +58,7 @@ export default {
     margin: 0 10px;
     border-radius: 5px;
     small {
-      line-height: 20px;
+      display: inline-block;
       user-select: none;
     }
   }

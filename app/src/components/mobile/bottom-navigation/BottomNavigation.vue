@@ -2,12 +2,12 @@
   <section class="root-bottom-navigation">
     <div class="navigation-wrapper">
       <bottom-navigation-items
-        :showOptions="showOptions"
-        @update:closeOptions="openConfigs()"
+        :show-options="showOptions"
+        @update:closeOptions="closeConfig"
       />
 
-      <div class="floating-button">
-        <div @click="openConfigs()">
+      <div v-click-outside="closeConfig" class="floating-button">
+        <div @click="openCloseConfig()">
           <i class="fa fa-cogs fa-fw" />
         </div>
       </div>
@@ -30,8 +30,11 @@ export default {
     navigateToDashboard() {
       this.$router.push({ path: '/dashboard' });
     },
-    openConfigs() {
+    openCloseConfig() {
       this.$emit('update:openCloseConfigs');
+    },
+    closeConfig() {
+      this.$emit('update:closeConfig');
     },
   },
 };

@@ -4,9 +4,9 @@
       :class="{
         'btn-default': !mobile,
         'btn-disabled': disabled,
-        'primary': primary && !mobile,
+        'primary': primary,
         'btn-simple': simple && !mobile,
-        'btn-small': small && !mobile,
+        'btn-small': small,
         'btn-circle': circle && !mobile,
         'btn-transparent': transparent && !mobile,
         'mobile-button': mobile,
@@ -81,8 +81,7 @@ export default {
   }
   .mobile-button {
     width: 100%;
-    margin: 10px;
-    padding: 15px;
+    padding: 10px;
     background-color: var(--button-gray);
     font-weight: bold;
     border: none;
@@ -108,6 +107,7 @@ export default {
   }
   .primary {
     background-color: var(--duas-rodas-soft) !important;
+    span, small, p, h3 { color: white !important ;}
   }
   .btn-circle {
     display: flex;

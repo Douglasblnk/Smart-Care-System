@@ -7,8 +7,8 @@ const logoff = () => {
     type: 'question',
     title: 'Deseja realmente sair do sistema?',
     showCancelButton: true,
-    cancelButtonText: 'Não!',
-    confirmButtonText: 'Sim!',
+    cancelButtonText: 'Não',
+    confirmButtonText: 'Sair',
     confirmButtonColor: '#F34336',
   }).then(res => {
     if (res.value) {
@@ -33,6 +33,11 @@ export const recommendedItems = {
   '/consultas': {
     options: [
       {
+        name: 'Filtrar',
+        icon: 'fa-filter',
+        actions: () => { store.state.showConsultFilter = !store.state.showConsultFilter; },
+      },
+      {
         name: 'Dashboard',
         icon: 'fa-home',
         actions: () => [router.replace('/dashboard')],
@@ -40,12 +45,27 @@ export const recommendedItems = {
       commonOption,
     ],
   },
-  [`/perfil/${store.state.user.cracha}`]: {
+  '/perfil': {
     options: [
       {
         name: 'Dashboard',
         icon: 'fa-home',
         actions: () => [router.replace('/dashboard')],
+      },
+      commonOption,
+    ],
+  },
+  '/consulta-verificacoes': {
+    options: [
+      {
+        name: 'Dashboard',
+        icon: 'fa-home',
+        actions: () => [router.replace('/dashboard')],
+      },
+      {
+        name: 'Consultas',
+        icon: 'fa-search',
+        actions: () => [router.replace('/consultas')],
       },
       commonOption,
     ],

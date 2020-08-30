@@ -9,6 +9,7 @@ export default new Vuex.Store({
     page: '',
     isMobile: false,
     mainIcon: '',
+    showConsultFilter: false,
   },
 
   mutations: {
@@ -24,6 +25,9 @@ export default new Vuex.Store({
     setMainIcon(state, icon) {
       state.mainIcon = icon;
     },
+    setShowConsultFilter(state, value) {
+      state.showConsultFilter = value;
+    },
   },
 
   getters: {
@@ -38,6 +42,9 @@ export default new Vuex.Store({
     },
     getPageName(state) {
       return state.page;
+    },
+    getShowConsultFilter(state) {
+      return state.showConsultFilter;
     },
   },
 

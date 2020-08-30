@@ -7,8 +7,8 @@ import VueSweetalert2 from 'vue-sweetalert2';
 import Swal from 'sweetalert2';
 import Lodash from 'lodash';
 import moment from 'moment';
-import { ClientTable } from 'vue-tables-2';
 import VueFormWizard from 'vue-form-wizard';
+import { ClientTable } from 'vue-tables-2';
 import 'vue-form-wizard/dist/vue-form-wizard.min.css';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -20,6 +20,7 @@ import Services from './services/services';
 import { validateSession } from './utils/utils';
 import activities from './utils/activities';
 import importedComponents from './plugins/importedComponents';
+import Directives from './plugins/directive';
 
 Vue.use(Fontawesome);
 Vue.use(Lodash);
@@ -29,6 +30,7 @@ Vue.use(Vuex);
 Vue.use(ClientTable);
 Vue.use(VueFormWizard);
 Vue.use(importedComponents);
+Vue.use(Directives);
 
 const service = new Services();
 

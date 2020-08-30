@@ -21,10 +21,11 @@
         </div>
 
         <transition name="fade" mode="out-in">
-          <div v-if="validateVisibility" class="bottom-navigation" @click.self="openCloseConfigs">
+          <div v-if="validateVisibility" class="bottom-navigation">
             <bottom-navigation
-              :showOptions="state.showOptions"
+              :show-options="state.showOptions"
               @update:openCloseConfigs="openCloseConfigs()"
+              @update:closeConfig="closeConfig"
             />
           </div>
         </transition>
@@ -36,12 +37,18 @@
     </div>
 
     <transition name="fade" mode="out-in">
-      <div v-show="state.showOptions" class="dark" @click="openCloseConfigs" />
+      <div v-show="state.showOptions" class="config-blurred-background" />
+    </transition>
+
+    <transition name="fade" mode="out-in">
+      <div v-show="showConsultFilter" class="filter-dark-background" @click="closeConsultFilter" />
     </transition>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   components: {
     Sidebar: () => import('./components/web/sidebar/Sidebar.vue'),
@@ -58,6 +65,9 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      showConsultFilter: 'getShowConsultFilter',
+    }),
     routes() {
       if (this.$route.name === 'login') return false;
       if (this.$route.name === '404') return false;
@@ -85,6 +95,12 @@ export default {
     },
     openCloseConfigs() {
       this.state.showOptions = !this.state.showOptions;
+    },
+    closeConfig() {
+      this.state.showOptions = false;
+    },
+    closeConsultFilter() {
+      this.$store.commit('setShowConsultFilter', false);
     },
   },
 };

@@ -9,7 +9,7 @@
         <div class="card-title d-flex justify-content-center align-items-center">
           <h3>Análise de Verificações</h3>
         </div>
-        <card fullWidth>
+        <card full-width>
           <div class="table-verifications">
             <v-client-table ref="table_verification" v-model="listVerificationsStatus" :columns="columns" :options="options">
               <span slot="Solicitante" slot-scope="{row}" style="font-size: 2em;">
@@ -69,7 +69,9 @@
                 </div>
               </div>
               <div class="d-flex justify-content-center">
-                <cancel-button label="Fechar" @click.native="closeModal()" />
+                <smart-button @click.native="closeModal()">
+                  <span>Fechar</span>
+                </smart-button>
               </div>
             </div>
           </b-modal>
