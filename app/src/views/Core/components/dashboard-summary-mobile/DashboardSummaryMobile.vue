@@ -3,17 +3,17 @@
     <!-- <div class="summary-content m-3">
     </div> -->
     <div class="summary-card p-3 mr-3">
-        <div class="title-summary-card text-center">
-          <span>Ordens abertas</span>
-          <i v-if="isLoading" class="fa fa-spinner fa-spin fa-2x text-muted" />
-          <i v-else-if="hasErrors" class="fa fa-exclamation-triangle fa-2x text-danger mb-2" />
-          <h1 v-else class="text-muted">{{ orders.openOrders }}</h1>
-        </div>
+      <div class="title-summary-card text-center">
+        <span>Ordens abertas</span>
+        <i v-if="isLoading" class="fa fa-spinner fa-spin fa-2x text-muted" />
+        <i v-else-if="hasErrors" class="fa fa-exclamation-triangle fa-2x text-danger mb-2" />
+        <h1 v-else class="text-muted">{{ orders.openOrders }}</h1>
       </div>
+    </div>
     <div class="summary-card p-3 ml-3">
       <div class="wrapper">
         <div class="title-summary-card text-center">
-        <span>Ordens em andamento</span>
+          <span>Ordens em andamento</span>
           <i v-if="isLoading" class="fa fa-spinner fa-spin fa-2x text-muted" />
           <i v-else-if="hasErrors" class="fa fa-exclamation-triangle fa-2x text-danger mb-2" />
           <h1 v-else class="text-muted">{{ orders.currentOrders }}</h1>
@@ -25,7 +25,7 @@
 
 <script>
 export default {
-  name: 'DashboardSummary',
+  name: 'DashboardSummaryMobile',
   props: {
     orders: { type: Object, default: () => ({}) },
     isLoading: { type: Boolean, default: false },
