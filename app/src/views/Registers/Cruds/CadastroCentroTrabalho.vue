@@ -27,27 +27,29 @@
 
         <transition name="slide-fade" mode="out-in">
           <template v-if="switchListRegister === 'list'">
-            <div class="table-content bg-white p-4">
-              <table class="table table table-striped table-borderless table-hover" cellspacing="0">
-                <thead class="table-head">
-                  <tr>
-                    <th scope="col">Centro de trabalho</th>
-                    <th scope="col">Ações</th>
-                  </tr>
-                </thead>
-                <tbody class="table-body">
-                  <tr v-for="(workCenter, index) in workCenters" :key="`workCenter-${index}`">
-                    <td>{{ workCenter.descricao }}</td>
-                    <td style="width: 50px">
-                      <div class="d-flex table-action">
-                        <i class="fas fa-edit text-muted" @click="editWorkCenter(workCenter)"></i>
-                        <i class="fas fa-trash text-muted" @click="deleteWorkCenter(workCenter, index)"></i>
+            <card fullWidth>
+              <div class="register-centrotrabalho-table">
+                <v-client-table
+                  ref="tableRegisterEpi"
+                  v-model="workCenters"
+                  :columns="columns"
+                  :options="cadastroCentroTrabalhoTable.options"
+                >
+                  <div slot="actions" slot-scope="props">
+                    <template>
+                      <div class="icons-actions-wrapper">
+                        <div class="icons-actions">
+                          <i class="fas fa-edit text-muted" @click="editWorkCenter(props.row)"></i>
+                        </div>
+                        <div class="icons-actions">
+                          <i class="fas fa-trash text-muted" @click="deleteWorkCenter(props.row, index)"></i>
+                        </div>
                       </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+                    </template>
+                  </div>
+                </v-client-table>
+              </div>
+            </card>
           </template>
 
           <template v-if="switchListRegister === 'register'">
@@ -58,9 +60,9 @@
                 </div>
               </div>
               <div class="d-flex justify-content-center m-3">
-                  <smart-button primary class="mr-2">
-                    {{getSaveButtonText()}}
-                  </smart-button>
+                <smart-button primary class="mr-2">
+                  {{ getSaveButtonText() }}
+                </smart-button>
                 <smart-button v-if="isEditing" @click.native="closeEditing">
                   <span>Cancelar</span>
                 </smart-button>
@@ -87,6 +89,34 @@ export default {
       switchListRegister: 'list',
       isEditing: false,
       workCenters: [],
+      columns: ['descricao', 'actions'],
+      cadastroCentroTrabalhoTable: {
+        options: {
+          headings: {
+            id_centro_trabalho: create => create('span', {
+              domProps: { innerHTML: 'Centro de Trabalho <i class="fas fa-sort"></i>' },
+            }),
+            descricao: 'Centro de Trabalho',
+            actions: 'Ações',
+          },
+          columnsClasses: {
+            actions: 'actions-class',
+          },
+          texts: {
+            filter: '',
+            filterPlaceholder: 'Buscar',
+            count: 'Mostrando {from} até {to} de {count} registros|{count} Registros|Um Registro',
+            limit: '',
+            page: 'Páginas:',
+            noResults: 'Nenhum registro encontrado',
+            loading: 'Carregando...',
+          },
+          perPage: 10,
+          perPageValues: [10, 25, 50],
+          sortable: ['id_centro_trabalho'],
+        },
+        
+      },
     };
   },
 
@@ -109,8 +139,7 @@ export default {
         this.switchListRegister = 'register';
         return this.$store.commit('addPageName', `Cadastro de Centro de Trabalho | Cadastrar`);
       } else {
-        return this.$store.commit('addPageName', `Cadastro de Centro de Trabalho | Editar`);
-      }
+        return this.$store.commit('addPageName', `Cadastro de Centro de Trabalho | Editar`);}
     },
     getWorkCenter() {
       this.$http.get('centro-trabalho/get', getLocalStorageToken())
@@ -126,6 +155,7 @@ export default {
           if (res.result.length === undefined)
             this.workCenters.push(res.result);
           else this.workCenters = [...res.result];
+          console.log(this.workCenters);
         });
     },
 
@@ -184,14 +214,14 @@ export default {
 
     editWorkCenter(workCenter) {
       this.switchLabelPage('edit');
-      this.inputValues = { ...workCenter }
+      this.inputValues = { ...workCenter };
       console.log(this.inputValues);
-      this.switchListRegister = 'register'
+      this.switchListRegister = 'register';
       this.isEditing = true;
     },
 
     updateWorkCenter() {
-      this.$http.update('centro-trabalho', getLocalStorageToken(), this.inputValues, this.inputValues.idCentro_Trabalho )
+      this.$http.update('centro-trabalho', getLocalStorageToken(), this.inputValues, this.inputValues.idCentro_Trabalho)
         .then(res => {
           if (res.status !== 200) {
             return this.$swal({
@@ -219,7 +249,7 @@ export default {
 
     closeEditing() {
       this.switchLabelPage('list');
-      this.switchListRegister = 'list'
+      this.switchListRegister = 'list';
       this.isEditing = false;
       this.resetModel();
     },
@@ -305,6 +335,38 @@ export default {
       }
     }
   }
+  .icons-actions-wrapper{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    
+    .icons-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      &:hover {
+        span {
+          color: var(--duas-rodas-soft)
+        }
+      }
+      i {
+        transition: .2s;
+      }
+      &:hover {
+        i {
+          transform: scale(1.18);
+        }
+      }
+      &:active {
+        i {
+          transform: scale(1);
+        }
+      }
+      // padding: 2%;
+    }
+  }
 
   .slide-fade-enter-active {
     transition: all 0.1s ease;
@@ -318,4 +380,70 @@ export default {
     opacity: 0;
   }
 }
+</style>
+<style lang="scss">
+.register-centrotrabalho-table {
+  table {
+    border-radius: 8px;
+    thead {
+      th {
+        background-color: var(--duas-rodas-soft);
+        span {
+          cursor: pointer;
+          color: white !important;
+        }
+        border: 0 !important;
+        outline: none;
+      }
+    }
+    tbody {
+      tr {
+        td {
+          border: 0 !important;
+          vertical-align: middle;
+          outline: none;
+        }
+      }
+    }
+  }
+  .col-md-12 {
+    justify-content: space-between;
+    display: flex !important;
+    .VueTables__search-field {
+      width: 30vw !important;
+      input {
+        width: 100%;
+      }
+    }
+  }
+
+  .VuePagination {
+    display: flex;
+    justify-content: center;
+
+    p {
+      display: flex;
+      justify-content: center;
+    }
+  }
+  .page-item .active {
+    color: white !important;
+    border-color: #ddd !important;
+    background-color: var(--duas-rodas-soft) !important;
+    &:focus {
+      box-shadow: none !important;
+    }
+  }
+  .page-link {
+    color: #555 !important;
+    &:focus {
+      box-shadow: none !important;
+    }
+  }
+  .actions-class {
+    width: 100px !important;
+  }
+
+}
+
 </style>
