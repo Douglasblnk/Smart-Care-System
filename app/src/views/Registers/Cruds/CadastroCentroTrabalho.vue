@@ -155,7 +155,6 @@ export default {
           if (res.result.length === undefined)
             this.workCenters.push(res.result);
           else this.workCenters = [...res.result];
-          console.log(this.workCenters);
         });
     },
 
