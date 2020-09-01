@@ -62,7 +62,7 @@
               </div>
               <div class="d-flex justify-content-center m-3">
                 <smart-button primary class="mr-2">
-                  {{getSaveButtonText()}}
+                  {{ getSaveButtonText() }}
                 </smart-button>
                 <smart-button v-if="isEditing" @click.native="closeEditing">
                   <span>Cancelar</span>
