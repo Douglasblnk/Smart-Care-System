@@ -35,7 +35,9 @@
               <mobile-input v-model="inputValues.numeroCracha" placeholder="Crachá" icon="fa-user" type="text" />
               <mobile-input v-model="inputValues.senha" placeholder="Senha" icon="fa-lock" type="password" />
 
-              <mobile-button id="entrar" label="Entrar" />
+              <smart-button :loading="isLoading" mobile class="p-2">
+                <span>Entrar</span>
+              </smart-button>
             </div>
           </form>
         </div>
@@ -74,17 +76,6 @@ export default {
 
         const response = await this.$http.post('users', localStorage.getItem('token'), this.inputValues);
 
-        this.$http.setActivity(
-          'login',
-          {
-            nome: response.nome,
-            email: response.email,
-            cracha: response.numeroCracha,
-            date: this.$moment().format('DD-MM-YYYY HH-mm'),
-          },
-          'unnecessaryToken'
-        );
-
         this.$store.commit('addUser', {
           email: response.email,
           nome: response.nome,
@@ -105,7 +96,9 @@ export default {
           timer: 1500,
         }).then(() => {
           this.isLoading = false;
-          this.$router.replace('dashboard');
+          this.$http.setActivity(this.$activities.LOGIN);
+
+          this.$router.push('dashboard');
         });
       } catch (err) {
         console.log('err login => :', err.response || err);

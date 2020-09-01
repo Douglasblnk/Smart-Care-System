@@ -77,7 +77,7 @@
 
 
 <script>
-import { getLocalStorageToken, getErrors } from '../../../utils/utils';
+import { getToken, getErrors } from '../../../utils/utils';
 
 export default {
   name: 'CadastroEpi',
@@ -143,7 +143,8 @@ export default {
     },
     async getEpi() {
       try {
-        const response = await this.$http.get('epi/get', getLocalStorageToken());
+        const response = await this.$http.get('epi/get', getToken());
+
         if (response.result.length === undefined)
           this.Epis.push(response.result);
         else this.Epis = [...response.result];
@@ -161,7 +162,7 @@ export default {
       try {
         if (this.isEditing) return this.updateEpi();
 
-        const response = await this.$http.post('epi', getLocalStorageToken(), this.inputValues);
+        const response = await this.$http.post('epi', getToken(), this.inputValues);
 
         this.$swal({
           type: 'success',
@@ -185,7 +186,7 @@ export default {
     },
     async updateEpi() {
       try {
-        const response = await this.$http.update('epi', getLocalStorageToken(), this.inputValues, this.inputValues.idEpi);
+        const response = await this.$http.update('epi', getToken(), this.inputValues, this.inputValues.idEpi);
 
         this.$swal({
           type: 'success',
@@ -215,7 +216,7 @@ export default {
           showCancelButton: true,
           confirmButtonColor: '#F34336',
           preConfirm: async () => {
-            const response = await this.$http.delete('epi', getLocalStorageToken(), epi.idEpi);
+            const response = await this.$http.delete('epi', getToken(), epi.idEpi);
 
             this.$swal({
               type: 'success',

@@ -1,14 +1,9 @@
 <template>
   <div class="root-dashboard-view">
     <template v-if="isMobile">
-      <dashboard-mobile />
-    </template>
-
-    <template v-else>
-      <dashboard-web
+      <dashboard-mobile 
         :orders="orders"
         :custom-styles="customStyles"
-        :chart-style="chartStyle"
         :quantity="quantity"
         :labels="labels"
         :is-loading="isLoading"
@@ -16,11 +11,19 @@
         :loaded="loaded"
       />
     </template>
+
+    <template v-else>
+      <dashboard-web
+        :orders="orders"
+        :is-loading="isLoading"
+        :has-errors="hasErrors"
+      />
+    </template>
   </div>
 </template>
 
 <script>
-import { getLocalStorageToken } from '../../utils/utils';
+import { getToken } from '../../utils/utils';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -63,6 +66,7 @@ export default {
   },
   mounted() {
     this.$store.commit('addPageName', 'Dashboard');
+    this.$store.commit('setMainIcon', 'fa-home');
 
     this.getOrdersSummary();
     this.getLastOrderByMonth();
@@ -73,7 +77,7 @@ export default {
       try {
         this.isLoading = true;
         
-        const orders = await this.$http.microserviceAnalisis('analysis/order-summary', getLocalStorageToken());
+        const orders = await this.$http.microserviceAnalisis('analysis/order-summary', getToken());
 
         if (!orders || orders === undefined) {
           this.hasErrors = true;
@@ -92,7 +96,7 @@ export default {
       try {
         this.resetState();
 
-        const response = await this.$http.microserviceAnalisis('analysis/last-month', getLocalStorageToken());
+        const response = await this.$http.microserviceAnalisis('analysis/last-month', getToken());
 
         this.quantity = response.map(order => order.Quantity);
         this.labels = response.map(order => this.$moment(order.OpeningDate).format('DD-MM-YYYY'));

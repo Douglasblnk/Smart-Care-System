@@ -68,6 +68,7 @@ export default {
   
   mounted() {
     this.$store.commit('addPageName', 'Meu Perfil');
+    this.$store.commit('setMainIcon', 'fa-user-circle')
   },
 };
 </script>

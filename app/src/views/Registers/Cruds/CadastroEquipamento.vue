@@ -90,7 +90,7 @@
 </template>
 
 <script>
-import { getLocalStorageToken, getErrors } from '../../../utils/utils';
+import { getToken, getErrors } from '../../../utils/utils';
 
 export default {
   name: 'CadastroEquipamento',
@@ -178,7 +178,7 @@ export default {
     },
 
     getEquipment() {
-      this.$http.get('equipamento/get', getLocalStorageToken())
+      this.$http.get('equipamento/get', getToken())
         .then(res => {
           if (res.result.length === 0) {
             this.$swal({
@@ -195,7 +195,7 @@ export default {
     },
     async getSector() {
       try {
-        const response = await this.$http.get('local-instalacao/get', getLocalStorageToken());
+        const response = await this.$http.get('local-instalacao/get', getToken());
 
         if (response.result.length === undefined)
           this.selectsSector.push(response.result);
@@ -211,7 +211,7 @@ export default {
     },
     registerEquipment() {
       if (this.isEditing) return this.updateEquipment();
-      this.$http.post('equipamento', getLocalStorageToken(), this.inputValues)
+      this.$http.post('equipamento', getToken(), this.inputValues)
         .then(res => {
           if (res.status !== 200) {
             return this.$swal({
@@ -241,7 +241,7 @@ export default {
         showCancelButton: true,
         confirmButtonColor: '#F34336',
         preConfirm: () => {
-          this.$http.delete('equipamento', getLocalStorageToken(), equipment.idEquipamento)
+          this.$http.delete('equipamento', getToken(), equipment.idEquipamento)
             .then(res => {
               if (res.status !== 200) {
                 return this.$swal({
@@ -264,7 +264,7 @@ export default {
     },
 
     updateEquipment() {
-      this.$http.update('equipamento', getLocalStorageToken(), this.inputValues, this.inputValues.idEquipamento)
+      this.$http.update('equipamento', getToken(), this.inputValues, this.inputValues.idEquipamento)
         .then(res => {
           if (res.status !== 200) {
             return this.$swal({

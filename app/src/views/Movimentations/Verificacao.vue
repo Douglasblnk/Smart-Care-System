@@ -38,8 +38,11 @@
 </template>
 
 <script>
-import { getLocalStorageToken, getErrors } from '../../utils/utils';
+import Vue from 'vue';
 import { ToggleButton } from 'vue-js-toggle-button';
+import { getToken, getErrors } from '../../utils/utils';
+
+Vue.use(ToggleButton);
 
 export default {
   components: {
@@ -71,7 +74,7 @@ export default {
         this.inputValues.typeVerification = this.$store.state.user.nivelAcesso;
         this.inputValues.cracha = this.$store.state.user.cracha;
 
-        const response = await this.$http.post('verificacao', getLocalStorageToken(), this.inputValues);
+        const response = await this.$http.post('verificacao', getToken(), this.inputValues);
 
         this.$swal({
           type: 'success',

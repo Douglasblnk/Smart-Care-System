@@ -31,17 +31,12 @@ export default {
   },
 
   methods: {
-    currentRoute(routes, router) {
-      return routes === this.getRouteName(router);
+    currentRoute(selectedRoute, { name }) {
+      return selectedRoute === name;
     },
-    getRouteName(router) {
-      if (router.matched.length)
-        return router.matched[0].name;
-    },
-    goToRoute(routes) {
-      if (routes)
-        this.$router.push(routes.link);
-      else this.$router.push('/');
+    goToRoute({ link }) {
+      if (link && this.$route.path !== link)
+        this.$router.push(link);
     },
   },
 };

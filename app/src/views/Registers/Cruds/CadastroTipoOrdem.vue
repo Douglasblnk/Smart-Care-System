@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import { getLocalStorageToken, getErrors } from '../../../utils/utils';
+import { getToken, getErrors } from '../../../utils/utils';
 
 export default {
   data() {
@@ -108,7 +108,7 @@ export default {
 
     async getOrderType() {
       try {
-        const response = await this.$http.get('tipo-ordem/get', getLocalStorageToken());
+        const response = await this.$http.get('tipo-ordem/get', getToken());
 
         if (response.result.length === undefined)
           this.orderTypes.push(response.result);
@@ -128,7 +128,7 @@ export default {
       if (this.isEditing) return this.updateOrderType();
 
       try {
-        const response = await this.$http.post('tipo-ordem', getLocalStorageToken(), this.inputValues);
+        const response = await this.$http.post('tipo-ordem', getToken(), this.inputValues);
         
         this.$swal({
           type: 'success',
@@ -158,7 +158,7 @@ export default {
         confirmButtonColor: '#F34336',
         preConfirm: async () => {
           try {
-            const response = await this.$http.delete('tipo-ordem', getLocalStorageToken(), order.idtipoManutencao);
+            const response = await this.$http.delete('tipo-ordem', getToken(), order.idtipoManutencao);
             
             return this.$swal({
               type: 'success',
@@ -183,7 +183,7 @@ export default {
     async updateOrderType() {
       try {
         const response = await this.$http.update(
-          'tipo-ordem', getLocalStorageToken(), this.inputValues, this.inputValues.idtipoManutencao
+          'tipo-ordem', getToken(), this.inputValues, this.inputValues.idtipoManutencao
         );
 
         this.$swal({
