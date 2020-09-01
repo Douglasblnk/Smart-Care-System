@@ -4,8 +4,14 @@
       <h3 class="font-weight-light text-muted">Informações rápidas</h3>
     </div>
 
-    <div class="d-flex flex-row flex-wrap">
-      <div v-for="(item, index) in dashboard" :key="`ìtem-${index}`">
+    <dashboard-summary
+      :orders="orders"
+      :is-loading="isLoading"
+      :has-errors="hasErrors"
+    />
+    <hr>
+    <div class="d-flex flex-row flex-wrap justify-content-center">
+      <div v-for="(item, index) in dashboard" :key="`ìtem-${index}`" class="card-option">
         <template v-if="item.mobile">
           <card-option :title="item.name" :icon="item.icon" :route="item.link" size="small" />
         </template>
@@ -20,6 +26,14 @@ import dashboard from './../../../utils/dashboard-module';
 export default {
   name: 'dashboardItems',
 
+  components: {
+    dashboardSummary: () => import('../components/dashboard-summary-mobile/DashboardSummaryMobile.vue'),
+  },
+  props: {
+    orders: { type: Object, default: () => ({}) },
+    isLoading: { type: Boolean, default: false },
+    hasErrors: { type: Boolean, default: false },
+  },
   data() {
     return {
       dashboard,

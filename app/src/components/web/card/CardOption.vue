@@ -60,8 +60,8 @@ export default {
 		}
 	}
 	.small {
-		width: 150px !important;
-		height: 120px !important;
+		width: 120px !important;
+		height: 100px !important;
 	}
 
 	@media screen and (max-width: 1366px) {

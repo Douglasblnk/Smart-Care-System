@@ -15,7 +15,7 @@ export default class Services extends Http {
 
       const response = await Axios({
         method: 'post',
-        url: 'http://192.168.10.5:3010/activity/set',
+        url: 'http://localhost:3010/activity/set',
         headers: {
           'authorization': `${getToken()}`,
         },
@@ -36,7 +36,7 @@ export default class Services extends Http {
     try {
       const response = await Axios({
         method: 'get',
-        url: `http://192.168.10.5:3020/${url}`,
+        url: `http://localhost:3020/${url}`,
         headers: {
           'authorization': `${token}`,
         },
