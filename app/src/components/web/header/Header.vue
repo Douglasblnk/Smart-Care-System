@@ -49,9 +49,6 @@ export default {
     getPageName() {
       return this.$store.state.page;
     },
-    getUserBadge() {
-      return this.$store.state.user.cracha;
-    },
   },
 
   methods: {
@@ -60,8 +57,8 @@ export default {
         type: 'question',
         title: 'Deseja realmente sair do sistema?',
         showCancelButton: true,
-        cancelButtonText: 'Não!',
-        confirmButtonText: 'Sim!',
+        cancelButtonText: 'Não',
+        confirmButtonText: 'Sair',
         confirmButtonColor: '#F34336',
       }).then(res => {
         if (res.value) {
@@ -73,7 +70,7 @@ export default {
     async openProfile() {
       if (this.$route.matched.some(({ name }) => name === 'Meu Perfil')) return;
       
-      this.$router.push({ path: `/perfil/${this.getUserBadge}` });
+      this.$router.push({ path: '/perfil' });
     },
   },
 };

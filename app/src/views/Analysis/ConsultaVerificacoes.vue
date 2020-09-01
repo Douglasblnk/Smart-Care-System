@@ -1,11 +1,15 @@
 <template>
   <div class="content-consult-verification">
+    <back-button
+      @goBack="goBack"
+    />
+    
     <transition name="slide-side" mode="out-in">
       <div v-if="state.view === 'verifications'" key="verifications" class="content-verifications">
         <div class="card-title d-flex justify-content-center align-items-center">
           <h3>Análise de Verificações</h3>
         </div>
-        <card fullWidth>
+        <card full-width>
           <div class="table-verifications">
             <v-client-table ref="table_verification" v-model="listVerificationsStatus" :columns="columns" :options="options">
               <span slot="Solicitante" slot-scope="{row}" style="font-size: 2em;">
@@ -65,7 +69,9 @@
                 </div>
               </div>
               <div class="d-flex justify-content-center">
-                <cancel-button label="Fechar" @click.native="closeModal()" />
+                <smart-button @click.native="closeModal()">
+                  <span>Fechar</span>
+                </smart-button>
               </div>
             </div>
           </b-modal>
@@ -76,7 +82,7 @@
 </template>
 
 <script>
-import { getErrors, getLocalStorageToken } from '../../utils/utils';
+import { getErrors, getToken } from '../../utils/utils';
 export default {
   data() {
     return {
@@ -177,13 +183,17 @@ export default {
   },
   mounted() {
     this.listVerifications();
+    this.setActivity();
     this.$store.commit('addPageName', 'Verificações');
   },
 
   methods: {
+    setActivity() {
+      this.$http.setActivity(this.$activities.VERIFICATION_CONSULT_OPEN);
+    },
     async listVerifications() {
       try {
-        const { result } = await this.$http.get('verificacao/list-verification', getLocalStorageToken());
+        const { result } = await this.$http.get('verificacao/list-verification', getToken());
         if (result.length !== undefined)
           this.verifications_list = [...result];
         else this.verifications_list.push(result);
@@ -217,7 +227,7 @@ export default {
       try {
         const order = { idOrdemServico: props.ordemServico_idOrdemServico };
 
-        const { result } = await this.$http.post('ordem-manutencao/detail', getLocalStorageToken(), {
+        const { result } = await this.$http.post('ordem-manutencao/detail', getToken(), {
           order,
         });
 
@@ -244,6 +254,9 @@ export default {
     closeDetail() {
       this.$store.commit('addPageName', 'Verificações');
       this.$set(this.state, 'view', 'verifications');
+    },
+    goBack() {
+      this.$router.push('/dashboard');
     },
   },
 };

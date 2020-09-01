@@ -1,41 +1,28 @@
-const GetUserAutentication = require('../integration/GetUserAuthentication');
+const GetUserAuthentication = require('../integration/GetUserAuthentication');
 const SetActivityData = require('../datasource/SetActivityData');
-
-const RESOURCE_ORIGIN = 'http://localhost:8080';
-
 
 module.exports = class SetActivity {
   constructor({
     auth,
-    origin,
-    nome,
-    cracha,
+    name,
+    badge,
     email,
     date,
     activityId,
-    descricao = '',
+    note = '',
   } = {}) {
     this._auth = auth;
-    this._origin = origin;
-    this._nome = nome;
-    this._cracha = cracha;
+    this._name = name;
+    this._badge = badge;
     this._email = email;
     this._date = date;
     this._activityId = activityId;
-    this._descricao = descricao;
+    this._note = note;
 
     this._checkParameters();
 
-    this._integrationAuthJwt = new GetUserAutentication();
-
-    this._setActivityData = new SetActivityData(
-      this._nome,
-      this._cracha,
-      this._email,
-      this._date,
-      this._activityId,
-      this._descricao,
-    );
+    this._integrationAuthJwt = new GetUserAuthentication();
+    this._setActivityData = new SetActivityData();
   }
 
 
@@ -57,7 +44,14 @@ module.exports = class SetActivity {
 
   async _setActivity() {
     try {
-      const activityResponse = await this._setActivityData.setActivity();
+      const activityResponse = await this._setActivityData.setActivity({
+        name: this._name,
+        badge: this._badge,
+        email: this._email,
+        date: this._date,
+        activityId: this._activityId,
+        note: this._note,
+      });
 
       return activityResponse;
     } catch (err) {
@@ -67,8 +61,6 @@ module.exports = class SetActivity {
 
   async _validateSession() {
     try {
-      if (this._auth === 'unnecessaryToken' && this._origin === RESOURCE_ORIGIN) return;
-
       const res = await this._integrationAuthJwt.validateSession({
         token: this._auth,
       });
@@ -82,9 +74,8 @@ module.exports = class SetActivity {
   _checkParameters() {
     try {
       if (!this._auth) throw (400, { auth: 'undefined' });
-      if (!this._origin) throw (400, { origin: 'undefined' });
-      if (!this._nome) throw (400, { nome: 'undefined' });
-      if (!this._cracha) throw (400, { cracha: 'undefined' });
+      if (!this._name) throw (400, { name: 'undefined' });
+      if (!this._badge) throw (400, { badge: 'undefined' });
       if (!this._email) throw (400, { email: 'undefined' });
       if (!this._date) throw (400, { date: 'undefined' });
       if (!this._activityId) throw (400, { activityId: 'undefined' });

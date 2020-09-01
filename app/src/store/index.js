@@ -8,6 +8,8 @@ export default new Vuex.Store({
     user: {},
     page: '',
     isMobile: false,
+    mainIcon: '',
+    showConsultFilter: false,
   },
 
   mutations: {
@@ -20,11 +22,29 @@ export default new Vuex.Store({
     setIsMobile(state, isMobile) {
       state.isMobile = isMobile;
     },
+    setMainIcon(state, icon) {
+      state.mainIcon = icon;
+    },
+    setShowConsultFilter(state, value) {
+      state.showConsultFilter = value;
+    },
   },
 
   getters: {
     getIsMobile(state) {
       return state.isMobile;
+    },
+    getUser(state) {
+      return state.user;
+    },
+    getMainIcon(state) {
+      return state.mainIcon;
+    },
+    getPageName(state) {
+      return state.page;
+    },
+    getShowConsultFilter(state) {
+      return state.showConsultFilter;
     },
   },
 
