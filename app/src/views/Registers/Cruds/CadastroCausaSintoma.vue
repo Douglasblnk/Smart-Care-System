@@ -216,7 +216,6 @@ export default {
           perPageValues: [10, 25, 50],
           sortable: ['idCausa'],
         },
-        
       },
       columnsTwo: ['descricaoSintomas', 'actions'],
       cadastroSymptomTable: {
