@@ -1,29 +1,27 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import App from './App.vue';
 import Fontawesome from '@fortawesome/fontawesome-free/css/all.css';
 import BootstrapVue from 'bootstrap-vue';
 import VueSweetalert2 from 'vue-sweetalert2';
 import Swal from 'sweetalert2';
 import Lodash from 'lodash';
-import store from './store/index';
 import moment from 'moment';
-import App from './App.vue';
-import router from './routes';
-import ToggleButton from 'vue-js-toggle-button';
-import Services from './utils/services';
 import VueFormWizard from 'vue-form-wizard';
+import { ClientTable } from 'vue-tables-2';
 import 'vue-form-wizard/dist/vue-form-wizard.min.css';
-
 import 'sweetalert2/dist/sweetalert2.min.css';
-
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
-import { ClientTable } from 'vue-tables-2';
+import router from './routes';
+import store from './store/index';
+import Services from './services/services';
 import { validateSession } from './utils/utils';
+import activities from './utils/activities';
 import importedComponents from './plugins/importedComponents';
+import Directives from './plugins/directive';
 
-Vue.use(ToggleButton);
 Vue.use(Fontawesome);
 Vue.use(Lodash);
 Vue.use(BootstrapVue);
@@ -32,6 +30,7 @@ Vue.use(Vuex);
 Vue.use(ClientTable);
 Vue.use(VueFormWizard);
 Vue.use(importedComponents);
+Vue.use(Directives);
 
 const service = new Services();
 
@@ -40,6 +39,7 @@ Vue.prototype.$http = service;
 Vue.prototype.$apiUrl = router.options.apiUrl;
 Vue.prototype.$moment = moment;
 Vue.prototype.$_ = Lodash;
+Vue.prototype.$activities = activities;
 
 new Vue({
   router,

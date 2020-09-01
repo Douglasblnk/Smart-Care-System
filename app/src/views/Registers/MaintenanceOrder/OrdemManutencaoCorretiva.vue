@@ -264,7 +264,7 @@
 </template>
 
 <script>
-import { getLocalStorageToken, getErrors } from '../../../utils/utils';
+import { getToken, getErrors } from '../../../utils/utils';
 import { FormWizard, TabContent } from 'vue-form-wizard';
 import 'vue-form-wizard/dist/vue-form-wizard.min.css';
 
@@ -408,7 +408,7 @@ export default {
     },
     async getEpis() {
       try {
-        const { result } = await this.$http.get('epi/get', getLocalStorageToken());
+        const { result } = await this.$http.get('epi/get', getToken());
 
         this.epiList = [...result];
       } catch (err) {
@@ -486,7 +486,7 @@ export default {
       try {
         this.$set(this.inputValues, 'beginData', this.$moment().format('YYYY-MM-DD'));
 
-        await this.$http.post('ordem-manutencao', getLocalStorageToken(), this.inputValues);
+        await this.$http.post('ordem-manutencao', getToken(), this.inputValues);
         
         this.$swal({
           type: 'success',
@@ -507,7 +507,7 @@ export default {
     },
     async getEquipments() {
       try {
-        const response = await this.$http.get('equipamento/get', getLocalStorageToken());
+        const response = await this.$http.get('equipamento/get', getToken());
 
         if (response.result.length === undefined)
           this.workEquipment.push(response.result);
@@ -523,7 +523,7 @@ export default {
     },
     async getRequester() {
       try {
-        const response = await this.$http.get('users/requester', getLocalStorageToken());
+        const response = await this.$http.get('users/requester', getToken());
 
         if (response.result.length === undefined)
           this.selectsRequesterOptions.push(response.result);
@@ -538,7 +538,7 @@ export default {
     },
     async getReporter() {
       try {
-        const response = await this.$http.get('users/report', getLocalStorageToken());
+        const response = await this.$http.get('users/report', getToken());
         console.log('Reporter: ', response);
         if (response.result.length === undefined)
           this.selectsReports.push(response.result);
@@ -565,7 +565,7 @@ export default {
     },
     async getSector() {
       try {
-        const response = await this.$http.get('local-instalacao/get', getLocalStorageToken());
+        const response = await this.$http.get('local-instalacao/get', getToken());
 
         if (response.result.length === undefined)
           this.selectsSector.push(response.result);
@@ -584,7 +584,7 @@ export default {
     },
     async getPriority() {
       try {
-        const response = await this.$http.get('prioridade/get', getLocalStorageToken());
+        const response = await this.$http.get('prioridade/get', getToken());
 
         if (response.result.length === undefined)
           this.selectsPriority.push(response.result);
@@ -602,7 +602,7 @@ export default {
     },
     async getOperations() {
       try {
-        const { result } = await this.$http.get('operacoes/get', getLocalStorageToken());
+        const { result } = await this.$http.get('operacoes/get', getToken());
         this.operationsList = [...result];
       } catch (err) {
         console.log('err getOperations :>> ', err.response || err);

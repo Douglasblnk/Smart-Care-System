@@ -1,15 +1,9 @@
   
 <template>
   <div class="root-configuracoes-view">
-    <div class="d-flex align-items-center">
-      <div class="back-button ml-3" @click="goBack">
-        <i
-          class="fa fa-arrow-left fa-fw"
-          title="Retornar"
-        />
-        <span>Voltar</span>
-      </div>
-    </div>
+    <back-button
+      @goBack="goBack"
+    />
 
     <div class="content-wrapper">
       <div class="wrapper-configuration p-3">
@@ -98,37 +92,35 @@
 
         <div class="accordion-container mb-3">
           <accordion title="Cadastrar usuário" icon="fas fa-user">
-            <form @submit.prevent="register">
-              <div class="accordion-content bg-white mt-3 p-3 d-flex flex-wrap">
-                <div class="p-2 m-2">
-                  <simple-input v-model="userInputValues.nome" label="Nome" type="text"></simple-input>
-                </div>
-                <div class="p-2 m-2">
-                  <simple-input v-model="userInputValues.numeroCracha" label="Cracha" type="number"></simple-input>
-                </div>
-                <div class="p-2 m-2">
-                  <simple-input v-model="userInputValues.funcao" label="Função" type="text"></simple-input>
-                </div>
-                <div class="p-2 m-2">
-                  <custom-select
-                    v-model="userInputValues.nivelAcesso"
-                    label="Nível de acesso"
-                    :options="getAccessLevelOptions()"
-                  />
-                </div>
-                <div class="p-2 m-2">
-                  <simple-input v-model="userInputValues.email" label="E-mail" type="email"></simple-input>
-                </div>
-                <div class="p-2 m-2">
-                  <simple-input v-model="userInputValues.senha" label="Senha" type="password"></simple-input>
-                </div>
+            <div class="accordion-content bg-white mt-3 p-3 d-flex flex-wrap">
+              <div class="p-2 m-2">
+                <simple-input v-model="userInputValues.nome" label="Nome" type="text"></simple-input>
               </div>
-              <div class="save d-flex justify-content-center">
-                <smart-button>
-                  <span>Cadastrar</span>
-                </smart-button>
+              <div class="p-2 m-2">
+                <simple-input v-model="userInputValues.numeroCracha" label="Cracha" type="number"></simple-input>
               </div>
-            </form>
+              <div class="p-2 m-2">
+                <simple-input v-model="userInputValues.funcao" label="Função" type="text"></simple-input>
+              </div>
+              <div class="p-2 m-2">
+                <custom-select
+                  v-model="userInputValues.nivelAcesso"
+                  label="Nível de acesso"
+                  :options="getAccessLevelOptions()"
+                />
+              </div>
+              <div class="p-2 m-2">
+                <simple-input v-model="userInputValues.email" label="E-mail" type="email"></simple-input>
+              </div>
+              <div class="p-2 m-2">
+                <simple-input v-model="userInputValues.senha" label="Senha" type="password"></simple-input>
+              </div>
+            </div>
+            <div class="save d-flex justify-content-center">
+              <smart-button primary class="m-2" @click.native="register()">
+                <span>Cadastrar</span>
+              </smart-button>
+            </div>
           </accordion>
         </div>
       </div>
@@ -137,7 +129,7 @@
 </template>
 
 <script>
-import { getLocalStorageToken, getErrors, getAccessLevelName } from '../../utils/utils';
+import { getToken, getErrors, getAccessLevelName } from '../../utils/utils';
 
 export default {
   name: 'Configurações',
@@ -160,6 +152,7 @@ export default {
   },
   mounted() {
     this.$store.commit('addPageName', 'Configurações');
+    this.$store.commit('setMainIcon', 'fa-cogs');
 
     this.getUsers();
     this.getAccessLevel();
@@ -168,7 +161,7 @@ export default {
   methods: {
     async getUsers() {
       try {
-        const response = await this.$http.get('users/get', getLocalStorageToken());
+        const response = await this.$http.get('users/get', getToken());
         
         if (response.result.length === 0) return;
         
@@ -181,7 +174,7 @@ export default {
     },
     async getAccessLevel() {
       try {
-        const response = await this.$http.get('nivel-acesso/get', getLocalStorageToken());
+        const response = await this.$http.get('nivel-acesso/get', getToken());
 
         if (response.result.length === undefined)
           this.accessLevel.push(response.result);
@@ -199,20 +192,9 @@ export default {
     },
     async register() {
       try {
-        const response = await this.$http.post('users/register', getLocalStorageToken(), this.userInputValues);
-        console.log('response :>> ', response);
-        this.$http.setActivity(
-          'registerUser',
-          {
-            ...this.$store.state.user,
-            date: this.$moment().format('DD-MM-YYYY HH-mm'),
-            descricao: `
-              ${this.$store.state.user.nome} cadastrou o usuário 
-              ${this.userInputValues.numeroCracha} - ${this.userInputValues.nome}
-            `,
-          },
-          getLocalStorageToken(),
-        );
+        const response = await this.$http.post('users/register', getToken(), this.userInputValues);
+
+        this.$http.setActivity(this.$activities.REGISTER_USER, JSON.stringify({ registeredUser: this.userInputValues.numeroCracha }));
         
         this.$swal({
           type: 'success',
@@ -242,22 +224,12 @@ export default {
       try {
         const response = await this.$http.update(
           'users',
-          getLocalStorageToken(),
+          getToken(),
           this.userInputValues,
           this.userInputValues.numeroCracha
         );
 
-        this.$http.setActivity(
-          'editUser',
-          {
-            ...this.$store.state.user,
-            date: this.$moment().format('DD-MM-YYYY HH-mm'),
-            descricao: `
-              ${this.$store.state.user.nome} editou o usuário
-              ${this.userInputValues.numeroCracha} - ${this.userInputValues.nome}`,
-          },
-          getLocalStorageToken(),
-        );
+        this.$http.setActivity(this.$activities.EDIT_USER, JSON.stringify({ userEdited: this.userInputValues.numeroCracha }));
 
         this.$swal({
           type: 'success',
@@ -288,17 +260,9 @@ export default {
         confirmButtonColor: '#F34336',
         preConfirm: async () => {
           try {
-            const response = await this.$http.delete('users', getLocalStorageToken(), user.numeroCracha);
+            const response = await this.$http.delete('users', getToken(), user.numeroCracha);
 
-            this.$http.setActivity(
-              'deleteUser',
-              {
-                ...this.$store.state.user,
-                date: this.$moment().format('DD-MM-YYYY HH-mm'),
-                descricao: `${this.$store.state.user.nome} removeu o usuário ${user.numeroCracha} - ${user.nome}`,
-              },
-              getLocalStorageToken(),
-            );
+            this.$http.setActivity(this.$activities.DELETE_USER, JSON.stringify({ userDeleted: user.numeroCracha }));
 
             this.$swal({
               type: 'success',

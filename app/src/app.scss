@@ -3,7 +3,7 @@
   --duas-rodas-soft: #E66E6D;
   --shadow-gray: rgb(160, 160, 160);
   --gray: rgb(92, 92, 92);
-  --button-gray: #eee;
+  --button-gray: #ddd;
 }
 
 body {
@@ -35,6 +35,10 @@ span, p, strong {
   border-radius: 10px !important;
 }
 
+.no-margin {
+  margin: 0 !important
+}
+
 .no-padding {
   padding: 0 !important;
 }
@@ -50,6 +54,33 @@ span, p, strong {
 }
 .very-high-priority {
   color: var(--duas-rodas) !important;
+}
+
+.bottom-navigation {
+  display: flex;
+  justify-content: flex-end;
+  position: fixed;
+  z-index: 10;
+  bottom: 0;
+  right: 0;
+}
+
+.config-blurred-background {
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  background-color: rgba(68, 68, 68, 0.356);
+  position: absolute;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+.filter-dark-background {
+  background-color: rgba(68, 68, 68, 0.356);
+  position: absolute;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
 }
 
 .custom-control {
@@ -82,14 +113,6 @@ span, p, strong {
     transform: scale(1);
   }
 }
-
-
-/* ADICIONAR UM ESTILO CUSTOMIZADO AO SCROLL BAR */
-::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { background: #f1f1f1; }
-::-webkit-scrollbar-thumb { background: rgb(182, 182, 182); border-radius: 50px; }
-::-webkit-scrollbar-thumb:hover { background: rgb(119, 119, 119); }
-
 
 .content {
   width: 100vw;
@@ -159,10 +182,8 @@ span, p, strong {
   }
 }
 
-.back-button {
-  color: var(--duas-rodas-soft);
-  font-size: 18px;
-}
+
+// TRANSITIONS
 
 .slide-fade-enter-active {
   transition: all 0.1s ease;
@@ -174,6 +195,28 @@ span, p, strong {
 .slide-fade-leave-to {
   transform: translateY(10px);
   opacity: 0;
+}
+
+.fade-enter-active {
+  transition: all 0.1s ease;
+}
+.fade-leave-active {
+  transition: all 0.1s cubic-bezier(1, 0.5, 0.8, 1);
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.grow-enter-active {
+  transition: all 0.1s ease;
+}
+.grow-leave-active {
+  transition: all 0.1s cubic-bezier(1, 0.5, 0.8, 1);
+}
+.grow-enter,
+.grow-leave-to {
+  transform: scale(0);
 }
 
 .slide-down-enter-active {

@@ -74,7 +74,7 @@
 </template>
 
 <script>
-import { getLocalStorageToken } from '../../../utils/utils';
+import { getToken } from '../../../utils/utils';
 
 export default {
   name: 'CadastroCentroTrabalho',
@@ -113,7 +113,7 @@ export default {
       }
     },
     getWorkCenter() {
-      this.$http.get('centro-trabalho/get', getLocalStorageToken())
+      this.$http.get('centro-trabalho/get', getToken())
         .then(res => {
           if (res.result.length === 0) {
             this.$swal({
@@ -131,7 +131,7 @@ export default {
 
     registerWorkCenter() {
       if (this.isEditing) return this.updateWorkCenter();
-      this.$http.post('centro-trabalho', getLocalStorageToken(), this.inputValues)
+      this.$http.post('centro-trabalho', getToken(), this.inputValues)
         .then(res => {
           if (res.status !== 200) {
             return this.$swal({
@@ -160,7 +160,7 @@ export default {
         showCancelButton: true,
         confirmButtonColor: '#F34336',
         preConfirm: () => {
-          this.$http.delete('centro-trabalho', getLocalStorageToken(), workCenter.id_centro_trabalho)
+          this.$http.delete('centro-trabalho', getToken(), workCenter.id_centro_trabalho)
             .then(res => {
               if (res.status !== 200) {
                 return this.$swal({
@@ -191,7 +191,7 @@ export default {
     },
 
     updateWorkCenter() {
-      this.$http.update('centro-trabalho', getLocalStorageToken(), this.inputValues, this.inputValues.idCentro_Trabalho )
+      this.$http.update('centro-trabalho', getToken(), this.inputValues, this.inputValues.idCentro_Trabalho )
         .then(res => {
           if (res.status !== 200) {
             return this.$swal({

@@ -4,8 +4,12 @@
       <div v-if="state.view === 'detail'" class="detail-content">
         <div class="d-flex">
           <div>
-            <smart-button @click.native="() => $emit('state-list')" simple  class="mb-2 back-button">
-              <i class="fa fa-arrow-left mr-2"/>
+            <smart-button
+              simple
+              class="mb-2 back-button"
+              @click.native="() => $emit('state-list')"
+            >
+              <i class="fa fa-arrow-left mr-2" />
               <span>Voltar</span>
             </smart-button>
           </div>
@@ -286,16 +290,12 @@
                   </p>
                   <template v-slot:cell(name)="row">
                     {{ row.item.nome }}
-                    <!-- {{ row }} -->
                   </template>
 
-                  <template v-if="button_Add_And_Remove_Visibility" v-slot:cell(actions)="row">
+                  <template v-if="showAddButton" v-slot:cell(actions)="row">
                     <smart-button @click.native="addManutentor(row.item, row.index, $event.target)">
                       Adicionar
                     </smart-button>
-                  <!-- <b-button size="sm" @click="row.toggleDetails">
-                    {{ row.detailsShowing ? 'Hide' : 'Show' }} Details
-        </b-button> -->
                   </template>
                   <template v-slot:row-details="row">
                     <b-card>
@@ -382,7 +382,7 @@
                     <!-- {{ row }} -->
                   </template>
 
-                  <template v-if="button_Add_And_Remove_Visibility" v-slot:cell(actions)="row">
+                  <template v-if="showAddButton" v-slot:cell(actions)="row">
                     <smart-button @click.native="removeManutentor(row.item, row.index, $event.target)">
                       Remover
                     </smart-button>
@@ -427,7 +427,7 @@
 <script>
 import orderVerification from './Verificacao.vue';
 import OrderNote from './Apontamentos.vue';
-import { getErrors, getLocalStorageToken, getPriorityClass } from '../../utils/utils';
+import { getErrors, getToken, getPriorityClass } from '../../utils/utils';
 
 export default {
   name: 'Detalhamento',
@@ -475,7 +475,7 @@ export default {
         user: this.$store.state.user,
         // excluded: '',
       },
-      button_Add_And_Remove_Visibility: true,
+      showAddButton: true,
       opcao: '',
       manutentores: [],
       manutentorInOrdem: [],
@@ -568,10 +568,10 @@ export default {
       const user = this.$store.state.user;
 
       if (user.nivelAcesso === 3) {
-        this.button_Add_And_Remove_Visibility = false;
+        this.showAddButton = false;
         return;
       }
-      this.button_Add_And_Remove_Visibility = true;
+      this.showAddButton = true;
     },
     info(item, index, button) {
       this.infoModal.title = `Row index: ${index}`;
@@ -592,15 +592,7 @@ export default {
       this.selectedEpis = [];
     },
     setActivity() {
-      this.$http.setActivity(
-        'orderDetail',
-        {
-          ...this.$store.state.user,
-          date: this.$moment().format('DD-MM-YYYY HH-mm'),
-          descricao: JSON.stringify({ order: this.order.idOrdemServico }),
-        },
-        getLocalStorageToken()
-      );
+      this.$http.setActivity(this.$activities.ORDER_DETAIL, JSON.stringify({ order: this.order.idOrdemServico }))
     },
     translateStatus(status) {
       if (status === 'Aberto') return 'open';
@@ -660,7 +652,7 @@ export default {
     // busca todos os manutentores do sistema
     async getManutentor() {
       try {
-        const response = await this.$http.post('detalhamento/get-geral-user', getLocalStorageToken(), this.valuesInput);
+        const response = await this.$http.post('detalhamento/get-geral-user', getToken(), this.valuesInput);
 
         if (response.result.length === undefined)
           this.manutentores.push(response.result);
@@ -672,7 +664,7 @@ export default {
     // Busca os manutentores na ordem
     async getManutentoresInOrdem() {
       try {
-        const response = await this.$http.post('detalhamento', getLocalStorageToken(), this.valuesInput);
+        const response = await this.$http.post('detalhamento', getToken(), this.valuesInput);
         if (response.result.length === undefined) {
           this.manutentorInOrdem.push(response.result);
           this.listManutentorInOrdem = this.manutentorInOrdem.filter( i => {
@@ -694,7 +686,7 @@ export default {
     // Busca o reporte e o solicitante da ordem
     async getReportRequester() {
       try {
-        const response = await this.$http.post('detalhamento/get-report-requester', getLocalStorageToken(), this.valuesInput);
+        const response = await this.$http.post('detalhamento/get-report-requester', getToken(), this.valuesInput);
         if (response.result.length === undefined)
           this.report_requester.push(response.result);
         else this.report_requester = [...response.result];
@@ -702,12 +694,12 @@ export default {
         throw err;
       }
     },
-    validaAddManutentor(User) {
+    validateAddManutentor(User) {
       return this.manutentorInOrdem.find(element => element.idUsuario === User.idUsuario);
     },
-    async addManutentor(index, row ) {
+    async addManutentor(index, row) {
       try {
-        const validManutentorAdd = this.validaAddManutentor(row);
+        const validManutentorAdd = this.validateAddManutentor(row);
 
         if (validManutentorAdd === undefined) {
           this.dialogVisible = false;
@@ -715,7 +707,7 @@ export default {
           this.valuesInput.excluded = 0;
           this.valuesInput.idUsuario = index.idUsuario;
 
-          const response = await this.$http.post('detalhamento/register', getLocalStorageToken(), this.valuesInput);
+          const response = await this.$http.post('detalhamento/register', getToken(), this.valuesInput);
 
           this.$swal({
             type: 'success',
@@ -725,16 +717,7 @@ export default {
 
           this.getManutentoresInOrdem();
 
-          this.$http.setActivity(
-            'registerUser',
-            {
-              ...this.$store.state.user,
-              date: this.$moment().format('DD-MM-YYYY HH-mm'),
-              descricao: `${this.$store.state.user.nome}
-              registerUser o usuário ${row.nome} para ajudar na ordem serviço`,
-            },
-            getLocalStorageToken(),
-          );
+          this.$http.setActivity(this.$activities.INVITE_USER_TO_ORDER, JSON.stringify({ invitedUser: row.nome }));
         } else {
           this.visibleMessage = true;
         }
@@ -746,13 +729,13 @@ export default {
         });
       }
     },
-    async removeManutentor(index, row) {
+    async removeManutentor(row) {
       try {
-        this.valuesInput.idUsuario = index.idUsuario;
+        this.valuesInput.idUsuario = row.idUsuario;
         this.valuesInput.excluded = 1;
         this.dialogVisible = false;
 
-        const response = await this.$http.update('detalhamento', getLocalStorageToken(), this.valuesInput, this.valuesInput.idOrdemServico);
+        const response = await this.$http.update('detalhamento', getToken(), this.valuesInput, this.valuesInput.idOrdemServico);
 
         this.$swal({
           type: 'success',
@@ -763,16 +746,7 @@ export default {
         this.manutentorInOrdem = [],
         this.getManutentoresInOrdem(),
 
-        this.$http.setActivity(
-          'editUser',
-          {
-            ...this.$store.state.user,
-            date: this.$moment().format('DD-MM-YYYY HH-mm'),
-            descricao: `${this.$store.state.user.nome}
-              desabilitando o status excluded o usuário para ajudar na ordem serviço`,
-          },
-          getLocalStorageToken(),
-        );
+        this.$http.setActivity(this.$activities.REMOVE_INVITED_USER, JSON.stringify({ removedInvitedUser: row.idUsuario }));
       } catch (err) {
         return this.$swal({
           type: 'warning',
@@ -801,7 +775,7 @@ export default {
       try {
         this.$set(this.isLoading, 'assume', true);
 
-        const { result } = await this.$http.post('initiate/assume', getLocalStorageToken(), {
+        const { result } = await this.$http.post('initiate/assume', getToken(), {
           ...this.$store.state.user,
           order: this.order.idOrdemServico,
         });
@@ -848,7 +822,7 @@ export default {
       try {
         this.$set(this.isLoading, 'pause', true);
 
-        const response = await this.$http.post('initiate/pause', getLocalStorageToken(), { ...this.$store.state.user, isMaster: true, order: this.order.idOrdemServico });
+        const response = await this.$http.post('initiate/pause', getToken(), { ...this.$store.state.user, isMaster: true, order: this.order.idOrdemServico });
 
         this.$set(this.isLoading, 'pause', false);
 
@@ -877,9 +851,9 @@ export default {
         const listEpiCheck = await this.listEpiCheck();
 
         if (listEpiCheck.length === this.epiList.length) {
-          await this.$http.post('epi/register', getLocalStorageToken(), listEpiCheck);
+          await this.$http.post('epi/register', getToken(), listEpiCheck);
         
-          await this.$http.post('initiate/init', getLocalStorageToken(),
+          await this.$http.post('initiate/init', getToken(),
             { ...this.$store.state.user, isMaster: true, order: this.order.idOrdemServico });
           
           this.$set(this.order, 'status', 'Em Andamento');
@@ -947,7 +921,7 @@ export default {
     },
     async getEpis() {
       try {
-        const { result } = await this.$http.post('epi/order', getLocalStorageToken(), { order: this.order.idOrdemServico });
+        const { result } = await this.$http.post('epi/order', getToken(), { order: this.order.idOrdemServico });
         
         if (result.length !== undefined)
           this.epiList = [...result];
@@ -975,7 +949,7 @@ export default {
         if (res.value) {
           const manutentor = await this.validateActualManutentor();
           
-          const response = await this.$http.update('ordem-manutencao', getLocalStorageToken(), { ...this.$store.state.user }, this.order.idOrdemServico);
+          const response = await this.$http.update('ordem-manutencao', getToken(), { ...this.$store.state.user }, this.order.idOrdemServico);
 
           this.$swal({
             type: 'success',

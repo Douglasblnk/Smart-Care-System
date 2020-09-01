@@ -66,13 +66,17 @@ export default {
 
   mounted() {
     this.listVerifications();
+    this.setActivity();
     this.$store.commit('addPageName', 'Verificações');
   },
 
   methods: {
+    setActivity() {
+      this.$http.setActivity(this.$activities.VERIFICATION_CONSULT_OPEN);
+    },
     async listVerifications() {
       try {
-        const { result } = await this.$http.get('verificacao/list-verification', getLocalStorageToken());
+        const { result } = await this.$http.get('verificacao/list-verification', getToken());
         if (result.length !== undefined)
           this.dataVerification.verifications_list = [...result];
         else this.verifications_list.push(result);
