@@ -1,5 +1,5 @@
 <template>
-  <div class="content-consult-verification">
+  <div class="root-configuracoes-view">
     <transition name="slide-side" mode="out-in">
       <div v-if="state.view === 'verifications'" key="verifications" class="content-verifications">
         <div class="card-title d-flex justify-content-center align-items-center">
@@ -30,12 +30,6 @@
                   <span>{{ resolvedProblem(row.problemaResolvido) }}</span>
                 </div>
               </template>
-              <!-- <div slot="actions" slot-scope="props">
-                <a target="_blank" class="fas fa-eye fa-lg mb-2 eye"
-                   @click="openOrder(props.row)"
-                ></a>
-                <i class="fas fa-edit fa-lg mb-2" @click="openModalDetailVerifications(props.row)"></i>
-              </div> -->
             </v-client-table>
           </div>
           <b-modal ref="my-modal" centered
@@ -244,104 +238,106 @@ export default {
 </script>
 
 <style lang="scss">
-  .user_detail_verification{
-    font-size: 20px;
-  }
-  .content-consult-verification{
+  .root-configuracoes-view {
     .content-verifications {
-        font-family: "Avenir", Helvetica, Arial, sans-serif;
-        text-align: center;
-        color: #2c3e50;
-        table {
-          border-radius: 8px;
-          thead {
-            th {
-              background-color: var(--duas-rodas-soft);
-              span {
-                cursor: pointer;
-                color: white !important;
-              }
+      .user_detail_verification{
+        font-size: 20px;
+      }
+      font-family: "Avenir", Helvetica, Arial, sans-serif;
+      text-align: center;
+      color: #2c3e50;
+      table {
+        border-radius: 8px;
+        thead {
+          th {
+            background-color: var(--duas-rodas-soft);
+            span {
+              cursor: pointer;
+              color: white !important;
+            }
+            border: 0 !important;
+            outline: none;
+          }
+        }
+        tbody {
+          tr {
+            td {
               border: 0 !important;
+              vertical-align: middle;
               outline: none;
             }
           }
-          tbody {
-            tr {
-              td {
-                border: 0 !important;
-                vertical-align: middle;
-                outline: none;
-              }
-            }
+        }
+      }
+      .col-md-12 {
+        justify-content: space-between;
+        display: flex !important;
+        .VueTables__search-field {
+          width: 30vw !important;
+          input {
+            width: 100%;
           }
         }
-        .col-md-12 {
-          justify-content: space-between;
-          display: flex !important;
-          .VueTables__search-field {
-            width: 30vw !important;
-            input {
-              width: 100%;
-            }
-          }
-        }
-        .VuePagination {
+      }
+      .VuePagination {
+        display: flex;
+        justify-content: center;
+        p {
           display: flex;
           justify-content: center;
-          p {
-            display: flex;
-            justify-content: center;
-          }
-          li {
-            width:50px;
-          }
         }
-        //.VuePagination__pagination-item page-item
-        .page-item .active {
-          color: white !important;
-          border-color: #ddd !important;
-          background-color: var(--duas-rodas-soft) !important;
-          &:focus {
-            box-shadow: none !important;
-          }
+        li {
+          width:50px;
         }
-        .page-link {
-          color: #555 !important;
-          &:focus {
-            box-shadow: none !important;
-          }
+      }
+      //.VuePagination__pagination-item page-item
+      .page-item .active {
+        color: white !important;
+        border-color: #ddd !important;
+        background-color: var(--duas-rodas-soft) !important;
+        &:focus {
+          box-shadow: none !important;
         }
-        .card-title{
-          h3 {
-            font-family: 'roboto';
-            color: #E66E6D;
-          }
+      }
+      .page-link {
+        color: #555 !important;
+        &:focus {
+          box-shadow: none !important;
         }
-        .eye{
-            padding-left: 20px;
-            padding-right: 20px;
+      }
+      .card-title{
+        h3 {
+          font-family: 'roboto';
+          color: #E66E6D;
         }
-        .fa-check {
-          font-size: 20px;
-          color: rgb(174, 214, 183)
+      }
+      .eye{
+          padding-left: 20px;
+          padding-right: 20px;
+      }
+      .fa-check {
+        font-size: 20px;
+        color: rgb(174, 214, 183)
+      }
+      .fa-times {
+        font-size: 20px;
+        color: var(--duas-rodas)
+      }
+      .VuePagination {
+        display: flex;
+        justify-content: center;
+        p {
+          display: flex;
+          justify-content: center;
         }
-        .fa-times {
-          font-size: 20px;
-          color: var(--duas-rodas)
+        &.row {
+          margin: 0 !important;
         }
+      }
+      .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
     }
   }
-  .pagination {
-    justify-content: center;
-  }
-  .content-consult-verification .content-verifications .VuePagination li {
-    width: 35px;
-  }
-  // .page-item.active .page-link {
-  //   background-color: #E66E6D !important;
-  //   border-color: #E66E6D !important;
-  // }
-  // .page-link {
-  //   color: #E66E6D !important;
-  // }
 </style>
