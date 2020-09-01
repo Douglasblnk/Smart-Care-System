@@ -35,7 +35,7 @@
               <mobile-input v-model="inputValues.numeroCracha" placeholder="Crachá" icon="fa-user" type="text" />
               <mobile-input v-model="inputValues.senha" placeholder="Senha" icon="fa-lock" type="password" />
 
-              <smart-button :loading="isLoading" mobile class="p-2">
+              <smart-button :loading="isLoading" mobile primary class="p-2">
                 <span>Entrar</span>
               </smart-button>
             </div>
