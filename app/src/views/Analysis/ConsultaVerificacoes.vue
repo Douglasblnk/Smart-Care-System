@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { getErrors, getLocalStorageToken } from '../../utils/utils';
+import { getErrors, getToken } from '../../utils/utils';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -50,7 +50,7 @@ export default {
             loading: 'Carregando...',
           },
           perPage: 10,
-          perPageValues: [10, 25, 50],
+          perPageValues: [],
           sortable: ['ordemServico_idOrdemServico'],
         },
         verifications_list: [],

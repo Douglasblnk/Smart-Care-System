@@ -82,17 +82,14 @@
 </template>
 
 <script>
-import { getErrors, getLocalStorageToken } from '../../../../utils/utils';
+import { getErrors, getToken } from '../../../../utils/utils';
 export default {
   name: 'PendingVerificationsWeb',
-
-  components: {
-    smartButton: () => import('../../../../components/web/button/SmartButton'),
-  },
   props: {
     verificationsData: {
       type: Object,
       required: true,
+      default: () => ({}),
     },
   },
   data() {
@@ -185,7 +182,7 @@ export default {
       try {
         const order = { idOrdemServico: props.ordemServico_idOrdemServico };
 
-        const { result } = await this.$http.post('ordem-manutencao/detail', getLocalStorageToken(), {
+        const { result } = await this.$http.post('ordem-manutencao/detail', getToken(), {
           order,
         });
 

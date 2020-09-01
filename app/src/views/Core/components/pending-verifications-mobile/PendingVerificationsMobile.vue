@@ -82,13 +82,14 @@
 </template>
 
 <script>
-import { getErrors, getLocalStorageToken } from '../../../../utils/utils';
+import { getErrors, getToken } from '../../../../utils/utils';
 export default {
   name: 'PendingVerificationsWeb',
   props: {
     verificationsData: {
       type: Object,
       required: true,
+      default: () => ({}),
     },
   },
   data() {
@@ -183,7 +184,7 @@ export default {
       try {
         const order = { idOrdemServico: props.ordemServico_idOrdemServico };
 
-        const { result } = await this.$http.post('ordem-manutencao/detail', getLocalStorageToken(), {
+        const { result } = await this.$http.post('ordem-manutencao/detail', getToken(), {
           order,
         });
 
@@ -272,10 +273,13 @@ export default {
       .col-md-12 {
         justify-content: space-between;
         display: flex !important;
-        .VueTables__search-field {
-          width: 30vw !important;
-          input {
-            width: 100%;
+        .VueTables__search {
+          width: 100% !important;
+          .VueTables__search-field {
+            width: 100% !important;
+            label {
+              display: block !important;
+            }
           }
         }
       }

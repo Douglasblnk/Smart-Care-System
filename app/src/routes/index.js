@@ -149,7 +149,7 @@ const routes = [
   },
 ];
 
-const apiUrl = 'http://192.168.10.5:3000';
+const apiUrl = 'http://localhost:3000';
 
 const router = new VueRouter({
   mode: 'history',
