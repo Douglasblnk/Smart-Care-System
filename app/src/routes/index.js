@@ -8,7 +8,7 @@ const Dashboard = () => import('../views/Core/Dashboard.vue');
 const Cadastros = () => import('../views/Registers/Cadastros.vue');
 const Configurações = () => import('../views/Core/Configurações.vue');
 const Verificacao = () => import('../views/Movimentations/Verificacao.vue');
-const Consulta = () => import('../views/Movimentations/Consulta.vue');
+const Consulta = () => import('../views/Movimentations/consult/Consulta.vue');
 const Profile = () => import('../views/Core/Profile.vue');
 const ConsultaVerificacoes = () => import('../views/Analysis/ConsultaVerificacoes');
 
@@ -121,7 +121,7 @@ const routes = [
   },
   {
     path: '/consulta-verificacoes',
-    name: 'Consulta-Verificações',
+    name: 'Verificações',
     component: ConsultaVerificacoes,
     meta: { requireAuth: true },
   },
@@ -138,7 +138,7 @@ const routes = [
     meta: { requireAuth: true },
   },
   {
-    path: '/perfil/:userId',
+    path: '/perfil',
     name: 'Meu Perfil',
     component: Profile,
     meta: { requireAuth: true },

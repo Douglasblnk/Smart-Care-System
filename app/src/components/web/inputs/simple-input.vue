@@ -4,7 +4,7 @@
       <label class="text-muted">{{ label }}</label>
     </div>
     <div class="d-flex">
-      <div v-if="prefix" @click="iconClick" class="sufix-prefix  mr-3">
+      <div v-if="prefix" class="sufix-prefix  mr-3" @click="iconClick">
         <i :class="prefix" class="fa" />
       </div>
       <input
@@ -17,7 +17,7 @@
         :placeholder="placeholder"
         required
       />
-      <div v-if="sufix" @click="iconClick" class="sufix-prefix ml-3">
+      <div v-if="sufix" class="sufix-prefix ml-3" @click="iconClick">
         <i :class="sufix" class="fa" />
       </div>
     </div>

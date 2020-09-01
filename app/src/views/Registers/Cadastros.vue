@@ -2,15 +2,10 @@
   <div class="root-cadastro-view">
     <transition name="slide-fade" mode="out-in">
       <div v-if="$route.path === '/cadastros'">
-        <div class="d-flex align-items-center">
-          <div class="back-button ml-3" @click="goBack">
-            <i
-              class="fa fa-arrow-left fa-fw"
-              title="Retornar"
-            />
-            <span>Voltar</span>
-          </div>
-        </div>
+        <back-button
+          @goBack="goBack"
+        />
+        
         <div class="card-container d-flex justify-content-center align-items-center flex-column">
           <div class="card-title d-flex justify-content-center align-items-center">
             <span>Escolha o tipo de cadastro</span>

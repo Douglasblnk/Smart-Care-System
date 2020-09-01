@@ -1,21 +1,30 @@
 <template>
-  <div class="root-smart-button">
+  <div class="root-smart-button" :class="mobile ? 'd-flex justify-content-center' : ''">
     <button
-      class="btn-default"
       :class="{
+        'btn-default': !mobile,
         'btn-disabled': disabled,
         'primary': primary,
-        'btn-simple': simple,
+        'btn-simple': simple && !mobile,
         'btn-small': small,
-        'btn-circle': circle,
-        'btn-transparent': transparent,
+        'btn-circle': circle && !mobile,
+        'btn-transparent': transparent && !mobile,
+        'mobile-button': mobile,
       }"
       :style="`width: ${getCustomWidth} !important`"
     >
-      <div v-if="!loading" class="w-100 d-flex align-items-center">
+      <div
+        v-if="!loading"
+        class="w-100 d-flex align-items-center"
+        :class="mobile ? 'loading-mobile-button' : ''"
+      >
         <slot />
       </div>
-      <div v-if="loading" class="d-flex align-items-center">
+      <div
+        v-if="loading"
+        class="d-flex align-items-center"
+        :class="mobile ? 'loading-mobile-button' : ''"
+      >
         <i class="fa fa-spinner fa-spin mr-2 fa-sm" />
         <span>Aguarde...</span>
       </div>
@@ -34,6 +43,7 @@ export default {
     circle: { type: Boolean, default: false },
     transparent: { type: Boolean, default: false },
     width: { type: String, default: '' },
+    mobile: { type: Boolean, default: false },
   },
 
   data: () => ({}),
@@ -69,12 +79,35 @@ export default {
     }
     &:active { transform: scale(0.95) }
   }
+  .mobile-button {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--button-gray);
+    font-weight: bold;
+    border: none;
+    text-decoration: none;
+    text-align: center;
+    border-radius: 7px;
+    outline: 0;
+    transition: .1s;
+    user-select: none;
+    span, small, h3, p { color: var(--duas-rodas-soft); }
+    &:active {
+      box-shadow: 2px 2px 5px 0px var(--shadow-gray);
+      border-radius: 9px;
+    }
+    .loading-mobile-button {
+      justify-content: center;
+      i { color: var(--duas-rodas-soft); }
+    }
+  }
   .btn-small {
     padding: 5px 15px !important;
     font-size: 13px !important;
   }
   .primary {
     background-color: var(--duas-rodas-soft) !important;
+    span, small, p, h3 { color: white !important ;}
   }
   .btn-circle {
     display: flex;
