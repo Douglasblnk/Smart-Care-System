@@ -17,48 +17,45 @@
 
         <transition name="slide-fade" mode="out-in">
           <template v-if="switchListRegister === 'list'">
-            <div class="d-flex w-100 justify-content-center">
-              <div class="table-content bg-white p-4 w-100">
-                <div class="table-responsive">
-                  <table class="table table table-striped table-borderless table-hover" cellspacing="0">
-                    <thead class="table-head">
-                      <tr>
-                        <th scope="col">Componente</th>
-                        <!-- <th scope="col">Máquina</th> -->
-                        <th scope="col">Ações</th>
-                      </tr>
-                    </thead>
-                    <tbody class="table-body">
-                      <tr v-for="(component, index) in workOperations" :key="`component-${index}`" value="component.descricao_operacao">
-                        <td>{{ component.descricao_operacao }}</td>
-                      
-                        <!-- <td>{{ workCenter.DescricaoComponente}}</td> -->
-                        <td style="width: 50px">
-                          <div class="d-flex table-action">
-                            <i class="fas fa-edit text-muted" @click="editOperations(component)"></i>
-                            <i class="fas fa-trash text-muted" @click="deleteOperations(component, index)"></i>
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+            <card fullWidth>
+              <div class="register-operacao-table">
+                <v-client-table
+                  ref="tableRegisterEpi"
+                  v-model="workOperations"
+                  :columns="columns"
+                  :options="registerOperationTable.options"
+                >
+                  <div slot="actions" slot-scope="props">
+                    <template>
+                      <div class="icons-actions-wrapper">
+                        <div class="icons-actions">
+                          <i class="fas fa-edit text-muted" @click="editOperations(props.row)"></i>
+                        </div>
+                        <div class="icons-actions">
+                          <i class="fas fa-trash text-muted" @click="deleteOperations(props.row, index)"></i>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                </v-client-table>
               </div>
-            </div>
+            </card>
           </template>
 
           <template v-if="switchListRegister === 'register'">
             <form class="formPosition" @submit.prevent="registerOperations()">
               <div class="cadCard">
                 <div class="inputs">
-                  <!-- <custom-select v-model="selectValue" :options="getWorkEquipmentOptions()"></custom-select> -->
-                  <!--<tranfer-select v-model="inputValues.Equipamento_idEquipamento" :selects="selectsEquipament" :label="'Máquina'" ></tranfer-select>
-                  -->
-                  <simple-input v-model="inputValues.descricao_operacao" label="Descrição Operaçao:" type="text"></simple-input>
-                  <simple-input v-model="inputValues.material" label="Material:" type="text"></simple-input>
-                  <simple-input v-model="inputValues.quantidade_material" label="Quantidade:" type="number"></simple-input>
-                  <simple-input v-model="inputValues.unidade_material" label="Unidade:" type="text "></simple-input>
-                  <simple-input v-model="inputValues.tempo_planejado" label="Tempo Planejado:" type="time"></simple-input>
+                  <simple-input v-model="inputValues.descricao_operacao" label="Descrição Operaçao:" type="text">
+                  </simple-input>
+                  <simple-input v-model="inputValues.material" label="Material:" type="text">
+                  </simple-input>
+                  <simple-input v-model="inputValues.quantidade_material" label="Quantidade:" type="number">
+                  </simple-input>
+                  <simple-input v-model="inputValues.unidade_material" label="Unidade:" type="text ">
+                  </simple-input>
+                  <simple-input v-model="inputValues.tempo_planejado" label="Tempo Planejado:" type="time">
+                  </simple-input>
                 </div>
               </div>
               <!-- <div class="d-flex justify-content-center m-3">
@@ -98,6 +95,34 @@ export default {
         quantidade_material: 0,
         unidade_material: '',
         tempo_planejado: 0,
+      },
+      columns: ['descricao_operacao', 'actions'],
+      registerOperationTable: {
+        options: {
+          headings: {
+            idoperacao: create => create('span', {
+              domProps: { innerHTML: 'Operação <i class="fas fa-sort"></i>' },
+            }),
+            descricao_operacao: 'Operação',
+            actions: 'Ações',
+          },
+          columnsClasses: {
+            actions: 'actions-class',
+          },
+          texts: {
+            filter: '',
+            filterPlaceholder: 'Buscar',
+            count: 'Mostrando {from} até {to} de {count} registros|{count} Registros|Um Registro',
+            limit: '',
+            page: 'Páginas:',
+            noResults: 'Nenhum registro encontrado',
+            loading: 'Carregando...',
+          },
+          perPage: 10,
+          perPageValues: [10, 25, 50],
+          sortable: ['idoperacao'],
+        },
+        
       },
       workOperations: [],
       switchListRegister: 'list',
@@ -306,6 +331,38 @@ export default {
       }
     }
   }
+  .icons-actions-wrapper{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    
+    .icons-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      &:hover {
+        span {
+          color: var(--duas-rodas-soft)
+        }
+      }
+      i {
+        transition: .2s;
+      }
+      &:hover {
+        i {
+          transform: scale(1.18);
+        }
+      }
+      &:active {
+        i {
+          transform: scale(1);
+        }
+      }
+      // padding: 2%;
+    }
+  }
 
   .slide-fade-enter-active {
     transition: all 0.1s ease;
@@ -320,3 +377,70 @@ export default {
   }
 }
 </style>
+<style lang="scss">
+.register-operacao-table {
+  table {
+    border-radius: 8px;
+    thead {
+      th {
+        background-color: var(--duas-rodas-soft);
+        span {
+          cursor: pointer;
+          color: white !important;
+        }
+        border: 0 !important;
+        outline: none;
+      }
+    }
+    tbody {
+      tr {
+        td {
+          border: 0 !important;
+          vertical-align: middle;
+          outline: none;
+        }
+      }
+    }
+  }
+  .col-md-12 {
+    justify-content: space-between;
+    display: flex !important;
+    .VueTables__search-field {
+      width: 30vw !important;
+      input {
+        width: 100%;
+      }
+    }
+  }
+
+  .VuePagination {
+    display: flex;
+    justify-content: center;
+
+    p {
+      display: flex;
+      justify-content: center;
+    }
+  }
+  .page-item .active {
+    color: white !important;
+    border-color: #ddd !important;
+    background-color: var(--duas-rodas-soft) !important;
+    &:focus {
+      box-shadow: none !important;
+    }
+  }
+  .page-link {
+    color: #555 !important;
+    &:focus {
+      box-shadow: none !important;
+    }
+  }
+  .actions-class {
+    width: 100px !important;
+  }
+
+}
+
+</style>
+
