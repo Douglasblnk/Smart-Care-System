@@ -1,22 +1,23 @@
 <template>
   <div class="root-dashboard-view">
     <template v-if="isMobile">
-      <dashboard-mobile 
+      <dashboard-mobile
         :orders="orders"
-        :custom-styles="customStyles"
-        :quantity="quantity"
-        :labels="labels"
         :is-loading="isLoading"
         :has-errors="hasErrors"
-        :loaded="loaded"
       />
     </template>
 
     <template v-else>
       <dashboard-web
         :orders="orders"
+        :custom-styles="customStyles"
+        :quantity="quantity"
+        :chart-style="chartStyle"
+        :labels="labels"
         :is-loading="isLoading"
         :has-errors="hasErrors"
+        :loaded="loaded"
       />
     </template>
   </div>
