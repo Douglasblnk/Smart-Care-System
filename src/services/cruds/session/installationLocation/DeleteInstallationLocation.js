@@ -46,8 +46,8 @@ module.exports = class DeleteInstallationLocation {
     }
   }
   
-  async deleteSector(user) {
-    this._queryReturn = await new InstallationLocationDao(user).deleteSector();
+  async deleteSector(parameters) {
+    this._queryReturn = await new InstallationLocationDao(parameters).deleteSector();
   }
 
   async validateGroups({ authData }) {
