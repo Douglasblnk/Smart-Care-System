@@ -27,12 +27,12 @@ const MaintenanceOrder = require('./services/cruds/routes/orderModule/Maintenanc
 const Equipment = require('./services/cruds/routes/crudsModule/Equipment');
 const InstallationLocation = require('./services/cruds/routes/crudsModule/InstallationLocation');
 const Cause = require('./services/cruds/routes/crudsModule/Cause');
+const Epi = require('./services/cruds/routes/crudsModule/Epi');
 // const centroTrabalho = require('./services/cruds/routes/CentroTrabalho/CentroTrabalho');
 // const tipoOrdem = require('./services/cruds/routes/TipoOrdem/TipoOrdem');
 // const componente = require('./services/cruds/routes/Componente/Componente');
 // const tipoManutencao = require('./services/cruds/routes/TipoOrdem/TipoOrdem');
 // const prioridade = require('./services/cruds/routes/Prioridade/Prioridade');
-// const epi = require('./services/cruds/routes/Epi/Epi');
 // const operacoes = require('./services/cruds/routes/Operacoes/Operacoes');
 
 // MOVIMENTATIONS
@@ -49,12 +49,12 @@ app.use('/ordem-manutencao', MaintenanceOrder);
 app.use('/equipments', Equipment);
 app.use('/local-instalacao', InstallationLocation);
 app.use('/causa', Cause);
+app.use('/epi', Epi);
 // app.use('/centro-trabalho', centroTrabalho);
 // app.use('/tipo-ordem', tipoOrdem);
 // app.use('/componente', componente);
 // app.use('/tipo-manutencao', tipoManutencao);
 // app.use('/prioridade', prioridade);
-// app.use('/epi', epi);
 // app.use('/detalhamento', detalhamento);
 // app.use('/verificacao', verificacao);
 // app.use('/operacoes', operacoes);

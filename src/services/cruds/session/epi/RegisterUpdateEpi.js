@@ -1,17 +1,17 @@
-const CauseDao = require('../../dao/crudModule/CauseDao');
+const EpiDao = require('../../dao/crudModule/EpiDao');
 
 const { ADMINISTRADOR_ID } = require('../../../../shared/constants/accessLevel');
 const { get } = require('lodash');
 const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../shared/constants/HTTPResponse');
 
-module.exports = class RegisterUpdateCause {
+module.exports = class RegisterUpdateEpi {
   constructor() {
     this._queryReturn;
   }
 
   getParameters(req) {
     return {
-      causeDescription: get(req.body, 'descricaoCausa', ''),
+      epiDescription: get(req.body, 'descricaoEpi', ''),
       updateId: get(req.params, 'id', ''),
       mysql: get(req, 'mysql'),
       authData: get(req, 'authData', ''),
@@ -19,14 +19,14 @@ module.exports = class RegisterUpdateCause {
   }
 
   checkParameters({
-    causeDescription,
+    epiDescription,
     updateId,
     mysql,
     authData,
   }, type = '') {
     return {
-      ...(!causeDescription ? { causeDescription: 'Descrição da causa não informada' } : ''),
-      ...(type === 'update' && !updateId ? { updateId: 'Id da causa a ser alterado não informada' } : ''),
+      ...(!epiDescription ? { epiDescription: 'Descrição da epi não informada' } : ''),
+      ...(type === 'update' && !updateId ? { updateId: 'Id do EPI a ser alterado não informada' } : ''),
       ...(!mysql ? { mysql: 'Conexão não estabelecida' } : ''),
       ...(!authData ? { authData: 'Dados de autenticação não encontrados' } : ''),
     };
@@ -41,24 +41,24 @@ module.exports = class RegisterUpdateCause {
       
       await this.validateGroups(parameters);
 
-      await this.registerUpdateCause(parameters, type);
+      await this.registerUpdateEpi(parameters, type);
       
       if (!this._queryReturn.affectedRows)
         throw type ? 'Nenhum registro foi alterado' : 'Nenhum registro foi inserido';
 
       return this._queryReturn;
     } catch (err) {
-      console.log('err RegisterUpdateCause :>> ', err);
+      console.log('err RegisterUpdateEpi :>> ', err);
 
       throw err;
     }
   }
   
-  async registerUpdateCause(parameters, type = '') {
+  async registerUpdateEpi(parameters, type = '') {
     if (type === 'update')
-      this._queryReturn = await new CauseDao(parameters).updateCause();
+      this._queryReturn = await new EpiDao(parameters).updateEpi();
 
-    else this._queryReturn = await new CauseDao(parameters).registerCause();
+    else this._queryReturn = await new EpiDao(parameters).registerEpi();
   }
 
   async validateGroups({ authData }) {
