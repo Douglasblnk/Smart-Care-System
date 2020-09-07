@@ -141,7 +141,7 @@ module.exports = class UserDao extends GenericDao {
     };
 
     const [rows] = await this._mysql.query(/* SQL */ `
-      UPDATE ${TABLE_USUARIO} SET ? WHERE numeroCracha = ?;
+      UPDATE ${TABLE_USUARIO} SET ? WHERE idUsuario = ?;
       `, [values, this._updateId],
     );
 
@@ -161,7 +161,7 @@ module.exports = class UserDao extends GenericDao {
     };
 
     const [rows] = await this._mysql.query(/* SQL */ `
-      UPDATE ${TABLE_USUARIO} SET ? WHERE numeroCracha = ?;
+      UPDATE ${TABLE_USUARIO} SET ? WHERE idUsuario = ?;
       `, [values, this._updateId],
     );
 

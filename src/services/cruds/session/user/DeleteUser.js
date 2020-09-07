@@ -37,7 +37,7 @@ module.exports = class DeleteUser {
       
       if (!this._queryReturn.affectedRows)
         throw 'Não foi possível deletar o usuário';
-      
+
       return this._queryReturn;
     } catch (err) {
       console.log('err registerUser :>> ', err);
