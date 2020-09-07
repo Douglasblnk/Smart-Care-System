@@ -1,4 +1,4 @@
-const PriorityDao = require('../../dao/PriorityDao');
+const PriorityDao = require('../../../dao/cruds/PriorityDao');
 
 const { get } = require('lodash');
 

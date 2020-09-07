@@ -1,4 +1,4 @@
-const InstallationLocationDao = require('../../dao/InstallationLocationDao');
+const InstallationLocationDao = require('../../../dao/cruds/InstallationLocationDao');
 
 const { ADMINISTRADOR_ID } = require('../../../../shared/constants/accessLevel');
 const { get } = require('lodash');

@@ -1,4 +1,4 @@
-const EquipmentsDao = require('../../dao/EquipmentsDao');
+const EquipmentsDao = require('../../../dao/cruds/EquipmentsDao');
 
 const { get } = require('lodash');
 

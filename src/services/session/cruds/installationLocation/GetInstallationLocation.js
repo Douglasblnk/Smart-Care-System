@@ -1,4 +1,4 @@
-const InstallationLocationDao = require('../../dao/InstallationLocationDao');
+const InstallationLocationDao = require('../../../dao/cruds/InstallationLocationDao');
 
 const { get } = require('lodash');
 

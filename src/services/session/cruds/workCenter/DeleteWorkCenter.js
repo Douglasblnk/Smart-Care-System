@@ -1,4 +1,4 @@
-const WorkCenterDao = require('../../dao/WorkCenterDao');
+const WorkCenterDao = require('../../../dao/cruds/WorkCenterDao');
 
 const { ADMINISTRADOR_ID } = require('../../../../shared/constants/accessLevel');
 const { get } = require('lodash');

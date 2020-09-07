@@ -1,4 +1,4 @@
-const EpiDao = require('../../dao/EpiDao');
+const EpiDao = require('../../../dao/cruds/EpiDao');
 
 const { ADMINISTRADOR_ID } = require('../../../../shared/constants/accessLevel');
 const { get } = require('lodash');

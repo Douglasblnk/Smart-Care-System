@@ -1,4 +1,4 @@
-const userDao = require('../../dao/UserDao');
+const userDao = require('../../../dao/cruds/UserDao');
 const { generateHash } = require('../../../../shared/guard/cryptography');
 
 const { ADMINISTRADOR_ID } = require('../../../../shared/constants/accessLevel');

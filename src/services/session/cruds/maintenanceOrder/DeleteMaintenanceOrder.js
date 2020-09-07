@@ -1,4 +1,4 @@
-const MaintenanceOrderDao = require('../../dao/MaintenanceOrderDao');
+const MaintenanceOrderDao = require('../../../dao/cruds/MaintenanceOrderDao');
 
 const { ADMINISTRADOR_ID } = require('../../../../shared/constants/accessLevel');
 const { get } = require('lodash');

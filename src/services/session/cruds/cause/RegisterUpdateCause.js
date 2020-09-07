@@ -1,4 +1,4 @@
-const CauseDao = require('../../dao/CauseDao');
+const CauseDao = require('../../../dao/cruds/CauseDao');
 
 const { ADMINISTRADOR_ID } = require('../../../../shared/constants/accessLevel');
 const { get } = require('lodash');

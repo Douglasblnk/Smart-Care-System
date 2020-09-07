@@ -1,4 +1,4 @@
-const AccessLevelDao = require('../../dao/AccessLevelDao');
+const AccessLevelDao = require('../../../dao/cruds/AccessLevelDao');
 
 const { get } = require('lodash');
 

@@ -1,4 +1,4 @@
-const SymptomDao = require('../../dao/SymptomDao');
+const SymptomDao = require('../../../dao/cruds/SymptomDao');
 
 const { ADMINISTRADOR_ID } = require('../../../../shared/constants/accessLevel');
 const { get } = require('lodash');
