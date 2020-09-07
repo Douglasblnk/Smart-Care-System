@@ -1,53 +1,64 @@
-const EpiDao = require('../../dao/EpiDao');
+const WorkCenterDao = require('../../dao/WorkCenterDao');
 
 const { ADMINISTRADOR_ID } = require('../../../../shared/constants/accessLevel');
 const { get } = require('lodash');
 const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../shared/constants/HTTPResponse');
 
-module.exports = class DeleteEpi {
+module.exports = class RegisterUpdateWorkCenter {
   constructor() {
     this._queryReturn;
   }
 
   getParameters(req) {
     return {
+      workCenterDescription: get(req.body, 'descricao', ''),
       updateId: get(req.params, 'id', ''),
       mysql: get(req, 'mysql'),
       authData: get(req, 'authData', ''),
     };
   }
 
-  checkParameters({ updateId, mysql, authData }) {
+  checkParameters({
+    workCenterDescription,
+    updateId,
+    mysql,
+    authData,
+  }, type = '') {
     return {
-      ...(!updateId ? { numeroCracha: 'ID do EPI não infomada' } : ''),
+      ...(!workCenterDescription ? { workCenterDescription: 'Descrição do centro de trabalho não informado' } : ''),
+      ...(type === 'update' && !updateId ? { updateId: 'Id do EPI a ser alterado não informada' } : ''),
       ...(!mysql ? { mysql: 'Conexão não estabelecida' } : ''),
       ...(!authData ? { authData: 'Dados de autenticação não encontrados' } : ''),
     };
   }
 
-  async run(req) {
+  async run(req, type = '') {
     try {
       const parameters = this.getParameters(req);
 
-      const errors = this.checkParameters(parameters);
+      const errors = this.checkParameters(parameters, type);
       if (Object.values(errors).length > 0) throw errors;
       
       await this.validateGroups(parameters);
-      await this.deleteEpi(parameters);
+
+      await this.registerUpdateWorkCenter(parameters, type);
       
       if (!this._queryReturn.affectedRows)
-        throw 'Não foi possível deletar o EPI';
-      
+        throw type ? 'Nenhum registro foi alterado' : 'Nenhum registro foi inserido';
+
       return this._queryReturn;
     } catch (err) {
-      console.log('err DeleteEpi :>> ', err);
+      console.log('err RegisterUpdateWorkCenter :>> ', err);
 
       throw err;
     }
   }
   
-  async deleteEpi(parameters) {
-    this._queryReturn = await new EpiDao(parameters).deleteEpi();
+  async registerUpdateWorkCenter(parameters, type = '') {
+    if (type === 'update')
+      this._queryReturn = await new WorkCenterDao(parameters).updateWorkCenter();
+
+    else this._queryReturn = await new WorkCenterDao(parameters).registerWorkCenter();
   }
 
   async validateGroups({ authData }) {
