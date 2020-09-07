@@ -32,14 +32,6 @@ const OrderType = require('./services/cruds/routes/OrderType');
 const Priority = require('./services/cruds/routes/Priority');
 const WorkCenter = require('./services/cruds/routes/WorkCenter');
 const Operation = require('./services/cruds/routes/Operation');
-// const componente = require('./services/cruds/routes/Componente/Componente');
-// const tipoManutencao = require('./services/cruds/routes/TipoOrdem/TipoOrdem');
-
-// MOVIMENTATIONS
-// const detalhamento = require('./services/movimentations/routes/Detalhamento/Detalhamento');
-// const verificacao = require('./services/movimentations/routes/Verificacao/Verificacao');
-// const initiate = require('./services/movimentations/routes/Iniciar/InitiateOrder');
-// const orderNote = require('./services/movimentations/routes/Apontar/OrderNote');
 
 app.use('/users', User);
 app.use('/status', Status);
@@ -54,8 +46,15 @@ app.use('/tipo-ordem', OrderType);
 app.use('/prioridade', Priority);
 app.use('/centro-trabalho', WorkCenter);
 app.use('/operacoes', Operation);
-// app.use('/componente', componente);
-// app.use('/tipo-manutencao', tipoManutencao);
+
+
+// MOVIMENTATIONS
+// const detalhamento = require('./services/movimentations/routes/Detalhamento/Detalhamento');
+// const verificacao = require('./services/movimentations/routes/Verificacao/Verificacao');
+// const initiate = require('./services/movimentations/routes/Iniciar/InitiateOrder');
+// const orderNote = require('./services/movimentations/routes/Apontar/OrderNote');
+
+
 // app.use('/detalhamento', detalhamento);
 // app.use('/verificacao', verificacao);
 // app.use('/initiate', initiate);
@@ -66,5 +65,3 @@ app.use(connectionFactory.closeConnection);
 app.listen(process.env.PORT, () => {
   console.log(`Ouvindo na porta ${process.env.PORT}!`);
 });
-
-
