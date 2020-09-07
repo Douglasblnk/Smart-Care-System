@@ -34,9 +34,19 @@ module.exports = class MaintenanceOrderDao extends GenericDao {
         os.resumo,
         os.descricao,
         os.dataEmissao,
-        (SELECT t.tipoManutencao FROM ${TABLE_TIPO_MANUTENCAO} as t WHERE os.tipoManutencao_idtipoManutencao = t.idtipoManutencao) as tipo_manutencao,
-        (SELECT p.descricaoPrioridade FROM ${TABLE_PRIORIDADE} as p WHERE os.Prioridade_idPrioridade = p.idPrioridade) as prioridade,
         (SELECT st.tipoStatus FROM ${TABLE_STATUS} as st WHERE os.Status_idStatus = st.idStatus) as status
+        (
+          SELECT
+            t.tipoManutencao
+            FROM ${TABLE_TIPO_MANUTENCAO} as t
+            WHERE os.tipoManutencao_idtipoManutencao = t.idtipoManutencao
+          ) as tipo_manutencao,
+        (
+          SELECT
+            p.descricaoPrioridade
+            FROM ${TABLE_PRIORIDADE} as p
+            WHERE os.Prioridade_idPrioridade = p.idPrioridade
+          ) as prioridade,
       FROM ${TABLE_ORDEM_SERVICO} as os
       WHERE os.excluded = 0
       GROUP BY os.idOrdemServico;
@@ -62,9 +72,19 @@ module.exports = class MaintenanceOrderDao extends GenericDao {
         os.dataEmissao,
         (SELECT descricao FROM ${TABLE_EQUIPAMENTO} WHERE idEquipamento = Equipamentos.Equipamento) as equipamento,
         (SELECT Setor.nome FROM ${TABLE_SETOR} WHERE idSetor = Locais.Local) as local,
-        (SELECT t.tipoManutencao FROM ${TABLE_TIPO_MANUTENCAO} as t WHERE os.tipoManutencao_idtipoManutencao = t.idtipoManutencao) as tipo_manutencao,
-        (SELECT p.descricaoPrioridade FROM ${TABLE_PRIORIDADE} as p WHERE os.Prioridade_idPrioridade = p.idPrioridade) as prioridade,
         (SELECT st.tipoStatus FROM ${TABLE_STATUS} as st WHERE os.Status_idStatus = st.idStatus) as status
+        (
+          SELECT
+            t.tipoManutencao
+          FROM ${TABLE_TIPO_MANUTENCAO} as t
+          WHERE os.tipoManutencao_idtipoManutencao = t.idtipoManutencao
+        ) as tipo_manutencao,
+        (
+          SELECT
+            p.descricaoPrioridade
+          FROM ${TABLE_PRIORIDADE} as p
+          WHERE os.Prioridade_idPrioridade = p.idPrioridade
+        ) as prioridade,
       FROM ${TABLE_ORDEM_SERVICO} as os
       LEFT JOIN ${TABLE_LOCAIS} as Locais ON Locais.Ordem_Servico = os.idOrdemServico
       LEFT JOIN ${TABLE_EQUIPAMENTOS} as Equipamentos ON Equipamentos.Ordem_servico = os.idOrdemServico

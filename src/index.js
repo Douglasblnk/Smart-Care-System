@@ -31,9 +31,9 @@ const Epi = require('./services/cruds/routes/Epi');
 const OrderType = require('./services/cruds/routes/OrderType');
 const Priority = require('./services/cruds/routes/Priority');
 const WorkCenter = require('./services/cruds/routes/WorkCenter');
+const Operation = require('./services/cruds/routes/Operation');
 // const componente = require('./services/cruds/routes/Componente/Componente');
 // const tipoManutencao = require('./services/cruds/routes/TipoOrdem/TipoOrdem');
-// const operacoes = require('./services/cruds/routes/Operacoes/Operacoes');
 
 // MOVIMENTATIONS
 // const detalhamento = require('./services/movimentations/routes/Detalhamento/Detalhamento');
@@ -53,11 +53,11 @@ app.use('/epi', Epi);
 app.use('/tipo-ordem', OrderType);
 app.use('/prioridade', Priority);
 app.use('/centro-trabalho', WorkCenter);
+app.use('/operacoes', Operation);
 // app.use('/componente', componente);
 // app.use('/tipo-manutencao', tipoManutencao);
 // app.use('/detalhamento', detalhamento);
 // app.use('/verificacao', verificacao);
-// app.use('/operacoes', operacoes);
 // app.use('/initiate', initiate);
 // app.use('/order-note', orderNote);
 

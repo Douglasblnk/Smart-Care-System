@@ -93,4 +93,4 @@ module.exports = class EquipmentsDao extends GenericDao {
 
     return this.parseInsertResponse(rows);
   }
-}
+};

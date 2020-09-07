@@ -79,4 +79,4 @@ module.exports = class InstallationLocationDao extends GenericDao {
 
     return this.parseInsertResponse(rows);
   }
-}
+};

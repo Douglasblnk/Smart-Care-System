@@ -1,64 +1,53 @@
-const WorkCenterDao = require('../../dao/WorkCenterDao');
+const OperationDao = require('../../dao/OperationDao');
 
 const { ADMINISTRADOR_ID } = require('../../../../shared/constants/accessLevel');
 const { get } = require('lodash');
 const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../shared/constants/HTTPResponse');
 
-module.exports = class RegisterUpdateWorkCenter {
+module.exports = class DeleteOperation {
   constructor() {
     this._queryReturn;
   }
 
   getParameters(req) {
     return {
-      workCenterDescription: get(req.body, 'descricao', ''),
       updateId: get(req.params, 'id', ''),
       mysql: get(req, 'mysql'),
       authData: get(req, 'authData', ''),
     };
   }
 
-  checkParameters({
-    workCenterDescription,
-    updateId,
-    mysql,
-    authData,
-  }, type = '') {
+  checkParameters({ updateId, mysql, authData }) {
     return {
-      ...(!workCenterDescription ? { workCenterDescription: 'Descrição do centro de trabalho não informado' } : ''),
-      ...(type === 'update' && !updateId ? { updateId: 'Id do centro de trabalho a ser alterado não informado' } : ''),
+      ...(!updateId ? { numeroCracha: 'ID da causa não infomada' } : ''),
       ...(!mysql ? { mysql: 'Conexão não estabelecida' } : ''),
       ...(!authData ? { authData: 'Dados de autenticação não encontrados' } : ''),
     };
   }
 
-  async run(req, type = '') {
+  async run(req) {
     try {
       const parameters = this.getParameters(req);
 
-      const errors = this.checkParameters(parameters, type);
+      const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
       
       await this.validateGroups(parameters);
-
-      await this.registerUpdateWorkCenter(parameters, type);
+      await this.deleteOperation(parameters);
       
       if (!this._queryReturn.affectedRows)
-        throw type ? 'Nenhum registro foi alterado' : 'Nenhum registro foi inserido';
-
+        throw 'Não foi possível deletar a operação';
+      
       return this._queryReturn;
     } catch (err) {
-      console.log('err RegisterUpdateWorkCenter :>> ', err);
+      console.log('err DeleteOperation :>> ', err);
 
       throw err;
     }
   }
   
-  async registerUpdateWorkCenter(parameters, type = '') {
-    if (type === 'update')
-      this._queryReturn = await new WorkCenterDao(parameters).updateWorkCenter();
-
-    else this._queryReturn = await new WorkCenterDao(parameters).registerWorkCenter();
+  async deleteOperation(parameters) {
+    this._queryReturn = await new OperationDao(parameters).deleteOperation();
   }
 
   async validateGroups({ authData }) {
