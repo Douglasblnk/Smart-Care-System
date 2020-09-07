@@ -10,10 +10,11 @@ const DeleteEquipments = require('../../session/equipments/DeleteEquipments');
 /**
  *  ROTA PARA BUSCAR OS EQUIPAMENTOS
 */
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
     const response = await new GetEquipments().run(req);
 
+    next();
     res.status(200).send(response);
   } catch (err) {
     const responseError = errorResponseTreatment(err);
@@ -25,10 +26,11 @@ router.get('/', async (req, res) => {
 /**
  *  ROTA PARA REGISTRAR UM EQUIPAMENTO
 */
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
   try {
     const response = await new RegisterUpdateEquipments().run(req);
 
+    next();
     res.status(200).send(response);
   } catch (err) {
     const responseError = errorResponseTreatment(err);
@@ -40,10 +42,11 @@ router.post('/', async (req, res) => {
 /**
  *  ROTA PARA ALTERAR UM EQUIPAMENTO
 */
-router.put('/:id', async (req, res) => {
+router.put('/:id', async (req, res, next) => {
   try {
     const response = await new RegisterUpdateEquipments().run(req, 'update');
 
+    next();
     res.status(200).send(response);
   } catch (err) {
     const responseError = errorResponseTreatment(err);
@@ -55,10 +58,11 @@ router.put('/:id', async (req, res) => {
 /**
  *  ROTA PARA DELETAR UM EQUIPAMENTO
 */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async (req, res, next) => {
   try {
     const response = await new DeleteEquipments().run(req);
 
+    next();
     res.status(200).send(response);
   } catch (err) {
     const responseError = errorResponseTreatment(err);

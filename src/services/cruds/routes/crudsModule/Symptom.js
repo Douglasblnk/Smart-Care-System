@@ -11,10 +11,11 @@ const DeleteSymptom = require('../../session/symptom/DeleteSymptom');
 /**
  *  ROTA DE REGISTRO DE SINTOMA
  */
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
   try {
     const response = await new RegisterUpdateSymptom().run(req);
     
+    next();
     res.status(200).send(response);
   } catch (err) {
     const responseError = errorResponseTreatment(err);
@@ -26,10 +27,11 @@ router.post('/', async (req, res) => {
 /**
  *  ROTA PARA DELETAR SINTOMA
  */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async (req, res, next) => {
   try {
     const response = await new DeleteSymptom().run(req);
     
+    next();
     res.status(200).send(response);
   } catch (err) {
     const responseError = errorResponseTreatment(err);
@@ -41,10 +43,11 @@ router.delete('/:id', async (req, res) => {
 /**
  *  ROTA PARA BUSCAR SINTOMAS CADASTRADOS NO SISTEMA
  */
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
     const response = await new GetSymptom().run(req);
 
+    next();
     res.status(200).send(response);
   } catch (err) {
     const responseError = errorResponseTreatment(err);
@@ -56,10 +59,11 @@ router.get('/', async (req, res) => {
 /**
  *  ROTA PARA ATUALIZAR O SINTOMA
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id', async (req, res, next) => {
   try {
     const response = await new RegisterUpdateSymptom().run(req, 'update');
     
+    next();
     res.status(200).send(response);
   } catch (err) {
     const responseError = errorResponseTreatment(err);

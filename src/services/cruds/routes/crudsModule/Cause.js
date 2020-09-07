@@ -7,10 +7,11 @@ const GetCause = require('../../session/cause/GetCause');
 const RegisterUpdateCause = require('../../session/cause/RegisterUpdateCause');
 const DeleteCause = require('../../session/cause/DeleteCause');
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
   try {
     const response = await new RegisterUpdateCause().run(req);
 
+    next();
     res.status(200).send(response);
   } catch (err) {
     const responseError = errorResponseTreatment(err);
@@ -19,10 +20,11 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
     const response = await new GetCause().run(req);
 
+    next();
     res.status(200).send(response);
   } catch (err) {
     const responseError = errorResponseTreatment(err);
@@ -31,10 +33,11 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async (req, res, next) => {
   try {
     const response = await new DeleteCause().run(req);
 
+    next();
     res.status(200).send(response);
   } catch (err) {
     const responseError = errorResponseTreatment(err);
@@ -43,10 +46,11 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', async (req, res, next) => {
   try {
     const response = await new RegisterUpdateCause().run(req, 'update');
 
+    next();
     res.status(200).send(response);
   } catch (err) {
     const responseError = errorResponseTreatment(err);

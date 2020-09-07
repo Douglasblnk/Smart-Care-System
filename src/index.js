@@ -28,8 +28,8 @@ const Equipment = require('./services/cruds/routes/crudsModule/Equipment');
 const InstallationLocation = require('./services/cruds/routes/crudsModule/InstallationLocation');
 const Cause = require('./services/cruds/routes/crudsModule/Cause');
 const Epi = require('./services/cruds/routes/crudsModule/Epi');
+const OrderType = require('./services/cruds/routes/crudsModule/OrderType');
 // const centroTrabalho = require('./services/cruds/routes/CentroTrabalho/CentroTrabalho');
-// const tipoOrdem = require('./services/cruds/routes/TipoOrdem/TipoOrdem');
 // const componente = require('./services/cruds/routes/Componente/Componente');
 // const tipoManutencao = require('./services/cruds/routes/TipoOrdem/TipoOrdem');
 // const prioridade = require('./services/cruds/routes/Prioridade/Prioridade');
@@ -50,8 +50,8 @@ app.use('/equipments', Equipment);
 app.use('/local-instalacao', InstallationLocation);
 app.use('/causa', Cause);
 app.use('/epi', Epi);
+app.use('/tipo-ordem', OrderType);
 // app.use('/centro-trabalho', centroTrabalho);
-// app.use('/tipo-ordem', tipoOrdem);
 // app.use('/componente', componente);
 // app.use('/tipo-manutencao', tipoManutencao);
 // app.use('/prioridade', prioridade);
@@ -61,14 +61,10 @@ app.use('/epi', Epi);
 // app.use('/initiate', initiate);
 // app.use('/order-note', orderNote);
 
-
-app.get('/', res => {
-  res.send('Smart Care API');
-});
-
-app.use(connectionFactory.closeConnection.bind(connectionFactory));
+app.use(connectionFactory.closeConnection);
 
 app.listen(process.env.PORT, () => {
   console.log(`Ouvindo na porta ${process.env.PORT}!`);
 });
+
 

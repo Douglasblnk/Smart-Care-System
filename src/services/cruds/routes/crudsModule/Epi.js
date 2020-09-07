@@ -8,10 +8,11 @@ const GetEpi = require('../../session/epi/GetEpi');
 const DeleteEpi = require('../../session/epi/DeleteEpi');
 
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
   try {
     const response = await new RegisterUpdateEpi().run(req);
 
+    next();
     res.status(200).send(response);
   } catch (err) {
     const responseError = errorResponseTreatment(err);
@@ -20,10 +21,11 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
     const response = await new GetEpi().run(req);
 
+    next();
     res.status(200).send(response);
   } catch (err) {
     const responseError = errorResponseTreatment(err);
@@ -32,10 +34,11 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async (req, res, next) => {
   try {
     const response = await new DeleteEpi().run(req);
 
+    next();
     res.status(200).send(response);
   } catch (err) {
     const responseError = errorResponseTreatment(err);
@@ -44,10 +47,11 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', async (req, res, next) => {
   try {
     const response = await new RegisterUpdateEpi().run(req, 'update');
 
+    next();
     res.status(200).send(response);
   } catch (err) {
     const responseError = errorResponseTreatment(err);
