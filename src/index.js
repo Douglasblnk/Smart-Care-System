@@ -19,19 +19,19 @@ app.use(connectionFactory.createConnection.bind(connectionFactory));
 app.use(auth.run.bind(auth));
 
 // CRUDS
-const User = require('./services/cruds/routes/User');
-const Status = require('./services/cruds/routes/Status');
-const Symptom = require('./services/cruds/routes/Symptom');
-const AccessLevel = require('./services/cruds/routes/AccessLevel');
-const MaintenanceOrder = require('./services/cruds/routes/MaintenanceOrder');
-const Equipment = require('./services/cruds/routes/Equipment');
-const InstallationLocation = require('./services/cruds/routes/InstallationLocation');
-const Cause = require('./services/cruds/routes/Cause');
-const Epi = require('./services/cruds/routes/Epi');
-const OrderType = require('./services/cruds/routes/OrderType');
-const Priority = require('./services/cruds/routes/Priority');
-const WorkCenter = require('./services/cruds/routes/WorkCenter');
-const Operation = require('./services/cruds/routes/Operation');
+const User = require('./services/routes/cruds/User');
+const Status = require('./services/routes/cruds/Status');
+const Symptom = require('./services/routes/cruds/Symptom');
+const AccessLevel = require('./services/routes/cruds/AccessLevel');
+const MaintenanceOrder = require('./services/routes/cruds/MaintenanceOrder');
+const Equipment = require('./services/routes/cruds/Equipment');
+const InstallationLocation = require('./services/routes/cruds/InstallationLocation');
+const Cause = require('./services/routes/cruds/Cause');
+const Epi = require('./services/routes/cruds/Epi');
+const OrderType = require('./services/routes/cruds/OrderType');
+const Priority = require('./services/routes/cruds/Priority');
+const WorkCenter = require('./services/routes/cruds/WorkCenter');
+const Operation = require('./services/routes/cruds/Operation');
 
 app.use('/users', User);
 app.use('/status', Status);
@@ -49,14 +49,14 @@ app.use('/operacoes', Operation);
 
 
 // MOVIMENTATIONS
-// const detalhamento = require('./services/movimentations/routes/Detalhamento/Detalhamento');
 // const verificacao = require('./services/movimentations/routes/Verificacao/Verificacao');
+// const detalhamento = require('./services/movimentations/routes/Detalhamento/Detalhamento');
 // const initiate = require('./services/movimentations/routes/Iniciar/InitiateOrder');
 // const orderNote = require('./services/movimentations/routes/Apontar/OrderNote');
 
 
-// app.use('/detalhamento', detalhamento);
 // app.use('/verificacao', verificacao);
+// app.use('/detalhamento', detalhamento);
 // app.use('/initiate', initiate);
 // app.use('/order-note', orderNote);
 
