@@ -3,7 +3,7 @@ const errorResponseTreatment = require('../../../shared/utils/utils');
 const Router = require('express');
 const router = Router();
 
-const GetPriority = require('../session/priority/GetPriority');
+const GetPriority = require('../../session/cruds/priority/GetPriority');
 
 /**
  *  ROTA PARA BUSCAR AS PRIORIDADES

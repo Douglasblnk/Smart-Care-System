@@ -3,7 +3,7 @@ const errorResponseTreatment = require('../../../shared/utils/utils');
 const Router = require('express');
 const router = Router();
 
-const GetOrderType = require('../session/orderType/GetOrderType');
+const GetOrderType = require('../../session/cruds/orderType/GetOrderType');
 
 
 /**

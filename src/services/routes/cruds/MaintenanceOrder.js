@@ -3,26 +3,16 @@ const errorResponseTreatment = require('../../../shared/utils/utils');
 const Router = require('express');
 const router = Router();
 
-const GetCause = require('../session/cause/GetCause');
-const RegisterUpdateCause = require('../session/cause/RegisterUpdateCause');
-const DeleteCause = require('../session/cause/DeleteCause');
+const GetMaintenanceOrder = require('../../session/cruds/maintenanceOrder/GetMaintenanceOrder');
+const DeleteMaintenanceOrder = require('../../session/cruds/maintenanceOrder/DeleteMaintenanceOrder');
+const RegisterMaintenanceOrder = require('../../session/cruds/maintenanceOrder/RegisterCorrectiveOrder');
 
-router.post('/', async (req, res, next) => {
-  try {
-    const response = await new RegisterUpdateCause().run(req);
-
-    next();
-    res.status(200).send(response);
-  } catch (err) {
-    const responseError = errorResponseTreatment(err);
-    
-    res.status(responseError.status).send(responseError);
-  }
-});
-
+/**
+ *  ROTA PARA BUSCAR UM RESUMO DE TODAS AS ORDENS DE MANUTENÇÃO
+ */
 router.get('/', async (req, res, next) => {
   try {
-    const response = await new GetCause().run(req);
+    const response = await new GetMaintenanceOrder().run(req);
 
     next();
     res.status(200).send(response);
@@ -33,9 +23,28 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+/**
+ *  ROTA PARA CADASTRAR UMA 0RDEM DE MANUTENÇÃO DO TIPO CORRETIVA
+ */
+router.post('/', async (req, res, next) => {
+  try {
+    const response = await new RegisterMaintenanceOrder().run(req);
+
+    next();
+    res.status(200).send(response);
+  } catch (err) {
+    const responseError = errorResponseTreatment(err);
+    
+    res.status(responseError.status).send(responseError);
+  }
+});
+
+/**
+ *  ROTA PARA DELETAR UMA ORDEM DO SISTEMA
+ */
 router.delete('/:id', async (req, res, next) => {
   try {
-    const response = await new DeleteCause().run(req);
+    const response = await new DeleteMaintenanceOrder().run(req);
 
     next();
     res.status(200).send(response);
@@ -46,17 +55,5 @@ router.delete('/:id', async (req, res, next) => {
   }
 });
 
-router.put('/:id', async (req, res, next) => {
-  try {
-    const response = await new RegisterUpdateCause().run(req, 'update');
-
-    next();
-    res.status(200).send(response);
-  } catch (err) {
-    const responseError = errorResponseTreatment(err);
-    
-    res.status(responseError.status).send(responseError);
-  }
-});
 
 module.exports = router;

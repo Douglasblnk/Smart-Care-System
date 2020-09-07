@@ -3,32 +3,14 @@ const errorResponseTreatment = require('../../../shared/utils/utils');
 const Router = require('express');
 const router = Router();
 
-const GetMaintenanceOrder = require('../session/maintenanceOrder/GetMaintenanceOrder');
-const DeleteMaintenanceOrder = require('../session/maintenanceOrder/DeleteMaintenanceOrder');
-const RegisterMaintenanceOrder = require('../session/maintenanceOrder/RegisterCorrectiveOrder');
+const RegisterUpdateEpi = require('../../session/cruds/epi/RegisterUpdateEpi');
+const GetEpi = require('../../session/cruds/epi/GetEpi');
+const DeleteEpi = require('../../session/cruds/epi/DeleteEpi');
 
-/**
- *  ROTA PARA BUSCAR UM RESUMO DE TODAS AS ORDENS DE MANUTENÇÃO
- */
-router.get('/', async (req, res, next) => {
-  try {
-    const response = await new GetMaintenanceOrder().run(req);
 
-    next();
-    res.status(200).send(response);
-  } catch (err) {
-    const responseError = errorResponseTreatment(err);
-    
-    res.status(responseError.status).send(responseError);
-  }
-});
-
-/**
- *  ROTA PARA CADASTRAR UMA 0RDEM DE MANUTENÇÃO DO TIPO CORRETIVA
- */
 router.post('/', async (req, res, next) => {
   try {
-    const response = await new RegisterMaintenanceOrder().run(req);
+    const response = await new RegisterUpdateEpi().run(req);
 
     next();
     res.status(200).send(response);
@@ -39,12 +21,22 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-/**
- *  ROTA PARA DELETAR UMA ORDEM DO SISTEMA
- */
+router.get('/', async (req, res, next) => {
+  try {
+    const response = await new GetEpi().run(req);
+
+    next();
+    res.status(200).send(response);
+  } catch (err) {
+    const responseError = errorResponseTreatment(err);
+    
+    res.status(responseError.status).send(responseError);
+  }
+});
+
 router.delete('/:id', async (req, res, next) => {
   try {
-    const response = await new DeleteMaintenanceOrder().run(req);
+    const response = await new DeleteEpi().run(req);
 
     next();
     res.status(200).send(response);
@@ -55,5 +47,17 @@ router.delete('/:id', async (req, res, next) => {
   }
 });
 
+router.put('/:id', async (req, res, next) => {
+  try {
+    const response = await new RegisterUpdateEpi().run(req, 'update');
+
+    next();
+    res.status(200).send(response);
+  } catch (err) {
+    const responseError = errorResponseTreatment(err);
+    
+    res.status(responseError.status).send(responseError);
+  }
+});
 
 module.exports = router;

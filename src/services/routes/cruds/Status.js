@@ -3,14 +3,14 @@ const errorResponseTreatment = require('../../../shared/utils/utils');
 const Router = require('express');
 const router = Router();
 
-const GetAccessLevel = require('../session/accessLevel/GetAccessLevel');
+const GetStatus = require('../../session/cruds/status/getStatus');
 
 /**
- *  ROTA PARA BUSCAR OS NIVEIS DE ACESSO
+ *  ROTA PARA BUSCAR OS STATUS
  */
 router.get('/', async (req, res, next) => {
   try {
-    const response = await new GetAccessLevel().run(req);
+    const response = await new GetStatus().run(req);
 
     next();
     res.status(200).send(response);

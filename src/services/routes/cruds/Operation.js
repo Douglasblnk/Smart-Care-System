@@ -3,18 +3,13 @@ const errorResponseTreatment = require('../../../shared/utils/utils');
 const Router = require('express');
 const router = Router();
 
-const GetInstallationLocation = require('../session/installationLocation/GetInstallationLocation');
-const DeleteInstallationLocation = require('../session/installationLocation/DeleteInstallationLocation');
-const RegisterUpdateInstallationLocation = require(
-  '../session/installationLocation/RegisterUpdateInstallationLocation',
-);
+const GetOperation = require('../../session/cruds/operation/GetOperation');
+const RegisterUpdateOperation = require('../../session/cruds/operation/RegisterUpdateOperation');
+const DeleteCause = require('../../session/cruds/operation/DeleteCause');
 
-/**
- *  ROTA PARA BUSCAR OS LOCAIS DE INSTALAÇÃO
-*/
 router.get('/', async (req, res, next) => {
   try {
-    const response = await new GetInstallationLocation().run(req);
+    const response = await new GetOperation().run(req);
 
     next();
     res.status(200).send(response);
@@ -25,12 +20,9 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-/**
- *  ROTA PARA REGISTRAR UM LOCAL DE INSTALAÇÃO
-*/
 router.post('/', async (req, res, next) => {
   try {
-    const response = await new RegisterUpdateInstallationLocation().run(req);
+    const response = await new RegisterUpdateOperation().run(req);
 
     next();
     res.status(200).send(response);
@@ -41,12 +33,9 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-/**
- *  ROTA PARA ALTERAR UM LOCAL DE INSTALAÇÃO
-*/
 router.put('/:id', async (req, res, next) => {
   try {
-    const response = await new RegisterUpdateInstallationLocation().run(req, 'update');
+    const response = await new RegisterUpdateOperation().run(req, 'update');
 
     next();
     res.status(200).send(response);
@@ -57,12 +46,9 @@ router.put('/:id', async (req, res, next) => {
   }
 });
 
-/**
- *  ROTA PARA DELETAR UM LOCAL DE INSTALAÇÃO
-*/
 router.delete('/:id', async (req, res, next) => {
   try {
-    const response = await new DeleteInstallationLocation().run(req);
+    const response = await new DeleteCause().run(req);
 
     next();
     res.status(200).send(response);

@@ -5,10 +5,10 @@ const RateLimit = require('express-rate-limit');
 const Router = require('express');
 const router = Router();
 
-const LoginValidate = require('../session/user/LoginValidate');
-const GetUsers = require('../session/user/GetUsers');
-const RegisterUpdateUser = require('../session/user/RegisterUpdateUser');
-const DeleteUser = require('../session/user/DeleteUser');
+const LoginValidate = require('../../session/cruds/user/LoginValidate');
+const GetUsers = require('../../session/cruds/user/GetUsers');
+const RegisterUpdateUser = require('../../session/cruds/user/RegisterUpdateUser');
+const DeleteUser = require('../../session/cruds/user/DeleteUser');
 
 /**
  * Limita a quantidade de tentativas de login
