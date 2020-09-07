@@ -1,20 +1,17 @@
-const errorResponseTreatment = require('../../../../shared/utils/utils');
+const errorResponseTreatment = require('../../../shared/utils/utils');
 
 const Router = require('express');
 const router = Router();
 
-const GetSymptom = require('../../session/symptom/GetSymptom');
-const RegisterUpdateSymptom = require('../../session/symptom/RegisterUpdateSymptom');
-const DeleteSymptom = require('../../session/symptom/DeleteSymptom');
+const RegisterUpdateEpi = require('../session/epi/RegisterUpdateEpi');
+const GetEpi = require('../session/epi/GetEpi');
+const DeleteEpi = require('../session/epi/DeleteEpi');
 
 
-/**
- *  ROTA DE REGISTRO DE SINTOMA
- */
 router.post('/', async (req, res, next) => {
   try {
-    const response = await new RegisterUpdateSymptom().run(req);
-    
+    const response = await new RegisterUpdateEpi().run(req);
+
     next();
     res.status(200).send(response);
   } catch (err) {
@@ -24,50 +21,41 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-/**
- *  ROTA PARA DELETAR SINTOMA
- */
-router.delete('/:id', async (req, res, next) => {
-  try {
-    const response = await new DeleteSymptom().run(req);
-    
-    next();
-    res.status(200).send(response);
-  } catch (err) {
-    const responseError = errorResponseTreatment(err);
-    
-    res.status(responseError.status).send(responseError);
-  }
-});
-
-/**
- *  ROTA PARA BUSCAR SINTOMAS CADASTRADOS NO SISTEMA
- */
 router.get('/', async (req, res, next) => {
   try {
-    const response = await new GetSymptom().run(req);
+    const response = await new GetEpi().run(req);
 
     next();
     res.status(200).send(response);
   } catch (err) {
     const responseError = errorResponseTreatment(err);
-
+    
     res.status(responseError.status).send(responseError);
   }
 });
 
-/**
- *  ROTA PARA ATUALIZAR O SINTOMA
- */
-router.put('/:id', async (req, res, next) => {
+router.delete('/:id', async (req, res, next) => {
   try {
-    const response = await new RegisterUpdateSymptom().run(req, 'update');
-    
+    const response = await new DeleteEpi().run(req);
+
     next();
     res.status(200).send(response);
   } catch (err) {
     const responseError = errorResponseTreatment(err);
+    
+    res.status(responseError.status).send(responseError);
+  }
+});
 
+router.put('/:id', async (req, res, next) => {
+  try {
+    const response = await new RegisterUpdateEpi().run(req, 'update');
+
+    next();
+    res.status(200).send(response);
+  } catch (err) {
+    const responseError = errorResponseTreatment(err);
+    
     res.status(responseError.status).send(responseError);
   }
 });

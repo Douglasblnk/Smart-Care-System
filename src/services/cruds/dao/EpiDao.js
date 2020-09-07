@@ -1,82 +1,82 @@
-const GenericDao = require('../GenericDao');
-const { TABLE_CAUSA } = require('../../../../shared/constants/database');
+const GenericDao = require('./GenericDao');
+const { TABLE_EPI } = require('../../../shared/constants/database');
 
-module.exports = class CauseDao extends GenericDao {
+module.exports = class EpiDao extends GenericDao {
   constructor({
-    causeDescription,
+    epiDescription,
     updateId,
     mysql,
   } = {}) {
     super();
 
-    this._causeDescription = causeDescription;
+    this._epiDescription = epiDescription;
     this._updateId = updateId;
     this._mysql = mysql;
   }
 
   /**
-   * getCauses
-   * Busca todos as causas
-   * @return {Array} parsed array com todos as causas
+   * getEpis
+   * Busca todos os EPIs
+   * @return {Array} parsed array com todos os EPIs
    */
-  async getCauses() {
+  async getEpis() {
     const [rows] = await this._mysql.query(/* SQL */`
       SELECT 
         * 
-      FROM ${TABLE_CAUSA}
-      WHERE ${TABLE_CAUSA}.excluded = ?;
+      FROM ${TABLE_EPI}
+      WHERE ${TABLE_EPI}.excluded = ?;
     `, [0]);
 
     return this.parseSelectResponse(rows);
   }
 
   /**
-   * updateCause
-   * Atualiza uma causa
+   * updateEpi
+   * Atualiza um EPI
    * @return {Array} parsed array com o resultado da inserção
    */
-  async updateCause() {
+  async updateEpi() {
     const values = {
-      descricaoCausa: this._causeDescription,
+      descricaoEpi: this._epiDescription,
     };
 
     const [rows] = await this._mysql.query(/* SQL */`
-      UPDATE ${TABLE_CAUSA} SET ? WHERE idCausa = ?;
+      UPDATE ${TABLE_EPI} SET ? WHERE idEpi = ?;
     `, [values, this._updateId]);
 
     return this.parseInsertResponse(rows);
   }
 
   /**
-   * registerCause
-   * Registra uma causa
+   * registerEpi
+   * Registra um EPI
    * @return {Array} parsed array com o resultado da inserção
    */
-  async registerCause() {
+  async registerEpi() {
     const values = {
-      descricaoCausa: this._causeDescription,
+      descricaoEpi: this._epiDescription,
     };
 
     const [rows] = await this._mysql.query(/* SQL */`
-      INSERT INTO ${TABLE_CAUSA} SET ?;
+      INSERT INTO ${TABLE_EPI} SET ?;
     `, [values]);
 
     return this.parseInsertResponse(rows);
   }
 
   /**
-   * deleteCause
-   * Deleta uma causa
+   * deleteEpi
+   * Deleta um EPI
    * @return {Array} parsed array com o resultado da inserção
    */
-  async deleteCause() {
+  async deleteEpi() {
     const values = {
       excluded: 1,
     };
 
     const [rows] = await this._mysql.query(/* SQL */`
-      UPDATE ${TABLE_CAUSA} SET ?
-      WHERE ${TABLE_CAUSA}.idCausa = ?;
+      UPDATE ${TABLE_EPI} SET ?
+      WHERE ${TABLE_EPI}.idEpi = ?;
     `, [values, this._updateId]);
 
     return this.parseInsertResponse(rows);

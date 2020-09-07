@@ -1,5 +1,5 @@
-const GenericDao = require('../GenericDao');
-const { TABLE_TIPO_MANUTENCAO } = require('../../../../shared/constants/database');
+const GenericDao = require('./GenericDao');
+const { TABLE_TIPO_MANUTENCAO } = require('../../../shared/constants/database');
 
 module.exports = class OrderTypeDao extends GenericDao {
   constructor({ mysql } = {}) {

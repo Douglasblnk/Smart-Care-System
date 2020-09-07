@@ -1,16 +1,17 @@
-const errorResponseTreatment = require('../../../../shared/utils/utils');
+const errorResponseTreatment = require('../../../shared/utils/utils');
 
 const Router = require('express');
 const router = Router();
 
-const GetAccessLevel = require('../../session/accessLevel/GetAccessLevel');
+const GetOrderType = require('../session/orderType/GetOrderType');
+
 
 /**
- *  ROTA PARA BUSCAR OS NIVEIS DE ACESSO
- */
+ *  ROTA PARA BUSCAR OS TIPOS DE MANUTENÇÃO
+*/
 router.get('/', async (req, res, next) => {
   try {
-    const response = await new GetAccessLevel().run(req);
+    const response = await new GetOrderType().run(req);
 
     next();
     res.status(200).send(response);

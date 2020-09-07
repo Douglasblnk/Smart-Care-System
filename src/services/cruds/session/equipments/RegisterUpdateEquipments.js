@@ -1,4 +1,4 @@
-const EquipmentsDao = require('../../dao/crudModule/EquipmentsDao');
+const EquipmentsDao = require('../../dao/EquipmentsDao');
 
 const { ADMINISTRADOR_ID } = require('../../../../shared/constants/accessLevel');
 const { get } = require('lodash');

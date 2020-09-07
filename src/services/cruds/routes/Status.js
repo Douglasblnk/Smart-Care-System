@@ -1,17 +1,16 @@
-const errorResponseTreatment = require('../../../../shared/utils/utils');
+const errorResponseTreatment = require('../../../shared/utils/utils');
 
 const Router = require('express');
 const router = Router();
 
-const GetOrderType = require('../../session/orderType/GetOrderType');
-
+const GetStatus = require('../session/status/getStatus');
 
 /**
- *  ROTA PARA BUSCAR OS TIPOS DE MANUTENÇÃO
-*/
+ *  ROTA PARA BUSCAR OS STATUS
+ */
 router.get('/', async (req, res, next) => {
   try {
-    const response = await new GetOrderType().run(req);
+    const response = await new GetStatus().run(req);
 
     next();
     res.status(200).send(response);

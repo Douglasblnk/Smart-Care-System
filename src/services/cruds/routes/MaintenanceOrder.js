@@ -1,11 +1,11 @@
-const errorResponseTreatment = require('../../../../shared/utils/utils');
+const errorResponseTreatment = require('../../../shared/utils/utils');
 
 const Router = require('express');
 const router = Router();
 
-const GetMaintenanceOrder = require('../../session/maintenanceOrder/GetMaintenanceOrder');
-const DeleteMaintenanceOrder = require('../../session/maintenanceOrder/DeleteMaintenanceOrder');
-const RegisterMaintenanceOrder = require('../../session/maintenanceOrder/RegisterCorrectiveOrder');
+const GetMaintenanceOrder = require('../session/maintenanceOrder/GetMaintenanceOrder');
+const DeleteMaintenanceOrder = require('../session/maintenanceOrder/DeleteMaintenanceOrder');
+const RegisterMaintenanceOrder = require('../session/maintenanceOrder/RegisterCorrectiveOrder');
 
 /**
  *  ROTA PARA BUSCAR UM RESUMO DE TODAS AS ORDENS DE MANUTENÇÃO

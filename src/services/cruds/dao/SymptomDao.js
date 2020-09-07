@@ -1,5 +1,5 @@
-const GenericDao = require('../GenericDao');
-const { TABLE_SINTOMAS } = require('../../../../shared/constants/database');
+const GenericDao = require('./GenericDao');
+const { TABLE_SINTOMAS } = require('../../../shared/constants/database');
 
 module.exports = class SymptomDao extends GenericDao {  
   constructor({

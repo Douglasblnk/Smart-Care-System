@@ -1,5 +1,5 @@
-const GenericDao = require('../GenericDao');
-const { TABLE_SETOR } = require('../../../../shared/constants/database');
+const GenericDao = require('./GenericDao');
+const { TABLE_SETOR } = require('../../../shared/constants/database');
 
 module.exports = class InstallationLocationDao extends GenericDao {
   constructor({

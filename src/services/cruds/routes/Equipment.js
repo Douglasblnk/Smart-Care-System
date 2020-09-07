@@ -1,11 +1,11 @@
-const errorResponseTreatment = require('../../../../shared/utils/utils');
+const errorResponseTreatment = require('../../../shared/utils/utils');
 
 const Router = require('express');
 const router = Router();
 
-const GetEquipments = require('../../session/equipments/GetEquipments');
-const RegisterUpdateEquipments = require('../../session/equipments/RegisterUpdateEquipments');
-const DeleteEquipments = require('../../session/equipments/DeleteEquipments');
+const GetEquipments = require('../session/equipments/GetEquipments');
+const RegisterUpdateEquipments = require('../session/equipments/RegisterUpdateEquipments');
+const DeleteEquipments = require('../session/equipments/DeleteEquipments');
 
 /**
  *  ROTA PARA BUSCAR OS EQUIPAMENTOS

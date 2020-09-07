@@ -1,16 +1,15 @@
-const errorResponseTreatment = require('../../../../shared/utils/utils');
+const errorResponseTreatment = require('../../../shared/utils/utils');
 
 const Router = require('express');
 const router = Router();
 
-const RegisterUpdateEpi = require('../../session/epi/RegisterUpdateEpi');
-const GetEpi = require('../../session/epi/GetEpi');
-const DeleteEpi = require('../../session/epi/DeleteEpi');
-
+const GetCause = require('../session/cause/GetCause');
+const RegisterUpdateCause = require('../session/cause/RegisterUpdateCause');
+const DeleteCause = require('../session/cause/DeleteCause');
 
 router.post('/', async (req, res, next) => {
   try {
-    const response = await new RegisterUpdateEpi().run(req);
+    const response = await new RegisterUpdateCause().run(req);
 
     next();
     res.status(200).send(response);
@@ -23,7 +22,7 @@ router.post('/', async (req, res, next) => {
 
 router.get('/', async (req, res, next) => {
   try {
-    const response = await new GetEpi().run(req);
+    const response = await new GetCause().run(req);
 
     next();
     res.status(200).send(response);
@@ -36,7 +35,7 @@ router.get('/', async (req, res, next) => {
 
 router.delete('/:id', async (req, res, next) => {
   try {
-    const response = await new DeleteEpi().run(req);
+    const response = await new DeleteCause().run(req);
 
     next();
     res.status(200).send(response);
@@ -49,7 +48,7 @@ router.delete('/:id', async (req, res, next) => {
 
 router.put('/:id', async (req, res, next) => {
   try {
-    const response = await new RegisterUpdateEpi().run(req, 'update');
+    const response = await new RegisterUpdateCause().run(req, 'update');
 
     next();
     res.status(200).send(response);

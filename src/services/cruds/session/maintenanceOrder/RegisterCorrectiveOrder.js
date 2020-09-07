@@ -1,4 +1,4 @@
-const CorrectiveOrderDao = require('../../dao/transactions/CorrectiveMaintenanceOrder');
+const CorrectiveOrderDao = require('../../dao/CorrectiveMaintenanceOrder');
 
 const { MANUTENTOR_ID } = require('../../../../shared/constants/accessLevel');
 const { get } = require('lodash');

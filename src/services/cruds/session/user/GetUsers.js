@@ -1,4 +1,4 @@
-const userDao = require('../../dao/userModule/UserDao');
+const userDao = require('../../dao/UserDao');
 
 const { get } = require('lodash');
 

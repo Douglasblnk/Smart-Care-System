@@ -1,4 +1,4 @@
-const EpiDao = require('../../dao/crudModule/EpiDao');
+const EpiDao = require('../../dao/EpiDao');
 
 const { get } = require('lodash');
 

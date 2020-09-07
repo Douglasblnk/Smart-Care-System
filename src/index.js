@@ -19,20 +19,20 @@ app.use(connectionFactory.createConnection.bind(connectionFactory));
 app.use(auth.run.bind(auth));
 
 // CRUDS
-const User = require('./services/cruds/routes/userModule/User');
-const Status = require('./services/cruds/routes/crudsModule/Status');
-const Symptom = require('./services/cruds/routes/crudsModule/Symptom');
-const AccessLevel = require('./services/cruds/routes/crudsModule/AccessLevel');
-const MaintenanceOrder = require('./services/cruds/routes/orderModule/MaintenanceOrder');
-const Equipment = require('./services/cruds/routes/crudsModule/Equipment');
-const InstallationLocation = require('./services/cruds/routes/crudsModule/InstallationLocation');
-const Cause = require('./services/cruds/routes/crudsModule/Cause');
-const Epi = require('./services/cruds/routes/crudsModule/Epi');
-const OrderType = require('./services/cruds/routes/crudsModule/OrderType');
+const User = require('./services/cruds/routes/User');
+const Status = require('./services/cruds/routes/Status');
+const Symptom = require('./services/cruds/routes/Symptom');
+const AccessLevel = require('./services/cruds/routes/AccessLevel');
+const MaintenanceOrder = require('./services/cruds/routes/MaintenanceOrder');
+const Equipment = require('./services/cruds/routes/Equipment');
+const InstallationLocation = require('./services/cruds/routes/InstallationLocation');
+const Cause = require('./services/cruds/routes/Cause');
+const Epi = require('./services/cruds/routes/Epi');
+const OrderType = require('./services/cruds/routes/OrderType');
+const Priority = require('./services/cruds/routes/Priority');
 // const centroTrabalho = require('./services/cruds/routes/CentroTrabalho/CentroTrabalho');
 // const componente = require('./services/cruds/routes/Componente/Componente');
 // const tipoManutencao = require('./services/cruds/routes/TipoOrdem/TipoOrdem');
-// const prioridade = require('./services/cruds/routes/Prioridade/Prioridade');
 // const operacoes = require('./services/cruds/routes/Operacoes/Operacoes');
 
 // MOVIMENTATIONS
@@ -51,10 +51,10 @@ app.use('/local-instalacao', InstallationLocation);
 app.use('/causa', Cause);
 app.use('/epi', Epi);
 app.use('/tipo-ordem', OrderType);
+app.use('/prioridade', Priority);
 // app.use('/centro-trabalho', centroTrabalho);
 // app.use('/componente', componente);
 // app.use('/tipo-manutencao', tipoManutencao);
-// app.use('/prioridade', prioridade);
 // app.use('/detalhamento', detalhamento);
 // app.use('/verificacao', verificacao);
 // app.use('/operacoes', operacoes);

@@ -1,12 +1,12 @@
-const errorResponseTreatment = require('../../../../shared/utils/utils');
+const errorResponseTreatment = require('../../../shared/utils/utils');
 
 const Router = require('express');
 const router = Router();
 
-const GetInstallationLocation = require('../../session/installationLocation/GetInstallationLocation');
-const DeleteInstallationLocation = require('../../session/installationLocation/DeleteInstallationLocation');
+const GetInstallationLocation = require('../session/installationLocation/GetInstallationLocation');
+const DeleteInstallationLocation = require('../session/installationLocation/DeleteInstallationLocation');
 const RegisterUpdateInstallationLocation = require(
-  '../../session/installationLocation/RegisterUpdateInstallationLocation',
+  '../session/installationLocation/RegisterUpdateInstallationLocation',
 );
 
 /**

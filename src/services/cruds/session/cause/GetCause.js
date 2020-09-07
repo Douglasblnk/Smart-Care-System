@@ -1,4 +1,4 @@
-const CauseDao = require('../../dao/crudModule/CauseDao');
+const CauseDao = require('../../dao/CauseDao');
 
 const { get } = require('lodash');
 
