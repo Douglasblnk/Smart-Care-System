@@ -1,8 +1,8 @@
-const EquipmentsDao = require('../../dao/EquipmentsDao');
+const EpiDao = require('../../dao/EpiDao');
 
 const { get } = require('lodash');
 
-module.exports = class GetEquipments {
+module.exports = class GetEpi {
   constructor() {
     this._queryResult;
   }
@@ -26,17 +26,17 @@ module.exports = class GetEquipments {
       const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
 
-      await this.getEquipments(parameters);
+      await this.getEpis(parameters);
 
       return this._queryResult;
     } catch (err) {
-      console.log('err GetEquipments :>> ', err);
+      console.log('err GetEpi :>> ', err);
 
       throw err;
     }
   }
 
-  async getEquipments(parameters) {
-    this._queryResult = await new EquipmentsDao(parameters).getEquipments();
+  async getEpis(parameters) {
+    this._queryResult = await new EpiDao(parameters).getEpis();
   }
 };

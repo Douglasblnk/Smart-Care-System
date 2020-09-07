@@ -1,10 +1,10 @@
-const EquipmentsDao = require('../../dao/EquipmentsDao');
+const WorkCenterDao = require('../../dao/WorkCenterDao');
 
 const { ADMINISTRADOR_ID } = require('../../../../shared/constants/accessLevel');
 const { get } = require('lodash');
 const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../shared/constants/HTTPResponse');
 
-module.exports = class DeleteEquipments {
+module.exports = class DeleteWorkCenter {
   constructor() {
     this._queryReturn;
   }
@@ -19,7 +19,7 @@ module.exports = class DeleteEquipments {
 
   checkParameters({ updateId, mysql, authData }) {
     return {
-      ...(!updateId ? { numeroCracha: 'ID do equipamento não infomado' } : ''),
+      ...(!updateId ? { numeroCracha: 'ID do centro de trabalho não infomado' } : ''),
       ...(!mysql ? { mysql: 'Conexão não estabelecida' } : ''),
       ...(!authData ? { authData: 'Dados de autenticação não encontrados' } : ''),
     };
@@ -33,21 +33,21 @@ module.exports = class DeleteEquipments {
       if (Object.values(errors).length > 0) throw errors;
       
       await this.validateGroups(parameters);
-      await this.deleteEquipment(parameters);
+      await this.deleteWorkCenter(parameters);
       
       if (!this._queryReturn.affectedRows)
-        throw 'Não foi possível deletar o equipamento';
+        throw 'Não foi possível deletar o centro de trabalho';
       
       return this._queryReturn;
     } catch (err) {
-      console.log('err DeleteEquipment :>> ', err);
+      console.log('err DeleteWorkCenter :>> ', err);
 
       throw err;
     }
   }
   
-  async deleteEquipment(parameters) {
-    this._queryReturn = await new EquipmentsDao(parameters).deleteEquipment();
+  async deleteWorkCenter(parameters) {
+    this._queryReturn = await new WorkCenterDao(parameters).deleteWorkCenter();
   }
 
   async validateGroups({ authData }) {

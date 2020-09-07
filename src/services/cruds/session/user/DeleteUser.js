@@ -1,4 +1,4 @@
-const userDao = require('../../dao/userModule/UserDao');
+const userDao = require('../../dao/UserDao');
 
 const { ADMINISTRADOR_ID } = require('../../../../shared/constants/accessLevel');
 const { get } = require('lodash');

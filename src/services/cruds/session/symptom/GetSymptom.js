@@ -1,4 +1,4 @@
-const SymptomDao = require('../../dao/crudModule/SymptomDao');
+const SymptomDao = require('../../dao/SymptomDao');
 
 const { get } = require('lodash');
 

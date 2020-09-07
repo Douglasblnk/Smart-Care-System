@@ -1,4 +1,4 @@
-const InstallationLocationDao = require('../../dao/crudModule/InstallationLocationDao');
+const InstallationLocationDao = require('../../dao/InstallationLocationDao');
 
 const { ADMINISTRADOR_ID } = require('../../../../shared/constants/accessLevel');
 const { get } = require('lodash');
@@ -46,8 +46,8 @@ module.exports = class DeleteInstallationLocation {
     }
   }
   
-  async deleteSector(user) {
-    this._queryReturn = await new InstallationLocationDao(user).deleteSector();
+  async deleteSector(parameters) {
+    this._queryReturn = await new InstallationLocationDao(parameters).deleteSector();
   }
 
   async validateGroups({ authData }) {

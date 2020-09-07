@@ -1,4 +1,4 @@
-const userDao = require('../../dao/userModule/UserDao');
+const userDao = require('../../dao/UserDao');
 const { compareHash } = require('../../../../shared/guard/cryptography');
 const JwtToken = require('../../../../shared/auth/auth');
 

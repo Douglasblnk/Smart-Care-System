@@ -1,5 +1,5 @@
-const GenericDao = require('../GenericDao');
-const { TABLE_NIVEL_ACESSO } = require('../../../../shared/constants/database');
+const GenericDao = require('./GenericDao');
+const { TABLE_NIVEL_ACESSO } = require('../../../shared/constants/database');
 
 module.exports = class AccessLevelDao extends GenericDao {
   constructor({

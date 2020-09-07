@@ -1,21 +1,22 @@
-const errorResponseTreatment = require('../../../../shared/utils/utils');
+const errorResponseTreatment = require('../../../shared/utils/utils');
 
 const Router = require('express');
 const router = Router();
 
-const GetInstallationLocation = require('../../session/installationLocation/GetInstallationLocation');
-const DeleteInstallationLocation = require('../../session/installationLocation/DeleteInstallationLocation');
+const GetInstallationLocation = require('../session/installationLocation/GetInstallationLocation');
+const DeleteInstallationLocation = require('../session/installationLocation/DeleteInstallationLocation');
 const RegisterUpdateInstallationLocation = require(
-  '../../session/installationLocation/RegisterUpdateInstallationLocation',
+  '../session/installationLocation/RegisterUpdateInstallationLocation',
 );
 
 /**
  *  ROTA PARA BUSCAR OS LOCAIS DE INSTALAÇÃO
 */
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
     const response = await new GetInstallationLocation().run(req);
 
+    next();
     res.status(200).send(response);
   } catch (err) {
     const responseError = errorResponseTreatment(err);
@@ -27,10 +28,11 @@ router.get('/', async (req, res) => {
 /**
  *  ROTA PARA REGISTRAR UM LOCAL DE INSTALAÇÃO
 */
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
   try {
     const response = await new RegisterUpdateInstallationLocation().run(req);
 
+    next();
     res.status(200).send(response);
   } catch (err) {
     const responseError = errorResponseTreatment(err);
@@ -42,10 +44,11 @@ router.post('/', async (req, res) => {
 /**
  *  ROTA PARA ALTERAR UM LOCAL DE INSTALAÇÃO
 */
-router.put('/:id', async (req, res) => {
+router.put('/:id', async (req, res, next) => {
   try {
     const response = await new RegisterUpdateInstallationLocation().run(req, 'update');
 
+    next();
     res.status(200).send(response);
   } catch (err) {
     const responseError = errorResponseTreatment(err);
@@ -57,10 +60,11 @@ router.put('/:id', async (req, res) => {
 /**
  *  ROTA PARA DELETAR UM LOCAL DE INSTALAÇÃO
 */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async (req, res, next) => {
   try {
     const response = await new DeleteInstallationLocation().run(req);
 
+    next();
     res.status(200).send(response);
   } catch (err) {
     const responseError = errorResponseTreatment(err);

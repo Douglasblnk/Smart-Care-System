@@ -1,5 +1,5 @@
-const GenericDao = require('../GenericDao');
-const { TABLE_EQUIPAMENTO } = require('../../../../shared/constants/database');
+const GenericDao = require('./GenericDao');
+const { TABLE_EQUIPAMENTO } = require('../../../shared/constants/database');
 
 module.exports = class EquipmentsDao extends GenericDao {
   constructor({
@@ -93,4 +93,4 @@ module.exports = class EquipmentsDao extends GenericDao {
 
     return this.parseInsertResponse(rows);
   }
-}
+};

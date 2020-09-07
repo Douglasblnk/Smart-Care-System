@@ -1,8 +1,8 @@
-const EquipmentsDao = require('../../dao/EquipmentsDao');
+const OrderTypeDao = require('../../dao/OrderTypeDao');
 
 const { get } = require('lodash');
 
-module.exports = class GetEquipments {
+module.exports = class GetOrderType {
   constructor() {
     this._queryResult;
   }
@@ -26,17 +26,17 @@ module.exports = class GetEquipments {
       const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
 
-      await this.getEquipments(parameters);
+      await this.getOrderType(parameters);
 
       return this._queryResult;
     } catch (err) {
-      console.log('err GetEquipments :>> ', err);
+      console.log('err GetOrderType :>> ', err);
 
       throw err;
     }
   }
 
-  async getEquipments(parameters) {
-    this._queryResult = await new EquipmentsDao(parameters).getEquipments();
+  async getOrderType(parameters) {
+    this._queryResult = await new OrderTypeDao(parameters).getOrderType();
   }
 };

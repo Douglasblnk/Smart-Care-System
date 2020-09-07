@@ -1,8 +1,8 @@
-const EquipmentsDao = require('../../dao/EquipmentsDao');
+const WorkCenterDao = require('../../dao/WorkCenterDao');
 
 const { get } = require('lodash');
 
-module.exports = class GetEquipments {
+module.exports = class GetWorkCenter {
   constructor() {
     this._queryResult;
   }
@@ -26,17 +26,17 @@ module.exports = class GetEquipments {
       const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
 
-      await this.getEquipments(parameters);
+      await this.getWorkCenter(parameters);
 
       return this._queryResult;
     } catch (err) {
-      console.log('err GetEquipments :>> ', err);
+      console.log('err GetWorkCenter :>> ', err);
 
       throw err;
     }
   }
 
-  async getEquipments(parameters) {
-    this._queryResult = await new EquipmentsDao(parameters).getEquipments();
+  async getWorkCenter(parameters) {
+    this._queryResult = await new WorkCenterDao(parameters).getWorkCenter();
   }
 };
