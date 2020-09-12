@@ -1,4 +1,4 @@
-const GenericDao = require('./GenericDao');
+const GenericDao = require('../GenericDao');
 
 const { TABLE_USUARIO } = require('../../../shared/constants/database');
 

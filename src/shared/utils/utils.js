@@ -1,11 +1,11 @@
-const errorResponseTreatment = err => {
+function errorResponseTreatment(err) {
   const error = {
     status: getStatusCode(err),
     msg: getErrorMessage(err),
   };
 
   return error;
-};
+}
 
 function getErrorMessage(err) {
   if (
@@ -24,6 +24,7 @@ function getErrorMessage(err) {
 
 function getStatusCode(err) {
   if (err.status) return err.status;
+  if (err.statusCode) return err.statusCode;
   return 404;
 }
 
