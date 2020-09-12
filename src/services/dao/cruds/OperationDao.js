@@ -1,4 +1,4 @@
-const GenericDao = require('./GenericDao');
+const GenericDao = require('../GenericDao');
 const { TABLE_OPERACAO } = require('../../../shared/constants/database');
 
 module.exports = class OperationsDao extends GenericDao {

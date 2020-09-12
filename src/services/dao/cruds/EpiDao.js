@@ -1,4 +1,4 @@
-const GenericDao = require('./GenericDao');
+const GenericDao = require('../GenericDao');
 const { TABLE_EPI } = require('../../../shared/constants/database');
 
 module.exports = class EpiDao extends GenericDao {

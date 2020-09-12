@@ -32,13 +32,15 @@ const OrderType = require('./services/routes/cruds/OrderType');
 const Priority = require('./services/routes/cruds/Priority');
 const WorkCenter = require('./services/routes/cruds/WorkCenter');
 const Operation = require('./services/routes/cruds/Operation');
+const Component = require('./services/routes/cruds/Component');
 
 app.use('/users', User);
 app.use('/status', Status);
 app.use('/sintoma', Symptom);
 app.use('/nivel-acesso', AccessLevel);
 app.use('/ordem-manutencao', MaintenanceOrder);
-app.use('/equipments', Equipment);
+app.use('/equipamento', Equipment);
+app.use('/componente', Component);
 app.use('/local-instalacao', InstallationLocation);
 app.use('/causa', Cause);
 app.use('/epi', Epi);
@@ -49,13 +51,13 @@ app.use('/operacoes', Operation);
 
 
 // MOVIMENTATIONS
-// const verificacao = require('./services/movimentations/routes/Verificacao/Verificacao');
+const Verifications = require('./services/routes/movimentations/Verifications');
 // const detalhamento = require('./services/movimentations/routes/Detalhamento/Detalhamento');
 // const initiate = require('./services/movimentations/routes/Iniciar/InitiateOrder');
 // const orderNote = require('./services/movimentations/routes/Apontar/OrderNote');
 
 
-// app.use('/verificacao', verificacao);
+app.use('/verificacao', Verifications);
 // app.use('/detalhamento', detalhamento);
 // app.use('/initiate', initiate);
 // app.use('/order-note', orderNote);
