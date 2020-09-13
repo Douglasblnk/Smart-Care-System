@@ -15,7 +15,6 @@ const ConsultaVerificacoes = () => import('../views/Analysis/ConsultaVerificacoe
 const CadastroEquipamento = () => import('../views/Registers/Cruds/CadastroEquipamento.vue');
 const CadastroLocalInstalacao = () => import('../views/Registers/Cruds/CadastroLocalInstalacao.vue');
 const CadastroCentroTrabalho = () => import('../views/Registers/Cruds/CadastroCentroTrabalho.vue');
-const CadastroTipoOrdem = () => import('../views/Registers/Cruds/CadastroTipoOrdem.vue');
 const CadastroCausaSintoma = () => import('../views/Registers/Cruds/CadastroCausaSintoma.vue');
 const CadastroComponente = () => import('../views/Registers/Cruds/CadastroComponente.vue');
 const CadastroEpi = () => import('../views/Registers/Cruds/CadastroEpi.vue');
@@ -65,12 +64,6 @@ const routes = [
         path: 'cadastro-centro-trabalho',
         name: 'Centro de Trabalho',
         component: CadastroCentroTrabalho,
-        meta: { requireAuth: true },
-      },
-      {
-        path: 'cadastro-tipo-ordem',
-        name: 'Tipo de Ordem',
-        component: CadastroTipoOrdem,
         meta: { requireAuth: true },
       },
       {

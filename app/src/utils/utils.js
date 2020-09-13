@@ -1,6 +1,6 @@
 const Vuex = require('../store/index');
 const Axios = require('axios');
-const { isObject } = require('deep-object-js');
+const { get } = require('deep-object-js');
 
 const getToken = () => localStorage.getItem('token');
 
@@ -14,10 +14,12 @@ const validateToken = () => {
   }
 };
 
+const isObjectEmpty = obj => Object.keys(obj).length === 0 && obj.constructor === Object;
+
 const validateSession = async apiUrl => {
   try {
     const response = await Axios({
-      method: 'post',
+      method: 'get',
       url: `${apiUrl}/users/token`,
       headers: {
         'authorization': `Bearer ${getToken()}`,
@@ -47,36 +49,69 @@ const validateSession = async apiUrl => {
 };
 
 const getErrors = err => {
-  let error = 'Ops! Não foi possível concluir a operação, tente novamente mais tarde.';
+  const message = (
+    get(err, 'response.data.msg')
+    || get(err, 'response.data.message')
+    || get(err, 'msg')
+    || get(err, 'message')
+  );
 
-  if (!err) return error;
-  error = err;
-  
+  const status = (
+    get(err, 'response.data.status')
+    || get(err, 'response.data.statusCode')
+    || get(err, 'status')
+    || get(err, 'statusCode')
+  );
 
-  if (!err.response) return error;
-  error = err.response;
+  console.log('status :>> ', status);
   
-
-  if (err.response.result) error = err.response.result;
-  else if (err.response.data) error = err.response.data;
-  
-  
-  if (!err.response.data) return error;
-    
-  if (err.response.data.err) error = err.response.data.err;
-  else if (err.response.data.result) error = err.response.data.result;
-  else if (err.response.data.message || err.response.data.msg)
-    error = err.response.data.msg || err.response.data.message;
-  
-
-  if (err.response.data.name === 'TokenExpiredError')
-    return error.concat(' Sessão expirada.');
-  
-  if (isObject(error))
-    return Object.values(error).join('');
-
-  return error;
+  return `
+    <div style="margin: 10px; display: flex; flex-direction: column">
+      <span class="text-muted">
+        Erro: ${message || 'Não foi possível concluir a operação.'}
+      </span>
+      <small>
+        StatusCode: ${status || ''} <br>
+      </small>
+    </div>
+  `;
 };
+
+// const getErrors = err => {
+//   let error = 'Ops! Não foi possível concluir a operação, tente novamente mais tarde.';
+
+//   if (!err) return error;
+//   error = err;
+  
+
+//   if (!err.response) return error;
+//   error = err.response;
+  
+
+//   if (err.response.result) error = err.response.result;
+//   else if (err.response.data) error = err.response.data;
+  
+  
+//   if (!err.response.data) return error;
+    
+//   if (err.response.data.err) error = err.response.data.err;
+//   else if (err.response.data.result) error = err.response.data.result;
+//   else if (err.response.data.message || err.response.data.msg)
+//     error = err.response.data.msg || err.response.data.message;
+  
+
+//   if (err.response.data.name === 'TokenExpiredError')
+//     return error.concat(' Sessão expirada.');
+  
+//   if (isObject(error)) {
+//     return `
+//       <h3>Os seguintes erros foram encontrados:</h3>
+//       <p>${Object.values(error).join('; <br>')}</p>
+//     `;
+//   }
+
+//   return error;
+// };
 
 const getAccessLevelName = accessNum => {
   const num = Number.isNaN(accessNum) ? accessNum : String(accessNum);
@@ -100,4 +135,5 @@ module.exports = {
   getErrors,
   getAccessLevelName,
   getPriorityClass,
+  isObjectEmpty,
 };

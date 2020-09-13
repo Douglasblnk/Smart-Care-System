@@ -8,7 +8,7 @@ module.exports = class GetUserAutentication {
       if (!token) throw 'nenhum token informado!';
       
       const response = await axios({
-        method: 'post',
+        method: 'get',
         url: `${API_URL}/users/token`,
         headers: {
           'Content-Type': 'application/json',

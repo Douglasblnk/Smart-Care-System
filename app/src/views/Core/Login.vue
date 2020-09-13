@@ -74,7 +74,7 @@ export default {
       try {
         this.isLoading = true;
 
-        const response = await this.$http.post('users', localStorage.getItem('token'), this.inputValues);
+        const response = await this.$http.post('users', this.inputValues);
 
         this.$store.commit('addUser', {
           email: response.email,

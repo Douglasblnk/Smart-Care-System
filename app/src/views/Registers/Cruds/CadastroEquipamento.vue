@@ -1,14 +1,6 @@
 <template>
   <div class="equipment-wrapper">
-    <div class="d-flex align-items-center">
-      <div class="back-button ml-3" @click="goBack">
-        <i
-          class="fa fa-arrow-left fa-fw"
-          title="Retornar"
-        />
-        <span>Voltar</span>
-      </div>
-    </div>
+    <back-button @goBack="goBack" />
 
     <div class="content-wrapper">
       <div>
@@ -26,8 +18,8 @@
         </div>
         
         <transition name="slide-fade" mode="out-in">
-          <template v-if="switchListRegister === 'list'">
-            <card fullWidth>
+          <div v-if="switchListRegister === 'list'" key="list">
+            <card full-width>
               <div class="register-equipament-table">
                 <v-client-table
                   ref="tableRegisterEpi"
@@ -35,14 +27,14 @@
                   :columns="columns"
                   :options="registerequipamentTable.options"
                 >
-                  <div slot="actions" slot-scope="props">
+                  <div slot="actions" slot-scope="{row, index}">
                     <template>
                       <div class="icons-actions-wrapper">
                         <div class="icons-actions">
-                          <i class="fas fa-edit text-muted" @click="editEquipment(props.row)"></i>
+                          <i class="fas fa-edit text-muted" @click="editEquipment(row)"></i>
                         </div>
                         <div class="icons-actions">
-                          <i class="fas fa-trash text-muted" @click="deleteEquipment(props.row, index)"></i>
+                          <i class="fas fa-trash text-muted" @click="deleteEquipment(row, index - 1)"></i>
                         </div>
                       </div>
                     </template>
@@ -50,39 +42,43 @@
                 </v-client-table>
               </div>
             </card>
-          </template>
+          </div>
 
-          <template v-if="switchListRegister === 'register'">
-            <form @submit.prevent="registerEquipment()">
-              <div class="cadCard">
-                <div class="input-card">
-                  <custom-select
-                    v-model="inputValues.Setor_idSetor"
-                    label="Setor"
-                    :options="getSectorOptions()"
-                  />
-                  <simple-input v-model="inputValues.equipamento" label="Equipamento:" type="text" />
-                  <simple-input v-model="inputValues.equipamentoSuperior" label="Equipamento Superior:" type="text" />
-                </div>
-                <div class="input-card">
-                  <description
-                    v-model="inputValues.descricao"
-                    cols="30"
-                    rows="3"
-                    label="Descrição: "
-                  />
-                </div>
+          <div v-if="switchListRegister === 'register'" key="register">
+            <div class="cadCard">
+              <div class="input-card">
+                <custom-select
+                  v-model="inputValues.Setor_idSetor"
+                  label="Setor"
+                  :options="getSectorOptions()"
+                />
+                <simple-input v-model="inputValues.equipamento" label="Equipamento:" type="text" />
+                <simple-input v-model="inputValues.equipamentoSuperior" label="Equipamento Superior:" type="text" />
               </div>
-              <div class="d-flex justify-content-center m-3">
-                <smart-button primary class="mr-2">
-                  {{ getSaveButtonText() }}
-                </smart-button>
-                <smart-button v-if="isEditing" @click.native="closeEditing">
-                  <span>Cancelar</span>
-                </smart-button>
+              <div class="input-card">
+                <description
+                  v-model="inputValues.descricao"
+                  cols="30"
+                  rows="3"
+                  label="Descrição: "
+                />
               </div>
-            </form>
-          </template>
+            </div>
+            <div class="d-flex justify-content-center m-3">
+              <smart-button
+                primary
+                :loading="isLoading"
+                class="mr-2"
+                @click.native="registerEquipment()"
+              >
+                {{ getSaveButtonText() }}
+              </smart-button>
+
+              <smart-button v-if="isEditing" @click.native="closeEditing()">
+                <span>Cancelar</span>
+              </smart-button>
+            </div>
+          </div>
         </transition>
       </div>
     </div>
@@ -90,7 +86,7 @@
 </template>
 
 <script>
-import { getToken, getErrors } from '../../../utils/utils';
+import { getErrors } from '../../../utils/utils';
 
 export default {
   name: 'CadastroEquipamento',
@@ -110,7 +106,7 @@ export default {
             idEquipamento: create => create('span', {
               domProps: { innerHTML: 'Equipamento <i class="fas fa-sort"></i>' },
             }),
-            Setor_idSetor:'Local de instalação',
+            Setor_idSetor: 'Local de instalação',
             equipamento: 'Equipamento',
             descricao: 'Descrição',
             actions: 'Ações',
@@ -137,6 +133,7 @@ export default {
       selectsSector: [],
       switchListRegister: 'list',
       isEditing: false,
+      isLoading: false,
     };
   },
 
@@ -165,7 +162,7 @@ export default {
     editEquipment(equipment) {
       this.switchLabelPage('edit');
       
-      this.inputValues = { ...equipment };
+      this.inputValues = { ...equipment, Setor_idSetor: String(equipment.Setor_idSetor) };
       this.switchListRegister = 'register';
       this.isEditing = true;
     },
@@ -177,61 +174,67 @@ export default {
       this.resetModel();
     },
 
-    getEquipment() {
-      this.$http.get('equipamento/get', getToken())
-        .then(res => {
-          if (res.result.length === 0) {
-            this.$swal({
-              type: 'warning',
-              title: 'Não foi encontrado nenhum equipamento cadastrado!',
-              confirmButtonColor: '#F34336',
-            });
-          }
-
-          if (res.result.length === undefined)
-            this.equipments.push(res.result);
-          else this.equipments = [...res.result];
-        });
-    },
-    async getSector() {
+    async getEquipment() {
       try {
-        const response = await this.$http.get('local-instalacao/get', getToken());
-
-        if (response.result.length === undefined)
-          this.selectsSector.push(response.result);
-
-        else this.selectsSector = [...response.result];
+        const response = await this.$http.get('equipamento');
+        
+        if (response.length === undefined)
+          this.equipments.push(response);
+        else this.equipments = [...response];
       } catch (err) {
+        console.log('err getEquipment :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
     },
-    registerEquipment() {
-      if (this.isEditing) return this.updateEquipment();
-      this.$http.post('equipamento', getToken(), this.inputValues)
-        .then(res => {
-          if (res.status !== 200) {
-            return this.$swal({
-              type: 'error',
-              title: `Ops! ${res.err}`,
-              confirmButtonColor: '#F34336',
-            });
-          }
+    async getSector() {
+      try {
+        const response = await this.$http.get('local-instalacao');
 
-          this.$swal({
-            type: 'success',
-            title: `${res.result}`,
-            confirmButtonColor: '#F34336',
-          }).then(() => {
-            this.equipments.push(this.inputValues);
+        if (response.length === undefined)
+          this.selectsSector.push(response);
+        else this.selectsSector = [...response];
+      } catch (err) {
+        console.log('err getSector :>> ', err.response || err);
 
-            this.resetModel();
-            this.getEquipment();
-          });
+        return this.$swal({
+          type: 'warning',
+          html: getErrors(err),
+          confirmButtonColor: '#F34336',
         });
+      }
+    },
+    async registerEquipment() {
+      if (this.isLoading) return;
+      if (this.isEditing) return this.updateEquipment();
+
+      try {
+        this.isLoading = true;
+        await this.$http.post('equipamento', this.inputValues);
+
+        this.resetModel();
+        this.getEquipment();
+
+        await this.$swal({
+          type: 'success',
+          text: 'Equipamento registrado com sucesso!',
+          confirmButtonColor: '#F34336',
+        });
+      } catch (err) {
+        console.log('err registerEquipment :>> ', err.response || err);
+
+        return this.$swal({
+          type: 'warning',
+          html: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      } finally {
+        this.isLoading = false;
+      }
     },
 
     deleteEquipment(equipment, index) {
@@ -239,56 +242,57 @@ export default {
         type: 'question',
         title: `Deseja mesmo remover o equipamento ${equipment.descricao}?`,
         showCancelButton: true,
+        showLoaderOnConfirm: true,
         confirmButtonColor: '#F34336',
-        preConfirm: () => {
-          this.$http.delete('equipamento', getToken(), equipment.idEquipamento)
-            .then(res => {
-              if (res.status !== 200) {
-                return this.$swal({
-                  type: 'warning',
-                  title: res.err,
-                  confirmButtonColor: '#F34336',
-                });
-              }
+        preConfirm: async () => {
+          try {
+            await this.$http.delete('equipamento', equipment.idEquipamento)
 
-              this.$swal({
-                type: 'success',
-                title: res.result,
-                confirmButtonColor: '#F34336',
-              }).then(() => {
-                this.equipments.splice(index, 1);
-              });
+            await this.$swal({
+              type: 'success',
+              text: 'Equipamento removido com sucesso!',
+              confirmButtonColor: '#F34336',
             });
-        },
-      });
-    },
 
-    updateEquipment() {
-      this.$http.update('equipamento', getToken(), this.inputValues, this.inputValues.idEquipamento)
-        .then(res => {
-          if (res.status !== 200) {
+            this.equipments.splice(index, 1);
+          } catch (err) {
+            console.log('err deleteEquipment :>> ', err.response || err);
+
             return this.$swal({
-              type: 'error',
-              title: 'Ops! Ocorreu um erro com a solicitação.',
-              text: res.err,
+              type: 'warning',
+              html: getErrors(err),
               confirmButtonColor: '#F34336',
             });
           }
-          this.$swal({
-            type: 'success',
-            title: res.result,
-            confirmButtonColor: '#F34336',
-          }).then(() => {
-            const index = this.equipments.indexOf(
-              this.equipments.find(
-                i => i.idEquipamento === this.inputValues.idEquipamento
-              )
-            );
-            
-            this.equipments.splice(index, 1, this.inputValues);
-            this.closeEditing();
-          });
+        },
+      });
+    },
+    async updateEquipment() {
+      if (this.isLoading) return;
+
+      try {
+        this.isLoading = true;
+        await this.$http.update('equipamento', this.inputValues, this.inputValues.idEquipamento)
+        
+        this.closeEditing();
+        this.getEquipment();
+
+        await this.$swal({
+          type: 'success',
+          text: 'Equipamento alterado com sucesso!',
+          confirmButtonColor: '#F34336',
         });
+      } catch (err) {
+        console.log('err updateEquipment :>> ', err.response || err);
+
+        return this.$swal({
+          type: 'warning',
+          html: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      } finally {
+        this.isLoading = false;
+      }
     },
 
     resetModel() {

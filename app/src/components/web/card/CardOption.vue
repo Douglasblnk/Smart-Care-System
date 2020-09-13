@@ -1,17 +1,15 @@
 <template>
   <div class="root-card-option-component">
-    <router-link class="text-decoration-none text-muted" :to="route">
-      <div class="card-option shadow" :class="size ? 'small' : ''">
-        <div class="card-wrapper">
-          <div class="icon-card">
-            <i :class="icon" class="fa-2x"></i>
-          </div>
-          <div>
-            <span class="text-muted">{{ title }}</span>
-          </div>
+    <div class="card-option shadow cursor-pointer" :class="size ? 'small' : ''" @click="$router.push(route)">
+      <div class="card-wrapper">
+        <div class="icon-card">
+          <i :class="icon" class="fa-2x"></i>
+        </div>
+        <div>
+          <span class="text-muted">{{ title }}</span>
         </div>
       </div>
-    </router-link>
+    </div>
   </div>
 </template>
 

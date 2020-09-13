@@ -49,7 +49,7 @@ import { mapGetters } from 'vuex';
 import ConsultFilters from './components/ConsultFilters.vue';
 import FilterSettled from './components/FilterSettled.vue';
 import OrdersTable from './components/OrdersTable.vue';
-import { getToken, getErrors, getPriorityClass } from '../../../utils/utils';
+import { getToken, getErrors, getPriorityClass, isObjectEmpty } from '../../../utils/utils';
 
 export default {
   name: 'Consulta',
@@ -152,7 +152,7 @@ export default {
     this.$store.commit('addPageName', 'Consultas');
     this.$store.commit('setMainIcon', 'fa-search');
 
-    this.getOrdersMaintences();
+    this.getOrdersMaintenance();
     this.getStatus();
     this.getPriority();
     this.getOrderType();
@@ -262,14 +262,17 @@ export default {
       if (this.isLoadingOrder[String(order.idOrdemServico)]) return;
 
       try {
-        this.isLoadingOrder[String(order.idOrdemServico)] = true;
+        this.$set(this.isLoadingOrder, String(order.idOrdemServico), true);
 
-        const { result } = await this.$http.post('ordem-manutencao/detail', getToken(), {
-          order,
+        const response = await this.$http.get('ordem-manutencao', {
+          headers: { order: order.idOrdemServico },
         });
 
+        if (!response || isObjectEmpty(response))
+          throw new Error(`Não foi possível buscar os detalhes da ordem ${order}`);
+
         this.$set(this.state, 'view', 'detail');
-        this.$set(this.detail, 'order', result);
+        this.$set(this.detail, 'order', response);
       } catch (err) {
         console.log('err getOrderDetail :>> ', err.response || err);
 
@@ -279,20 +282,24 @@ export default {
           confirmButtonColor: '#F34336',
         });
       } finally {
-        this.isLoadingOrder[String(order.idOrdemServico)] = false;
+        this.$set(this.isLoadingOrder, String(order.idOrdemServico), false);
       }
     },
-    async getOrdersMaintences() {
+    async getOrdersMaintenance() {
       try {
         this.isLoading = true;
 
-        const response = await this.$http.get('ordem-manutencao/summary', getToken());
+        const response = await this.$http.get('ordem-manutencao', {
+          headers: {
+            type: 'summary',
+          },
+        });
 
-        if (response.result.length === 0) return;
+        if (response.length === 0) return;
 
-        if (response.result.length === undefined)
-          this.maintenainceOrders.push(response.result);
-        else this.maintenainceOrders = [...response.result];
+        if (response.length === undefined)
+          this.maintenainceOrders.push(response);
+        else this.maintenainceOrders = [...response];
 
         this.$http.setActivity(this.$activities.ORDER_MAINTENANCE_QUERY);
       } catch (err) {
@@ -300,7 +307,7 @@ export default {
         console.log('error getOrderMaintence =>', err.response || err);
 
         this.$swal({
-          type: 'error',
+          type: 'warning',
           text: getErrors(err),
           confirmButtonColor: '#F34336',
         });
@@ -310,50 +317,29 @@ export default {
     },
     async getStatus() {
       try {
-        const response = await this.$http.get('status/get', getToken());
+        const response = await this.$http.get('status');
 
-        if (response.result.length === 0)
-          throw 'Não foi possível buscar os status ou não há nenhuma status cadastrado';
-
-        this.optionsData.status = [...response.result];
+        this.optionsData.status = [...response];
       } catch (err) {
         console.log('error getStatus :', err.response || err);
-
-        this.$swal({
-          type: 'warning',
-          text: getErrors(err),
-          confirmButtonColor: '#F34336',
-        });
       }
     },
     async getPriority() {
       try {
-        const response = await this.$http.get('prioridade/get', getToken());
+        const response = await this.$http.get('prioridade');
 
-        this.optionsData.priority = [...response.result];
+        this.optionsData.priority = [...response];
       } catch (err) {
         console.log('err getPriority => :', err.response || err);
-
-        return this.$swal({
-          type: 'warning',
-          text: getErrors(err),
-          confirmButtonColor: '#F34336',
-        });
       }
     },
     async getOrderType() {
       try {
-        const response = await this.$http.get('tipo-ordem/get', getToken());
+        const response = await this.$http.get('tipo-ordem');
 
-        this.optionsData.orderType = [...response.result];
+        this.optionsData.orderType = [...response];
       } catch (err) {
         console.log('err getOrderType => :', err.response || err);
-
-        return this.$swal({
-          type: 'warning',
-          text: getErrors(err),
-          confirmButtonColor: '#F34336',
-        });
       }
     },
     clearFilters() {

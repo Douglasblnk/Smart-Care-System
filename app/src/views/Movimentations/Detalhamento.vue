@@ -652,7 +652,7 @@ export default {
     // busca todos os manutentores do sistema
     async getManutentor() {
       try {
-        const response = await this.$http.post('detalhamento/get-geral-user', getToken(), this.valuesInput);
+        const response = await this.$http.post('detalhamento/get-geral-user', this.valuesInput);
 
         if (response.result.length === undefined)
           this.manutentores.push(response.result);
@@ -664,7 +664,7 @@ export default {
     // Busca os manutentores na ordem
     async getManutentoresInOrdem() {
       try {
-        const response = await this.$http.post('detalhamento', getToken(), this.valuesInput);
+        const response = await this.$http.post('detalhamento', this.valuesInput);
         if (response.result.length === undefined) {
           this.manutentorInOrdem.push(response.result);
           this.listManutentorInOrdem = this.manutentorInOrdem.filter( i => {
@@ -686,7 +686,7 @@ export default {
     // Busca o reporte e o solicitante da ordem
     async getReportRequester() {
       try {
-        const response = await this.$http.post('detalhamento/get-report-requester', getToken(), this.valuesInput);
+        const response = await this.$http.post('detalhamento/get-report-requester', this.valuesInput);
         if (response.result.length === undefined)
           this.report_requester.push(response.result);
         else this.report_requester = [...response.result];
@@ -707,7 +707,7 @@ export default {
           this.valuesInput.excluded = 0;
           this.valuesInput.idUsuario = index.idUsuario;
 
-          const response = await this.$http.post('detalhamento/register', getToken(), this.valuesInput);
+          const response = await this.$http.post('detalhamento/register', this.valuesInput);
 
           this.$swal({
             type: 'success',
@@ -735,7 +735,7 @@ export default {
         this.valuesInput.excluded = 1;
         this.dialogVisible = false;
 
-        const response = await this.$http.update('detalhamento', getToken(), this.valuesInput, this.valuesInput.idOrdemServico);
+        const response = await this.$http.update('detalhamento', this.valuesInput, this.valuesInput.idOrdemServico);
 
         this.$swal({
           type: 'success',
@@ -775,7 +775,7 @@ export default {
       try {
         this.$set(this.isLoading, 'assume', true);
 
-        const { result } = await this.$http.post('initiate/assume', getToken(), {
+        const { result } = await this.$http.post('initiate/assume', {
           ...this.$store.state.user,
           order: this.order.idOrdemServico,
         });
@@ -822,7 +822,7 @@ export default {
       try {
         this.$set(this.isLoading, 'pause', true);
 
-        const response = await this.$http.post('initiate/pause', getToken(), { ...this.$store.state.user, isMaster: true, order: this.order.idOrdemServico });
+        const response = await this.$http.post('initiate/pause', { ...this.$store.state.user, isMaster: true, order: this.order.idOrdemServico });
 
         this.$set(this.isLoading, 'pause', false);
 
@@ -851,9 +851,9 @@ export default {
         const listEpiCheck = await this.listEpiCheck();
 
         if (listEpiCheck.length === this.epiList.length) {
-          await this.$http.post('epi/register', getToken(), listEpiCheck);
+          await this.$http.post('epi/register', listEpiCheck);
         
-          await this.$http.post('initiate/init', getToken(),
+          await this.$http.post('initiate/init',
             { ...this.$store.state.user, isMaster: true, order: this.order.idOrdemServico });
           
           this.$set(this.order, 'status', 'Em Andamento');
@@ -921,7 +921,7 @@ export default {
     },
     async getEpis() {
       try {
-        const { result } = await this.$http.post('epi/order', getToken(), { order: this.order.idOrdemServico });
+        const { result } = await this.$http.post('epi/order', { order: this.order.idOrdemServico });
         
         if (result.length !== undefined)
           this.epiList = [...result];
@@ -949,7 +949,7 @@ export default {
         if (res.value) {
           const manutentor = await this.validateActualManutentor();
           
-          const response = await this.$http.update('ordem-manutencao', getToken(), { ...this.$store.state.user }, this.order.idOrdemServico);
+          const response = await this.$http.update('ordem-manutencao', { ...this.$store.state.user }, this.order.idOrdemServico);
 
           this.$swal({
             type: 'success',

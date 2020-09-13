@@ -17,13 +17,15 @@
         </div>
         <div class="form-verification-option">
           <label>O problema foi resolvido?</label>
-          <toggle-button
-            v-model="inputValues.resolved"
-            :labels="{ checked: 'Sim', unchecked: 'Não' }"
-            :width="70"
-            :height="30"
-            :font-size="14"
-          />
+          <div class="d-flex">
+            <toggle-button
+              v-model="inputValues.resolved"
+              :labels="{ checked: 'Sim', unchecked: 'Não' }"
+              :width="70"
+              :height="30"
+              :font-size="14"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -74,7 +76,7 @@ export default {
         this.inputValues.typeVerification = this.$store.state.user.nivelAcesso;
         this.inputValues.cracha = this.$store.state.user.cracha;
 
-        const response = await this.$http.post('verificacao', getToken(), this.inputValues);
+        const response = await this.$http.post('verificacao', this.inputValues);
 
         this.$swal({
           type: 'success',

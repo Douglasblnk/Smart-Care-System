@@ -184,7 +184,7 @@ export default {
       try {
         const order = { idOrdemServico: props.ordemServico_idOrdemServico };
 
-        const { result } = await this.$http.post('ordem-manutencao/detail', getToken(), {
+        const { result } = await this.$http.post('ordem-manutencao/detail', {
           order,
         });
 

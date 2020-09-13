@@ -14,7 +14,7 @@
         <div class="accordion-container mb-3">
           <accordion title="Gerenciar usuário" icon="fas fa-user-edit">
             <transition name="slide-fade" mode="out-in">
-              <template v-if="!isEditing">
+              <div v-if="!isEditing" key="list">
                 <div class="accordion-content bg-white mt-3 p-4">
                   <div class="table-responsive">
                     <table class="table table table-striped table-borderless table-hover" cellspacing="0">
@@ -48,44 +48,48 @@
                     </table>
                   </div>
                 </div>
-              </template>
+              </div>
 
-              <template v-if="isEditing">
-                <form @submit.prevent="updateUser">
-                  <div class="accordion-content bg-white mt-3 p-3 d-flex flex-wrap">
-                    <div class="p-2 m-2 w-25">
-                      <simple-input v-model="userInputValues.nome" label="Nome" type="text"></simple-input>
-                    </div>
-                    <div class="p-2 m-2 w-25">
-                      <simple-input v-model="userInputValues.numeroCracha" label="Cracha" type="number"></simple-input>
-                    </div>
-                    <div class="p-2 m-2 w-25">
-                      <simple-input v-model="userInputValues.funcao" label="Função" type="text"></simple-input>
-                    </div>
-                    <div class="p-2 m-2 w-25">
-                      <custom-select
-                        v-model="userInputValues.nivelAcesso"
-                        label="Nível de acesso"
-                        :options="getAccessLevelOptions()"
-                      />
-                    </div>
-                    <div class="p-2 m-2 w-25">
-                      <simple-input v-model="userInputValues.email" label="E-mail" type="email"></simple-input>
-                    </div>
-                    <div class="p-2 m-2 w-25">
-                      <simple-input v-model="userInputValues.senha" label="Senha" type="password"></simple-input>
-                    </div>
+              <div v-if="isEditing" key="editing">
+                <div class="accordion-content bg-white mt-3 p-3 d-flex flex-wrap">
+                  <div class="p-2 m-2 w-25">
+                    <simple-input v-model="userInputValues.nome" label="Nome" type="text"></simple-input>
                   </div>
-                  <div class="save d-flex justify-content-center">
-                    <smart-button primary @click="updateUser" class="mr-2">
-                      <span>Alterar</span>
-                    </smart-button>
-                    <smart-button @click.native="closeEditingUser">
-                      <span>Cancelar</span>
-                    </smart-button>
+                  <div class="p-2 m-2 w-25">
+                    <simple-input v-model="userInputValues.numeroCracha" label="Cracha" type="number"></simple-input>
                   </div>
-                </form>
-              </template>
+                  <div class="p-2 m-2 w-25">
+                    <simple-input v-model="userInputValues.funcao" label="Função" type="text"></simple-input>
+                  </div>
+                  <div class="p-2 m-2 w-25">
+                    <custom-select
+                      v-model="userInputValues.nivelAcesso"
+                      label="Nível de acesso"
+                      :options="getAccessLevelOptions()"
+                    />
+                  </div>
+                  <div class="p-2 m-2 w-25">
+                    <simple-input v-model="userInputValues.email" label="E-mail" type="email"></simple-input>
+                  </div>
+                  <div class="p-2 m-2 w-25">
+                    <simple-input v-model="userInputValues.senha" label="Senha" type="password"></simple-input>
+                  </div>
+                </div>
+                <div class="m-2 d-flex justify-content-center">
+                  <smart-button
+                    primary
+                    :loading="isLoading"
+                    class="mr-2"
+                    @click.native="updateUser()"
+                  >
+                    <span>Alterar</span>
+                  </smart-button>
+
+                  <smart-button @click.native="closeEditingUser()">
+                    <span>Cancelar</span>
+                  </smart-button>
+                </div>
+              </div>
             </transition>
           </accordion>
         </div>
@@ -116,8 +120,13 @@
                 <simple-input v-model="userInputValues.senha" label="Senha" type="password"></simple-input>
               </div>
             </div>
-            <div class="save d-flex justify-content-center">
-              <smart-button primary class="m-2" @click.native="register()">
+            <div class="d-flex justify-content-center">
+              <smart-button
+                primary
+                :loading="isLoading"
+                class="m-2"
+                @click.native="register()"
+              >
                 <span>Cadastrar</span>
               </smart-button>
             </div>
@@ -129,7 +138,7 @@
 </template>
 
 <script>
-import { getToken, getErrors, getAccessLevelName } from '../../utils/utils';
+import { getErrors, getAccessLevelName } from '../../utils/utils';
 
 export default {
   name: 'Configurações',
@@ -147,6 +156,7 @@ export default {
       users: [],
       accessLevel: [],
       isEditing: false,
+      isLoading: false,
       getAccessLevelName,
     };
   },
@@ -161,44 +171,48 @@ export default {
   methods: {
     async getUsers() {
       try {
-        const response = await this.$http.get('users/get', getToken());
+        const response = await this.$http.get('users');
         
-        if (response.result.length === 0) return;
+        if (response.length === 0) return;
         
-        if (response.result.length === undefined)
-          this.users.push(response.result);
-        else this.users = [...response.result];
+        if (response.length === undefined)
+          this.users.push(response);
+        else this.users = [...response];
       } catch (err) {
         console.log('error getUser => ', err.response || err);
       }
     },
     async getAccessLevel() {
       try {
-        const response = await this.$http.get('nivel-acesso/get', getToken());
+        const response = await this.$http.get('nivel-acesso');
 
-        if (response.result.length === undefined)
-          this.accessLevel.push(response.result);
+        if (response.length === undefined)
+          this.accessLevel.push(response);
 
-        else this.accessLevel = [...response.result];
+        else this.accessLevel = [...response];
       } catch (err) {
         console.log('err getAccessLevel :>> ', err.response || err);
 
         this.$swal({
           type: 'warning',
-          text: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
     },
     async register() {
+      if (this.isLoading) return;
+
       try {
-        const response = await this.$http.post('users/register', getToken(), this.userInputValues);
+        this.isLoading = true;
+        
+        await this.$http.post('users/register', this.userInputValues);
 
         this.$http.setActivity(this.$activities.REGISTER_USER, JSON.stringify({ registeredUser: this.userInputValues.numeroCracha }));
         
-        this.$swal({
+        await this.$swal({
           type: 'success',
-          title: response.result,
+          html: 'Usuário registrado com sucesso!',
           confirmButtonColor: '#F34336',
         });
 
@@ -210,9 +224,11 @@ export default {
 
         return this.$swal({
           type: 'error',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
+      } finally {
+        this.isLoading = false;
       }
     },
     editUser(user) {
@@ -221,35 +237,33 @@ export default {
       this.isEditing = true;
     },
     async updateUser() {
+      if (this.isLoading) return;
+
       try {
-        const response = await this.$http.update(
-          'users',
-          getToken(),
-          this.userInputValues,
-          this.userInputValues.numeroCracha
-        );
+        this.isLoading = true;
+
+        await this.$http.update('users', this.userInputValues, this.userInputValues.idUsuario);
 
         this.$http.setActivity(this.$activities.EDIT_USER, JSON.stringify({ userEdited: this.userInputValues.numeroCracha }));
 
-        this.$swal({
+        await this.$swal({
           type: 'success',
-          title: response.result,
+          html: 'Usuário alterado com sucesso!',
         });
 
-        const index = this.users.indexOf(
-          this.users.find(i => i.numeroCracha === this.userInputValues.numeroCracha)
-        );
+        this.getUsers();
 
-        this.users.splice(index, 1, this.userInputValues);
         this.closeEditingUser();
       } catch (err) {
         console.log('error updateUser => ', err.response || err);
 
         return this.$swal({
           type: 'error',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
+      } finally {
+        this.isLoading = false;
       }
     },
     deleteUser(user, index) {
@@ -260,13 +274,13 @@ export default {
         confirmButtonColor: '#F34336',
         preConfirm: async () => {
           try {
-            const response = await this.$http.delete('users', getToken(), user.numeroCracha);
+            await this.$http.delete('users', user.idUsuario);
 
             this.$http.setActivity(this.$activities.DELETE_USER, JSON.stringify({ userDeleted: user.numeroCracha }));
 
-            this.$swal({
+            await this.$swal({
               type: 'success',
-              title: response.result,
+              html: 'Usuário removido com sucesso!',
               confirmButtonColor: '#F34336',
             });
 
@@ -276,7 +290,7 @@ export default {
 
             return this.$swal({
               type: 'error',
-              title: getErrors(err),
+              html: getErrors(err),
               confirmButtonColor: '#F34336',
             });
           }

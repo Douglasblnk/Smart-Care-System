@@ -78,7 +78,7 @@ export default {
       try {
         this.isLoading = true;
         
-        const orders = await this.$http.microserviceAnalisis('analysis/order-summary', getToken());
+        const orders = await this.$http.microserviceAnalisis('analysis/order-summary');
 
         if (!orders || orders === undefined) {
           this.hasErrors = true;
@@ -97,7 +97,7 @@ export default {
       try {
         this.resetState();
 
-        const response = await this.$http.microserviceAnalisis('analysis/last-month', getToken());
+        const response = await this.$http.microserviceAnalisis('analysis/last-month');
 
         this.quantity = response.map(order => order.Quantity);
         this.labels = response.map(order => this.$moment(order.OpeningDate).format('DD-MM-YYYY'));

@@ -1,14 +1,6 @@
 <template>
   <div class="root-epi-view">
-    <div class="d-flex align-items-center">
-      <div class="back-button ml-3" @click="goBack">
-        <i
-          class="fa fa-arrow-left fa-fw"
-          title="Retornar"
-        />
-        <span>Voltar</span>
-      </div>
-    </div>
+    <back-button @goBack="goBack" />
 
     <div class="content-wrapper">
       <div>
@@ -26,8 +18,8 @@
         </div>
 
         <transition name="slide-fade" mode="out-in">
-          <template v-if="switchListRegister === 'list'">
-            <card fullWidth>
+          <div v-if="switchListRegister === 'list'" key="list">
+            <card full-width>
               <div class="register-epi-table">
                 <v-client-table
                   ref="tableRegisterEpi"
@@ -35,14 +27,14 @@
                   :columns="columns"
                   :options="cadastroEpiTable.options"
                 >
-                  <div slot="actions" slot-scope="props">
+                  <div slot="actions" slot-scope="{row, index}">
                     <template>
                       <div class="icons-actions-wrapper">
                         <div class="icons-actions">
-                          <i class="fas fa-edit text-muted" @click="editEpi(props.row)"></i>
+                          <i class="fas fa-edit text-muted" @click="editEpi(row)"></i>
                         </div>
                         <div class="icons-actions">
-                          <i class="fas fa-trash text-muted" @click="deleteEpi(props.row, index)"></i>
+                          <i class="fas fa-trash text-muted" @click="deleteEpi(row, index - 1)"></i>
                         </div>
                       </div>
                     </template>
@@ -50,16 +42,21 @@
                 </v-client-table>
               </div>
             </card>
-          </template>
+          </div>
 
-          <template v-if="switchListRegister === 'register'">
+          <div v-if="switchListRegister === 'register'" key="register">
             <div>
               <div class="cadCard">
                 <simple-input v-model="inputValues.descricaoEpi" :label="'Epi:'" :type="'text'" />
               </div>
 
               <div class="d-flex justify-content-center m-3">
-                <smart-button primary class="mr-2" @click.native="registerEpi()">
+                <smart-button
+                  primary
+                  :loading="isLoading"
+                  class="mr-2"
+                  @click.native="registerEpi()"
+                >
                   {{ getSaveButtonText() }}
                 </smart-button>
                 <smart-button v-if="isEditing" @click.native="closeEditing">
@@ -67,17 +64,15 @@
                 </smart-button>
               </div>
             </div>
-          </template>
+          </div>
         </transition>
       </div>
     </div>
   </div>
 </template>
 
-
-
 <script>
-import { getToken, getErrors } from '../../../utils/utils';
+import { getErrors } from '../../../utils/utils';
 
 export default {
   name: 'CadastroEpi',
@@ -89,6 +84,7 @@ export default {
       },
       switchListRegister: 'list',
       isEditing: false,
+      isLoading: false,
       Epis: [],
       columns: ['descricaoEpi', 'actions'],
       cadastroEpiTable: {
@@ -143,99 +139,106 @@ export default {
     },
     async getEpi() {
       try {
-        const response = await this.$http.get('epi/get', getToken());
+        const response = await this.$http.get('epi');
 
-        if (response.result.length === undefined)
-          this.Epis.push(response.result);
-        else this.Epis = [...response.result];
+        if (response.length === undefined)
+          this.Epis.push(response);
+        else this.Epis = [...response];
       } catch (err) {
         console.log('err getEpi :>> ', err.response || err);
 
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
     },
     async registerEpi() {
+      if (this.isLoading) return;
+      if (this.isEditing) return this.updateEpi();
+
       try {
-        if (this.isEditing) return this.updateEpi();
+        this.isLoading = true;
 
-        const response = await this.$http.post('epi', getToken(), this.inputValues);
-
-        this.$swal({
-          type: 'success',
-          title: response.result,
-          confirmButtonColor: '#F34336',
-        }),
-
-        this.Epis.push(this.inputValues);
+        await this.$http.post('epi', this.inputValues);
 
         this.resetModel();
         this.getEpi();
+
+        await this.$swal({
+          type: 'success',
+          text: 'Epi registrado com sucesso!',
+          confirmButtonColor: '#F34336',
+        });
       } catch (err) {
         console.log('err registerEpi :>> ', err.response || err);
 
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
+      } finally {
+        this.isLoading = false;
       }
     },
     async updateEpi() {
+      if (this.isLoading) return;
+
       try {
-        const response = await this.$http.update('epi', getToken(), this.inputValues, this.inputValues.idEpi);
+        this.isLoading = true;
+        await this.$http.update('epi', this.inputValues, this.inputValues.idEpi);
+
+        this.closeEditing();
+        this.getEpi();
 
         this.$swal({
           type: 'success',
-          title: response.result,
+          text: 'Epi alterado com sucesso!',
           confirmButtonColor: '#F34336',
         });
-
-        const index = this.Epis.indexOf(this.Epis.find(i => i.idEpi === this.inputValues.idEpi));
-
-        this.Epis.splice(index, 1, this.inputValues);
-        this.closeEditing();
       } catch (err) {
         console.log('err updateEpi :>> ', err.response || err);
 
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
+      } finally {
+        this.isLoading = false;
       }
     },
     deleteEpi(epi, index) {
-      try {
-        this.$swal({
-          type: 'question',
-          title: `Deseja mesmo remover o Epi ${epi.descricaoEpi}`,
-          showCancelButton: true,
-          confirmButtonColor: '#F34336',
-          preConfirm: async () => {
-            const response = await this.$http.delete('epi', getToken(), epi.idEpi);
+      this.$swal({
+        type: 'question',
+        title: `Deseja mesmo remover o Epi ${epi.descricaoEpi}`,
+        showCancelButton: true,
+        showLoaderOnConfirm: true,
+        confirmButtonColor: '#F34336',
+        preConfirm: async () => {
+          try {
+            await this.$http.delete('epi', epi.idEpi);
 
-            this.$swal({
+            await this.$swal({
               type: 'success',
-              title: `${response.result}`,
+              text: 'Epi removido com sucesso!',
               confirmButtonColor: '#F34336',
             }),
 
             this.Epis.splice(index, 1);
-          },
-        });
-      } catch (err) {
-        console.log('err deleteEpi :>> ', err.response || err);
+          } catch (err) {
+            console.log('err deleteEpi :>> ', err.response || err);
 
-        return this.$swal({
-          type: 'warning',
-          title: getErrors(err),
-          confirmButtonColor: '#F34336',
-        });
-      }
+            return this.$swal({
+              type: 'warning',
+              html: getErrors(err),
+              confirmButtonColor: '#F34336',
+            });
+          }
+        },
+      });
     },
     editEpi(epi) {
       this.switchLabelPage('edit');

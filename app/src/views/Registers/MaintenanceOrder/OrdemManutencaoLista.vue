@@ -1,170 +1,192 @@
 <template>
   <div class="ordem-corretiva-root">
-    <div class="content-wrapper">
-      <form-wizard
-        class="step-by-step"
-        title="Cadastro de Ordem de serviço"
-        subtitle=""
-        nextButtonText="Próximo"
-        backButtonText="Voltar"
-        finishButtonText="Finalizar"
-        @on-complete="registerOrderMaintenance()"
+    <transition name="fade" mode="out-in">
+      <div
+        v-if="isLoading"
+        key="loadingContent"
+        class="d-flex justify-content-center align-items-center text-muted mt-5"
       >
-        <!--
-          Step para informar o titulo, resumo e descrição da ordem
-         -->
-        <tab-content title="Causa Manutenção" icon="fas fa-user" class="maintenanceCause">
-          <div class="firstInput">
-            <simple-input v-model="inputValues.title" :label="'Título:'" :type="'text'" />
-          </div>
+        <i class="fa fa-spinner fa-spin fa-lg mx-2" />
+        <span>Carregando informações...</span>
+      </div>
 
-          <div class="secondInput">
-            <simple-input v-model="inputValues.summary" :label="'Resumo'" :type="'text'" />
-          </div>
-
-          <!-- <div class="inputMaintenance">
-            <div>
-              <label class="text-muted">
-                Descrição do problema:
-              </label>
+      <card v-if="!isLoading" key="orderForm">
+        <form-wizard
+          class="step-by-step"
+          title="Cadastro de Ordem de serviço"
+          subtitle=""
+          next-button-text="Próximo"
+          back-button-text="Voltar"
+          finish-button-text="Finalizar"
+          @on-complete="registerOrderMaintenance()"
+        >
+          <!--
+            Step para informar o titulo, resumo e descrição da ordem
+          -->
+          <tab-content title="Causa Manutenção" icon="fas fa-user" class="maintenanceCause">
+            <div class="firstInput">
+              <simple-input v-model="inputValues.title" :label="'Título:'" :type="'text'" />
             </div>
-            <textarea
-              v-model="inputValues.description"
-              class="rounded w-100"
-              rows="3"
-              name="comment"
-              form="usrform"
-            />
-          </div> -->
-        </tab-content>
 
-        <!--
-          Step para informada o inicio planejado e o fim planejado da ordem
-         -->
-        <tab-content title="Datas" icon="fa fa-cog" class="maintenanceCause">
-          <div>
-            <simple-input
-              v-model="inputValues.plannedStart"
-              :label="'Inicio Planejado:'"
-              :type="'date'"
-            />
-          </div>
-          <div>
-            <simple-input
-              v-model="inputValues.plannedEnd"
-              :label="'Fim Planejado'"
-              :type="'date'"
-            />
-          </div>
-        </tab-content>
+            <div class="secondInput">
+              <simple-input v-model="inputValues.summary" :label="'Resumo'" :type="'text'" />
+            </div>
 
-        <!--
-          Step para selecionar a prioridade, setor e se querer parada
-         -->
-        <tab-content title="Informações Gerais" icon="fas fa-check" class="maintenanceCause">
-          <custom-select
-            v-model="inputValues.priority"
-            label="Prioridade"
-            :options="getPriorityOptions()"
-          />
+            <!-- <div class="inputMaintenance">
+              <div>
+                <label class="text-muted">
+                  Descrição do problema:
+                </label>
+              </div>
+              <textarea
+                v-model="inputValues.description"
+                class="rounded w-100"
+                rows="3"
+                name="comment"
+                form="usrform"
+              />
+            </div> -->
+          </tab-content>
 
-          <custom-select
-            v-model="inputValues.requireStop"
-            label="Requer Parada"
-            :options="selectsRequireStopOptions()"
-          />
-          <custom-select
-            v-model="inputValues.requester"
-            label="Solicitante"
-            :options="selectsRequestersOptions()"
-          />
-          <custom-select
-            v-model="inputValues.report"
-            label="Reporte"
-            :options="selectsReportOptions()"
-          />
-        </tab-content>
+          <!--
+            Step para informada o inicio planejado e o fim planejado da ordem
+          -->
+          <tab-content title="Datas" icon="fa fa-cog" class="maintenanceCause">
+            <div>
+              <simple-input
+                v-model="inputValues.plannedStart"
+                :label="'Inicio Planejado:'"
+                :type="'date'"
+              />
+            </div>
+            <div>
+              <simple-input
+                v-model="inputValues.plannedEnd"
+                :label="'Fim Planejado'"
+                :type="'date'"
+              />
+            </div>
+          </tab-content>
 
-        <!--
-          Step para selecionar os equipamentos
-         -->
-        <tab-content title="Equipamentos" icon="fas fa-check">
-          <div class="w-100 d-flex justify-content-center">
-            <span style="font-size: 22px">Selecione os equipamentos</span>
-          </div>
-          <div class="equipament-items">
-            <custom-select
-              v-model="sector"
-              label="Setor"
-              :options="getSectorOptions()"
-            />
-            <custom-select
-              v-model="equipment"
-              label="Equipamento"
-              :options="getEquipmentOptions()"
-            />
-            <smart-button @click.native="addEquipmentSector(sector,equipment)">
-              <span>Adicionar</span>
-            </smart-button>
-          </div>
-        </tab-content>
+          <!--
+            Step para selecionar a prioridade, setor e se querer parada
+          -->
+          <tab-content title="Informações Gerais" icon="fas fa-check" class="maintenanceCause">
+            <div class="d-flex">
+              <custom-select
+                v-model="inputValues.priority"
+                label="Prioridade"
+                :options="getPriorityOptions()"
+              />
 
-        <!--
-          Step para definir quais as operações que a ordem deve ter
-         -->
-        <tab-content title="Operações" icon="fa fa-cog">
-          <div class="operations-title">
-            <span class="text-center">Selecione o setor e as operações para os equipamentos</span>
-          </div>
-          <div class="operations-items">
-            <label>Equipamentos</label>
-            <b-form-checkbox-group
-              id="checkbox-operations"
-              v-model="selectedOperations"
-              :options="getOperationsOptions()"
-              name="flavour-1"
-              stacked
-            />
-          </div>
-        </tab-content>
+              <custom-select
+                v-model="inputValues.requireStop"
+                label="Requer Parada"
+                :options="selectsRequireStopOptions()"
+              />
+            </div>
 
-        <!--
-          Step para definir quais EPIs são necessárias para a ordem
-         -->
-        <tab-content title="Epi" icon="fa fa-cog">
-          <div class="d-flex justify-content-center">
-            <smart-button id="show-btn" @click.native="showEpiModal()">
-              <span>Adicionar EPI</span>
-            </smart-button>
-          </div>
+            <div class="d-flex">
+              <custom-select
+                v-model="inputValues.requester"
+                label="Solicitante"
+                :options="selectsRequestersOptions()"
+              />
+              <custom-select
+                v-model="inputValues.report"
+                label="Reporte"
+                :options="selectsReportOptions()"
+              />
+            </div>
+          </tab-content>
 
-          <div class="w-100">
-            <label>EPIs selecionadas: </label>
-            <div v-if="inputValues.epis.length > 0" class="d-flex flex-wrap">
-              <div v-for="(epi, index) in inputValues.epis" :key="`epi-${index}`">
-                <div
-                  class="selected-epi-wrapper"
-                  @mouseenter="() => $set(showRemoveEpi, index, true)"
-                  @mouseleave="() => $set(showRemoveEpi, index, false)"
+          <!--
+            Step para selecionar os equipamentos
+          -->
+          <tab-content title="Equipamentos" icon="fas fa-check">
+            <div class="w-100 d-flex justify-content-center">
+              <span style="font-size: 22px">Selecione os equipamentos</span>
+            </div>
+            <div class="equipament-items">
+              <custom-select
+                v-model="sector"
+                label="Setor"
+                :options="getSectorOptions()"
+              />
+              <custom-select
+                v-model="equipment"
+                label="Equipamento"
+                :options="getEquipmentOptions()"
+              />
+              <div class="d-flex justify-content-center">
+                <smart-button
+                  primary
+                  :disabled="!sector || !equipment"
+                  @click.native="addEquipmentSector(sector, equipment)"
                 >
-                  <span>{{ getEpiName(epi.Epi_idEpi) }}</span>
+                  <span>Adicionar</span>
+                </smart-button>
+              </div>
+            </div>
+          </tab-content>
+
+          <!--
+            Step para definir quais as operações que a ordem deve ter
+          -->
+          <tab-content title="Operações" icon="fa fa-cog">
+            <div class="operations-title">
+              <span class="text-center">Selecione o setor e as operações para os equipamentos</span>
+            </div>
+            <div class="operations-items">
+              <label>Equipamentos</label>
+              <b-form-checkbox-group
+                id="checkbox-operations"
+                v-model="selectedOperations"
+                :options="getOperationsOptions()"
+                name="flavour-1"
+                stacked
+              />
+            </div>
+          </tab-content>
+
+          <!--
+            Step para definir quais EPIs são necessárias para a ordem
+          -->
+          <tab-content title="Epi" icon="fa fa-cog">
+            <div class="d-flex justify-content-center">
+              <smart-button primary @click.native="showEpiModal()">
+                <span>Adicionar EPI</span>
+              </smart-button>
+            </div>
+
+            <div class="w-100">
+              <label>EPIs selecionadas: </label>
+              <div v-if="inputValues.epis.length > 0" class="d-flex flex-wrap">
+                <div v-for="(epi, index) in inputValues.epis" :key="`epi-${index}`">
                   <div
-                    v-if="showRemoveEpi[index]"
-                    class="selected-epi-remove"
-                    @click="removeEpi(index)"
+                    class="selected-epi-wrapper"
+                    @mouseenter="() => $set(showRemoveEpi, index, true)"
+                    @mouseleave="() => $set(showRemoveEpi, index, false)"
                   >
-                    <i class="fa fa-trash" />
+                    <span>{{ getEpiName(epi.Epi_idEpi) }}</span>
+                    <div
+                      v-if="showRemoveEpi[index]"
+                      class="selected-epi-remove"
+                      @click="removeEpi(index)"
+                    >
+                      <i class="fa fa-trash" />
+                    </div>
                   </div>
                 </div>
               </div>
+              <div v-else>
+                <span>Nenhuma EPI selecionada.</span>
+              </div>
             </div>
-            <div v-else>
-              <span>Nenhuma EPI selecionada.</span>
-            </div>
-          </div>
-        </tab-content>
-      </form-wizard>
-    </div>
+          </tab-content>
+        </form-wizard>
+      </card>
+    </transition>
 
     <b-modal ref="my-modal" centered hide-footer hide-header title="Cadastrar Epi na Ordem" @hide="resetModal()" @show="checkSelectedEpis()">
       <div class="d-block text">
@@ -174,7 +196,7 @@
             Informe quais EPIs esta ordem precisa para ser executada.
           </span>
         </div>
-        <div class="m-3">
+        <div class="m-3" style="overflow: auto; max-height: 300px;">
           <b-form-checkbox-group
             id="checkbox-group-1"
             v-model="selectedEpis"
@@ -190,7 +212,7 @@
         </div>
       </div>
       <div class="d-flex justify-content-center">
-        <smart-button @click.native="closeModal()" class="mr-2">
+        <smart-button class="mr-2" @click.native="closeModal()">
           <span>Fechar</span>
         </smart-button>
         <smart-button primary @click.native="addEpi()">
@@ -202,7 +224,7 @@
 </template>
 
 <script>
-import { getToken, getErrors } from '../../../utils/utils';
+import { getErrors } from '../../../utils/utils';
 import { FormWizard, TabContent } from 'vue-form-wizard';
 import 'vue-form-wizard/dist/vue-form-wizard.min.css';
 
@@ -259,45 +281,54 @@ export default {
       sequenceOperation: 0,
       modalHasError: false,
       modalErrorMessage: '',
-      isloading: false,
+      isLoading: false,
     };
   },
 
-  mounted() {
-    this.getEquipments();
-    this.getSector();
-    this.getPriority();
-    this.getOperations();
-    this.getRequester();
-    this.getReporter();
+  created() {
+    this.isLoading = true;
+    this.getSequencialData();
   },
 
   methods: {
+    async getSequencialData() {
+      try {
+        await this.getEquipments();
+        await this.getSector();
+        await this.getOperations();
+        await this.getPriority();
+        await this.getRequester();
+        await this.getReporter();
+  
+        this.isLoading = false;
+      } catch (err) {
+        console.log('err getSequencialData :>> ', err.response || err);
+
+        this.$swal({
+          type: 'waning',
+          html: getErrors(err),
+        });
+      }
+    },
     resetModal() {
       this.modalHasError = false;
       this.modalErrorMessage = '';
       this.selectedEpis = [];
     },
     addEquipmentSector(sector, equipment) {
-      try {
-        const obj = { Equipamento: equipment, Local: sector };
-        this.inputValues.equipments_sectors.push(obj);
-        
-        this.$swal({
-          type: 'success',
-          title: 'Equipamento e Setor adicionados a lista',
-          confirmButtonColor: '#F34336',
-        });
-        console.log('Equipments_sectors', this.inputValues);
-      } catch (err) {
-        console.log('err :>> ', err.response || err);
+      if (!sector || !equipment) return;
 
-        return this.$swal({
-          type: 'warning',
-          title: getErrors(err),
-          confirmButtonColor: '#F34336',
-        });
-      }
+      this.inputValues.equipments_sectors.push({ Equipamento: equipment, Local: sector });
+      
+      this.$swal({
+        type: 'success',
+        text: 'Equipamento e Setor adicionados a lista',
+        toast: true,
+        position: 'top-right',
+        showConfirmButton: false,
+        timer: 3000,
+        confirmButtonColor: '#F34336',
+      });
     },
     getEpiOptions() {
       return this.epiList.map(i => ({ text: i.descricaoEpi, value: i.idEpi }));
@@ -330,15 +361,17 @@ export default {
     },
     async getEpis() {
       try {
-        const { result } = await this.$http.get('epi/get', getToken());
+        const response = await this.$http.get('epi');
 
-        this.epiList = [...result];
+        if (response.length === undefined)
+          this.epiList.push(response);
+        else this.epiList = [...response];
       } catch (err) {
-        console.log('err :>> ', err.response || err);
+        console.log('err getEpis :>> ', err.response || err);
 
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
@@ -381,68 +414,75 @@ export default {
       try {
         await this.addOperation();
         this.$set(this.inputValues, 'beginData', this.$moment().format('YYYY-MM-DD'));
-        console.log('this.inputValues :>> ', this.inputValues);
-        const response = await this.$http.post('ordem-manutencao/list', getToken(), this.inputValues);
-        
-        console.log('response :>> ', response);
+
+        await this.$http.post('ordem-manutencao/list', this.inputValues);
 
         this.$swal({
           type: 'success',
-          title: 'Ordem de Serviço cadastrada com Sucesso',
+          text: 'Ordem de Serviço cadastrada com Sucesso',
           confirmButtonColor: '#F34336',
         });
       } catch (err) {
-        console.log('err :>> ', err.response || err);
+        console.log('err registerOrderMaintenance :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
     },
     async getEquipments() {
       try {
-        const response = await this.$http.get('equipamento/get', getToken());
-        console.log('EQUIPAMENTOS RETURN: ', response);
-        if (response.result.length === undefined)
-          this.workEquipment.push(response.result);
+        const response = await this.$http.get('equipamento');
 
-        else this.workEquipment = [...response.result];
-        console.log('EQUIPAMENTOS: ', this.workEquipment);
+        if (response.length === undefined)
+          this.workEquipment.push(response);
+        else this.workEquipment = [...response];
       } catch (err) {
+        console.log('err getEquipments :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
     },
     async getRequester() {
       try {
-        const response = await this.$http.get('users/requester', getToken());
+        const response = await this.$http.get('users', {
+          headers: { type: 'requester' },
+        });
 
-        if (response.result.length === undefined)
-          this.selectsRequesterOptions.push(response.result);
-        else this.selectsRequesterOptions = [...response.result];
+        if (response.length === undefined)
+          this.selectsRequesterOptions.push(response);
+        else this.selectsRequesterOptions = [...response];
       } catch (err) {
+        console.log('err getRequester :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
     },
     async getReporter() {
       try {
-        const response = await this.$http.get('users/report', getToken());
+        const response = await this.$http.get('users', {
+          headers: { type: 'report' },
+        });
 
-        if (response.result.length === undefined)
-          this.selectsReports.push(response.result);
-        else this.selectsReports = [...response.result];
+        if (response.length === undefined)
+          this.selectsReports.push(response);
+        else this.selectsReports = [...response];
       } catch (err) {
+        console.log('err getReporter :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
@@ -458,16 +498,17 @@ export default {
     },
     async getSector() {
       try {
-        const response = await this.$http.get('local-instalacao/get', getToken());
+        const response = await this.$http.get('local-instalacao');
 
-        if (response.result.length === undefined)
-          this.selectsSector.push(response.result);
-
-        else this.selectsSector = [...response.result];
+        if (response.length === undefined)
+          this.selectsSector.push(response);
+        else this.selectsSector = [...response];
       } catch (err) {
+        console.log('err getSector :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
@@ -477,32 +518,34 @@ export default {
     },
     async getPriority() {
       try {
-        const response = await this.$http.get('prioridade/get', getToken());
+        const response = await this.$http.get('prioridade');
 
-        if (response.result.length === undefined)
-          this.selectsPriority.push(response.result);
-
-        else this.selectsPriority = [...response.result];
+        if (response.length === undefined)
+          this.selectsPriority.push(response);
+        else this.selectsPriority = [...response];
       } catch (err) {
-        console.log('err getSectorOptions :>> ', err.response || err);
+        console.log('err getPriority :>> ', err.response || err);
 
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
     },
     async getOperations() {
       try {
-        const { result } = await this.$http.get('operacoes/get', getToken());
-        this.operationsList = [...result];
+        const response = await this.$http.get('operacoes');
+
+        if (response.length === undefined)
+          this.operationsList.push(response);
+        else this.operationsList = [...response];
       } catch (err) {
         console.log('err getOperations :>> ', err.response || err);
 
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
