@@ -1,5 +1,7 @@
 <template>
   <div class="root-cadastro-component-view">
+    <back-button @goBack="goBack" />
+
     <div class="content-wrapper">
       <div>
         <div class="list-option">
@@ -16,8 +18,8 @@
         </div>
 
         <transition name="slide-fade" mode="out-in">
-          <template v-if="switchListRegister === 'list'">
-            <card fullWidth>
+          <div v-if="switchListRegister === 'list'" key="list">
+            <card full-width>
               <div class="register-component-table">
                 <v-client-table
                   ref="tableRegisterEpi"
@@ -25,14 +27,14 @@
                   :columns="columns"
                   :options="registerComponetTable.options"
                 >
-                  <div slot="actions" slot-scope="props">
+                  <div slot="actions" slot-scope="{row, index}">
                     <template>
                       <div class="icons-actions-wrapper">
                         <div class="icons-actions">
-                          <i class="fas fa-edit text-muted" @click="editComponent(props.row)"></i>
+                          <i class="fas fa-edit text-muted" @click="editComponent(row)"></i>
                         </div>
                         <div class="icons-actions">
-                          <i class="fas fa-trash text-muted" @click="deleteComponents(props.row, index)"></i>
+                          <i class="fas fa-trash text-muted" @click="deleteComponents(row, index - 1)"></i>
                         </div>
                       </div>
                     </template>
@@ -40,13 +42,13 @@
                 </v-client-table>
               </div>
             </card>
-          </template>
+          </div>
 
-          <template v-if="switchListRegister === 'register'">
-            <form class="formPosition" @submit.prevent="registerEquipment()">
+          <div v-if="switchListRegister === 'register'" key="register">
+            <div class="formPosition">
               <div class="cadCard">
                 <div class="inputs">
-                  <custom-select v-model="selectValue" :options="getWorkEquipmentOptions()"></custom-select>
+                  <custom-select v-model="selectEquipment" :options="getWorkEquipmentOptions()"></custom-select>
                 </div>
                 <div class="sideInput">
                   <div class="inputsSidePosition">
@@ -59,16 +61,24 @@
                 </div>
               </div>
               <div class="d-flex justify-content-center m-3">
-                <smart-button primary class="mr-2">
+                <smart-button
+                  primary
+                  :loading="isLoading"
+                  class="mr-2"
+                  @click.native="registerComponent()"
+                >
                   {{ getSaveButtonText() }}
                 </smart-button>
 
-                <smart-button v-if="isEditing" @click.native="closeEditing">
+                <smart-button
+                  v-if="isEditing"
+                  @click.native="closeEditing()"
+                >
                   <span>Cancelar</span>
                 </smart-button>
               </div>
-            </form>
-          </template>
+            </div>
+          </div>
         </transition>
       </div>
     </div>
@@ -76,8 +86,7 @@
 </template>
 
 <script>
-import { getToken, getErrors } from '../../../utils/utils';
-
+import { getErrors } from '../../../utils/utils';
 
 export default {
   components: {
@@ -85,7 +94,7 @@ export default {
   },
   data() {
     return {
-      selectValue: '',
+      selectEquipment: '',
       inputValues: {
         DescricaoComponente: '',
         Equipamento_idEquipamento: 0,
@@ -120,11 +129,11 @@ export default {
         
       },
       workEquipment: [],
-      workEquipmentEdit: [],
       workComponent: [],
       selectsComponentseEquipament: [],
       switchListRegister: 'list',
       isEditing: false,
+      isLoading: false,
       equipamentos: [],
     };
   },
@@ -142,46 +151,57 @@ export default {
     switchLabelPage(labelPage) {
       if (labelPage === 'list') {
         this.switchListRegister = 'list';
-        this.workEquipment = this.workEquipmentEdit;
         return this.$store.commit('addPageName', 'Cadastro de Componentes | Listagem');
       } else if (labelPage === 'register') {
-        this.workEquipment = this.workEquipmentEdit;
         this.switchListRegister = 'register';
         return this.$store.commit('addPageName', 'Cadastro de Componentes | Cadastrar');
       }
       return this.$store.commit('addPageName', 'Cadastro de Componentes | Editar');
     },
-    async registerEquipment() {
+    async registerComponent() {
+      if (this.isLoading) return;
       if (this.isEditing) return this.updateComponent();
-      this.inputValues.Equipamento_idEquipamento = this.selectValue;
+
+      this.inputValues.Equipamento_idEquipamento = this.selectEquipment;
+
       try {
-        const response = await this.$http.post('componente', getToken(), this.inputValues);
-        this.$swal({
-          type: 'success',
-          title: 'Cadastrado com sucesso',
-          confirmButtonColor: '#F34336',
-        }),
-        this.DescricaoComponente = '';
+        this.isLoading = true;
+        await this.$http.post('componente', this.inputValues);
+
+        this.resetModel();
         this.getComponentes();
-      } catch (err) {
-        return this.$swal({
-          type: 'warning',
-          title: getErrors(err),
+
+        await this.$swal({
+          type: 'success',
+          text: 'Componente registrado com sucesso!',
           confirmButtonColor: '#F34336',
         });
+      } catch (err) {
+        console.log('err registerComponent:>> ', err.response || err);
+
+        return this.$swal({
+          type: 'warning',
+          html: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      } finally {
+        this.isLoading = false;
       }
     },
 
     async getEquipments() {
       try {
-        const response = await this.$http.get('equipamento/get', getToken());
-        if (response.result.length === undefined)
-          this.workEquipment.push(response.result);
-        else this.workEquipment = [...response.result];
+        const response = await this.$http.get('equipamento');
+
+        if (response.length === undefined)
+          this.workEquipment.push(response);
+        else this.workEquipment = [...response];
       } catch (err) {
+        console.log('err getEquipments :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
@@ -189,47 +209,50 @@ export default {
 
     async getComponentes() {
       try {
-        const response = await this.$http.get('componente/get', getToken());
-        if (response.result.length === undefined)
-          this.workComponent.push(response.result);
-        else this.workComponent = [...response.result];
+        const response = await this.$http.get('componente');
+
+        if (response.length === undefined)
+          this.workComponent.push(response);
+        else this.workComponent = [...response];
       } catch (err) {
+        console.log('err getComponentes :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
     },
-
-    resetModel() {
-      this.inputValues = {};
-    },
-  
     async deleteComponents(component, index) {
-      try {
-        this.$swal({
-          type: 'question',
-          title: `Deseja mesmo remover o Componente ${component.DescricaoComponente}`,
-          showCancelButton: true,
-          confirmButtonColor: '#F34336',
-          preConfirm: async () => {
-            const response = await this.$http.delete('componente', getToken(), component.idComponente);
-            return this.$swal({
+      this.$swal({
+        type: 'question',
+        title: `Deseja mesmo remover o Componente ${component.DescricaoComponente}`,
+        showCancelButton: true,
+        showLoaderOnConfirm: true,
+        confirmButtonColor: '#F34336',
+        preConfirm: async () => {
+          try {
+            await this.$http.delete('componente', component.idComponente);
+
+            this.workComponent.splice(index, 1);
+
+            await this.$swal({
               type: 'success',
-              title: 'Removido com Sucesso',
-              text: response.detailErr || '',
+              text: 'Componente removido com sucesso!',
               confirmButtonColor: '#F34336',
             });
-          },
-        });
-      } catch (err) {
-        return this.$swal({
-          type: 'warning',
-          title: getErrors(err),
-          confirmButtonColor: '#F34336',
-        });
-      }
+          } catch (err) {
+            console.log('err deleteComponents :>> ', err.response || err);
+
+            return this.$swal({
+              type: 'warning',
+              html: getErrors(err),
+              confirmButtonColor: '#F34336',
+            });
+          }
+        },
+      });
     },
     editComponent(component) {
       this.switchLabelPage('edit');
@@ -237,46 +260,53 @@ export default {
       this.switchListRegister = 'register';
       this.isEditing = true;
 
-      this.workEquipmentEdit = this.workEquipment;
-
       const equipamentName = this.workEquipment.find(equipament => equipament.idEquipamento === component.Equipamento_idEquipamento);
 
-      if (equipamentName !== undefined) {
-        this.workEquipment = [];
-        this.workEquipment.push(equipamentName);
-        this.getWorkEquipmentOptions();
-      } else { return this.workEquipment= this.workEquipment; }
-    },
-  
-    closeEditing() {
-      this.switchLabelPage('list');
-      this.switchListRegister = 'list';
-      this.isEditing = false;
-      this.workEquipment = this.workEquipmentEdit;
-      this.resetModel();
+      this.selectEquipment = String(equipamentName.idEquipamento);
     },
     async updateComponent() {
+      if (this.isLoading) return;
+
       try {
-        const response = await this.$http.update('componente', getToken(), this.inputValues, this.inputValues.idComponente);
-        this.$swal({
+        this.isLoading = true;
+        this.inputValues.Equipamento_idEquipamento = this.selectEquipment;
+        
+        await this.$http.update('componente', this.inputValues, this.inputValues.idComponente);
+
+        this.getComponentes();
+        this.closeEditing();
+        
+        await this.$swal({
           type: 'success',
-          title: 'Alterado com Sucesso',
+          text: 'Alterado com Sucesso',
           confirmButtonColor: '#F34336',
         });
-        const index = this.workComponent.indexOf(this.workComponent.find(i => i.idComponente === this.inputValues.idComponente));
-        this.workComponent.splice(index, 1, this.inputValues);
-        this.workEquipment = this.workEquipmentEdit;
-        this.closeEditing();
       } catch (err) {
+        console.log('err updateComponent :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
+      } finally {
+        this.isLoading = false;
       }
     },
     getWorkEquipmentOptions() {
       return this.workEquipment.map(i => ({ id: String(i.idEquipamento), description: i.equipamento }));
+    },
+    closeEditing() {
+      this.switchLabelPage('list');
+      this.switchListRegister = 'list';
+      this.isEditing = false;
+      this.resetModel();
+    },
+    resetModel() {
+      this.inputValues = {};
+    },
+    goBack() {
+      this.$router.push('/cadastros');
     },
   },
 };

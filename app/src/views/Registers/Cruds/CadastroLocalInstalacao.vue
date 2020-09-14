@@ -1,15 +1,6 @@
 <template>
   <div class="root-local-instalacao-view">
-    <div class="d-flex align-items-center">
-      <div class="back-button ml-3" @click="goBack">
-        <i
-          class="fa fa-arrow-left fa-fw"
-          title="Retornar"
-        />
-        <span>Voltar</span>
-      </div>
-    </div>
-
+    <back-button @goBack="goBack" />
 
     <div class="content-wrapper">
       <div>
@@ -27,8 +18,8 @@
         </div>
 
         <transition name="slide-fade" mode="out-in">
-          <template v-if="switchListRegister === 'list'">
-            <card fullWidth>
+          <div v-if="switchListRegister === 'list'" key="list">
+            <card full-width>
               <div class="register-localinstalacao-table">
                 <v-client-table
                   ref="tableRegisterEpi"
@@ -36,14 +27,14 @@
                   :columns="columns"
                   :options="cadastroLocalInstalacaoTable.options"
                 >
-                  <div slot="actions" slot-scope="props">
+                  <div slot="actions" slot-scope="{row, index}">
                     <template>
                       <div class="icons-actions-wrapper">
                         <div class="icons-actions">
-                          <i class="fas fa-edit text-muted" @click="editSector(props.row)"></i>
+                          <i class="fas fa-edit text-muted" @click="editSector(row)"></i>
                         </div>
                         <div class="icons-actions">
-                          <i class="fas fa-trash text-muted" @click="deleteSector(props.row, index)"></i>
+                          <i class="fas fa-trash text-muted" @click="deleteSector(row, index - 1)"></i>
                         </div>
                       </div>
                     </template>
@@ -51,25 +42,28 @@
                 </v-client-table>
               </div>
             </card>
-          </template>
+          </div>
 
-          <template v-if="switchListRegister === 'register'">
-            <form @submit.prevent="registerSector()">
-              <div class="cadCard">
-                <div class="inputs">
-                  <simple-input v-model="inputValues.nome" :label="'Local Instalação:'" :type="'text'" />
-                </div>
+          <div v-if="switchListRegister === 'register'" key="register">
+            <div class="cadCard">
+              <div class="inputs">
+                <simple-input v-model="inputValues.nome" :label="'Local Instalação:'" :type="'text'" />
               </div>
-              <div class="d-flex justify-content-center m-3">
-                <smart-button primary class="mr-2">
-                  {{getSaveButtonText()}}
-                </smart-button>
-                <smart-button v-if="isEditing" @click.native="closeEditing">
-                  <span>Cancelar</span>
-                </smart-button>
-              </div>
-            </form>
-          </template>
+            </div>
+            <div class="d-flex justify-content-center m-3">
+              <smart-button
+                primary
+                :loading="isLoading"
+                class="mr-2"
+                @click.native="registerSector()"
+              >
+                {{ getSaveButtonText() }}
+              </smart-button>
+              <smart-button v-if="isEditing" @click.native="closeEditing()">
+                <span>Cancelar</span>
+              </smart-button>
+            </div>
+          </div>
         </transition>
       </div>
     </div>
@@ -77,7 +71,7 @@
 </template>
 
 <script>
-import { getToken, getErrors } from '../../../utils/utils';
+import { getErrors } from '../../../utils/utils';
 
 export default {
   data() {
@@ -116,6 +110,7 @@ export default {
       },
       switchListRegister: 'list',
       isEditing: false,
+      isLoading: false,
       instalationLocal: [],
     };
   },
@@ -149,76 +144,74 @@ export default {
     },
     async getSector() {
       try {
-        const response = await this.$http.get('local-instalacao/get', getToken());
+        const response = await this.$http.get('local-instalacao');
 
-        if (response.result.length === undefined)
-          this.instalationLocal.push(response.result);
-          
-        else this.instalationLocal = [...response.result];
+        if (response.length === undefined)
+          this.instalationLocal.push(response);
+        else this.instalationLocal = [...response];
       } catch (err) {
         console.log('err getSector => :', err.response || err);
 
         return this.$swal({
           type: 'warning',
-          text: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
     },
     async registerSector() {
+      if (this.isLoading) return;
       if (this.isEditing) return this.updateSector();
 
       try {
-        const response = await this.$http.post('local-instalacao', getToken(), this.inputValues);
+        this.isLoading = true;
+        await this.$http.post('local-instalacao', this.inputValues);
+
+        this.resetModel();
+        this.getSector();
 
         this.$swal({
           type: 'success',
-          title: response.result,
+          text: 'Local de instalação registrado com sucesso!',
           confirmButtonColor: '#F34336',
-        }).then(() => {
-          this.instalationLocal.push(this.inputValues);
-
-          this.resetModel();
-          this.getSector();
         });
       } catch (err) {
         console.log('err registerSector => :', err.response || err);
 
         return this.$swal({
           type: 'warning',
-          text: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
+      } finally {
+        this.isLoading = false;
       }
     },
     async updateSector() {
+      if (this.isLoading) return;
+
       try {
-        console.log('INPUT VALUES: ', this.inputValues);
-        const response = await this.$http.update(
-          'local-instalacao', getToken(), this.inputValues, this.inputValues.idSetor,
-        );
+        this.isLoading = true;
+        await this.$http.update('local-instalacao', this.inputValues, this.inputValues.idSetor);
 
-        this.$swal({
+        this.getSector();
+        this.closeEditing();
+
+        await this.$swal({
           type: 'success',
-          title: response.result,
+          text: 'Local de instalação alterado com sucesso!',
           confirmButtonColor: '#F34336',
-        }).then(() => {
-          const index = this.instalationLocal.indexOf(
-            this.instalationLocal.find(i => i.idSetor === this.inputValues.idSetor)
-          );
-
-          this.instalationLocal.splice(index, 1, this.inputValues);
-
-          this.closeEditing();
         });
       } catch (err) {
         console.log('err updateSector => :', err.response || err);
 
         return this.$swal({
           type: 'error',
-          text: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
+      } finally {
+        this.isLoading = false;
       }
     },
     deleteSector(sector, index) {
@@ -226,24 +219,25 @@ export default {
         type: 'question',
         title: `Deseja mesmo remover o setor de ${sector.nome}?`,
         showCancelButton: true,
+        showLoaderOnConfirm: true,
         confirmButtonColor: '#F34336',
         preConfirm: async () => {
           try {
-            const response = await this.$http.delete('local-instalacao', getToken(), sector.idSetor);
+            await this.$http.delete('local-instalacao', sector.idSetor);
 
-            return this.$swal({
+            await this.$swal({
               type: 'success',
-              title: response.result,
+              text: 'Local de instalação removido com sucesso!',
               confirmButtonColor: '#F34336',
-            }).then(() => {
-              this.instalationLocal.splice(index, 1);
             });
+
+            this.instalationLocal.splice(index, 1);
           } catch (err) {
             console.log('err deleteSector => :', err.response || err);
 
             return this.$swal({
               type: 'error',
-              text: getErrors(err),
+              html: getErrors(err),
               confirmButtonColor: '#F34336',
             });
           }

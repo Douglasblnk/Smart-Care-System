@@ -32,13 +32,13 @@ export default class Services extends Http {
     }
   }
 
-  async microserviceAnalisis(url, token) {
+  async microserviceAnalisis(url) {
     try {
       const response = await Axios({
         method: 'get',
         url: `http://localhost:3020/${url}`,
         headers: {
-          'authorization': `${token}`,
+          'authorization': `${getToken()}`,
         },
       });
 

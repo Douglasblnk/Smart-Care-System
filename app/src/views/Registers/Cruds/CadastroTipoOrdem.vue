@@ -108,7 +108,7 @@ export default {
 
     async getOrderType() {
       try {
-        const response = await this.$http.get('tipo-ordem/get', getToken());
+        const response = await this.$http.get('tipo-ordem/get');
 
         if (response.result.length === undefined)
           this.orderTypes.push(response.result);
@@ -128,7 +128,7 @@ export default {
       if (this.isEditing) return this.updateOrderType();
 
       try {
-        const response = await this.$http.post('tipo-ordem', getToken(), this.inputValues);
+        const response = await this.$http.post('tipo-ordem', this.inputValues);
         
         this.$swal({
           type: 'success',
@@ -158,7 +158,7 @@ export default {
         confirmButtonColor: '#F34336',
         preConfirm: async () => {
           try {
-            const response = await this.$http.delete('tipo-ordem', getToken(), order.idtipoManutencao);
+            const response = await this.$http.delete('tipo-ordem', order.idtipoManutencao);
             
             return this.$swal({
               type: 'success',
@@ -183,7 +183,7 @@ export default {
     async updateOrderType() {
       try {
         const response = await this.$http.update(
-          'tipo-ordem', getToken(), this.inputValues, this.inputValues.idtipoManutencao
+          'tipo-ordem', this.inputValues, this.inputValues.idtipoManutencao
         );
 
         this.$swal({

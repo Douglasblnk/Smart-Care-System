@@ -2,19 +2,19 @@
   <div v-if="dataVerification.verifications_list.length">
     <div v-if="!isMobile">
       <pending-verifications-web
-        :verificationsData="dataVerification"
+        :verifications-data="dataVerification"
       />
     </div>
     <div v-if="isMobile">
       <pending-verifications-mobile
-        :verificationsData="dataVerification"
+        :verifications-data="dataVerification"
       />
     </div>
   </div>
 </template>
 
 <script>
-import { getErrors, getToken } from '../../utils/utils';
+import { getErrors } from '../../utils/utils';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -76,17 +76,19 @@ export default {
     },
     async listVerifications() {
       try {
-        const { result } = await this.$http.get('verificacao/list-verification', getToken());
-        if (result.length !== undefined)
-          this.dataVerification.verifications_list = [...result];
-        else this.verifications_list.push(result);
+        const response = await this.$http.get('verificacao/listagem');
+
+        if (response.length !== undefined)
+          this.dataVerification.verifications_list = [...response];
+        else this.verifications_list.push(response);
+
         this.mobileOptions();
-        console.log('dataVerification: ', this.dataVerification);
       } catch (err) {
         console.log('err :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }

@@ -1,213 +1,225 @@
 <template>
   <div class="ordem-corretiva-root">
-    <div class="content-wrapper">
-      <form-wizard
-        class="step-by-step"
-        title="Cadastro de Ordem de serviço"
-        subtitle=""
-        nextButtonText="Próximo"
-        backButtonText="Voltar"
-        finishButtonText="Finalizar"
-        @on-complete="registerOrderMaintenance()"
+    <transition name="fade" mode="out-in">
+      <div
+        v-if="isLoading"
+        key="loadingContent"
+        class="d-flex justify-content-center align-items-center text-muted mt-5"
       >
-        <!--
-          Step para informar o titulo, resumo e descrição da ordem
-         -->
-        <tab-content title="Causa Manutenção" icon="fas fa-user" class="maintenanceCause">
-          <div class="firstInput">
-            <simple-input v-model="inputValues.title" :label="'Título:'" :type="'text'" />
-          </div>
+        <i class="fa fa-spinner fa-spin fa-lg mx-2" />
+        <span>Carregando informações...</span>
+      </div>
 
-          <div class="secondInput">
-            <simple-input v-model="inputValues.summary" :label="'Resumo'" :type="'text'" />
-          </div>
-
-          <!-- <div class="inputMaintenance">
-            <div>
-              <label class="text-muted">
-                Descrição do problema:
-              </label>
+      <card v-if="!isLoading" key="orderForm">
+        <form-wizard
+          class="step-by-step"
+          title="Cadastro de Ordem de serviço"
+          subtitle=""
+          next-button-text="Próximo"
+          back-button-text="Voltar"
+          finish-button-text="Finalizar"
+          @on-complete="registerOrderMaintenance()"
+        >
+          <!--
+            Step para informar o titulo, resumo e descrição da ordem
+          -->
+          <tab-content title="Causa Manutenção" icon="fas fa-user" class="maintenanceCause">
+            <div class="firstInput">
+              <simple-input v-model="inputValues.title" :label="'Título:'" :type="'text'" />
             </div>
-            <textarea
-              v-model="inputValues.description"
-              class="rounded w-100"
-              rows="3"
-              name="comment"
-              form="usrform"
-            />
-          </div> -->
-        </tab-content>
 
-        <!--
-          Step para informada o inicio planejado e o fim planejado da ordem
-         -->
-        <tab-content title="Datas" icon="fa fa-cog" class="maintenanceCause">
-          <div>
-            <simple-input
-              v-model="inputValues.plannedStart"
-              :label="'Inicio Planejado:'"
-              :type="'date'"
-            />
-          </div>
-          <div>
-            <simple-input
-              v-model="inputValues.plannedEnd"
-              :label="'Fim Planejado'"
-              :type="'date'"
-            />
-          </div>
-        </tab-content>
+            <div class="secondInput">
+              <simple-input v-model="inputValues.summary" :label="'Resumo'" :type="'text'" />
+            </div>
 
-        <!--
-          Step para selecionar a prioridade, setor e se querer parada
-         -->
-        <tab-content title="Informações Gerais" icon="fas fa-check" class="maintenanceCause">
-          <custom-select
-            v-model="inputValues.priority"
-            label="Prioridade"
-            :options="getPriorityOptions()"
-          />
+            <!-- <div class="inputMaintenance">
+              <div>
+                <label class="text-muted">
+                  Descrição do problema:
+                </label>
+              </div>
+              <textarea
+                v-model="inputValues.description"
+                class="rounded w-100"
+                rows="3"
+                name="comment"
+                form="usrform"
+              />
+            </div> -->
+          </tab-content>
 
-          <custom-select
-            v-model="inputValues.requireStop"
-            label="Requer Parada"
-            :options="selectsRequireStopOptions()"
-          />
-          <custom-select
-            v-model="inputValues.requester"
-            label="Solicitante"
-            :options="selectsRequestersOptions()"
-          />
-          <custom-select
-            v-model="inputValues.report"
-            label="Reporte"
-            :options="selectsReportOptions()"
-          />
-        </tab-content>
-
-        <!--
-          Step para selecionar os equipamentos
-         -->
-        <tab-content  title="Equipamentos" icon="fas fa-check">
-          <div class="w-100 d-flex justify-content-center">
-            <span style="font-size: 22px">Selecione o setor e os equipamentos</span>
-          </div>
-          <div>
-            <custom-select
-              v-model="selectedSector"
-              label="Setor"
-              :options="getSectorOptions()"
-            />
-            <custom-select
-              v-model="equipment"
-              label="Equipamento"
-              :options="getEquipmentOptions()"
-            />
+          <!--
+            Step para informada o inicio planejado e o fim planejado da ordem
+          -->
+          <tab-content title="Datas" icon="fa fa-cog" class="maintenanceCause">
             <div>
-              <div class="operations-title">
-                <span class="text-center">Selecione as operações para os equipamentos</span>
-              </div>
+              <simple-input
+                v-model="inputValues.plannedStart"
+                :label="'Inicio Planejado:'"
+                :type="'date'"
+              />
+            </div>
+            <div>
+              <simple-input
+                v-model="inputValues.plannedEnd"
+                :label="'Fim Planejado'"
+                :type="'date'"
+              />
+            </div>
+          </tab-content>
 
-              <div class="d-flex justify-content-center">
-                <smart-button id="show-btn" @click.native="showOperationModal()">
-                  <span>Adicionar Operação</span>
-                </smart-button>
-              </div>
+          <!--
+            Step para selecionar a prioridade, setor e se querer parada
+          -->
+          <tab-content title="Informações Gerais" icon="fas fa-check" class="maintenanceCause">
+            <custom-select
+              v-model="inputValues.priority"
+              label="Prioridade"
+              :options="getPriorityOptions()"
+            />
 
-              <div class="operations-items">
-                <label>Operações selecionadas:</label>
-                <div v-if="inputValues.operations.length > 0" class="d-flex flex-column">
-                  <div v-for="(operation, index) in inputValues.operations" :key="`epi-${index}`">
-                    <div class="seleted-operation-item">
-                      <div class="d-flex flex-column">
-                        <span>Operação: {{ getOperationName(operation.Operacao) }}</span>
-                        <span>Sequencia: {{ operation.sequencia_operacao }}</span>
-                      </div>
-                      <div>
-                        <i class="fa fa-trash fa-lg scalable-btn" @click="removeOperation(index)" />
+            <custom-select
+              v-model="inputValues.requireStop"
+              label="Requer Parada"
+              :options="selectsRequireStopOptions()"
+            />
+
+            <custom-select
+              v-model="inputValues.requester"
+              label="Solicitante"
+              :options="selectsRequestersOptions()"
+            />
+            <custom-select
+              v-model="inputValues.report"
+              label="Reporte"
+              :options="selectsReportOptions()"
+            />
+          </tab-content>
+
+          <!--
+            Step para selecionar os equipamentos
+          -->
+          <tab-content  title="Equipamentos" icon="fas fa-check">
+            <div class="w-100 d-flex justify-content-center">
+              <span style="font-size: 22px">Selecione o setor e os equipamentos</span>
+            </div>
+            <div>
+              <custom-select
+                v-model="selectedSector"
+                label="Setor"
+                :options="getSectorOptions()"
+              />
+              <custom-select
+                v-model="equipment"
+                label="Equipamento"
+                :options="getEquipmentOptions()"
+              />
+              <div>
+                <div class="operations-title">
+                  <span class="text-center">Selecione as operações para os equipamentos</span>
+                </div>
+
+                <div class="d-flex justify-content-center">
+                  <smart-button primary @click.native="showOperationModal()">
+                    <span>Adicionar Operação</span>
+                  </smart-button>
+                </div>
+
+                <div class="operations-items">
+                  <label>Operações selecionadas:</label>
+                  <div v-if="inputValues.operations.length > 0" class="d-flex flex-column">
+                    <div v-for="(operation, index) in inputValues.operations" :key="`epi-${index}`">
+                      <div class="seleted-operation-item">
+                        <div class="d-flex flex-column">
+                          <span>Operação: {{ getOperationName(operation.Operacao) }}</span>
+                          <span>Sequencia: {{ operation.sequencia_operacao }}</span>
+                        </div>
+                        <div>
+                          <i class="fa fa-trash fa-lg scalable-btn" @click="removeOperation(index)" />
+                        </div>
                       </div>
                     </div>
                   </div>
+                  <div v-else>
+                    <span>Nenhuma operação selecionada.</span>
+                  </div>
                 </div>
-                <div v-else>
-                  <span>Nenhuma operação selecionada.</span>
+              </div>
+              <div class="d-flex justify-content-center">
+                <smart-button simple @click.native="addEquipmentSectorOperations()">
+                  <span>Vincular equipamento com a operação</span>
+                </smart-button>
+              </div>
+
+              <div v-if="inputValues.equipments_sectors_operations.length > 0" class="operations-equipment-list-wrapper">
+                <label>Operações vinculadas: </label>
+                <div class="">
+                  <div
+                    v-for="(vinculatedOperation, index) in inputValues.equipments_sectors_operations"
+                    :key="`vinculatedOperation-${index}`"
+                    class="operation-equipment-itens"
+                  >
+                    <div class="d-flex flex-column">
+                      <strong>{{ getEquipmentName(vinculatedOperation.Equipamento) }}</strong>
+                      <span>{{ getSectorName(vinculatedOperation.Local) }}</span>
+
+                      <accordion icon="fa fa-cogs" title="Operações">
+                        <div class="ml-3 mr-3 d-flex flex-wrap">
+                          <div
+                            v-for="(op, index) in vinculatedOperation.operationList"
+                            :key="`operation-${index}`"
+                          >
+                            <div class="selected-operation-wrapper">
+                              <span>{{ op.sequencia_operacao }} - {{ getOperationName(op.Operacao) }}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </accordion>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
+          </tab-content>
+
+          <!--
+            Step para definir quais EPIs são necessárias para a ordem
+          -->
+          <tab-content title="Epi" icon="fa fa-cog">
             <div class="d-flex justify-content-center">
-              <smart-button imple @click.native="addEquipmentSectorOperations()">
-                <span>Vincular equipamento com a operação</span>
+              <smart-button primary @click.native="showEpiModal()">
+                <span>Adicionar EPI</span>
               </smart-button>
             </div>
 
-            <div v-if="inputValues.equipments_sectors_operations.length > 0" class="operations-equipment-list-wrapper">
-              <label>Operações vinculadas: </label>
-              <div class="">
-                <div
-                  v-for="(vinculatedOperation, index) in inputValues.equipments_sectors_operations"
-                  :key="`vinculatedOperation-${index}`"
-                  class="operation-equipment-itens"
-                >
-                  <div class="d-flex flex-column">
-                    <strong>{{ getEquipmentName(vinculatedOperation.Equipamento) }}</strong>
-                    <span>{{ getSectorName(vinculatedOperation.Local) }}</span>
-
-                    <accordion icon="fa fa-cogs" title="Operações">
-                      <div class="ml-3 mr-3 d-flex flex-wrap">
-                        <div
-                          v-for="(op, index) in vinculatedOperation.operationList"
-                          :key="`operation-${index}`"
-                        >
-                          <div class="selected-operation-wrapper">
-                            <span>{{ op.sequencia_operacao }} - {{ getOperationName(op.Operacao) }}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </accordion>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </tab-content>
-
-        <!--
-          Step para definir quais EPIs são necessárias para a ordem
-         -->
-        <tab-content title="Epi" icon="fa fa-cog">
-          <div class="d-flex justify-content-center">
-            <smart-button id="show-btn" @click.native="showEpiModal()">
-              <span>Adicionar EPI</span>
-            </smart-button>
-          </div>
-
-          <div class="w-100">
-            <label>EPIs selecionadas: </label>
-            <div v-if="inputValues.epis.length > 0" class="d-flex flex-wrap">
-              <div v-for="(epi, index) in inputValues.epis" :key="`epi-${index}`">
-                <div
-                  class="selected-epi-wrapper"
-                  @mouseenter="() => $set(showRemoveEpi, index, true)"
-                  @mouseleave="() => $set(showRemoveEpi, index, false)"
-                >
-                  <span>{{ getEpiName(epi.Epi_idEpi) }}</span>
+            <div class="w-100">
+              <label>EPIs selecionadas: </label>
+              <div v-if="inputValues.epis.length > 0" class="d-flex flex-wrap">
+                <div v-for="(epi, index) in inputValues.epis" :key="`epi-${index}`">
                   <div
-                    v-if="showRemoveEpi[index]"
-                    class="selected-epi-remove"
-                    @click="removeEpi(index)"
+                    class="selected-epi-wrapper"
+                    @mouseenter="() => $set(showRemoveEpi, index, true)"
+                    @mouseleave="() => $set(showRemoveEpi, index, false)"
                   >
-                    <i class="fa fa-trash" />
+                    <span>{{ getEpiName(epi.Epi_idEpi) }}</span>
+                    <div
+                      v-if="showRemoveEpi[index]"
+                      class="selected-epi-remove"
+                      @click="removeEpi(index)"
+                    >
+                      <i class="fa fa-trash" />
+                    </div>
                   </div>
                 </div>
               </div>
+              <div v-else>
+                <span>Nenhuma EPI selecionada.</span>
+              </div>
             </div>
-            <div v-else>
-              <span>Nenhuma EPI selecionada.</span>
-            </div>
-          </div>
-        </tab-content>
-      </form-wizard>
-    </div>
+          </tab-content>
+        </form-wizard>
+      </card>
+    </transition>
 
     <b-modal
       ref="epi-modal"
@@ -354,20 +366,35 @@ export default {
       sequenceOperation: 0,
       modalHasError: false,
       modalErrorMessage: '',
-      isloading: false,
+      isLoading: false,
     };
   },
 
-  mounted() {
-    this.getEquipments();
-    this.getSector();
-    this.getPriority();
-    this.getOperations();
-    this.getRequester();
-    this.getReporter();
+  created() {
+    this.isLoading = true;
+    this.getSequencialData();
   },
 
   methods: {
+    async getSequencialData() {
+      try {
+        await this.getEquipments();
+        await this.getSector();
+        await this.getPriority();
+        await this.getOperations();
+        await this.getRequester();
+        await this.getReporter();
+
+        this.isLoading = false;
+      } catch (err) {
+        console.log('err getSequencialData :>> ', err.response || err);
+
+        this.$swal({
+          type: 'warning',
+          html: getErrors(err),
+        });
+      }
+    },
     resetModal() {
       this.modalHasError = false;
       this.modalErrorMessage = '';
@@ -378,13 +405,21 @@ export default {
       try {
         this.validateSelectedFields();
 
-        const EquipmentSectorOperations = { Equipamento: this.equipment, Local: this.selectedSector, operationList: this.inputValues.operations };
+        const EquipmentSectorOperations = {
+          Equipamento: this.equipment,
+          Local: this.selectedSector,
+          operationList: this.inputValues.operations,
+        };
 
         this.inputValues.equipments_sectors_operations.push(EquipmentSectorOperations);
-        
+
         this.$swal({
           type: 'success',
-          title: 'Equipamento e Setor vinculados as operações!',
+          text: 'Equipamento e Setor vinculados as operações!',
+          toast: true,
+          position: 'top-right',
+          showConfirmButton: false,
+          timer: 3000,
           confirmButtonColor: '#F34336',
         });
 
@@ -492,15 +527,17 @@ export default {
     },
     async getEpis() {
       try {
-        const { result } = await this.$http.get('epi/get', getToken());
+        const response = await this.$http.get('epi');
 
-        this.epiList = [...result];
+        if (response.length === undefined)
+          this.epiList.push(response);
+        else this.epiList = [...response];
       } catch (err) {
-        console.log('err :>> ', err.response || err);
+        console.log('err getEpis :>> ', err.response || err);
 
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
@@ -524,7 +561,7 @@ export default {
             return operation;
           return '';
         });
-        
+
         if (nonSelectedOperations.length === 0) return this.confirmOperationModal();
 
         let sequenceOperation = this.getLastSequence();
@@ -560,73 +597,78 @@ export default {
     },
     async registerOrderMaintenance() {
       try {
-        // this.$set(this.inputValues, 'beginData', this.$moment().format('YYYY-MM-DD'));
+        this.$set(this.inputValues, 'beginData', this.$moment().format('YYYY-MM-DD'));
 
-        // const response = await this.$http.post('ordem-manutencao/route', getToken(), this.inputValues);
-        
-        // console.log('response :>> ', response);
+        await this.$http.post('ordem-manutencao/route', this.inputValues);
 
         this.$swal({
           type: 'success',
-          title: 'Ordem de Serviço cadastrada com Sucesso',
+          text: 'Ordem de Serviço cadastrada com Sucesso',
           confirmButtonColor: '#F34336',
         });
 
         this.$emit('reset:closeOrderMaintenance');
       } catch (err) {
-        console.log('err :>> ', err.response || err);
+        console.log('err registerOrderMaintenance :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
     },
     async getEquipments() {
       try {
-        const response = await this.$http.get('equipamento/get', getToken());
-        console.log('EQUIPAMENTOS RETURN: ',response);
-        if (response.result.length === undefined)
-          this.workEquipment.push(response.result);
+        const response = await this.$http.get('equipamento');
 
-        else this.workEquipment = [...response.result];
-        console.log('EQUIPAMENTOS: ', this.workEquipment);
+        if (response.length === undefined)
+          this.workEquipment.push(response);
+        else this.workEquipment = [...response];
       } catch (err) {
+        console.log('err getEquipments :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
     },
     async getRequester() {
       try {
-        const response = await this.$http.get('users/requester', getToken());
+        const response = await this.$http.get('users', {
+          headers: { type: 'requester' },
+        });
 
-        if (response.result.length === undefined)
-          this.selectsRequesterOptions.push(response.result);
-        else this.selectsRequesterOptions = [...response.result];
-        
+        if (response.length === undefined)
+          this.selectsRequesterOptions.push(response);
+        else this.selectsRequesterOptions = [...response];
       } catch (err) {
+        console.log('err getRequester :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
     },
     async getReporter() {
       try {
-        const response = await this.$http.get('users/report', getToken());
-        console.log('Reporter: ',response);
-        if (response.result.length === undefined)
-          this.selectsReports.push(response.result);
-        else this.selectsReports = [...response.result];
-        
+        const response = await this.$http.get('users', {
+          headers: { type: 'report' },
+        });
+
+        if (response.length === undefined)
+          this.selectsReports.push(response);
+        else this.selectsReports = [...response];
       } catch (err) {
+        console.log('err getReporter :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
@@ -636,16 +678,17 @@ export default {
     },
     async getSector() {
       try {
-        const response = await this.$http.get('local-instalacao/get', getToken());
+        const response = await this.$http.get('local-instalacao');
 
-        if (response.result.length === undefined)
-          this.sectors.push(response.result);
-
-        else this.sectors = [...response.result];
+        if (response.length === undefined)
+          this.sectors.push(response);
+        else this.sectors = [...response];
       } catch (err) {
+        console.log('err getSector :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
@@ -656,37 +699,39 @@ export default {
     selectsRequestersOptions() {
       return this.selectsRequesterOptions.map(i => ({ id: String(i.idUsuario), description: i.nome }));
     },
-    selectsReportOptions(){
+    selectsReportOptions() {
       return this.selectsReports.map(i => ({ id: String(i.idUsuario), description: i.nome }));
     },
     async getPriority() {
       try {
-        const response = await this.$http.get('prioridade/get', getToken());
+        const response = await this.$http.get('prioridade');
 
-        if (response.result.length === undefined)
-          this.selectsPriority.push(response.result);
-
-        else this.selectsPriority = [...response.result];
+        if (response.length === undefined)
+          this.selectsPriority.push(response);
+        else this.selectsPriority = [...response];
       } catch (err) {
-        console.log('err getSectorOptions :>> ', err.response || err);
+        console.log('err getPriority :>> ', err.response || err);
 
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
     },
     async getOperations() {
       try {
-        const { result } = await this.$http.get('operacoes/get', getToken());
-        this.operationsList = [...result];
+        const response = await this.$http.get('operacoes');
+
+        if (response.length === undefined)
+          this.operationsList.push(response);
+        else this.operationsList = [...response];
       } catch (err) {
         console.log('err getOperations :>> ', err.response || err);
 
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
@@ -703,104 +748,97 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  .content-wrapper {
-    width: 70%;
-    background-color: #ffffff;
-    border-radius: 10px;
-    padding: 25px;
-    margin: 20px 0;
-    .step-by-step {
-      width:100%;
-      .maintenanceCause{
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: 1fr 1fr;
-        .inputMaintenance{
-          padding: 0.5rem;
-          grid-column-start: 1;
-          grid-column-end: 3;
-        }
-
-        .firstInput{
-          grid-column-start:1;
-          grid-column-end:1;
-        }
-        .secondInput{
-          grid-column-start:2;
-          grid-column-end:2;
-        }
+  .step-by-step {
+    width:100%;
+    .maintenanceCause{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      .inputMaintenance{
+        padding: 0.5rem;
+        grid-column-start: 1;
+        grid-column-end: 3;
       }
-      .operations-title {
+
+      .firstInput{
+        grid-column-start:1;
+        grid-column-end:1;
+      }
+      .secondInput{
+        grid-column-start:2;
+        grid-column-end:2;
+      }
+    }
+    .operations-title {
+      display: flex;
+      justify-content: center;
+      font-size: 22px;
+      margin-top: 20px;
+    }
+    .operations-items {
+      max-height: 350px;
+      overflow: auto;
+      margin: 20px;
+    }
+    .seleted-operation-item {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 8px;
+      padding: 20px;
+      i {
+        color: #555;
+      }
+      &:hover {
+        background-color: #eee;
+      }
+    }
+    .selected-epi-wrapper {
+      min-width: 50px;
+      padding: 5px 20px;
+      margin: 5px;
+      border-radius: 100px;
+      background-color: #eee;
+      user-select: none;
+      position: relative;
+      &:hover {
+        background-color: #ddd;
+      }
+      .selected-epi-remove {
+        position: absolute;
         display: flex;
         justify-content: center;
-        font-size: 22px;
-        margin-top: 20px;
-      }
-      .operations-items {
-        max-height: 350px;
-        overflow: auto;
-        margin: 20px;
-      }
-      .seleted-operation-item {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
         align-items: center;
-        border-radius: 8px;
-        padding: 20px;
-        i {
-          color: #555;
-        }
-        &:hover {
-          background-color: #eee;
-        }
-      }
-      .selected-epi-wrapper {
-        min-width: 50px;
-        padding: 5px 20px;
-        margin: 5px;
+        right: -10px;
+        top: -10px;
+        width: 30px;
+        height: 30px;
         border-radius: 100px;
         background-color: #eee;
-        user-select: none;
-        position: relative;
+        cursor: pointer;
         &:hover {
-          background-color: #ddd;
+          background-color: var(--duas-rodas-soft);
+          i { color: white; }
         }
-        .selected-epi-remove {
-          position: absolute;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          right: -10px;
-          top: -10px;
-          width: 30px;
-          height: 30px;
-          border-radius: 100px;
+        i { font-size: 14px; }
+      }
+    }
+    .selected-operation-wrapper {
+      min-width: 50px;
+      padding: 5px 20px;
+      margin: 5px;
+      border-radius: 100px;
+      background-color: #ddd;
+      user-select: none;
+    }
+    .operations-equipment-list-wrapper {
+      margin: 20px 0;
+      .operation-equipment-itens {
+        padding: 10px 20px;
+        border-radius: 9px;
+        &:hover {
           background-color: #eee;
-          cursor: pointer;
-          &:hover {
-            background-color: var(--duas-rodas-soft);
-            i { color: white; }
-          }
-          i { font-size: 14px; }
-        }
-      }
-      .selected-operation-wrapper {
-        min-width: 50px;
-        padding: 5px 20px;
-        margin: 5px;
-        border-radius: 100px;
-        background-color: #ddd;
-        user-select: none;
-      }
-      .operations-equipment-list-wrapper {
-        margin: 20px 0;
-        .operation-equipment-itens {
-          padding: 10px 20px;
-          border-radius: 9px;
-          &:hover {
-            background-color: #eee;
-          }
         }
       }
     }

@@ -119,7 +119,7 @@ export default {
   }
   .btn-disabled {
     cursor: not-allowed;
-    background-color: #c7c7c7;
+    background-color: #c7c7c7 !important;
     &:hover { transform: none !important }
     &:active { transform: none !important }
   }

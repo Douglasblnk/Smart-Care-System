@@ -31,8 +31,8 @@ export default {
   },
 
   methods: {
-    currentRoute(selectedRoute, { name }) {
-      return selectedRoute === name;
+    currentRoute(selectedRoute, { name, matched }) {
+      return selectedRoute === name || matched[0]?.name.includes(selectedRoute);
     },
     goToRoute({ link }) {
       if (link && this.$route.path !== link)

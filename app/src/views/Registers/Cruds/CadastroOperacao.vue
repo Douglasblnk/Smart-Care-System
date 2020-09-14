@@ -1,5 +1,7 @@
 <template>
   <div class="root-cadastro-operacao-view">
+    <back-button @goBack="goBack" />
+
     <div class="content-wrapper">
       <div>
         <div class="list-option">
@@ -16,8 +18,8 @@
         </div>
 
         <transition name="slide-fade" mode="out-in">
-          <template v-if="switchListRegister === 'list'">
-            <card fullWidth>
+          <div v-if="switchListRegister === 'list'" key="list">
+            <card full-width>
               <div class="register-operacao-table">
                 <v-client-table
                   ref="tableRegisterEpi"
@@ -25,14 +27,14 @@
                   :columns="columns"
                   :options="registerOperationTable.options"
                 >
-                  <div slot="actions" slot-scope="props">
+                  <div slot="actions" slot-scope="{row, index}">
                     <template>
                       <div class="icons-actions-wrapper">
                         <div class="icons-actions">
-                          <i class="fas fa-edit text-muted" @click="editOperations(props.row)"></i>
+                          <i class="fas fa-edit text-muted" @click="editOperations(row)"></i>
                         </div>
                         <div class="icons-actions">
-                          <i class="fas fa-trash text-muted" @click="deleteOperations(props.row, index)"></i>
+                          <i class="fas fa-trash text-muted" @click="deleteOperations(row, index - 1)"></i>
                         </div>
                       </div>
                     </template>
@@ -40,51 +42,46 @@
                 </v-client-table>
               </div>
             </card>
-          </template>
+          </div>
 
-          <template v-if="switchListRegister === 'register'">
-            <form class="formPosition" @submit.prevent="registerOperations()">
+          <div v-if="switchListRegister === 'register'" key="register">
+            <div class="form-position">
               <div class="cadCard">
                 <div class="inputs">
-                  <simple-input v-model="inputValues.descricao_operacao" label="Descrição Operaçao:" type="text">
-                  </simple-input>
-                  <simple-input v-model="inputValues.material" label="Material:" type="text">
-                  </simple-input>
-                  <simple-input v-model="inputValues.quantidade_material" label="Quantidade:" type="number">
-                  </simple-input>
-                  <simple-input v-model="inputValues.unidade_material" label="Unidade:" type="text ">
-                  </simple-input>
-                  <simple-input v-model="inputValues.tempo_planejado" label="Tempo Planejado:" type="time">
-                  </simple-input>
+                  <simple-input v-model="inputValues.descricao_operacao" label="Descrição Operaçao:" type="text" />
+                  <simple-input v-model="inputValues.material" label="Material:" type="text" />
+                  <simple-input v-model="inputValues.quantidade_material" label="Quantidade:" type="number" />
+                  <simple-input v-model="inputValues.unidade_material" label="Unidade:" type="text " />
+                  <simple-input v-model="inputValues.tempo_planejado" label="Tempo Planejado:" type="time" />
                 </div>
               </div>
-              <!-- <div class="d-flex justify-content-center m-3">
-                <b-button type="submit" value="send" variant="danger">Cadastrar</b-button>
-              </div> -->
+
               <div class="d-flex justify-content-center m-3">
-                <smart-button primary class="mr-2">
+                <smart-button
+                  primary
+                  :loading="isLoading"
+                  class="mr-2"
+                  @click.native="registerOperations()"
+                >
                   {{ getSaveButtonText() }}
                 </smart-button>
 
-                <smart-button v-if="isEditing" @click.native="closeEditing">
+                <smart-button v-if="isEditing" @click.native="closeEditing()">
                   <span>Cancelar</span>
                 </smart-button>
               </div>
-            </form>
-          </template>
+            </div>
+          </div>
         </transition>
       </div>
     </div>
   </div>
 </template>
 <script>
-import { getToken, getErrors } from '../../../utils/utils';
-
+import { getErrors } from '../../../utils/utils';
 
 export default {
-  components: {
-    
-  },
+  name: 'CadastroOperacao',
   data() {
     return {
       inputValues: {
@@ -127,6 +124,7 @@ export default {
       workOperations: [],
       switchListRegister: 'list',
       isEditing: false,
+      isLoading: false,
     };
   },
   mounted() {
@@ -150,69 +148,82 @@ export default {
       return this.$store.commit('addPageName', 'Cadastro de Operações | Editar');
     },
     async registerOperations() {
+      if (this.isLoading) return;
       if (this.isEditing) return this.updateOperations();
+
       try {
-        const response = await this.$http.post('operacoes', getToken(), this.inputValues);
-        this.$swal({
-          type: 'success',
-          title: 'Cadastrado',
-          confirmButtonColor: '#F34336',
-        }),
+        this.isLoading = true;
+        await this.$http.post('operacoes', this.inputValues);
+
         this.resetModel();
         this.getOperations();
-      } catch (err) {
-        return this.$swal({
-          type: 'warning',
-          title: getErrors(err),
+
+        await this.$swal({
+          type: 'success',
+          text: 'Operação registrada com sucesso!',
           confirmButtonColor: '#F34336',
         });
+      } catch (err) {
+        console.log('err registerOperations :>> ', err.response || err);
+
+        return this.$swal({
+          type: 'warning',
+          html: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      } finally {
+        this.isLoading = false;
       }
     },
     async getOperations() {
-      // const token = localStorage.getItem('token')
       try {
-        const response = await this.$http.get('operacoes/get', getToken());
-        if (response.result.length === undefined)
-          this.workOperations.push(response.result);
+        const response = await this.$http.get('operacoes');
 
-        else this.workOperations = [...response.result];
+        if (response.length === undefined)
+          this.workOperations.push(response);
+        else this.workOperations = [...response];
       } catch (err) {
+        console.log('err getOperations :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
     },
-
     resetModel() {
       this.inputValues = {};
     },
-  
     deleteOperations(component, index) {
-      try {
-        this.$swal({
-          type: 'question',
-          title: `Deseja mesmo remover o Componente ${component.descricao_operacao}`,
-          showCancelButton: true,
-          confirmButtonColor: '#F34336',
-          preConfirm: async () => {
-            const response = await this.$http.delete('operacoes', getToken(), component.idoperacao);
-            this.$swal({
+      this.$swal({
+        type: 'question',
+        title: `Deseja mesmo remover o Componente ${component.descricao_operacao}`,
+        showCancelButton: true,
+        showLoaderOnConfirm: true,
+        confirmButtonColor: '#F34336',
+        preConfirm: async () => {
+          try {
+            await this.$http.delete('operacoes', component.idoperacao);
+
+            await this.$swal({
               type: 'success',
-              title: 'Removido com sucesso',
+              text: 'Operação removida com sucesso',
               confirmButtonColor: '#F34336',
-            }),
+            });
+
             this.workOperations.splice(index, 1);
-          },
-        });
-      } catch (err) {
-        return this.$swal({
-          type: 'warning',
-          title: getErrors(err),
-          confirmButtonColor: '#F34336',
-        });
-      }
+          } catch (err) {
+            console.log('err deleteOperations :>> ', err.response || err);
+
+            return this.$swal({
+              type: 'warning',
+              html: getErrors(err),
+              confirmButtonColor: '#F34336',
+            });
+          }
+        },
+      });
     },
     editOperations(component) {
       this.switchLabelPage('edit');
@@ -227,30 +238,34 @@ export default {
       this.resetModel();
     },
     async updateOperations() {
+      if (this.isLoading) return;
       try {
-        const response = await this.$http.update('operacoes', getToken(), this.inputValues, this.inputValues.idoperacao);
+        this.isLoading = true;
+        await this.$http.update('operacoes', this.inputValues, this.inputValues.idoperacao);
       
-        const index = this.workOperations.indexOf(this.workOperations.find(i => i.idoperacao === this.inputValues.idoperacao));
-        this.workOperations.splice(index, 1, this.inputValues);
+        this.closeEditing();
+        this.getOperations();
 
-        this.$swal({
+        await this.$swal({
           type: 'success',
-          title: 'Editado com Sucesso',
+          text: 'Editado com Sucesso',
           confirmButtonColor: '#F34336',
         });
-        this.closeEditing();
       } catch (err) {
+        console.log('err updateOperations :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
+      } finally {
+        this.isLoading = false;
       }
     },
-
-  },
-  resetModel() {
-    this.inputValues = {};
+    goBack() {
+      this.$router.push('/cadastros');
+    },
   },
 };
 </script>
@@ -284,7 +299,7 @@ export default {
         }
       }
     }
-    .formPosition{
+    .form-position{
       display: flex;
       flex-direction: column;
       align-items: center;

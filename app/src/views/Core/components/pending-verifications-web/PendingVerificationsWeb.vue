@@ -5,7 +5,7 @@
         <div class="card-title d-flex justify-content-center align-items-center">
           <h3>Análise de Verificações</h3>
         </div>
-        <card fullWidth>
+        <card full-width>
           <div class="table-verifications">
             <v-client-table
               ref="table_verification"
@@ -182,7 +182,7 @@ export default {
       try {
         const order = { idOrdemServico: props.ordemServico_idOrdemServico };
 
-        const { result } = await this.$http.post('ordem-manutencao/detail', getToken(), {
+        const { result } = await this.$http.post('ordem-manutencao/detail', {
           order,
         });
 

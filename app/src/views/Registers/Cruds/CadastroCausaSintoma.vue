@@ -1,14 +1,6 @@
 <template>
   <div class="root-cadastro-causa-view">
-    <div class="d-flex align-items-center">
-      <div class="back-button ml-3" @click="goBack">
-        <i
-          class="fa fa-arrow-left fa-fw"
-          title="Retornar"
-        />
-        <span>Voltar</span>
-      </div>
-    </div>
+    <back-button @goBack="goBack" />
 
     <div class="d-flex align-items-center flex-column">
       <div class="register-select">
@@ -55,7 +47,7 @@
           </div>
 
           <transition name="slide-fade" mode="out-in">
-            <template v-if="switchListRegister === 'list'">
+            <div v-if="switchListRegister === 'list'" key="list">
               <div class="d-flex w-100 justify-content-center">
                 <div class="table-content bg-white p-4 w-100">
                   <div class="table-responsive">
@@ -73,7 +65,7 @@
                             <div class="d-flex table-action">
                               <i class="fas fa-edit text-muted" @click="startEdition(cause)"></i>
                               <i class="fas fa-trash text-muted" @click="deleteCause(cause, index)"></i>
-                            </div> 
+                            </div>
                           </td>
                         </tr>
                       </tbody>
@@ -81,27 +73,30 @@
                   </div>
                 </div>
               </div>
-            </template>
+            </div>
 
-            <template v-if="switchListRegister === 'register'">
-              <form @submit.prevent="registerCause">
-                <div class="cadCard p-4 bg-white">
-                  <simple-input
-                    label="Digite aqui a causa do defeito: "
-                    type="text"
-                    v-model="inputValuesCause.descricaoCausa"
-                  />
-                </div>
-                <div class="d-flex justify-content-center m-3">
-                  <smart-button primary class="mr-2">
-                    {{ getSaveButtonText()  }}
-                  </smart-button>                    
-                  <smart-button v-if="isEditing" @click.native="closeEditing">
-                    <span>Cancelar</span>
-                  </smart-button>
-                </div>
-              </form>
-            </template>
+            <div v-if="switchListRegister === 'register'" key="register">
+              <div class="cadCard p-4 bg-white">
+                <simple-input
+                  v-model="inputValuesCause.descricaoCausa"
+                  label="Digite aqui a causa do defeito: "
+                  type="text"
+                />
+              </div>
+              <div class="d-flex justify-content-center m-3">
+                <smart-button
+                  primary
+                  :loading="isLoading"
+                  class="mr-2"
+                  @click.native="registerCause()"
+                >
+                  {{ getSaveButtonText()  }}
+                </smart-button>
+                <smart-button v-if="isEditing" @click.native="closeEditing()">
+                  <span>Cancelar</span>
+                </smart-button>
+              </div>
+            </div>
           </transition>
         </div>
 
@@ -123,7 +118,7 @@
           </div>
 
           <transition name="slide-fade" mode="out-in">
-            <template v-if="switchListRegister === 'list'">
+            <div v-if="switchListRegister === 'list'" key="list">
               <div class="d-flex w-100 justify-content-center">
                 <div class="table-content bg-white p-4 w-100">
                   <div class="table-responsive">
@@ -149,27 +144,30 @@
                   </div>
                 </div>
               </div>
-            </template>
+            </div>
 
-            <template v-if="switchListRegister === 'register'">
-              <form @submit.prevent="registerSymptom">
-                <div class="cadCard p-4 bg-white">
-                  <simple-input
-                    v-model="inputValuesSymptom.descricaoSintomas"
-                    label="Digite aqui o sintoma do defeito: "
-                    type="text"
-                  />
-                </div>
-                <div class="d-flex justify-content-center m-3">
-                  <smart-button primary class="mr-2">
-                    {{getSaveButtonText()}}
-                  </smart-button>
-                  <smart-button v-if="isEditing" @click.native="closeEditing">
-                    <span>Cancelar</span>
-                  </smart-button>
-                </div>
-              </form>
-            </template>
+            <div v-if="switchListRegister === 'register'" key="register">
+              <div class="cadCard p-4 bg-white">
+                <simple-input
+                  v-model="inputValuesSymptom.descricaoSintomas"
+                  label="Digite aqui o sintoma do defeito: "
+                  type="text"
+                />
+              </div>
+              <div class="d-flex justify-content-center m-3">
+                <smart-button
+                  primary
+                  :loading="isLoading"
+                  class="mr-2"
+                  @click.native="registerSymptom()"
+                >
+                  {{ getSaveButtonText() }}
+                </smart-button>
+                <smart-button v-if="isEditing" @click.native="closeEditing()">
+                  <span>Cancelar</span>
+                </smart-button>
+              </div>
+            </div>
           </transition>
         </div>
       </transition>
@@ -178,7 +176,7 @@
 </template>
 
 <script>
-import { getToken } from '../../../utils/utils';
+import { getErrors } from '../../../utils/utils';
 
 export default {
 
@@ -198,6 +196,7 @@ export default {
       symptons: [],
       switchListRegister: 'list',
       isEditing: false,
+      isLoading: false,
     };
   },
   mounted() {
@@ -223,206 +222,243 @@ export default {
       } else if (labelPage === 'register') {
         this.switchListRegister = 'register';
         return this.$store.commit('addPageName', `${this.state.view} | Cadastrar`);
-      } else {
-        return this.$store.commit('addPageName', `${this.state.view} | Editar`);
       }
+      return this.$store.commit('addPageName', `${this.state.view} | Editar`);
     },
 
     closeEditing() {
       this.switchLabelPage('list');
-      this.switchListRegister = 'list'
+      this.switchListRegister = 'list';
       this.isEditing = false;
       this.resetModel();
     },
 
     resetModel() {
-      this.inputValuesCause = {}
-      this.inputValuesSymptom = {}
+      this.inputValuesCause = {};
+      this.inputValuesSymptom = {};
     },
 
     startEdition(value) {
       this.switchLabelPage('edit');
-      this.inputValuesCause = { ...value }
-      this.inputValuesSymptom = { ...value }
-      this.switchListRegister = 'register'
+      this.inputValuesCause = { ...value };
+      this.inputValuesSymptom = { ...value };
+      this.switchListRegister = 'register';
       this.isEditing = true;
     },
 
-    getCause() {
-      this.$http.get('causa', getToken())
-        .then(res => {
-          if (res.status !== 200) return this.$swal({
-            type: 'error',
-            title: `Ops! ${res.err}`,
-            confirmButtonColor: '#F34336',
-          });
-          if (res.result.length === undefined) 
-            this.causes.push(res.result)
-          else this.causes = [ ...res.result ]
-          console.log(this.causes);
-        })
+    async getCause() {
+      try {
+        const response = await this.$http.get('causa');
+
+        if (response.length === undefined)
+          this.causes.push(response);
+        else this.causes = [...response];
+      } catch (err) {
+        console.log('error getCause =>', err.response || err);
+
+        this.$swal({
+          type: 'warning',
+          html: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
     },
 
-    getSymptom() {
-      this.$http.get('sintoma', getToken())
-        .then(res => {
-          if (res.status !== 200) return this.$swal({
-            type: 'error',
-            title: `Ops! ${res.err}`,
-            confirmButtonColor: '#F34336',
-          });
-          if (res.result.length === undefined) 
-            this.symptons.push(res.result)
-          else this.symptons = [ ...res.result ]
-          console.log(this.symptons);
-        })
+    async getSymptom() {
+      try {
+        const response = await this.$http.get('sintoma');
+
+        if (response.length === undefined)
+          this.symptons.push(response);
+        else this.symptons = [...response];
+      } catch (err) {
+        console.log('error getSymptom =>', err.response || err);
+
+        this.$swal({
+          type: 'warning',
+          html: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
     },
 
-    registerCause() {
+    async registerCause() {
+      if (this.isLoading) return;
       if (this.isEditing) return this.updateCause();
-      this.$http.post('causa', getToken(), this.inputValuesCause)
-        .then(res => {
-          if (res.status !== 200) return this.$swal({
-            type: 'error',
-            title: `Ops! ${res.err}`,
-            confirmButtonColor: '#F34336',
-          })
-          this.$swal({
-            type: 'success',
-            title: res.result,
-            confirmButtonColor: '#F34336',
-          }).then(() => {
-            this.causes.push(this.inputValuesCause);
-            console.log(this.causes);
-            this.resetModel();
-            this.getCause();
-          })
-        })
+      
+      try {
+        this.isLoading = true;
+        await this.$http.post('causa', this.inputValuesCause);
+
+        this.resetModel();
+        this.getCause();
+
+        await this.$swal({
+          type: 'success',
+          html: 'Causa registrada com sucesso!',
+          confirmButtonColor: '#F34336',
+        });
+      } catch (err) {
+        console.log('error registerCause =>', err.response || err);
+
+        this.$swal({
+          type: 'warning',
+          html: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      } finally {
+        this.isLoading = false;
+      }
     },
 
-    registerSymptom() {
+    async registerSymptom() {
+      if (this.isLoading) return;
       if (this.isEditing) return this.updateSymptom();
-      this.$http.post('sintoma', getToken(), this.inputValuesSymptom)
-        .then(res => {
-          if (res.status !== 200) return this.$swal({
-            type: 'error',
-            title: `Ops! ${res.err}`,
-            confirmButtonColor: '#F34336',
-          })
-          this.$swal({
-            type: 'success',
-            title: res.result,
-            confirmButtonColor: '#F34336',
-          }).then(() => {
-            this.symptons.push(this.inputValuesSymptom);
-            console.log(this.symptons);
-            this.resetModel();
-            this.getSymptom();
-          })
-        })
+
+      try {
+        this.isLoading = true;
+        await this.$http.post('sintoma', this.inputValuesSymptom);
+
+        this.resetModel();
+        this.getSymptom();
+
+        await this.$swal({
+          type: 'success',
+          html: 'Sintoma registrado com sucesso!',
+          confirmButtonColor: '#F34336',
+        });
+      } catch (err) {
+        console.log('error registerSymptom =>', err.response || err);
+
+        this.$swal({
+          type: 'warning',
+          html: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      } finally {
+        this.isLoading = false;
+      }
     },
 
     deleteCause(cause, index) {
-      console.log(cause);
       this.$swal({
         type: 'question',
         title: `Deseja mesmo remover o tipo ${cause.descricaoCausa}?`,
-        showCancelButton: true,
+        loadOnConfirm: true,
+        showLoaderOnConfirm: true,
         confirmButtonColor: '#F34336',
-        preConfirm: () => {
-          this.$http.delete('causa', getToken(), cause.idCausa)
-            .then(res => {
-              console.log(res);
-              if (res.status !== 200) return this.$swal({
-                type: 'warning',
-                title: res.err,
-                confirmButtonColor: '#F34336',
-              })
-              this.$swal({
-                type: 'success',
-                title: res.result,
-                confirmButtonColor: '#F34336',
-              }).then(() => {
-                this.causes.splice(index, 1)
-                console.log(this.causes);
-              });
+        preConfirm: async () => {
+          try {
+            await this.$http.delete('causa', cause.idCausa);
+
+            this.causes.splice(index, 1);
+
+            await this.$swal({
+              type: 'success',
+              html: 'Causa removida com sucesso!',
+              confirmButtonColor: '#F34336',
             });
+          } catch (err) {
+            console.log('error deleteCause =>', err.response || err);
+
+            this.$swal({
+              type: 'warning',
+              html: getErrors(err),
+              confirmButtonColor: '#F34336',
+            });
+          }
         },
       });
     },
 
     deleteSymptom(symptom, index) {
-      console.log(symptom);
       this.$swal({
         type: 'question',
         title: `Deseja mesmo remover o tipo ${symptom.descricaoSintomas}?`,
         showCancelButton: true,
+        showLoaderOnConfirm: true,
         confirmButtonColor: '#F34336',
-        preConfirm: () => {
-          this.$http.delete('sintoma', getToken(), symptom.idSintomas)
-            .then(res => {
-              console.log(res);
-              if (res.status !== 200) return this.$swal({
-                type: 'warning',
-                title: res.err,
-                confirmButtonColor: '#F34336',
-              })
-              this.$swal({
-                type: 'success',
-                title: res.result,
-                confirmButtonColor: '#F34336',
-              }).then(() => {
-                this.symptons.splice(index, 1)
-                console.log(this.symptons);
-              });
+        preConfirm: async () => {
+          try {
+            await this.$http.delete('sintoma', symptom.idSintomas);
+
+            this.symptons.splice(index, 1);
+
+            await this.$swal({
+              type: 'success',
+              html: 'Sintoma removido com sucesso!',
+              confirmButtonColor: '#F34336',
             });
+          } catch (err) {
+            console.log('error deleteSymptom =>', err.response || err);
+
+            this.$swal({
+              type: 'warning',
+              html: getErrors(err),
+              confirmButtonColor: '#F34336',
+            });
+          }
         },
       });
     },
 
-    updateCause() {
-      this.$http.update('causa', getToken(), this.inputValuesCause, this.inputValuesCause.idCausa)
-        .then(res => {
-          if (res.status !== 200) return this.$swal({
-            type: 'error',
-            title: 'Ops! Ocorreu um erro com a solicitação.',
-            text: res.err,
-            confirmButtonColor: '#F34336',
-          })
-          this.$swal({
-            type: 'success',
-            title: res.result,
-            confirmButtonColor: '#F34336',
-          }).then(() => {
-            const index = this.causes.indexOf(this.causes.find(i => i.idCausa === this.inputValuesCause.idCausa))
-            this.causes.splice(index, 1, this.inputValuesCause)
-            this.closeEditing()
-          })
-        })
+    async updateCause() {
+      if (this.isLoading) return;
+
+      try {
+        this.isLoading = true;
+        await this.$http.update('causa', this.inputValuesCause, this.inputValuesCause.idCausa);
+
+        this.closeEditing();
+        this.getCause();
+
+        await this.$swal({
+          type: 'success',
+          html: 'Causa alterada com sucesso!',
+          confirmButtonColor: '#F34336',
+        });
+      } catch (err) {
+        console.log('error updateCause =>', err.response || err);
+
+        this.$swal({
+          type: 'warning',
+          html: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      } finally {
+        this.isLoading = false;
+      }
     },
 
-    updateSymptom() {
-      this.$http.update('sintoma', getToken(), this.inputValuesSymptom, this.inputValuesSymptom.idSintomas)
-        .then(res => {
-          if (res.status !== 200) return this.$swal({
-            type: 'error',
-            title: 'Ops! Ocorreu um erro com a solicitação.',
-            text: res.err,
-            confirmButtonColor: '#F34336',
-          })
-          this.$swal({
-            type: 'success',
-            title: res.result,
-            confirmButtonColor: '#F34336',
-          }).then(() => {
-            const index = this.symptons.indexOf(this.symptons.find(i => i.idSintomas === this.inputValuesSymptom.idSintomas))
-            this.symptons.splice(index, 1, this.inputValuesSymptom)
-            this.closeEditing()
-          })
-        })
+    async updateSymptom() {
+      if (this.isLoading) return;
+
+      try {
+        this.isLoading = true;
+        await this.$http.update('sintoma', this.inputValuesSymptom, this.inputValuesSymptom.idSintomas);
+
+        this.closeEditing();
+        this.getSymptom();
+
+        await this.$swal({
+          type: 'success',
+          html: 'Sintoma alterado com sucesso!',
+          confirmButtonColor: '#F34336',
+        });
+      } catch (err) {
+        console.log('error updateSymptom =>', err.response || err);
+
+        this.$swal({
+          type: 'warning',
+          html: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      } finally {
+        this.isLoading = false;
+      }
     },
     goBack() {
-      this.$router.push('/cadastros');      
+      this.$router.push('/cadastros');
     },
   },
 };
