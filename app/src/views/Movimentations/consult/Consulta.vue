@@ -1,12 +1,15 @@
 <template>
   <div
     class="root-consulta-view"
-    :class="(!maintenainceOrders.length && isMobile && !isLoading) ? 'd-flex justify-content-center align-items-center' : ''"
+    :class="(!maintenainceOrders.length && isMobile && !isLoading)
+      ? 'd-flex justify-content-center align-items-center'
+      : ''
+    "
   >
+    <back-button @goBack="goBack" />
+    
     <transition name="slide-side" mode="out-in">
       <div v-if="state.view === 'list'" key="list" :class="isMobile ? '' : 'p-3'">
-        <back-button @goBack="goBack" />
-
         <consult-filters
           :filters="filters"
           :option="option"
@@ -49,12 +52,12 @@ import { mapGetters } from 'vuex';
 import ConsultFilters from './components/ConsultFilters.vue';
 import FilterSettled from './components/FilterSettled.vue';
 import OrdersTable from './components/OrdersTable.vue';
-import { getToken, getErrors, getPriorityClass, isObjectEmpty } from '../../../utils/utils';
+import { getErrors, getPriorityClass, isObjectEmpty } from '../../../utils/utils';
 
 export default {
   name: 'Consulta',
   components: {
-    Detalhamento: () => import('../Detalhamento.vue'),
+    Detalhamento: () => import('../detail/Detalhamento.vue'),
     ConsultFilters,
     FilterSettled,
     OrdersTable,
@@ -126,11 +129,11 @@ export default {
     },
     isFilterSettled() {
       if (
-        this.filters.status ||
-        this.filters.data ||
-        this.filters.priority ||
-        this.filters.myOrders ||
-        this.filters.orderType
+        this.filters.status
+        || this.filters.data
+        || this.filters.priority
+        || this.filters.myOrders
+        || this.filters.orderType
       )
         return true;
 
@@ -162,7 +165,7 @@ export default {
     async verifyRoute() {
       if (this.type_route === 'verification') {
         this.$set(this.detail, 'order', this.order_verification);
-        this.$set(this.state, 'view', 'detail');
+        this.setStateView('detail');
       }
     },
     async setFiltersType(type) {
@@ -256,7 +259,7 @@ export default {
     },
     closeDetail() {
       this.$store.commit('addPageName', 'Consultas');
-      this.$set(this.state, 'view', 'list');
+      this.setStateView('list');
     },
     async getOrderDetail(order) {
       if (this.isLoadingOrder[String(order.idOrdemServico)]) return;
@@ -271,7 +274,7 @@ export default {
         if (!response || isObjectEmpty(response))
           throw new Error(`Não foi possível buscar os detalhes da ordem ${order}`);
 
-        this.$set(this.state, 'view', 'detail');
+        this.setStateView('detail');
         this.$set(this.detail, 'order', response);
       } catch (err) {
         console.log('err getOrderDetail :>> ', err.response || err);
@@ -365,7 +368,12 @@ export default {
       return string;
     },
     goBack() {
+      if (this.state.view === 'detail')
+        return this.setStateView('list');
       this.$router.push('/dashboard');
+    },
+    setStateView(view) {
+      this.state.view = view;
     },
   },
 };

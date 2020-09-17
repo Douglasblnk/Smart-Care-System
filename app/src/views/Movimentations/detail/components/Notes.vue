@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { getToken, getErrors } from '../../utils/utils';
+import { getToken, getErrors } from '../../../../utils/utils';
 
 export default {
   name: 'Apontamentos',
