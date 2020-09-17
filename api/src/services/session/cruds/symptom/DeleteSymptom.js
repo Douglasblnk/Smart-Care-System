@@ -6,7 +6,7 @@ const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../share
 
 module.exports = class DeleteSymptom {
   constructor() {
-    this._queryReturn;
+    this._queryReturn = '';
   }
 
   getParameters(req) {
@@ -31,13 +31,13 @@ module.exports = class DeleteSymptom {
 
       const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
-      
+
       await this.validateGroups(parameters);
       await this.deleteSymptom(parameters);
-      
+
       if (!this._queryReturn.affectedRows)
         throw 'Não foi possível deletar o sintoma';
-      
+
       return this._queryReturn;
     } catch (err) {
       console.log('err DeleteSymptom :>> ', err);
@@ -45,7 +45,7 @@ module.exports = class DeleteSymptom {
       throw err;
     }
   }
-  
+
   async deleteSymptom(parameters) {
     this._queryReturn = await new SymptomDao(parameters).deleteSymptom();
   }

@@ -4,9 +4,9 @@ const { get } = require('lodash');
 
 module.exports = class GetMaintenanceOrder {
   constructor() {
-    this._queryResult;
+    this._queryReturn = '';
   }
-  
+
   getParameters(req) {
     return {
       type: get(req.headers, 'type', ''),
@@ -25,7 +25,7 @@ module.exports = class GetMaintenanceOrder {
   async run(req) {
     try {
       const parameters = this.getParameters(req);
-  
+
       const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
 

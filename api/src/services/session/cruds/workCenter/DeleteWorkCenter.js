@@ -6,7 +6,7 @@ const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../share
 
 module.exports = class DeleteWorkCenter {
   constructor() {
-    this._queryReturn;
+    this._queryReturn = '';
   }
 
   getParameters(req) {
@@ -31,13 +31,13 @@ module.exports = class DeleteWorkCenter {
 
       const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
-      
+
       await this.validateGroups(parameters);
       await this.deleteWorkCenter(parameters);
-      
+
       if (!this._queryReturn.affectedRows)
         throw 'Não foi possível deletar o centro de trabalho';
-      
+
       return this._queryReturn;
     } catch (err) {
       console.log('err DeleteWorkCenter :>> ', err);
@@ -45,7 +45,7 @@ module.exports = class DeleteWorkCenter {
       throw err;
     }
   }
-  
+
   async deleteWorkCenter(parameters) {
     this._queryReturn = await new WorkCenterDao(parameters).deleteWorkCenter();
   }
