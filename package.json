@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "app": "npm run serve --prefix app",
-    "api": "npm run start --prefix API",
+    "api": "npm run start --prefix api",
     "ms-activity": "npm run start --prefix microservices/activity",
     "ms-analysis": "npm run start --prefix microservices/analysis",
     "ms": "npm-run-all -l -p ms-activity ms-analysis",

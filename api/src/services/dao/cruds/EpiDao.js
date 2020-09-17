@@ -1,15 +1,17 @@
 const GenericDao = require('../GenericDao');
-const { TABLE_EPI } = require('../../../shared/constants/database');
+const { TABLE_EPI, TABLE_ORDEM_SERVICO_HAS_EPI } = require('../../../shared/constants/database');
 
 module.exports = class EpiDao extends GenericDao {
   constructor({
     epiDescription,
+    orderId = '',
     updateId,
     mysql,
   } = {}) {
     super();
 
     this._epiDescription = epiDescription;
+    this._orderId = orderId;
     this._updateId = updateId;
     this._mysql = mysql;
   }
@@ -21,10 +23,30 @@ module.exports = class EpiDao extends GenericDao {
    */
   async getEpis() {
     const [rows] = await this._mysql.query(/* SQL */`
-      SELECT 
-        * 
+      SELECT
+        *
       FROM ${TABLE_EPI}
       WHERE ${TABLE_EPI}.excluded = ?;
+    `, [0]);
+
+    return this.parseSelectResponse(rows);
+  }
+
+  /**
+   * getOrderEpis
+   * Busca todos os EPIs de uma ordem de manutenção
+   * @return {Array} parsed array com todos os EPIs de uma ordem
+   */
+  async getOrderEpis() {
+    const [rows] = await this._mysql.query(/* SQL */`
+      SELECT
+        ${TABLE_ORDEM_SERVICO_HAS_EPI}.ordemServico_idOrdemServico,
+        ${TABLE_ORDEM_SERVICO_HAS_EPI}.Epi_idEpi,
+        ${TABLE_EPI}.idEpi,
+        ${TABLE_EPI}.descricaoEpi
+      FROM Epi
+      INNER JOIN ${TABLE_ORDEM_SERVICO_HAS_EPI} ON ${TABLE_ORDEM_SERVICO_HAS_EPI}.Epi_idEpi = ${TABLE_EPI}.idEpi
+      WHERE ${TABLE_ORDEM_SERVICO_HAS_EPI}.ordemServico_idOrdemServico = ${this._orderId}
     `, [0]);
 
     return this.parseSelectResponse(rows);

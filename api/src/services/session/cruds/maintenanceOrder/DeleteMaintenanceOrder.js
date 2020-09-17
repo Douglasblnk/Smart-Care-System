@@ -6,7 +6,7 @@ const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../share
 
 module.exports = class DeleteMaintenanceOrder {
   constructor() {
-    this._queryReturn;
+    this._queryReturn = '';
   }
 
   getParameters(req) {
@@ -31,13 +31,13 @@ module.exports = class DeleteMaintenanceOrder {
 
       const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
-      
+
       await this.validateGroups(parameters);
       await this.deleteOrder(parameters);
 
       if (!this._queryReturn.affectedRows)
         throw 'Não foi possível deletar a ordem de manutenção';
-      
+
       return this._queryReturn;
     } catch (err) {
       console.log('err DeleteMaintenanceOrder :>> ', err);
@@ -45,7 +45,7 @@ module.exports = class DeleteMaintenanceOrder {
       throw err;
     }
   }
-  
+
   async deleteOrder(parameters) {
     this._queryReturn = await new MaintenanceOrderDao(parameters).deleteOrder();
   }

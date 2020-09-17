@@ -7,12 +7,12 @@ const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../share
 
 module.exports = class RegisterUpdateUser {
   constructor() {
-    this._queryReturn;
+    this._queryReturn = '';
   }
 
   validateEmail(email) {
     if (!email) return false;
-    
+
     // eslint-disable-next-line max-len
     const regExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return regExp.test(email.toLowerCase());
@@ -62,12 +62,12 @@ module.exports = class RegisterUpdateUser {
 
       const errors = this.checkParameters(parameters, type);
       if (Object.values(errors).length > 0) throw errors;
-      
+
       await this.validateGroups(parameters);
 
       const user = await this.getPasswordHash(parameters);
       await this.registerUpdateUser(user, type);
-      
+
       if (!this._queryReturn.affectedRows)
         throw type ? 'Nenhum registro foi alterado' : 'Nenhum registro foi inserido';
 
@@ -78,7 +78,7 @@ module.exports = class RegisterUpdateUser {
       throw err;
     }
   }
-  
+
   async registerUpdateUser(parameters, type = '') {
     if (type === 'update')
       this._queryReturn = await new userDao(parameters).updateUser();

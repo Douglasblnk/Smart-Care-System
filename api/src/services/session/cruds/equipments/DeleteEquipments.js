@@ -6,7 +6,7 @@ const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../share
 
 module.exports = class DeleteEquipments {
   constructor() {
-    this._queryReturn;
+    this._queryReturn = '';
   }
 
   getParameters(req) {
@@ -31,13 +31,13 @@ module.exports = class DeleteEquipments {
 
       const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
-      
+
       await this.validateGroups(parameters);
       await this.deleteEquipment(parameters);
-      
+
       if (!this._queryReturn.affectedRows)
         throw 'Não foi possível deletar o equipamento';
-      
+
       return this._queryReturn;
     } catch (err) {
       console.log('err DeleteEquipment :>> ', err);
@@ -45,7 +45,7 @@ module.exports = class DeleteEquipments {
       throw err;
     }
   }
-  
+
   async deleteEquipment(parameters) {
     this._queryReturn = await new EquipmentsDao(parameters).deleteEquipment();
   }

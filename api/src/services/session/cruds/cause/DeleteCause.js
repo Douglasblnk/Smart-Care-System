@@ -6,7 +6,7 @@ const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../share
 
 module.exports = class DeleteCause {
   constructor() {
-    this._queryReturn;
+    this._queryReturn = '';
   }
 
   getParameters(req) {
@@ -31,13 +31,13 @@ module.exports = class DeleteCause {
 
       const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
-      
+
       await this.validateGroups(parameters);
       await this.deleteCause(parameters);
-      
+
       if (!this._queryReturn.affectedRows)
         throw 'Não foi possível deletar a causa';
-      
+
       return this._queryReturn;
     } catch (err) {
       console.log('err DeleteCause :>> ', err);
@@ -45,7 +45,7 @@ module.exports = class DeleteCause {
       throw err;
     }
   }
-  
+
   async deleteCause(parameters) {
     this._queryReturn = await new CauseDao(parameters).deleteCause();
   }

@@ -6,7 +6,7 @@ const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../share
 
 module.exports = class RegisterVerification {
   constructor() {
-    this._queryReturn;
+    this._queryReturn = '';
   }
 
   getParameters(req) {
@@ -45,11 +45,11 @@ module.exports = class RegisterVerification {
 
       const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
-      
+
       await this.validateGroups(parameters);
 
       await this.registerVerification(parameters);
-      
+
       if (!this._queryReturn.affectedRows)
         throw 'Nenhum registro foi inserido';
 
@@ -60,7 +60,7 @@ module.exports = class RegisterVerification {
       throw err;
     }
   }
-  
+
   async registerVerification(parameters) {
     // todo
     // this._queryReturn = await new VerificationDao(parameters);

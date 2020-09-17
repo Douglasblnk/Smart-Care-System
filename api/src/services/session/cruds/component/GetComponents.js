@@ -4,9 +4,9 @@ const { get } = require('lodash');
 
 module.exports = class GetComponents {
   constructor() {
-    this._queryResult;
+    this._queryReturn = '';
   }
-  
+
   getParameters(req) {
     return {
       mysql: get(req, 'mysql'),
@@ -22,7 +22,7 @@ module.exports = class GetComponents {
   async run(req) {
     try {
       const parameters = this.getParameters(req);
-  
+
       const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
 
