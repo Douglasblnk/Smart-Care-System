@@ -9,7 +9,7 @@ module.exports = class GetEpi {
 
   getParameters(req) {
     return {
-      orderId: get(req.headers, 'orderId'),
+      orderId: get(req.headers, 'order_id'),
       mysql: get(req, 'mysql'),
     };
   }
