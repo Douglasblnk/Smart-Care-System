@@ -33,7 +33,9 @@
     </div>
 
     <div v-else class="content justify-content-center align-items-center">
-      <router-view />
+      <transition name="fade" mode="out-in">
+        <router-view />
+      </transition>
     </div>
 
     <transition name="fade" mode="out-in">
