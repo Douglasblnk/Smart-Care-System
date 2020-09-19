@@ -4,9 +4,9 @@ const { get } = require('lodash');
 
 module.exports = class GetUsers {
   constructor() {
-    this._queryResult;
+    this._queryReturn = '';
   }
-  
+
   getParameters(req) {
     return {
       type: get(req.headers, 'type', ''),
@@ -23,7 +23,7 @@ module.exports = class GetUsers {
   async run(req) {
     try {
       const parameters = this.getParameters(req);
-  
+
       const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
 
@@ -43,7 +43,7 @@ module.exports = class GetUsers {
 
     else if (parameters.type === 'requester')
       this._queryResult = await new userDao(parameters).getRequesterUser();
-    
+
     else this._queryResult = await new userDao(parameters).getUsers();
   }
 
@@ -58,7 +58,7 @@ module.exports = class GetUsers {
         nivel_acesso: user.nivel_acesso,
       };
     }
-    
+
     return user.map(i => ({
       idUsuario: i.idUsuario,
       numeroCracha: i.numeroCracha,

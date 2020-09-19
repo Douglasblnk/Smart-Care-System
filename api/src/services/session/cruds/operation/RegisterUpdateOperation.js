@@ -6,7 +6,7 @@ const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../share
 
 module.exports = class RegisterUpdateOperation {
   constructor() {
-    this._queryReturn;
+    this._queryReturn = '';
   }
 
   getParameters(req) {
@@ -50,11 +50,11 @@ module.exports = class RegisterUpdateOperation {
 
       const errors = this.checkParameters(parameters, type);
       if (Object.values(errors).length > 0) throw errors;
-      
+
       await this.validateGroups(parameters);
 
       await this.registerUpdateOperation(parameters, type);
-      
+
       if (!this._queryReturn.affectedRows)
         throw type ? 'Nenhum registro foi alterado' : 'Nenhum registro foi inserido';
 
@@ -65,7 +65,7 @@ module.exports = class RegisterUpdateOperation {
       throw err;
     }
   }
-  
+
   async registerUpdateOperation(parameters, type = '') {
     if (type === 'update')
       this._queryReturn = await new OperationDao(parameters).updateOperation();

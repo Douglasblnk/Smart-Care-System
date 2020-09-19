@@ -6,7 +6,7 @@ const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../share
 
 module.exports = class DeleteEpi {
   constructor() {
-    this._queryReturn;
+    this._queryReturn = '';
   }
 
   getParameters(req) {
@@ -31,13 +31,13 @@ module.exports = class DeleteEpi {
 
       const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
-      
+
       await this.validateGroups(parameters);
       await this.deleteEpi(parameters);
-      
+
       if (!this._queryReturn.affectedRows)
         throw 'Não foi possível deletar o EPI';
-      
+
       return this._queryReturn;
     } catch (err) {
       console.log('err DeleteEpi :>> ', err);
@@ -45,7 +45,7 @@ module.exports = class DeleteEpi {
       throw err;
     }
   }
-  
+
   async deleteEpi(parameters) {
     this._queryReturn = await new EpiDao(parameters).deleteEpi();
   }
