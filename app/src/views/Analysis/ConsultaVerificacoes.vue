@@ -2,19 +2,19 @@
   <div v-if="dataVerification.verifications_list.length">
     <div v-if="!isMobile">
       <pending-verifications-web
-        :verificationsData="dataVerification"
+        :verifications-data="dataVerification"
       />
     </div>
     <div v-if="isMobile">
       <pending-verifications-mobile
-        :verificationsData="dataVerification"
+        :verifications-data="dataVerification"
       />
     </div>
   </div>
 </template>
 
 <script>
-import { getErrors, getToken } from '../../utils/utils';
+import { getErrors, getToken, isObjectEmpty } from '../../utils/utils';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -65,21 +65,52 @@ export default {
   },
 
   mounted() {
-    this.listVerifications();
-    this.setActivity();
     this.$store.commit('addPageName', 'Verificações');
+    
+    this.listVerificationsType();
+    //this.setActivity();
   },
 
   methods: {
-    setActivity() {
-      this.$http.setActivity(this.$activities.VERIFICATION_CONSULT_OPEN);
+    // setActivity() {
+    //   this.$http.setActivity(this.$activities.VERIFICATION_CONSULT_OPEN);
+    // },
+    async listVerificationsType() {
+      setTimeout(() => {
+        const user = this.$store.state.user;
+        if (isObjectEmpty(user))
+          return this.listVerificationsType();
+      }, 20);
+      //console.log('user: ', user);
+      if (user.nivelAcesso === 2)
+        this.listVerificationsMaintainer();
+      else if (user.nivelAcesso === 1)
+        this.listVerificationsReport();
     },
-    async listVerifications() {
+    async listVerificationsMaintainer() {
       try {
-        const { result } = await this.$http.get('verificacao/list-verification', getToken());
-        if (result.length !== undefined)
-          this.dataVerification.verifications_list = [...result];
-        else this.verifications_list.push(result);
+        //const { result } = await this.$http.get('verificacao/list-verification', getToken());
+        const orders = await this.$http.microserviceAnalisis('analysis/verifications-orders', getToken());
+        if (orders.length !== undefined)
+          this.dataVerification.verifications_list = [...orders];
+        else this.verifications_list.push(orders);
+
+        this.mobileOptions();
+      } catch (err) {
+        console.log('err :>> ', err.response || err);
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
+    async listVerificationsReport() {
+      try {
+        const orders = await this.$http.microserviceAnalisis('analysis/verifications-orders-report', getToken());
+        if (orders.length !== undefined)
+          this.dataVerification.verifications_list = [...orders];
+        else this.verifications_list.push(orders);
         this.mobileOptions();
         console.log('dataVerification: ', this.dataVerification);
       } catch (err) {
