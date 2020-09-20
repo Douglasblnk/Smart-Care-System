@@ -1,17 +1,18 @@
 <template>
   <section class="root-web-filter-settled" :class="isMobile ? '' : 'px-3'">
-    <div v-if="isMobile">
-      <span v-if="isFilterSettled" class="text-muted">Filtros selecionados: </span>
-      
-      <div v-if="!isFilterSettled" class="text-center d-flex align-items-center justify-content-center m-3">
+    <transition name="fade" mode="out-in">
+      <div
+        v-if="isMobile && !isFilterSettled"
+        key="search"
+        class="text-center d-flex align-items-center justify-content-center m-3"
+      >
         <i class="fa fa-search fa-fw text-muted" />
         <span class="text-muted bg-dark-gray p-2 rounded-lg">Pesquise por ordens de manutenção</span>
       </div>
-    </div>
 
-    <transition name="fade" mode="out-in">
       <div
         v-if="isFilterSettled"
+        key="filterSettled"
         :class="isMobile ? '' : 'd-flex justify-content-between mb-2'"
       >
         <div v-if="!isMobile" key="web" class="d-flex align-items-center">
@@ -39,6 +40,8 @@
         </div>
 
         <div v-else key="mobile" class="d-flex flex-column">
+          <span class="text-muted">Filtros selecionados: </span>
+
           <div class="d-flex flex-wrap">
             <span v-if="filters.status" class="selected-filters">
               <i class="fa fa-check-circle fa-fw" />{{ filters.status }}

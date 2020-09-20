@@ -21,18 +21,18 @@ module.exports = class GetOrderSummary {
       
       const lastMonth = await this._getMonthlyOrder();
 
-      this._getOrderByMonth.closeConnection();
-
       return lastMonth;
     } catch (err) {
       throw err;
+    } finally {
+      this._getOrderByMonth.closeConnection();
     }
   }
 
   async _getMonthlyOrder() {
     try {
       const orders = await this._getOrderByMonth.getOrderLastMonth();
-      
+
       if (!orders) throw 'could not find orders';
 
       return orders;

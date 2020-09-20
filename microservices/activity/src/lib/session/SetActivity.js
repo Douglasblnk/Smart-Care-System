@@ -31,14 +31,14 @@ module.exports = class SetActivity {
       await this._validateSession();
       await this._setActivity();
 
-      this._setActivityData.closeConnection();
-
       return {
         status: 200,
         message: 'activity setted',
       };
     } catch (err) {
       throw err;
+    } finally {
+      this._setActivityData.closeConnection();
     }
   }
 

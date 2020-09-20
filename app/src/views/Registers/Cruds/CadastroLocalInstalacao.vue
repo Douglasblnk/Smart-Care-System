@@ -1,15 +1,6 @@
 <template>
   <div class="root-local-instalacao-view">
-    <div class="d-flex align-items-center">
-      <div class="back-button ml-3" @click="goBack">
-        <i
-          class="fa fa-arrow-left fa-fw"
-          title="Retornar"
-        />
-        <span>Voltar</span>
-      </div>
-    </div>
-
+    <back-button @goBack="goBack" />
 
     <div class="content-wrapper">
       <div>
@@ -27,47 +18,52 @@
         </div>
 
         <transition name="slide-fade" mode="out-in">
-          <template v-if="switchListRegister === 'list'">
-            <div class="table-content list-option bg-white p-4">
-              <table class="table table table-striped table-borderless table-hover" cellspacing="0">
-                <thead class="table-head">
-                  <tr>
-                    <th scope="col">Setor</th>
-                    <th scope="col">Ações</th>
-                  </tr>
-                </thead>
-                <tbody class="table-body">
-                  <tr v-for="(sector, index) in instalationLocal" :key="`sector-${index}`">
-                    <td>{{ sector.nome }}</td>
-                    <td style="width: 50px">
-                      <div class="d-flex table-action">
-                        <i class="fas fa-edit text-muted" @click="editSector(sector)"></i>
-                        <i class="fas fa-trash text-muted" @click="deleteSector(sector, index)"></i>
+          <div v-if="switchListRegister === 'list'" key="list">
+            <card full-width>
+              <div class="register-localinstalacao-table">
+                <v-client-table
+                  ref="tableRegisterEpi"
+                  v-model="instalationLocal"
+                  :columns="columns"
+                  :options="cadastroLocalInstalacaoTable.options"
+                >
+                  <div slot="actions" slot-scope="{row, index}">
+                    <template>
+                      <div class="icons-actions-wrapper">
+                        <div class="icons-actions">
+                          <i class="fas fa-edit text-muted" @click="editSector(row)"></i>
+                        </div>
+                        <div class="icons-actions">
+                          <i class="fas fa-trash text-muted" @click="deleteSector(row, index - 1)"></i>
+                        </div>
                       </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </template>
+                    </template>
+                  </div>
+                </v-client-table>
+              </div>
+            </card>
+          </div>
 
-          <template v-if="switchListRegister === 'register'">
-            <form @submit.prevent="registerSector()">
-              <div class="cadCard">
-                <div class="inputs">
-                  <simple-input v-model="inputValues.nome" :label="'Local Instalação:'" :type="'text'" />
-                </div>
+          <div v-if="switchListRegister === 'register'" key="register">
+            <div class="cadCard">
+              <div class="inputs">
+                <simple-input v-model="inputValues.nome" :label="'Local Instalação:'" :type="'text'" />
               </div>
-              <div class="d-flex justify-content-center m-3">
-                <smart-button primary class="mr-2">
-                  {{getSaveButtonText()}}
-                </smart-button>
-                <smart-button v-if="isEditing" @click.native="closeEditing">
-                  <span>Cancelar</span>
-                </smart-button>
-              </div>
-            </form>
-          </template>
+            </div>
+            <div class="d-flex justify-content-center m-3">
+              <smart-button
+                primary
+                :loading="isLoading"
+                class="mr-2"
+                @click.native="registerSector()"
+              >
+                {{ getSaveButtonText() }}
+              </smart-button>
+              <smart-button v-if="isEditing" @click.native="closeEditing()">
+                <span>Cancelar</span>
+              </smart-button>
+            </div>
+          </div>
         </transition>
       </div>
     </div>
@@ -75,7 +71,7 @@
 </template>
 
 <script>
-import { getToken, getErrors } from '../../../utils/utils';
+import { getErrors } from '../../../utils/utils';
 
 export default {
   data() {
@@ -84,8 +80,37 @@ export default {
         idSetor: '',
         nome: '',
       },
+      columns: ['nome', 'actions'],
+      cadastroLocalInstalacaoTable: {
+        options: {
+          headings: {
+            idSetor: create => create('span', {
+              domProps: { innerHTML: 'Local Instalação <i class="fas fa-sort"></i>' },
+            }),
+            nome: 'Local Instalação',
+            actions: 'Ações',
+          },
+          columnsClasses: {
+            actions: 'actions-class',
+          },
+          texts: {
+            filter: '',
+            filterPlaceholder: 'Buscar',
+            count: 'Mostrando {from} até {to} de {count} registros|{count} Registros|Um Registro',
+            limit: '',
+            page: 'Páginas:',
+            noResults: 'Nenhum registro encontrado',
+            loading: 'Carregando...',
+          },
+          perPage: 10,
+          perPageValues: [10, 25, 50],
+          sortable: ['idSetor'],
+        },
+        
+      },
       switchListRegister: 'list',
       isEditing: false,
+      isLoading: false,
       instalationLocal: [],
     };
   },
@@ -119,76 +144,74 @@ export default {
     },
     async getSector() {
       try {
-        const response = await this.$http.get('local-instalacao/get', getToken());
+        const response = await this.$http.get('local-instalacao');
 
-        if (response.result.length === undefined)
-          this.instalationLocal.push(response.result);
-          
-        else this.instalationLocal = [...response.result];
+        if (response.length === undefined)
+          this.instalationLocal.push(response);
+        else this.instalationLocal = [...response];
       } catch (err) {
         console.log('err getSector => :', err.response || err);
 
         return this.$swal({
           type: 'warning',
-          text: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
     },
     async registerSector() {
+      if (this.isLoading) return;
       if (this.isEditing) return this.updateSector();
 
       try {
-        const response = await this.$http.post('local-instalacao', getToken(), this.inputValues);
+        this.isLoading = true;
+        await this.$http.post('local-instalacao', this.inputValues);
+
+        this.resetModel();
+        this.getSector();
 
         this.$swal({
           type: 'success',
-          title: response.result,
+          text: 'Local de instalação registrado com sucesso!',
           confirmButtonColor: '#F34336',
-        }).then(() => {
-          this.instalationLocal.push(this.inputValues);
-
-          this.resetModel();
-          this.getSector();
         });
       } catch (err) {
         console.log('err registerSector => :', err.response || err);
 
         return this.$swal({
           type: 'warning',
-          text: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
+      } finally {
+        this.isLoading = false;
       }
     },
     async updateSector() {
+      if (this.isLoading) return;
+
       try {
-        console.log('INPUT VALUES: ', this.inputValues);
-        const response = await this.$http.update(
-          'local-instalacao', getToken(), this.inputValues, this.inputValues.idSetor,
-        );
+        this.isLoading = true;
+        await this.$http.update('local-instalacao', this.inputValues, this.inputValues.idSetor);
 
-        this.$swal({
+        this.getSector();
+        this.closeEditing();
+
+        await this.$swal({
           type: 'success',
-          title: response.result,
+          text: 'Local de instalação alterado com sucesso!',
           confirmButtonColor: '#F34336',
-        }).then(() => {
-          const index = this.instalationLocal.indexOf(
-            this.instalationLocal.find(i => i.idSetor === this.inputValues.idSetor)
-          );
-
-          this.instalationLocal.splice(index, 1, this.inputValues);
-
-          this.closeEditing();
         });
       } catch (err) {
         console.log('err updateSector => :', err.response || err);
 
         return this.$swal({
           type: 'error',
-          text: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
+      } finally {
+        this.isLoading = false;
       }
     },
     deleteSector(sector, index) {
@@ -196,24 +219,25 @@ export default {
         type: 'question',
         title: `Deseja mesmo remover o setor de ${sector.nome}?`,
         showCancelButton: true,
+        showLoaderOnConfirm: true,
         confirmButtonColor: '#F34336',
         preConfirm: async () => {
           try {
-            const response = await this.$http.delete('local-instalacao', getToken(), sector.idSetor);
+            await this.$http.delete('local-instalacao', sector.idSetor);
 
-            return this.$swal({
+            await this.$swal({
               type: 'success',
-              title: response.result,
+              text: 'Local de instalação removido com sucesso!',
               confirmButtonColor: '#F34336',
-            }).then(() => {
-              this.instalationLocal.splice(index, 1);
             });
+
+            this.instalationLocal.splice(index, 1);
           } catch (err) {
             console.log('err deleteSector => :', err.response || err);
 
             return this.$swal({
               type: 'error',
-              text: getErrors(err),
+              html: getErrors(err),
               confirmButtonColor: '#F34336',
             });
           }
@@ -308,7 +332,38 @@ export default {
       }
     }
   }
-
+  .icons-actions-wrapper{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    
+    .icons-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      &:hover {
+        span {
+          color: var(--duas-rodas-soft)
+        }
+      }
+      i {
+        transition: .2s;
+      }
+      &:hover {
+        i {
+          transform: scale(1.18);
+        }
+      }
+      &:active {
+        i {
+          transform: scale(1);
+        }
+      }
+      // padding: 2%;
+    }
+  }
   .slide-fade-enter-active {
     transition: all 0.1s ease;
   }
@@ -321,4 +376,70 @@ export default {
     opacity: 0;
   }
 }
+</style>
+<style lang="scss">
+.register-localinstalacao-table {
+  table {
+    border-radius: 8px;
+    thead {
+      th {
+        background-color: var(--duas-rodas-soft);
+        span {
+          cursor: pointer;
+          color: white !important;
+        }
+        border: 0 !important;
+        outline: none;
+      }
+    }
+    tbody {
+      tr {
+        td {
+          border: 0 !important;
+          vertical-align: middle;
+          outline: none;
+        }
+      }
+    }
+  }
+  .col-md-12 {
+    justify-content: space-between;
+    display: flex !important;
+    .VueTables__search-field {
+      width: 30vw !important;
+      input {
+        width: 100%;
+      }
+    }
+  }
+
+  .VuePagination {
+    display: flex;
+    justify-content: center;
+
+    p {
+      display: flex;
+      justify-content: center;
+    }
+  }
+  .page-item .active {
+    color: white !important;
+    border-color: #ddd !important;
+    background-color: var(--duas-rodas-soft) !important;
+    &:focus {
+      box-shadow: none !important;
+    }
+  }
+  .page-link {
+    color: #555 !important;
+    &:focus {
+      box-shadow: none !important;
+    }
+  }
+  .actions-class {
+    width: 100px !important;
+  }
+
+}
+
 </style>

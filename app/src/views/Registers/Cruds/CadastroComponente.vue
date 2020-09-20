@@ -1,5 +1,7 @@
 <template>
   <div class="root-cadastro-component-view">
+    <back-button @goBack="goBack" />
+
     <div class="content-wrapper">
       <div>
         <div class="list-option">
@@ -16,60 +18,67 @@
         </div>
 
         <transition name="slide-fade" mode="out-in">
-          <template v-if="switchListRegister === 'list'">
-            <div class="d-flex w-100 justify-content-center">
-              <div class="table-content bg-white p-4 w-100">
-                <div class="table-responsive">
-                  <table class="table table table-striped table-borderless table-hover" cellspacing="0">
-                    <thead class="table-head">
-                      <tr>
-                        <th scope="col">Componente</th>
-                        <!-- <th scope="col">Máquina</th> -->
-                        <th scope="col">Ações</th>
-                      </tr>
-                    </thead>
-                    <tbody class="table-body">
-                      <tr v-for="(component, index) in workComponent" :key="`component-${index}`" value="component.label">
-                        <td>{{ component.DescricaoComponente }}</td>
-                      
-                        <!-- <td>{{ workCenter.DescricaoComponente}}</td> -->
-                        <td style="width: 50px">
-                          <div class="d-flex table-action">
-                            <i class="fas fa-edit text-muted" @click="editComponent(component)"></i>
-                            <i class="fas fa-trash text-muted" @click="deleteComponents(component, index)"></i>
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+          <div v-if="switchListRegister === 'list'" key="list">
+            <card full-width>
+              <div class="register-component-table">
+                <v-client-table
+                  ref="tableRegisterEpi"
+                  v-model="workComponent"
+                  :columns="columns"
+                  :options="registerComponetTable.options"
+                >
+                  <div slot="actions" slot-scope="{row, index}">
+                    <template>
+                      <div class="icons-actions-wrapper">
+                        <div class="icons-actions">
+                          <i class="fas fa-edit text-muted" @click="editComponent(row)"></i>
+                        </div>
+                        <div class="icons-actions">
+                          <i class="fas fa-trash text-muted" @click="deleteComponents(row, index - 1)"></i>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                </v-client-table>
               </div>
-            </div>
-          </template>
+            </card>
+          </div>
 
-          <template v-if="switchListRegister === 'register'">
-            <form class="formPosition" @submit.prevent="registerEquipment()">
+          <div v-if="switchListRegister === 'register'" key="register">
+            <div class="formPosition">
               <div class="cadCard">
                 <div class="inputs">
-                  <custom-select v-model="selectValue" :options="getWorkEquipmentOptions()"></custom-select>
+                  <custom-select v-model="selectEquipment" :options="getWorkEquipmentOptions()"></custom-select>
                 </div>
                 <div class="sideInput">
                   <div class="inputsSidePosition">
-                    <description v-model="inputValues.DescricaoComponente" :label="'Descrição Componente:'" :type="'text'" />
+                    <description
+                      v-model="inputValues.DescricaoComponente"
+                      :label="'Descrição Componente:'"
+                      :type="'text'"
+                    />
                   </div>
                 </div>
               </div>
               <div class="d-flex justify-content-center m-3">
-                <smart-button primary class="mr-2">
+                <smart-button
+                  primary
+                  :loading="isLoading"
+                  class="mr-2"
+                  @click.native="registerComponent()"
+                >
                   {{ getSaveButtonText() }}
                 </smart-button>
 
-                <smart-button v-if="isEditing" @click.native="closeEditing">
+                <smart-button
+                  v-if="isEditing"
+                  @click.native="closeEditing()"
+                >
                   <span>Cancelar</span>
                 </smart-button>
               </div>
-            </form>
-          </template>
+            </div>
+          </div>
         </transition>
       </div>
     </div>
@@ -77,8 +86,7 @@
 </template>
 
 <script>
-import { getToken, getErrors } from '../../../utils/utils';
-
+import { getErrors } from '../../../utils/utils';
 
 export default {
   components: {
@@ -86,18 +94,46 @@ export default {
   },
   data() {
     return {
-      selectValue: '',
+      selectEquipment: '',
       inputValues: {
         DescricaoComponente: '',
         Equipamento_idEquipamento: 0,
 
       },
+      columns: ['DescricaoComponente', 'actions'],
+      registerComponetTable: {
+        options: {
+          headings: {
+            idComponente: create => create('span', {
+              domProps: { innerHTML: 'Componente <i class="fas fa-sort"></i>' },
+            }),
+            DescricaoComponente: 'Componente',
+            actions: 'Ações',
+          },
+          columnsClasses: {
+            actions: 'actions-class',
+          },
+          texts: {
+            filter: '',
+            filterPlaceholder: 'Buscar',
+            count: 'Mostrando {from} até {to} de {count} registros|{count} Registros|Um Registro',
+            limit: '',
+            page: 'Páginas:',
+            noResults: 'Nenhum registro encontrado',
+            loading: 'Carregando...',
+          },
+          perPage: 10,
+          perPageValues: [10, 25, 50],
+          sortable: ['idComponente'],
+        },
+        
+      },
       workEquipment: [],
-      workEquipmentEdit: [],
       workComponent: [],
       selectsComponentseEquipament: [],
       switchListRegister: 'list',
       isEditing: false,
+      isLoading: false,
       equipamentos: [],
     };
   },
@@ -115,46 +151,57 @@ export default {
     switchLabelPage(labelPage) {
       if (labelPage === 'list') {
         this.switchListRegister = 'list';
-        this.workEquipment = this.workEquipmentEdit;
         return this.$store.commit('addPageName', 'Cadastro de Componentes | Listagem');
       } else if (labelPage === 'register') {
-        this.workEquipment = this.workEquipmentEdit;
         this.switchListRegister = 'register';
         return this.$store.commit('addPageName', 'Cadastro de Componentes | Cadastrar');
       }
       return this.$store.commit('addPageName', 'Cadastro de Componentes | Editar');
     },
-    async registerEquipment() {
+    async registerComponent() {
+      if (this.isLoading) return;
       if (this.isEditing) return this.updateComponent();
-      this.inputValues.Equipamento_idEquipamento = this.selectValue;
+
+      this.inputValues.Equipamento_idEquipamento = this.selectEquipment;
+
       try {
-        const response = await this.$http.post('componente', getToken(), this.inputValues);
-        this.$swal({
-          type: 'success',
-          title: 'Cadastrado com sucesso',
-          confirmButtonColor: '#F34336',
-        }),
-        this.DescricaoComponente = '';
+        this.isLoading = true;
+        await this.$http.post('componente', this.inputValues);
+
+        this.resetModel();
         this.getComponentes();
-      } catch (err) {
-        return this.$swal({
-          type: 'warning',
-          title: getErrors(err),
+
+        await this.$swal({
+          type: 'success',
+          text: 'Componente registrado com sucesso!',
           confirmButtonColor: '#F34336',
         });
+      } catch (err) {
+        console.log('err registerComponent:>> ', err.response || err);
+
+        return this.$swal({
+          type: 'warning',
+          html: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      } finally {
+        this.isLoading = false;
       }
     },
 
     async getEquipments() {
       try {
-        const response = await this.$http.get('equipamento/get', getToken());
-        if (response.result.length === undefined)
-          this.workEquipment.push(response.result);
-        else this.workEquipment = [...response.result];
+        const response = await this.$http.get('equipamento');
+
+        if (response.length === undefined)
+          this.workEquipment.push(response);
+        else this.workEquipment = [...response];
       } catch (err) {
+        console.log('err getEquipments :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
@@ -162,47 +209,50 @@ export default {
 
     async getComponentes() {
       try {
-        const response = await this.$http.get('componente/get', getToken());
-        if (response.result.length === undefined)
-          this.workComponent.push(response.result);
-        else this.workComponent = [...response.result];
+        const response = await this.$http.get('componente');
+
+        if (response.length === undefined)
+          this.workComponent.push(response);
+        else this.workComponent = [...response];
       } catch (err) {
+        console.log('err getComponentes :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
     },
-
-    resetModel() {
-      this.inputValues = {};
-    },
-  
     async deleteComponents(component, index) {
-      try {
-        this.$swal({
-          type: 'question',
-          title: `Deseja mesmo remover o Componente ${component.DescricaoComponente}`,
-          showCancelButton: true,
-          confirmButtonColor: '#F34336',
-          preConfirm: async () => {
-            const response = await this.$http.delete('componente', getToken(), component.idComponente);
-            return this.$swal({
+      this.$swal({
+        type: 'question',
+        title: `Deseja mesmo remover o Componente ${component.DescricaoComponente}`,
+        showCancelButton: true,
+        showLoaderOnConfirm: true,
+        confirmButtonColor: '#F34336',
+        preConfirm: async () => {
+          try {
+            await this.$http.delete('componente', component.idComponente);
+
+            this.workComponent.splice(index, 1);
+
+            await this.$swal({
               type: 'success',
-              title: 'Removido com Sucesso',
-              text: response.detailErr || '',
+              text: 'Componente removido com sucesso!',
               confirmButtonColor: '#F34336',
             });
-          },
-        });
-      } catch (err) {
-        return this.$swal({
-          type: 'warning',
-          title: getErrors(err),
-          confirmButtonColor: '#F34336',
-        });
-      }
+          } catch (err) {
+            console.log('err deleteComponents :>> ', err.response || err);
+
+            return this.$swal({
+              type: 'warning',
+              html: getErrors(err),
+              confirmButtonColor: '#F34336',
+            });
+          }
+        },
+      });
     },
     editComponent(component) {
       this.switchLabelPage('edit');
@@ -210,46 +260,53 @@ export default {
       this.switchListRegister = 'register';
       this.isEditing = true;
 
-      this.workEquipmentEdit = this.workEquipment;
-
       const equipamentName = this.workEquipment.find(equipament => equipament.idEquipamento === component.Equipamento_idEquipamento);
 
-      if (equipamentName !== undefined) {
-        this.workEquipment = [];
-        this.workEquipment.push(equipamentName);
-        this.getWorkEquipmentOptions();
-      } else { return this.workEquipment= this.workEquipment; }
-    },
-  
-    closeEditing() {
-      this.switchLabelPage('list');
-      this.switchListRegister = 'list';
-      this.isEditing = false;
-      this.workEquipment = this.workEquipmentEdit;
-      this.resetModel();
+      this.selectEquipment = String(equipamentName.idEquipamento);
     },
     async updateComponent() {
+      if (this.isLoading) return;
+
       try {
-        const response = await this.$http.update('componente', getToken(), this.inputValues, this.inputValues.idComponente);
-        this.$swal({
+        this.isLoading = true;
+        this.inputValues.Equipamento_idEquipamento = this.selectEquipment;
+        
+        await this.$http.update('componente', this.inputValues, this.inputValues.idComponente);
+
+        this.getComponentes();
+        this.closeEditing();
+        
+        await this.$swal({
           type: 'success',
-          title: 'Alterado com Sucesso',
+          text: 'Alterado com Sucesso',
           confirmButtonColor: '#F34336',
         });
-        const index = this.workComponent.indexOf(this.workComponent.find(i => i.idComponente === this.inputValues.idComponente));
-        this.workComponent.splice(index, 1, this.inputValues);
-        this.workEquipment = this.workEquipmentEdit;
-        this.closeEditing();
       } catch (err) {
+        console.log('err updateComponent :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
+      } finally {
+        this.isLoading = false;
       }
     },
     getWorkEquipmentOptions() {
       return this.workEquipment.map(i => ({ id: String(i.idEquipamento), description: i.equipamento }));
+    },
+    closeEditing() {
+      this.switchLabelPage('list');
+      this.switchListRegister = 'list';
+      this.isEditing = false;
+      this.resetModel();
+    },
+    resetModel() {
+      this.inputValues = {};
+    },
+    goBack() {
+      this.$router.push('/cadastros');
     },
   },
 };
@@ -331,7 +388,38 @@ export default {
       }
     }
   }
-
+  .icons-actions-wrapper{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    
+    .icons-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      &:hover {
+        span {
+          color: var(--duas-rodas-soft)
+        }
+      }
+      i {
+        transition: .2s;
+      }
+      &:hover {
+        i {
+          transform: scale(1.18);
+        }
+      }
+      &:active {
+        i {
+          transform: scale(1);
+        }
+      }
+      // padding: 2%;
+    }
+  }
   .slide-fade-enter-active {
     transition: all 0.1s ease;
   }
@@ -344,4 +432,70 @@ export default {
     opacity: 0;
   }
 }
+</style>
+<style lang="scss">
+.register-component-table {
+  table {
+    border-radius: 8px;
+    thead {
+      th {
+        background-color: var(--duas-rodas-soft);
+        span {
+          cursor: pointer;
+          color: white !important;
+        }
+        border: 0 !important;
+        outline: none;
+      }
+    }
+    tbody {
+      tr {
+        td {
+          border: 0 !important;
+          vertical-align: middle;
+          outline: none;
+        }
+      }
+    }
+  }
+  .col-md-12 {
+    justify-content: space-between;
+    display: flex !important;
+    .VueTables__search-field {
+      width: 30vw !important;
+      input {
+        width: 100%;
+      }
+    }
+  }
+
+  .VuePagination {
+    display: flex;
+    justify-content: center;
+
+    p {
+      display: flex;
+      justify-content: center;
+    }
+  }
+  .page-item .active {
+    color: white !important;
+    border-color: #ddd !important;
+    background-color: var(--duas-rodas-soft) !important;
+    &:focus {
+      box-shadow: none !important;
+    }
+  }
+  .page-link {
+    color: #555 !important;
+    &:focus {
+      box-shadow: none !important;
+    }
+  }
+  .actions-class {
+    width: 100px !important;
+  }
+
+}
+
 </style>

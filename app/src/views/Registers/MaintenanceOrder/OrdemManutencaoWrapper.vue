@@ -1,14 +1,6 @@
 <template>
   <div class="ordem-manutencao-wrapper-root">
-    <div class="d-flex align-items-center">
-      <div class="back-button ml-3" @click="goBack">
-        <i
-          class="fa fa-arrow-left fa-fw"
-          title="Retornar"
-        />
-        <span>Voltar</span>
-      </div>
-    </div>
+    <back-button @goBack="goBack" />
     
     <div>
       <div class="select-order-text">
@@ -78,9 +70,9 @@ export default {
   name: 'OrdemManutencaoWrapper',
 
   components: {
-    'ordem-lista': () => import('./OrdemManutencaoLista.vue'),
-    'ordem-rota': () => import('./OrdemManutencaoRota.vue'),
-    'ordem-corretiva': () => import('./OrdemManutencaoCorretiva.vue'),
+    ordemLista: () => import('./OrdemManutencaoLista.vue'),
+    ordemRota: () => import('./OrdemManutencaoRota.vue'),
+    ordemCorretiva: () => import('./OrdemManutencaoCorretiva.vue'),
   },
 
   data() {

@@ -1,27 +1,45 @@
 <template>
   <div id="app">
-    <div v-if="routes" class="content">
-      <div v-if="!state.isMobile" class="sidebar-content shadow">
-        <sidebar />
-      </div>
-
+    <div
+      class="content"
+      :class="isLoginScreen ? 'justify-content-center align-items-center' : ''"
+    >
+      <transition
+        name="sidebar-slide"
+        @after-leave="afterLeaveSidebar()"
+        @before-enter="beforeEnterSidebar()"
+      >
+        <div v-if="!state.isMobile && !isLoginScreen" class="sidebar-content shadow">
+          <sidebar />
+        </div>
+      </transition>
       <div class="wrapper">
-        <div v-if="!state.isMobile" class="topbar-content">
-          <Header />
-        </div>
+        <transition name="header-slide">
+          <div v-if="!state.isMobile && !isLoginScreen" key="header" class="topbar-content">
+            <Header />
+          </div>
+        </transition>
 
-        <div v-else class="mobile-topbar-content">
-          <mobile-header />
-        </div>
-
-        <div class="router-content">
-          <transition name="slide-fade" mode="out-in">
+        <transition name="header-slide">
+          <div v-if="state.isMobileAfterSidebarLeave && !isLoginScreen" key="mobileHeader" class="mobile-topbar-content">
+            <mobile-header />
+          </div>
+        </transition>
+        <div
+          key="router"
+          :class="state.isMobile && isLoginScreen ? 'content justify-content-center align-items-center' : 'router-content'"
+        >
+          <transition
+            name="slide-fade"
+            mode="out-in"
+            v-on:after-enter="afterEnterRouter()"
+          >
             <router-view />
           </transition>
         </div>
 
-        <transition name="fade" mode="out-in">
-          <div v-if="validateVisibility" class="bottom-navigation">
+        <transition name="fade">
+          <div v-if="validateVisibility && !isLoginScreen" class="bottom-navigation">
             <bottom-navigation
               :show-options="state.showOptions"
               @update:openCloseConfigs="openCloseConfigs()"
@@ -32,15 +50,11 @@
       </div>
     </div>
 
-    <div v-else class="content justify-content-center align-items-center">
-      <router-view />
-    </div>
-
-    <transition name="fade" mode="out-in">
+    <transition name="fade">
       <div v-show="state.showOptions" class="config-blurred-background" />
     </transition>
 
-    <transition name="fade" mode="out-in">
+    <transition name="fade">
       <div v-show="showConsultFilter" class="filter-dark-background" @click="closeConsultFilter" />
     </transition>
   </div>
@@ -61,6 +75,8 @@ export default {
       state: {
         isMobile: false,
         showOptions: false,
+        isLoginScreen: false,
+        isMobileAfterSidebarLeave: false,
       },
     };
   },
@@ -68,21 +84,33 @@ export default {
     ...mapGetters({
       showConsultFilter: 'getShowConsultFilter',
     }),
-    routes() {
-      if (this.$route.name === 'login') return false;
-      if (this.$route.name === '404') return false;
-      return true;
+    isLoginScreen() {
+      if (this.$route.name === 'login') return true;
+      return false;
     },
     validateVisibility() {
       return !this.state.isMobile ? false : true;
     },
   },
   mounted() {
-    this.systemResponsivity();
+    this.systemResponsivity(window);
+    window.addEventListener('resize', this.systemResponsivity); 
+
+    this.state.isMobileAfterSidebarLeave = this.isMobile;
   },
   methods: {
-    systemResponsivity() {
-      const width = window.innerWidth;
+    afterEnterRouter() {
+      if (this.isLoginScreen) this.state.isLoginScreen = true;
+      else this.state.isLoginScreen = false;
+    },
+    afterLeaveSidebar() {
+      this.state.isMobileAfterSidebarLeave = true;
+    },
+    beforeEnterSidebar() {
+      this.state.isMobileAfterSidebarLeave = false;
+    },
+    systemResponsivity({ target }) {
+      const width = target ? target.innerWidth : window.innerWidth;
 
       if (
         /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) &&
@@ -90,7 +118,7 @@ export default {
       )
         this.state.isMobile = true;
       else this.state.isMobile = false;
-
+      
       this.$store.dispatch('setIsMobile', this.state.isMobile);
     },
     openCloseConfigs() {
@@ -108,3 +136,29 @@ export default {
 </script>
 
 <style src="./app.scss" lang="scss"></style>
+
+<style scoped>
+.sidebar-slide-enter-active {
+  transition: all .2s ease;
+}
+.sidebar-slide-leave-active {
+  transition: all .2s;
+}
+.sidebar-slide-enter,
+.sidebar-slide-leave-to {
+  transform: translateX(-15px);
+  opacity: 0;
+}
+
+.header-slide-enter-active {
+  transition: all .2s ease;
+}
+.header-slide-leave-active {
+  transition: all .2s;
+}
+.header-slide-enter,
+.header-slide-leave-to {
+  transform: translateY(-15px);
+  opacity: 0;
+}
+</style>

@@ -37,6 +37,7 @@ export default {
     font-size: 18px;
     padding: 0 10px;
     border-radius: 5px;
+    user-select: none;
     cursor: pointer;
     i { margin-right: 10px }
     &:hover {

@@ -1,5 +1,7 @@
 <template>
   <div class="root-cadastro-operacao-view">
+    <back-button @goBack="goBack" />
+
     <div class="content-wrapper">
       <div>
         <div class="list-option">
@@ -16,78 +18,70 @@
         </div>
 
         <transition name="slide-fade" mode="out-in">
-          <template v-if="switchListRegister === 'list'">
-            <div class="d-flex w-100 justify-content-center">
-              <div class="table-content bg-white p-4 w-100">
-                <div class="table-responsive">
-                  <table class="table table table-striped table-borderless table-hover" cellspacing="0">
-                    <thead class="table-head">
-                      <tr>
-                        <th scope="col">Componente</th>
-                        <!-- <th scope="col">Máquina</th> -->
-                        <th scope="col">Ações</th>
-                      </tr>
-                    </thead>
-                    <tbody class="table-body">
-                      <tr v-for="(component, index) in workOperations" :key="`component-${index}`" value="component.descricao_operacao">
-                        <td>{{ component.descricao_operacao }}</td>
-                      
-                        <!-- <td>{{ workCenter.DescricaoComponente}}</td> -->
-                        <td style="width: 50px">
-                          <div class="d-flex table-action">
-                            <i class="fas fa-edit text-muted" @click="editOperations(component)"></i>
-                            <i class="fas fa-trash text-muted" @click="deleteOperations(component, index)"></i>
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+          <div v-if="switchListRegister === 'list'" key="list">
+            <card full-width>
+              <div class="register-operacao-table">
+                <v-client-table
+                  ref="tableRegisterEpi"
+                  v-model="workOperations"
+                  :columns="columns"
+                  :options="registerOperationTable.options"
+                >
+                  <div slot="actions" slot-scope="{row, index}">
+                    <template>
+                      <div class="icons-actions-wrapper">
+                        <div class="icons-actions">
+                          <i class="fas fa-edit text-muted" @click="editOperations(row)"></i>
+                        </div>
+                        <div class="icons-actions">
+                          <i class="fas fa-trash text-muted" @click="deleteOperations(row, index - 1)"></i>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                </v-client-table>
               </div>
-            </div>
-          </template>
+            </card>
+          </div>
 
-          <template v-if="switchListRegister === 'register'">
-            <form class="formPosition" @submit.prevent="registerOperations()">
+          <div v-if="switchListRegister === 'register'" key="register">
+            <div class="form-position">
               <div class="cadCard">
                 <div class="inputs">
-                  <!-- <custom-select v-model="selectValue" :options="getWorkEquipmentOptions()"></custom-select> -->
-                  <!--<tranfer-select v-model="inputValues.Equipamento_idEquipamento" :selects="selectsEquipament" :label="'Máquina'" ></tranfer-select>
-                  -->
-                  <simple-input v-model="inputValues.descricao_operacao" label="Descrição Operaçao:" type="text"></simple-input>
-                  <simple-input v-model="inputValues.material" label="Material:" type="text"></simple-input>
-                  <simple-input v-model="inputValues.quantidade_material" label="Quantidade:" type="number"></simple-input>
-                  <simple-input v-model="inputValues.unidade_material" label="Unidade:" type="text "></simple-input>
-                  <simple-input v-model="inputValues.tempo_planejado" label="Tempo Planejado:" type="time"></simple-input>
+                  <simple-input v-model="inputValues.descricao_operacao" label="Descrição Operaçao:" type="text" />
+                  <simple-input v-model="inputValues.material" label="Material:" type="text" />
+                  <simple-input v-model="inputValues.quantidade_material" label="Quantidade:" type="number" />
+                  <simple-input v-model="inputValues.unidade_material" label="Unidade:" type="text " />
+                  <simple-input v-model="inputValues.tempo_planejado" label="Tempo Planejado:" type="time" />
                 </div>
               </div>
-              <!-- <div class="d-flex justify-content-center m-3">
-                <b-button type="submit" value="send" variant="danger">Cadastrar</b-button>
-              </div> -->
+
               <div class="d-flex justify-content-center m-3">
-                <smart-button primary class="mr-2">
+                <smart-button
+                  primary
+                  :loading="isLoading"
+                  class="mr-2"
+                  @click.native="registerOperations()"
+                >
                   {{ getSaveButtonText() }}
                 </smart-button>
 
-                <smart-button v-if="isEditing" @click.native="closeEditing">
+                <smart-button v-if="isEditing" @click.native="closeEditing()">
                   <span>Cancelar</span>
                 </smart-button>
               </div>
-            </form>
-          </template>
+            </div>
+          </div>
         </transition>
       </div>
     </div>
   </div>
 </template>
 <script>
-import { getToken, getErrors } from '../../../utils/utils';
-
+import { getErrors } from '../../../utils/utils';
 
 export default {
-  components: {
-    
-  },
+  name: 'CadastroOperacao',
   data() {
     return {
       inputValues: {
@@ -99,9 +93,38 @@ export default {
         unidade_material: '',
         tempo_planejado: 0,
       },
+      columns: ['descricao_operacao', 'actions'],
+      registerOperationTable: {
+        options: {
+          headings: {
+            idoperacao: create => create('span', {
+              domProps: { innerHTML: 'Operação <i class="fas fa-sort"></i>' },
+            }),
+            descricao_operacao: 'Operação',
+            actions: 'Ações',
+          },
+          columnsClasses: {
+            actions: 'actions-class',
+          },
+          texts: {
+            filter: '',
+            filterPlaceholder: 'Buscar',
+            count: 'Mostrando {from} até {to} de {count} registros|{count} Registros|Um Registro',
+            limit: '',
+            page: 'Páginas:',
+            noResults: 'Nenhum registro encontrado',
+            loading: 'Carregando...',
+          },
+          perPage: 10,
+          perPageValues: [10, 25, 50],
+          sortable: ['idoperacao'],
+        },
+        
+      },
       workOperations: [],
       switchListRegister: 'list',
       isEditing: false,
+      isLoading: false,
     };
   },
   mounted() {
@@ -125,69 +148,82 @@ export default {
       return this.$store.commit('addPageName', 'Cadastro de Operações | Editar');
     },
     async registerOperations() {
+      if (this.isLoading) return;
       if (this.isEditing) return this.updateOperations();
+
       try {
-        const response = await this.$http.post('operacoes', getToken(), this.inputValues);
-        this.$swal({
-          type: 'success',
-          title: 'Cadastrado',
-          confirmButtonColor: '#F34336',
-        }),
+        this.isLoading = true;
+        await this.$http.post('operacoes', this.inputValues);
+
         this.resetModel();
         this.getOperations();
-      } catch (err) {
-        return this.$swal({
-          type: 'warning',
-          title: getErrors(err),
+
+        await this.$swal({
+          type: 'success',
+          text: 'Operação registrada com sucesso!',
           confirmButtonColor: '#F34336',
         });
+      } catch (err) {
+        console.log('err registerOperations :>> ', err.response || err);
+
+        return this.$swal({
+          type: 'warning',
+          html: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      } finally {
+        this.isLoading = false;
       }
     },
     async getOperations() {
-      // const token = localStorage.getItem('token')
       try {
-        const response = await this.$http.get('operacoes/get', getToken());
-        if (response.result.length === undefined)
-          this.workOperations.push(response.result);
+        const response = await this.$http.get('operacoes');
 
-        else this.workOperations = [...response.result];
+        if (response.length === undefined)
+          this.workOperations.push(response);
+        else this.workOperations = [...response];
       } catch (err) {
+        console.log('err getOperations :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
     },
-
     resetModel() {
       this.inputValues = {};
     },
-  
     deleteOperations(component, index) {
-      try {
-        this.$swal({
-          type: 'question',
-          title: `Deseja mesmo remover o Componente ${component.descricao_operacao}`,
-          showCancelButton: true,
-          confirmButtonColor: '#F34336',
-          preConfirm: async () => {
-            const response = await this.$http.delete('operacoes', getToken(), component.idoperacao);
-            this.$swal({
+      this.$swal({
+        type: 'question',
+        title: `Deseja mesmo remover o Componente ${component.descricao_operacao}`,
+        showCancelButton: true,
+        showLoaderOnConfirm: true,
+        confirmButtonColor: '#F34336',
+        preConfirm: async () => {
+          try {
+            await this.$http.delete('operacoes', component.idoperacao);
+
+            await this.$swal({
               type: 'success',
-              title: 'Removido com sucesso',
+              text: 'Operação removida com sucesso',
               confirmButtonColor: '#F34336',
-            }),
+            });
+
             this.workOperations.splice(index, 1);
-          },
-        });
-      } catch (err) {
-        return this.$swal({
-          type: 'warning',
-          title: getErrors(err),
-          confirmButtonColor: '#F34336',
-        });
-      }
+          } catch (err) {
+            console.log('err deleteOperations :>> ', err.response || err);
+
+            return this.$swal({
+              type: 'warning',
+              html: getErrors(err),
+              confirmButtonColor: '#F34336',
+            });
+          }
+        },
+      });
     },
     editOperations(component) {
       this.switchLabelPage('edit');
@@ -202,30 +238,34 @@ export default {
       this.resetModel();
     },
     async updateOperations() {
+      if (this.isLoading) return;
       try {
-        const response = await this.$http.update('operacoes', getToken(), this.inputValues, this.inputValues.idoperacao);
+        this.isLoading = true;
+        await this.$http.update('operacoes', this.inputValues, this.inputValues.idoperacao);
       
-        const index = this.workOperations.indexOf(this.workOperations.find(i => i.idoperacao === this.inputValues.idoperacao));
-        this.workOperations.splice(index, 1, this.inputValues);
+        this.closeEditing();
+        this.getOperations();
 
-        this.$swal({
+        await this.$swal({
           type: 'success',
-          title: 'Editado com Sucesso',
+          text: 'Editado com Sucesso',
           confirmButtonColor: '#F34336',
         });
-        this.closeEditing();
       } catch (err) {
+        console.log('err updateOperations :>> ', err.response || err);
+
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
+      } finally {
+        this.isLoading = false;
       }
     },
-
-  },
-  resetModel() {
-    this.inputValues = {};
+    goBack() {
+      this.$router.push('/cadastros');
+    },
   },
 };
 </script>
@@ -259,7 +299,7 @@ export default {
         }
       }
     }
-    .formPosition{
+    .form-position{
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -306,6 +346,38 @@ export default {
       }
     }
   }
+  .icons-actions-wrapper{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    
+    .icons-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      &:hover {
+        span {
+          color: var(--duas-rodas-soft)
+        }
+      }
+      i {
+        transition: .2s;
+      }
+      &:hover {
+        i {
+          transform: scale(1.18);
+        }
+      }
+      &:active {
+        i {
+          transform: scale(1);
+        }
+      }
+      // padding: 2%;
+    }
+  }
 
   .slide-fade-enter-active {
     transition: all 0.1s ease;
@@ -320,3 +392,70 @@ export default {
   }
 }
 </style>
+<style lang="scss">
+.register-operacao-table {
+  table {
+    border-radius: 8px;
+    thead {
+      th {
+        background-color: var(--duas-rodas-soft);
+        span {
+          cursor: pointer;
+          color: white !important;
+        }
+        border: 0 !important;
+        outline: none;
+      }
+    }
+    tbody {
+      tr {
+        td {
+          border: 0 !important;
+          vertical-align: middle;
+          outline: none;
+        }
+      }
+    }
+  }
+  .col-md-12 {
+    justify-content: space-between;
+    display: flex !important;
+    .VueTables__search-field {
+      width: 30vw !important;
+      input {
+        width: 100%;
+      }
+    }
+  }
+
+  .VuePagination {
+    display: flex;
+    justify-content: center;
+
+    p {
+      display: flex;
+      justify-content: center;
+    }
+  }
+  .page-item .active {
+    color: white !important;
+    border-color: #ddd !important;
+    background-color: var(--duas-rodas-soft) !important;
+    &:focus {
+      box-shadow: none !important;
+    }
+  }
+  .page-link {
+    color: #555 !important;
+    &:focus {
+      box-shadow: none !important;
+    }
+  }
+  .actions-class {
+    width: 100px !important;
+  }
+
+}
+
+</style>
+

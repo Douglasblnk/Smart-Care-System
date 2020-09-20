@@ -21,11 +21,11 @@ module.exports = class GetOrderSummary {
       
       const summary = await this._getOrderSummary();
 
-      this._getSummaryData.closeConnection();
-
       return summary;
     } catch (err) {
       throw err;
+    } finally {
+      this._getSummaryData.closeConnection();
     }
   }
 

@@ -1,14 +1,6 @@
 <template>
   <div class="root-epi-view">
-    <div class="d-flex align-items-center">
-      <div class="back-button ml-3" @click="goBack">
-        <i
-          class="fa fa-arrow-left fa-fw"
-          title="Retornar"
-        />
-        <span>Voltar</span>
-      </div>
-    </div>
+    <back-button @goBack="goBack" />
 
     <div class="content-wrapper">
       <div>
@@ -26,57 +18,61 @@
         </div>
 
         <transition name="slide-fade" mode="out-in">
-          <template v-if="switchListRegister === 'list'">
-            <div class="list-option">
-              <div class="table-content bg-white p-4 w-100">
-                <div class="table-responsive">
-                  <table class="table table table-striped table-borderless table-hover" cellspacing="0">
-                    <thead class="table-head">
-                      <tr>
-                        <th scope="col">Epi</th>
-                        <th scope="col">Ações</th>
-                      </tr>
-                    </thead>
-                    <tbody class="table-body">
-                      <tr v-for="(epi, index) in Epis" :key="`epi-${index}`">
-                        <td>{{ epi.descricaoEpi }}</td>
-                        <td style="width: 50px">
-                          <div class="d-flex table-action">
-                            <i class="fas fa-edit text-muted" @click="editEpi(epi)"></i>
-                            <i class="fas fa-trash text-muted" @click="deleteEpi(epi, index)"></i>
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+          <div v-if="switchListRegister === 'list'" key="list">
+            <card full-width>
+              <div class="register-epi-table">
+                <v-client-table
+                  ref="tableRegisterEpi"
+                  v-model="Epis"
+                  :columns="columns"
+                  :options="cadastroEpiTable.options"
+                >
+                  <div slot="actions" slot-scope="{row, index}">
+                    <template>
+                      <div class="icons-actions-wrapper">
+                        <div class="icons-actions">
+                          <i class="fas fa-edit text-muted" @click="editEpi(row)"></i>
+                        </div>
+                        <div class="icons-actions">
+                          <i class="fas fa-trash text-muted" @click="deleteEpi(row, index - 1)"></i>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                </v-client-table>
               </div>
-            </div>
-          </template>
+            </card>
+          </div>
 
-          <template v-if="switchListRegister === 'register'">
-            <form @submit.prevent="registerEpi()">
+          <div v-if="switchListRegister === 'register'" key="register">
+            <div>
               <div class="cadCard">
                 <simple-input v-model="inputValues.descricaoEpi" :label="'Epi:'" :type="'text'" />
               </div>
 
               <div class="d-flex justify-content-center m-3">
-                  <smart-button primary class="mr-2">
-                    {{getSaveButtonText()}}
-                  </smart-button>
+                <smart-button
+                  primary
+                  :loading="isLoading"
+                  class="mr-2"
+                  @click.native="registerEpi()"
+                >
+                  {{ getSaveButtonText() }}
+                </smart-button>
                 <smart-button v-if="isEditing" @click.native="closeEditing">
                   <span>Cancelar</span>
                 </smart-button>
               </div>
-            </form>
-          </template>
+            </div>
+          </div>
         </transition>
       </div>
     </div>
   </div>
 </template>
+
 <script>
-import { getToken, getErrors } from '../../../utils/utils';
+import { getErrors } from '../../../utils/utils';
 
 export default {
   name: 'CadastroEpi',
@@ -88,7 +84,36 @@ export default {
       },
       switchListRegister: 'list',
       isEditing: false,
+      isLoading: false,
       Epis: [],
+      columns: ['descricaoEpi', 'actions'],
+      cadastroEpiTable: {
+        options: {
+          headings: {
+            idEpi: create => create('span', {
+              domProps: { innerHTML: 'Epi <i class="fas fa-sort"></i>' },
+            }),
+            descricaoEpi: 'Epi',
+            actions: 'Ações',
+          },
+          columnsClasses: {
+            actions: 'actions-class',
+          },
+          texts: {
+            filter: '',
+            filterPlaceholder: 'Buscar',
+            count: 'Mostrando {from} até {to} de {count} registros|{count} Registros|Um Registro',
+            limit: '',
+            page: 'Páginas:',
+            noResults: 'Nenhum registro encontrado',
+            loading: 'Carregando...',
+          },
+          perPage: 10,
+          perPageValues: [10, 25, 50],
+          sortable: ['idEpi'],
+        },
+        
+      },
     };
   },
   mounted() {
@@ -114,99 +139,106 @@ export default {
     },
     async getEpi() {
       try {
-        const response = await this.$http.get('epi/get', getToken());
+        const response = await this.$http.get('epi');
 
-        if (response.result.length === undefined)
-          this.Epis.push(response.result);
-        else this.Epis = [...response.result];
+        if (response.length === undefined)
+          this.Epis.push(response);
+        else this.Epis = [...response];
       } catch (err) {
         console.log('err getEpi :>> ', err.response || err);
 
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
     },
     async registerEpi() {
+      if (this.isLoading) return;
+      if (this.isEditing) return this.updateEpi();
+
       try {
-        if (this.isEditing) return this.updateEpi();
+        this.isLoading = true;
 
-        const response = await this.$http.post('epi', getToken(), this.inputValues);
-
-        this.$swal({
-          type: 'success',
-          title: response.result,
-          confirmButtonColor: '#F34336',
-        }),
-
-        this.Epis.push(this.inputValues);
+        await this.$http.post('epi', this.inputValues);
 
         this.resetModel();
         this.getEpi();
+
+        await this.$swal({
+          type: 'success',
+          text: 'Epi registrado com sucesso!',
+          confirmButtonColor: '#F34336',
+        });
       } catch (err) {
         console.log('err registerEpi :>> ', err.response || err);
 
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
+      } finally {
+        this.isLoading = false;
       }
     },
     async updateEpi() {
+      if (this.isLoading) return;
+
       try {
-        const response = await this.$http.update('epi', getToken(), this.inputValues, this.inputValues.idEpi);
+        this.isLoading = true;
+        await this.$http.update('epi', this.inputValues, this.inputValues.idEpi);
+
+        this.closeEditing();
+        this.getEpi();
 
         this.$swal({
           type: 'success',
-          title: response.result,
+          text: 'Epi alterado com sucesso!',
           confirmButtonColor: '#F34336',
         });
-
-        const index = this.Epis.indexOf(this.Epis.find(i => i.idEpi === this.inputValues.idEpi));
-
-        this.Epis.splice(index, 1, this.inputValues);
-        this.closeEditing();
       } catch (err) {
         console.log('err updateEpi :>> ', err.response || err);
 
         return this.$swal({
           type: 'warning',
-          title: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
+      } finally {
+        this.isLoading = false;
       }
     },
     deleteEpi(epi, index) {
-      try {
-        this.$swal({
-          type: 'question',
-          title: `Deseja mesmo remover o Epi ${epi.descricaoEpi}`,
-          showCancelButton: true,
-          confirmButtonColor: '#F34336',
-          preConfirm: async () => {
-            const response = await this.$http.delete('epi', getToken(), epi.idEpi);
+      this.$swal({
+        type: 'question',
+        title: `Deseja mesmo remover o Epi ${epi.descricaoEpi}`,
+        showCancelButton: true,
+        showLoaderOnConfirm: true,
+        confirmButtonColor: '#F34336',
+        preConfirm: async () => {
+          try {
+            await this.$http.delete('epi', epi.idEpi);
 
-            this.$swal({
+            await this.$swal({
               type: 'success',
-              title: `${response.result}`,
+              text: 'Epi removido com sucesso!',
               confirmButtonColor: '#F34336',
             }),
 
             this.Epis.splice(index, 1);
-          },
-        });
-      } catch (err) {
-        console.log('err deleteEpi :>> ', err.response || err);
+          } catch (err) {
+            console.log('err deleteEpi :>> ', err.response || err);
 
-        return this.$swal({
-          type: 'warning',
-          title: getErrors(err),
-          confirmButtonColor: '#F34336',
-        });
-      }
+            return this.$swal({
+              type: 'warning',
+              html: getErrors(err),
+              confirmButtonColor: '#F34336',
+            });
+          }
+        },
+      });
     },
     editEpi(epi) {
       this.switchLabelPage('edit');
@@ -310,5 +342,104 @@ export default {
     transform: translateX(10px);
     opacity: 0;
   }
+  .icons-actions-wrapper{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    
+    .icons-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      &:hover {
+        span {
+          color: var(--duas-rodas-soft)
+        }
+      }
+      i {
+        transition: .2s;
+      }
+      &:hover {
+        i {
+          transform: scale(1.18);
+        }
+      }
+      &:active {
+        i {
+          transform: scale(1);
+        }
+      }
+      // padding: 2%;
+    }
+  }
+
 }
+</style>
+<style lang="scss">
+.register-epi-table {
+  table {
+    border-radius: 8px;
+    thead {
+      th {
+        background-color: var(--duas-rodas-soft);
+        span {
+          cursor: pointer;
+          color: white !important;
+        }
+        border: 0 !important;
+        outline: none;
+      }
+    }
+    tbody {
+      tr {
+        td {
+          border: 0 !important;
+          vertical-align: middle;
+          outline: none;
+        }
+      }
+    }
+  }
+  .col-md-12 {
+    justify-content: space-between;
+    display: flex !important;
+    .VueTables__search-field {
+      width: 30vw !important;
+      input {
+        width: 100%;
+      }
+    }
+  }
+
+  .VuePagination {
+    display: flex;
+    justify-content: center;
+
+    p {
+      display: flex;
+      justify-content: center;
+    }
+  }
+  .page-item .active {
+    color: white !important;
+    border-color: #ddd !important;
+    background-color: var(--duas-rodas-soft) !important;
+    &:focus {
+      box-shadow: none !important;
+    }
+  }
+  .page-link {
+    color: #555 !important;
+    &:focus {
+      box-shadow: none !important;
+    }
+  }
+  .actions-class {
+    width: 100px !important;
+  }
+
+}
+
 </style>

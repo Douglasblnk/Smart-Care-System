@@ -1,22 +1,23 @@
 <template>
   <div class="root-dashboard-view">
     <template v-if="isMobile">
-      <dashboard-mobile 
+      <dashboard-mobile
         :orders="orders"
-        :custom-styles="customStyles"
-        :quantity="quantity"
-        :labels="labels"
         :is-loading="isLoading"
         :has-errors="hasErrors"
-        :loaded="loaded"
       />
     </template>
 
     <template v-else>
       <dashboard-web
         :orders="orders"
+        :custom-styles="customStyles"
+        :quantity="quantity"
+        :chart-style="chartStyle"
+        :labels="labels"
         :is-loading="isLoading"
         :has-errors="hasErrors"
+        :loaded="loaded"
       />
     </template>
   </div>
@@ -77,7 +78,7 @@ export default {
       try {
         this.isLoading = true;
         
-        const orders = await this.$http.microserviceAnalisis('analysis/order-summary', getToken());
+        const orders = await this.$http.microserviceAnalisis('analysis/order-summary');
 
         if (!orders || orders === undefined) {
           this.hasErrors = true;
@@ -96,7 +97,7 @@ export default {
       try {
         this.resetState();
 
-        const response = await this.$http.microserviceAnalisis('analysis/last-month', getToken());
+        const response = await this.$http.microserviceAnalisis('analysis/last-month');
 
         this.quantity = response.map(order => order.Quantity);
         this.labels = response.map(order => this.$moment(order.OpeningDate).format('DD-MM-YYYY'));

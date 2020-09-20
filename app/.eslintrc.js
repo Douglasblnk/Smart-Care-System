@@ -53,7 +53,7 @@ module.exports = {
     "indent": ["warn", 2],
     "comma-spacing": "warn",
     "no-return-assign": "warn",
-    "operator-linebreak": "warn",
+    "operator-linebreak": ["warn", "before"],
     "spaced-comment": "warn",
     "eqeqeq": "warn",
     "space-in-parens": "warn",

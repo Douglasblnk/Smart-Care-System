@@ -1,14 +1,6 @@
 <template>
   <div class="root-centro-trabalho-view">
-    <div class="d-flex align-items-center">
-      <div class="back-button ml-3" @click="goBack">
-        <i
-          class="fa fa-arrow-left fa-fw"
-          title="Retornar"
-        />
-        <span>Voltar</span>
-      </div>
-    </div>
+    <back-button @goBack="goBack" />
 
     <div class="content-wrapper">
       <div>
@@ -26,47 +18,50 @@
         </div>
 
         <transition name="slide-fade" mode="out-in">
-          <template v-if="switchListRegister === 'list'">
-            <div class="table-content bg-white p-4">
-              <table class="table table table-striped table-borderless table-hover" cellspacing="0">
-                <thead class="table-head">
-                  <tr>
-                    <th scope="col">Centro de trabalho</th>
-                    <th scope="col">Ações</th>
-                  </tr>
-                </thead>
-                <tbody class="table-body">
-                  <tr v-for="(workCenter, index) in workCenters" :key="`workCenter-${index}`">
-                    <td>{{ workCenter.descricao }}</td>
-                    <td style="width: 50px">
-                      <div class="d-flex table-action">
-                        <i class="fas fa-edit text-muted" @click="editWorkCenter(workCenter)"></i>
-                        <i class="fas fa-trash text-muted" @click="deleteWorkCenter(workCenter, index)"></i>
+          <div v-if="switchListRegister === 'list'" key="list">
+            <card full-width>
+              <div class="register-centrotrabalho-table">
+                <v-client-table
+                  ref="tableRegisterEpi"
+                  v-model="workCenters"
+                  :columns="columns"
+                  :options="cadastroCentroTrabalhoTable.options"
+                >
+                  <div slot="actions" slot-scope="{row, index}">
+                    <div class="icons-actions-wrapper">
+                      <div class="icons-actions">
+                        <i class="fas fa-edit text-muted" @click="editWorkCenter(row)"></i>
                       </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </template>
+                      <div class="icons-actions">
+                        <i class="fas fa-trash text-muted" @click="deleteWorkCenter(row, index - 1)"></i>
+                      </div>
+                    </div>
+                  </div>
+                </v-client-table>
+              </div>
+            </card>
+          </div>
 
-          <template v-if="switchListRegister === 'register'">
-            <form @submit.prevent="registerWorkCenter()">
-              <div class="cadCard">
-                <div class="inputs">
-                  <simple-input v-model="inputValues.descricao" :label="'Centro de Trabalho:'" :type="'text'" />
-                </div>
+          <div v-if="switchListRegister === 'register'" key="register">
+            <div class="cadCard">
+              <div class="inputs">
+                <simple-input v-model="inputValues.descricao" :label="'Centro de Trabalho:'" :type="'text'" />
               </div>
-              <div class="d-flex justify-content-center m-3">
-                  <smart-button primary class="mr-2">
-                    {{getSaveButtonText()}}
-                  </smart-button>
-                <smart-button v-if="isEditing" @click.native="closeEditing">
-                  <span>Cancelar</span>
-                </smart-button>
-              </div>
-            </form>
-          </template>
+            </div>
+            <div class="d-flex justify-content-center m-3">
+              <smart-button
+                primary
+                :loading="isLoading"
+                class="mr-2"
+                @click.native="registerWorkCenter()"
+              >
+                {{ getSaveButtonText() }}
+              </smart-button>
+              <smart-button v-if="isEditing" @click.native="closeEditing()">
+                <span>Cancelar</span>
+              </smart-button>
+            </div>
+          </div>
         </transition>
       </div>
     </div>
@@ -74,7 +69,7 @@
 </template>
 
 <script>
-import { getToken } from '../../../utils/utils';
+import { getErrors } from '../../../utils/utils';
 
 export default {
   name: 'CadastroCentroTrabalho',
@@ -86,7 +81,36 @@ export default {
       },
       switchListRegister: 'list',
       isEditing: false,
+      isLoading: false,
       workCenters: [],
+      columns: ['descricao', 'actions'],
+      cadastroCentroTrabalhoTable: {
+        options: {
+          headings: {
+            id_centro_trabalho: create => create('span', {
+              domProps: { innerHTML: 'Centro de Trabalho <i class="fas fa-sort"></i>' },
+            }),
+            descricao: 'Centro de Trabalho',
+            actions: 'Ações',
+          },
+          columnsClasses: {
+            actions: 'actions-class',
+          },
+          texts: {
+            filter: '',
+            filterPlaceholder: 'Buscar',
+            count: 'Mostrando {from} até {to} de {count} registros|{count} Registros|Um Registro',
+            limit: '',
+            page: 'Páginas:',
+            noResults: 'Nenhum registro encontrado',
+            loading: 'Carregando...',
+          },
+          perPage: 10,
+          perPageValues: [10, 25, 50],
+          sortable: ['id_centro_trabalho'],
+        },
+        
+      },
     };
   },
 
@@ -104,53 +128,59 @@ export default {
     switchLabelPage(labelPage) {
       if (labelPage === 'list') {
         this.switchListRegister = 'list';
-        return this.$store.commit('addPageName', `Cadastro de Centro de Trabalho | Listagem`);
+        return this.$store.commit('addPageName', 'Cadastro de Centro de Trabalho | Listagem');
       } else if (labelPage === 'register') {
         this.switchListRegister = 'register';
-        return this.$store.commit('addPageName', `Cadastro de Centro de Trabalho | Cadastrar`);
-      } else {
-        return this.$store.commit('addPageName', `Cadastro de Centro de Trabalho | Editar`);
+        return this.$store.commit('addPageName', 'Cadastro de Centro de Trabalho | Cadastrar');
+      }
+      
+      return this.$store.commit('addPageName', 'Cadastro de Centro de Trabalho | Editar');
+    },
+    async getWorkCenter() {
+      try {
+        const response = await this.$http.get('centro-trabalho');
+
+        if (response.length === undefined)
+          this.workCenters.push(response);
+        else this.workCenters = [...response];
+      } catch (err) {
+        console.log('error getWorkCenter =>', err.response || err);
+
+        this.$swal({
+          type: 'warning',
+          html: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
       }
     },
-    getWorkCenter() {
-      this.$http.get('centro-trabalho/get', getToken())
-        .then(res => {
-          if (res.result.length === 0) {
-            this.$swal({
-              type: 'warning',
-              title: 'Não foi encontrado nenhum centro de trabalho!',
-              confirmButtonColor: '#F34336',
-            });
-          }
 
-          if (res.result.length === undefined)
-            this.workCenters.push(res.result);
-          else this.workCenters = [...res.result];
-        });
-    },
-
-    registerWorkCenter() {
+    async registerWorkCenter() {
+      if (this.isLoading) return;
       if (this.isEditing) return this.updateWorkCenter();
-      this.$http.post('centro-trabalho', getToken(), this.inputValues)
-        .then(res => {
-          if (res.status !== 200) {
-            return this.$swal({
-              type: 'error',
-              title: `Ops! ${res.err}`,
-              confirmButtonColor: '#F34336',
-            });
-          }
-          this.$swal({
-            type: 'success',
-            title: `${res.result}`,
-            confirmButtonColor: '#F34336',
-          }).then(() => {
-            this.workCenters.push(this.inputValues);
+    
+      try {
+        this.isLoading = true;
+        await this.$http.post('centro-trabalho', this.inputValues);
 
-            this.resetModel();
-            this.getWorkCenter();
-          });
+        this.resetModel();
+        this.getWorkCenter();
+
+        await this.$swal({
+          type: 'success',
+          title: 'Centro de trabalho registrado com sucesso!',
+          confirmButtonColor: '#F34336',
         });
+      } catch (err) {
+        console.log('error registerWorkCenter =>', err.response || err);
+
+        this.$swal({
+          type: 'warning',
+          html: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      } finally {
+        this.isLoading = false;
+      }
     },
 
     deleteWorkCenter(workCenter, index) {
@@ -158,68 +188,72 @@ export default {
         type: 'question',
         title: `Deseja mesmo remover o centro de trabalho ${workCenter.descricao}?`,
         showCancelButton: true,
+        showLoaderOnConfirm: true,
         confirmButtonColor: '#F34336',
-        preConfirm: () => {
-          this.$http.delete('centro-trabalho', getToken(), workCenter.id_centro_trabalho)
-            .then(res => {
-              if (res.status !== 200) {
-                return this.$swal({
-                  type: 'error',
-                  title: `Ops! ${res.err}`,
-                  text: res.detailErr || '',
-                  confirmButtonColor: '#F34336',
-                });
-              }
-              this.$swal({
-                type: 'success',
-                title: `${res.result}`,
-                confirmButtonColor: '#F34336',
-              }).then(() => {
-                this.workCenters.splice(index, 1);
-              });
+        preConfirm: async () => {
+          try {
+            await this.$http.delete('centro-trabalho', workCenter.id_centro_trabalho);
+
+            this.workCenters.splice(index, 1);
+
+            await this.$swal({
+              type: 'success',
+              title: 'Centro de trabalho removido com sucesso!',
+              confirmButtonColor: '#F34336',
             });
+          } catch (err) {
+            console.log('error deleteWorkCenter =>', err.response || err);
+
+            this.$swal({
+              type: 'warning',
+              html: getErrors(err),
+              confirmButtonColor: '#F34336',
+            });
+          }
         },
       });
     },
 
     editWorkCenter(workCenter) {
       this.switchLabelPage('edit');
-      this.inputValues = { ...workCenter }
-      console.log(this.inputValues);
-      this.switchListRegister = 'register'
+      this.inputValues = { ...workCenter };
+      
+      this.switchListRegister = 'register';
       this.isEditing = true;
     },
 
-    updateWorkCenter() {
-      this.$http.update('centro-trabalho', getToken(), this.inputValues, this.inputValues.idCentro_Trabalho )
-        .then(res => {
-          if (res.status !== 200) {
-            return this.$swal({
-              type: 'error',
-              title: `Ops! ${res.err}`,
-              confirmButtonColor: '#F34336',
-            });
-          }
-          this.$swal({
-            type: 'success',
-            title: `${res.result}`,
-            confirmButtonColor: '#F34336',
-          }).then(() => {
-            const index = this.workCenters.indexOf(
-              this.workCenters.find(
-                i => i.idCentro_Trabalho === this.inputValues.id_centro_trabalho
-              )
-            );
-            
-            this.workCenters.splice(index, 1, this.inputValues);
-            this.closeEditing();
-          });
+    async updateWorkCenter() {
+      if (this.isLoading) return;
+
+      try {
+        this.isLoading = true;
+
+        await this.$http.update('centro-trabalho', this.inputValues, this.inputValues.id_centro_trabalho);
+        
+        this.getWorkCenter();
+        this.closeEditing();
+        
+        await this.$swal({
+          type: 'success',
+          title: 'Centro de trabalho atualizado com sucesso!',
+          confirmButtonColor: '#F34336',
         });
+      } catch (err) {
+        console.log('error updateWorkCenter =>', err.response || err);
+
+        this.$swal({
+          type: 'warning',
+          html: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      } finally {
+        this.isLoading = false;
+      }
     },
 
     closeEditing() {
       this.switchLabelPage('list');
-      this.switchListRegister = 'list'
+      this.switchListRegister = 'list';
       this.isEditing = false;
       this.resetModel();
     },
@@ -305,6 +339,38 @@ export default {
       }
     }
   }
+  .icons-actions-wrapper{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    
+    .icons-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      &:hover {
+        span {
+          color: var(--duas-rodas-soft)
+        }
+      }
+      i {
+        transition: .2s;
+      }
+      &:hover {
+        i {
+          transform: scale(1.18);
+        }
+      }
+      &:active {
+        i {
+          transform: scale(1);
+        }
+      }
+      // padding: 2%;
+    }
+  }
 
   .slide-fade-enter-active {
     transition: all 0.1s ease;
@@ -318,4 +384,70 @@ export default {
     opacity: 0;
   }
 }
+</style>
+<style lang="scss">
+.register-centrotrabalho-table {
+  table {
+    border-radius: 8px;
+    thead {
+      th {
+        background-color: var(--duas-rodas-soft);
+        span {
+          cursor: pointer;
+          color: white !important;
+        }
+        border: 0 !important;
+        outline: none;
+      }
+    }
+    tbody {
+      tr {
+        td {
+          border: 0 !important;
+          vertical-align: middle;
+          outline: none;
+        }
+      }
+    }
+  }
+  .col-md-12 {
+    justify-content: space-between;
+    display: flex !important;
+    .VueTables__search-field {
+      width: 30vw !important;
+      input {
+        width: 100%;
+      }
+    }
+  }
+
+  .VuePagination {
+    display: flex;
+    justify-content: center;
+
+    p {
+      display: flex;
+      justify-content: center;
+    }
+  }
+  .page-item .active {
+    color: white !important;
+    border-color: #ddd !important;
+    background-color: var(--duas-rodas-soft) !important;
+    &:focus {
+      box-shadow: none !important;
+    }
+  }
+  .page-link {
+    color: #555 !important;
+    &:focus {
+      box-shadow: none !important;
+    }
+  }
+  .actions-class {
+    width: 100px !important;
+  }
+
+}
+
 </style>
