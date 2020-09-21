@@ -12,7 +12,7 @@ module.exports = class GetVerificationOrderData {
     this.createConnection();
   }
 
-  async getVerificationOrderData() {
+  async getVerificationOrderData(user) {
     return new Promise((resolve, reject) => {
       this.mysql.query(/* sql */ `
                     SELECT ${TABLE_VERIFICACAO}.tipoVerificacao, ${TABLE_VERIFICACAO}.ordemServico_idOrdemServico, 
@@ -30,8 +30,8 @@ module.exports = class GetVerificationOrderData {
                 INNER JOIN ${TABLE_USUARIO} AS user_report ON user_report.idUsuario = ${TABLE_ORDEM_SERVICO}.reporte
                 INNER JOIN ${TABLE_USUARIO} AS user_requester ON user_requester.idUsuario = ${TABLE_ORDEM_SERVICO}.solicitante
                 INNER JOIN ${TABLE_USUARIO} AS user_maintainer ON user_maintainer.idUsuario =  ${TABLE_ORDEM_SERVICO_HAS_USUARIO}.Usuario_idUsuario 
-                WHERE user_maintainer.idUsuario = 3 AND ${TABLE_ORDEM_SERVICO}.Status_idStatus = 6 AND ${TABLE_ORDEM_SERVICO_HAS_USUARIO}.is_master = 1;
-    `, (err, res) => {
+                WHERE user_maintainer.idUsuario = ? AND ${TABLE_ORDEM_SERVICO}.Status_idStatus = ? AND ${TABLE_ORDEM_SERVICO_HAS_USUARIO}.is_master = ?;
+    `, [user, 6, 1], (err, res) => {
         if (err) return reject(err);
         return resolve(res);
       });

@@ -805,7 +805,6 @@ export default {
 
         const manutentor = await this.validateActualManutentor();
 
-
         this.showEpiModal();
       } catch (err) {
         console.log('initiateOrder :>> ', err);

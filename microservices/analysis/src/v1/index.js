@@ -6,6 +6,7 @@ const summary = require('./summary/get');
 const lastMonth = require('./orderByMonth/get');
 const verificationsOrder = require('./verificationsOrder/get');
 const verificationsOrderReport = require('./verificationsOrderReport/get');
+const verificationsOrderRequester = require('./verificationsOrderRequester/get');
 
 const app = express();
 
@@ -47,6 +48,16 @@ app.get('/analysis/verifications-orders', async (req, res) => {
 app.get('/analysis/verifications-orders-report', async (req, res) => {
   try {
     const response = await verificationsOrderReport.run(req);
+    
+    res.status(200).send(response);
+  } catch (err) {
+    res.status(404).send(err);
+  }
+});
+
+app.get('/analysis/verifications-orders-requester', async (req, res) => {
+  try {
+    const response = await verificationsOrderRequester.run(req);
     
     res.status(200).send(response);
   } catch (err) {

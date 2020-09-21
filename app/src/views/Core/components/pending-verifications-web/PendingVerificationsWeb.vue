@@ -166,7 +166,6 @@ export default {
   },
 
   mounted() {
-    console.log('verificationsData: ', this.verificationsData);
     this.$store.commit('addPageName', 'Verificações');
   },
 

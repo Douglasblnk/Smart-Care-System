@@ -68,7 +68,6 @@ export default {
     this.$store.commit('addPageName', 'Verificações');
     
     this.listVerificationsType();
-    //this.setActivity();
   },
 
   methods: {
@@ -78,19 +77,23 @@ export default {
     async listVerificationsType() {
       setTimeout(() => {
         const user = this.$store.state.user;
+
         if (isObjectEmpty(user))
           return this.listVerificationsType();
+
+        this.$http.setActivity(this.$activities.VERIFICATION_CONSULT_OPEN);
+        if (user.nivelAcesso === 2)
+          return this.listVerificationsMaintainer(user.nivelAcesso);
+        if (user.nivelAcesso === 1)
+          return this.listVerificationsReport(user.nivelAcesso);
+        return this.listVerificationsRequester(user.nivelAcesso);
       }, 20);
-      //console.log('user: ', user);
-      if (user.nivelAcesso === 2)
-        this.listVerificationsMaintainer();
-      else if (user.nivelAcesso === 1)
-        this.listVerificationsReport();
     },
-    async listVerificationsMaintainer() {
+    async listVerificationsMaintainer(user) {
       try {
-        //const { result } = await this.$http.get('verificacao/list-verification', getToken());
-        const orders = await this.$http.microserviceAnalisis('analysis/verifications-orders');
+        const orders = await this.$http.microserviceAnalisis('analysis/verifications-orders', {
+          headers: { user },
+        });
         if (orders.length !== undefined)
           this.dataVerification.verifications_list = [...orders];
         else this.verifications_list.push(orders);
@@ -105,9 +108,30 @@ export default {
         });
       }
     },
-    async listVerificationsReport() {
+    async listVerificationsReport(user) {
       try {
-        const orders = await this.$http.microserviceAnalisis('analysis/verifications-orders-report');
+        const orders = await this.$http.microserviceAnalisis('analysis/verifications-orders-report', {
+          headers: { user },
+        });
+        if (orders.length !== undefined)
+          this.dataVerification.verifications_list = [...orders];
+        else this.verifications_list.push(orders);
+        this.mobileOptions();
+      } catch (err) {
+        console.log('err :>> ', err.response || err);
+
+        return this.$swal({
+          type: 'warning',
+          html: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
+    async listVerificationsRequester(user) {
+      try {
+        const orders = await this.$http.microserviceAnalisis('analysis/verifications-orders-requester', {
+          headers: { user },
+        });
         if (orders.length !== undefined)
           this.dataVerification.verifications_list = [...orders];
         else this.verifications_list.push(orders);

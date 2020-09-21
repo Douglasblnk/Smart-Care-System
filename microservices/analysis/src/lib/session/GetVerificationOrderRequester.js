@@ -1,8 +1,8 @@
 const GetUserAutentication = require('../integration/getUserAuthentication.js');
-const GetVerificationOrderDataReport = require('../datasource/getVerificationOrderDataReport');
+const GetVerificationOrderDataRequester = require('../datasource/getVerificationOrderDataRequester');
 
 
-module.exports = class GetVerificationOrderReport {
+module.exports = class GetVerificationOrderRequester {
   constructor({
     user = '',
     auth,
@@ -11,7 +11,7 @@ module.exports = class GetVerificationOrderReport {
     this._auth = auth;
 
     this._integrationAuthJwt = new GetUserAutentication();
-    this._getVerificationOrderDataReport = new GetVerificationOrderDataReport();
+    this._getVerificationOrderDataRequester = new GetVerificationOrderDataRequester();
 
     this._checkParameters();
   }
@@ -23,7 +23,7 @@ module.exports = class GetVerificationOrderReport {
       
       const verifications = await this._getVerificationOrder();
 
-      this._getVerificationOrderDataReport.closeConnection();
+      this._getVerificationOrderDataRequester.closeConnection();
 
       return verifications;
     } catch (err) {
@@ -34,7 +34,7 @@ module.exports = class GetVerificationOrderReport {
   async _getVerificationOrder() {
     try {
       const verifications = await
-      this._getVerificationOrderDataReport.GetVerificationOrderDataReport(this._user);
+      this._getVerificationOrderDataRequester.GetVerificationOrderDataRequester(this._user);
       
       if (!verifications) throw 'could not find verifications';
 

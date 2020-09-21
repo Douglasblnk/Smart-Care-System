@@ -5,14 +5,14 @@ const TABLE_ORDEM_SERVICO = 'ordemServico';
 const TABLE_ORDEM_SERVICO_HAS_USUARIO = 'ordemServico_has_Usuario';
 const TABLE_USUARIO = 'Usuario';
 
-module.exports = class GetVerificationOrderDataReport {
+module.exports = class GetVerificationOrderDataRequester {
   constructor() {
     this.mysql = '';
 
     this.createConnection();
   }
 
-  async GetVerificationOrderDataReport(user) {
+  async GetVerificationOrderDataRequester(user) {
     return new Promise((resolve, reject) => {
       this.mysql.query(/* sql */ `
                     SELECT ${TABLE_VERIFICACAO}.tipoVerificacao, ${TABLE_VERIFICACAO}.ordemServico_idOrdemServico,
@@ -30,8 +30,8 @@ module.exports = class GetVerificationOrderDataReport {
                 INNER JOIN ${TABLE_USUARIO} AS user_report ON user_report.idUsuario = ${TABLE_ORDEM_SERVICO}.reporte
                 INNER JOIN ${TABLE_USUARIO} AS user_requester ON user_requester.idUsuario = ${TABLE_ORDEM_SERVICO}.solicitante
                 INNER JOIN ${TABLE_USUARIO} AS user_maintainer ON user_maintainer.idUsuario =  ${TABLE_ORDEM_SERVICO_HAS_USUARIO}.Usuario_idUsuario
-                WHERE user_report.idUsuario = ? AND ${TABLE_ORDEM_SERVICO}.Status_idStatus = ?;
-    `, [user, 3], (err, res) => {
+                WHERE ${TABLE_ORDEM_SERVICO}.solicitante = ? AND ${TABLE_ORDEM_SERVICO}.Status_idStatus = ?;
+    `, [user, 6], (err, res) => {
         if (err) return reject(err);
         return resolve(res);
       });

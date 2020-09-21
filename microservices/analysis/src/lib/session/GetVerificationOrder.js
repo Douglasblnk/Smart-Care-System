@@ -4,8 +4,10 @@ const GetVerificationOrderData = require('../datasource/getVerificationOrderData
 
 module.exports = class GetVerificationOrder {
   constructor({
+    user = '',
     auth,
   } = {}) {
+    this._user = user;
     this._auth = auth;
 
     this._integrationAuthJwt = new GetUserAutentication();
@@ -31,7 +33,9 @@ module.exports = class GetVerificationOrder {
 
   async _getVerificationOrder() {
     try {
-      const verifications = await this._getVerificationOrderData.getVerificationOrderData();
+      const verifications = await this._getVerificationOrderData.getVerificationOrderData(
+        this._user,
+      );
       
       if (!verifications) throw 'could not find verifications';
 

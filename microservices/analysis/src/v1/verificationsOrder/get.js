@@ -2,12 +2,15 @@ const GetVerificationOrder = require('../../lib/session/GetVerificationOrder');
 
 const getParameters = req => ({
   auth: req.headers.authorization || '',
+  user: req.headers.user || '',
 });
 
 const checkParameters = ({
+  user,
   auth,
 } = {}) => ({
   ...(!auth ? { auth: 'undefined' } : ''),
+  ...(!user ? { user: 'undefined' } : ''),
 });
 
 const run = async req => {
