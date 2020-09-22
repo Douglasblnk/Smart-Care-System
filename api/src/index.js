@@ -33,6 +33,7 @@ const Priority = require('./services/routes/cruds/Priority');
 const WorkCenter = require('./services/routes/cruds/WorkCenter');
 const Operation = require('./services/routes/cruds/Operation');
 const Component = require('./services/routes/cruds/Component');
+const DelegateManutentor = require('./services/routes/movimentations/DelegateManutentor');
 
 app.use('/users', User);
 app.use('/status', Status);
@@ -48,6 +49,7 @@ app.use('/tipo-ordem', OrderType);
 app.use('/prioridade', Priority);
 app.use('/centro-trabalho', WorkCenter);
 app.use('/operacoes', Operation);
+app.use('/delegate-manutentor', DelegateManutentor);
 
 
 // MOVIMENTATIONS
