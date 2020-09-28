@@ -8,6 +8,7 @@
       @update:openIntiveTechnician="$emit('update:openIntiveTechnician')"
       @update:openOrderNote="$emit('update:openOrderNote')"
       @update:openOrderVerification="$emit('update:openOrderVerification')"
+      @update:toggleShowEpiModal="$emit('update:toggleShowEpiModal')"
     />
   </section>
 </template>
@@ -25,7 +26,8 @@ export default {
     order: { type: Object, default: () => ({}) },
     isLoading: { type: Object, default: () => ({}) },
     isOrderAssumed: { type: Boolean, default: false },
-    orderManutentor: { type: String, default: '' },
+    orderMasterMaintainer: { type: String, default: '' },
+    orderInvitedMaintainers: { type: [String, Array], default: '' },
   },
   computed: {
     ...mapGetters({

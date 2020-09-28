@@ -6,7 +6,7 @@ const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../share
 
 module.exports = class RegisterCorrectiveMaintenanceOrder {
   constructor() {
-    this._queryReturn = {};
+    this._queryResult = {};
   }
 
   getParameters(req) {
@@ -86,10 +86,10 @@ module.exports = class RegisterCorrectiveMaintenanceOrder {
 
       await this.registerCorrectiveMaintenanceOrder(parameters);
       
-      if (this._queryReturn.status !== 200 && this._queryReturn.msg !== 'OK')
+      if (this._queryResult.status !== 200 && this._queryResult.msg !== 'OK')
         throw 'Nenhum registro foi inserido';
 
-      return this._queryReturn;
+      return this._queryResult;
     } catch (err) {
       console.log('err RegisterCorrectiveMaintenanceOrder :>> ', err);
 
@@ -98,7 +98,7 @@ module.exports = class RegisterCorrectiveMaintenanceOrder {
   }
   
   async registerCorrectiveMaintenanceOrder(parameters) {
-    this._queryReturn = await new CorrectiveOrderDao(parameters).registerOrder();
+    this._queryResult = await new CorrectiveOrderDao(parameters).registerOrder();
   }
 
   async validateGroups({ authData } = {}) {

@@ -11,6 +11,7 @@ module.exports = class UserDao extends GenericDao {
     email,
     nivelAcesso,
     updateId,
+    orderId,
     mysql,
   } = {}) {
     super();
@@ -22,6 +23,7 @@ module.exports = class UserDao extends GenericDao {
     this._email = email;
     this._nivelAcesso = nivelAcesso;
     this._updateId = updateId;
+    this._orderId = orderId;
     this._mysql = mysql;
   }
 
@@ -97,6 +99,34 @@ module.exports = class UserDao extends GenericDao {
         ${TABLE_USUARIO}.nivel_acesso = ?
         AND ${TABLE_USUARIO}.excluded = ?
     `, [3, 0]);
+
+    return this.parseSelectResponse(rows);
+  }
+
+  /**
+   * getMaintainerUsers
+   * Busca todos os usuários de nível manutentor
+   * @return {Array} parsed array com todos os usuários de nível manutentor
+   */
+  async getMaintainerUsersNotIntOrder() {
+    const [rows] = await this._mysql.query(/* SQL */`
+      SELECT
+        ${TABLE_USUARIO}.idUsuario,
+        ${TABLE_USUARIO}.nome,
+        ${TABLE_USUARIO}.funcao,
+        ${TABLE_USUARIO}.numeroCracha,
+        ${TABLE_USUARIO}.nivel_acesso 
+      FROM ${TABLE_USUARIO}
+      WHERE Usuario.nivel_acesso = ? AND ${TABLE_USUARIO}.excluded = ? AND
+      NOT EXISTS (
+        SELECT
+          *
+        FROM ordemServico_has_Usuario
+        WHERE ordemServico_has_Usuario.Usuario_idUsuario = ${TABLE_USUARIO}.idUsuario 
+        AND ordemServico_has_Usuario.ordemServico_idOrdemServico = ${this._orderId}
+        AND ordemServico_has_Usuario.excluded = ?
+      )
+    `, [2, 0, 0]);
 
     return this.parseSelectResponse(rows);
   }

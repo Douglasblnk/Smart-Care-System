@@ -7,7 +7,7 @@ const { get } = require('lodash');
 
 module.exports = class LoginValidate {
   constructor() {
-    this._queryReturn = '';
+    this._queryResult = '';
   }
 
   getParameters(req) {

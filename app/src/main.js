@@ -42,9 +42,7 @@ Vue.prototype.$_ = Lodash;
 Vue.prototype.$activities = activities;
 
 new Vue({
-  router,
-  store,
-  async beforeMount() {
+  async beforeCreate() {
     moment.locale('pt-BR');
     
     try {
@@ -67,6 +65,8 @@ new Vue({
       return throwError();
     }
   },
+  router,
+  store,
   render: h => h(App),
 }).$mount('#app');
 

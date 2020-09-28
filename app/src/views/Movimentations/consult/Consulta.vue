@@ -276,12 +276,14 @@ export default {
 
         this.setStateView('detail');
         this.$set(this.detail, 'order', response);
+        
+        this.$http.setActivity(this.$activities.ORDER_DETAIL, JSON.stringify({ order: order.idOrdemServico }));
       } catch (err) {
         console.log('err getOrderDetail :>> ', err.response || err);
 
         this.$swal({
           type: 'warning',
-          text: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       } finally {
@@ -292,11 +294,7 @@ export default {
       try {
         this.isLoading = true;
 
-        const response = await this.$http.get('ordem-manutencao', {
-          headers: {
-            type: 'summary',
-          },
-        });
+        const response = await this.$http.get('ordem-manutencao');
 
         if (response.length === 0) return;
 
@@ -311,7 +309,7 @@ export default {
 
         this.$swal({
           type: 'warning',
-          text: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       } finally {

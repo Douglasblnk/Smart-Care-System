@@ -19,7 +19,14 @@
               class="my-3 d-flex align-items-center"
             >
               <i class="fa fa-user mr-2" />
-              <span>Manutentor: {{ orderManutentor }}</span>
+              <span>Manutentor: {{ orderMasterMaintainer }}</span>
+            </div>
+            <div
+              v-if="orderInvitedMaintainers.length"
+              class="my-3 d-flex align-items-center"
+            >
+              <i class="fa fa-users mr-2" />
+              <span>Manutentores convidados: {{ orderInvitedMaintainers.join(', ') }}</span>
             </div>
             <div class="my-3 d-flex align-items-center">
               <i class="fa fa-map-marker-alt mr-2" />
@@ -107,7 +114,7 @@
                   @click="openIntiveTechnician()"
                 >
                   <i class="fa fa-users fa-lg mb-2" />
-                  <i v-if="isLoading.convidar" class="fa fa-spinner fa-spin fa-lg m-3" />
+                  <i v-if="isLoading.inviteMaintainer" class="fa fa-spinner fa-spin fa-lg m-3" />
                   <span v-else>Convidar técnico</span>
                 </div>
 
@@ -121,9 +128,11 @@
 
                 <div
                   class="options"
+                  @click="toggleShowEpiModal()"
                 >
                   <i class="fa fa-check-double fa-lg mb-2" />
-                  <span>Checklist</span>
+                  <i v-if="isLoading.checklist" class="fa fa-spinner fa-spin fa-lg m-3" />
+                  <span v-else>Checklist</span>
                 </div>
 
                 <div
@@ -162,7 +171,8 @@ export default {
     order: { type: Object, default: () => ({}) },
     isLoading: { type: Object, default: () => ({}) },
     isOrderAssumed: { type: Boolean, default: false },
-    orderManutentor: { type: String, default: '' },
+    orderMasterMaintainer: { type: String, default: '' },
+    orderInvitedMaintainers: { type: [String, Array], default: '' },
   },
   data() {
     return {
@@ -195,6 +205,9 @@ export default {
     },
     openOrderVerification() {
       this.$emit('update:openOrderVerification');
+    },
+    toggleShowEpiModal() {
+      this.$emit('update:toggleShowEpiModal');
     },
   },
 };

@@ -13,7 +13,7 @@
       </div>
       <div class="note">
         <div class="description-activity">
-          <simple-input v-model="inputValues.description" :label="'Descricao Atividade:'" :type="'text'" />
+          <simple-input v-model="inputValues.description" :label="'Descrição Atividade:'" :type="'text'" />
         </div>
         <div>
           <simple-input

@@ -1,20 +1,22 @@
-const CauseDao = require('../../../dao/cruds/CauseDao');
-
 const { get } = require('lodash');
 
-module.exports = class GetCause {
+const UsersInOrder = require('../../../dao/movimentations/UsersInOrderDao');
+
+module.exports = class GetUsersInOrder {
   constructor() {
     this._queryResult = '';
   }
 
   getParameters(req) {
     return {
+      orderId: get(req.headers, 'order_id'),
       mysql: get(req, 'mysql'),
     };
   }
 
-  checkParameters({ mysql }) {
+  checkParameters({ orderId, mysql }) {
     return {
+      ...(!orderId ? { orderId: 'Id da ordem não informada!' } : ''),
       ...(!mysql ? { mysql: 'Conexão não estabelecida' } : ''),
     };
   }
@@ -26,17 +28,17 @@ module.exports = class GetCause {
       const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
 
-      await this.getCauses(parameters);
+      await this.getUsersInOrder(parameters);
 
       return this._queryResult;
     } catch (err) {
-      console.log('err GetCause :>> ', err);
+      console.log('err GetUsersInOrder :>> ', err);
 
       throw err;
     }
   }
 
-  async getCauses(parameters) {
-    this._queryResult = await new CauseDao(parameters).getCauses();
+  async getUsersInOrder(parameters) {
+    this._queryResult = await new UsersInOrder(parameters).getUsersInOrder();
   }
 };

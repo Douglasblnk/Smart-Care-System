@@ -6,7 +6,7 @@ const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../share
 
 module.exports = class RegisterUpdateWorkCenter {
   constructor() {
-    this._queryReturn = '';
+    this._queryResult = '';
   }
 
   getParameters(req) {
@@ -43,10 +43,10 @@ module.exports = class RegisterUpdateWorkCenter {
 
       await this.registerUpdateWorkCenter(parameters, type);
 
-      if (!this._queryReturn.affectedRows)
+      if (!this._queryResult.affectedRows)
         throw type ? 'Nenhum registro foi alterado' : 'Nenhum registro foi inserido';
 
-      return this._queryReturn;
+      return this._queryResult;
     } catch (err) {
       console.log('err RegisterUpdateWorkCenter :>> ', err);
 
@@ -56,9 +56,9 @@ module.exports = class RegisterUpdateWorkCenter {
 
   async registerUpdateWorkCenter(parameters, type = '') {
     if (type === 'update')
-      this._queryReturn = await new WorkCenterDao(parameters).updateWorkCenter();
+      this._queryResult = await new WorkCenterDao(parameters).updateWorkCenter();
 
-    else this._queryReturn = await new WorkCenterDao(parameters).registerWorkCenter();
+    else this._queryResult = await new WorkCenterDao(parameters).registerWorkCenter();
   }
 
   async validateGroups({ authData }) {

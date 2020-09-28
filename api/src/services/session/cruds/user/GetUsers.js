@@ -1,21 +1,23 @@
-const userDao = require('../../../dao/cruds/UserDao');
+const UserDao = require('../../../dao/cruds/UserDao');
 
 const { get } = require('lodash');
 
 module.exports = class GetUsers {
   constructor() {
-    this._queryReturn = '';
+    this._queryResult = '';
   }
 
   getParameters(req) {
     return {
+      orderId: get(req.headers, 'order_id'),
       type: get(req.headers, 'type', ''),
       mysql: get(req, 'mysql'),
     };
   }
 
-  checkParameters({ mysql } = {}) {
+  checkParameters({ orderId, type, mysql } = {}) {
     return {
+      ...(type === 'maintainers' && !orderId ? { orderId: 'ID da ordem não infomado' } : ''),
       ...(!mysql ? { mysql: 'Conexão não estabelecida' } : ''),
     };
   }
@@ -38,13 +40,9 @@ module.exports = class GetUsers {
   }
 
   async getUsers(parameters) {
-    if (parameters.type === 'reporter')
-      this._queryResult = await new userDao(parameters).getReporterUser();
-
-    else if (parameters.type === 'requester')
-      this._queryResult = await new userDao(parameters).getRequesterUser();
-
-    else this._queryResult = await new userDao(parameters).getUsers();
+    const functionName = `${parameters.type}Users`;
+    
+    this._queryResult = await dynamicGetUsers[functionName](parameters);
   }
 
   parseResult(user) {
@@ -68,4 +66,11 @@ module.exports = class GetUsers {
       nivel_acesso: i.nivel_acesso,
     }));
   }
+};
+
+const dynamicGetUsers = {
+  reporterUsers: async parameters => new UserDao(parameters).getReporterUser(),
+  requesterUsers: parameters => new UserDao(parameters).getRequesterUser(),
+  Users: parameters => new UserDao(parameters).getUsers(),
+  maintainerUsers: parameters => new UserDao(parameters).getMaintainerUsersNotIntOrder(),
 };
