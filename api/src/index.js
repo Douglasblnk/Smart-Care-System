@@ -49,7 +49,7 @@ app.use('/tipo-ordem', OrderType);
 app.use('/prioridade', Priority);
 app.use('/centro-trabalho', WorkCenter);
 app.use('/operacoes', Operation);
-app.use('/delegate-manutentor', DelegateManutentor);
+app.use('/delega-manutentor', DelegateManutentor);
 
 
 // MOVIMENTATIONS

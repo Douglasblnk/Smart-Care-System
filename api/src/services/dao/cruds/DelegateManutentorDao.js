@@ -20,8 +20,8 @@ module.exports = class DelegateManutentorDao extends GenericDao {
 
 
   /**
-   * registerEquipment
-   * Delegate manutentor no sistema
+   * registerDelegateManutentor
+   * Delegar manutentor na ordem serviço no sistema
    * @return {Array}; parsed array com dados da inserção
    */
   async registerDelegateManutentor() {
@@ -39,8 +39,8 @@ module.exports = class DelegateManutentorDao extends GenericDao {
   }
 
   /**
-   * updateEquipment
-   * Altera um equipamento no sistema
+   * updateDelegateManutentor
+   * Altera um manutentor registrado em uma ordem no sistema
    * @return {Array} parsed array com dados da alteração
    */
   async updateDelegateManutentor() {
@@ -56,10 +56,4 @@ module.exports = class DelegateManutentorDao extends GenericDao {
 
     return this.parseInsertResponse(rows);
   }
-
-  /**
-   * deleteEquipment
-   * remove um equipamento do sistema
-   * @return {Array} parsed array com as informações de deleção
-   */
 };

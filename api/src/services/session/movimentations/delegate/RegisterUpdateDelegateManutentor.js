@@ -1,12 +1,12 @@
 const DelegateManutentorDao = require('../../../dao/cruds/EquipmentsDao');
 
-const { ADMINISTRADOR_ID} = require('../../../../shared/constants/accessLevel');
+const { ADMINISTRADOR_ID } = require('../../../../shared/constants/accessLevel');
 const { get } = require('lodash');
 const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../shared/constants/HTTPResponse');
 
 module.exports = class RegisterDelegateManutentor {
   constructor() {
-    this._queryReturn;
+    this._queryReturn = '';
   }
 
   getParameters(req) {
@@ -54,7 +54,7 @@ module.exports = class RegisterDelegateManutentor {
 
       return this._queryReturn;
     } catch (err) {
-      console.log('err registerUpdateEquipment :>> ', err);
+      console.log('err registerUpdateDelegateManutentor :>> ', err);
 
       throw err;
     }
