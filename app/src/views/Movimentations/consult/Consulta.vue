@@ -308,7 +308,7 @@ export default {
 
         this.$swal({
           type: 'warning',
-          text: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       } finally {
