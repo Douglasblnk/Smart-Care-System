@@ -55,7 +55,6 @@ module.exports = class RegisterDelegateManutentor {
       return this._queryReturn;
     } catch (err) {
       console.log('err registerUpdateDelegateManutentor :>> ', err);
-
       throw err;
     }
   }
