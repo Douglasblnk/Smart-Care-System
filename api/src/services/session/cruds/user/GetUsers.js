@@ -47,14 +47,9 @@ module.exports = class GetUsers {
 
   parseResult(user) {
     if (!Array.isArray(user) && user.length === undefined) {
-      return {
-        idUsuario: user.idUsuario,
-        numeroCracha: user.numeroCracha,
-        nome: user.nome,
-        email: user.email,
-        funcao: user.funcao,
-        nivel_acesso: user.nivel_acesso,
-      };
+      const { senha, ...userObj } = user;
+
+      return { ...userObj };
     }
 
     return user.map(i => ({
@@ -64,6 +59,7 @@ module.exports = class GetUsers {
       email: i.email,
       funcao: i.funcao,
       nivel_acesso: i.nivel_acesso,
+      is_master: i.is_master,
     }));
   }
 };
@@ -72,5 +68,6 @@ const dynamicGetUsers = {
   reporterUsers: async parameters => new UserDao(parameters).getReporterUser(),
   requesterUsers: parameters => new UserDao(parameters).getRequesterUser(),
   Users: parameters => new UserDao(parameters).getUsers(),
-  maintainerUsers: parameters => new UserDao(parameters).getMaintainerUsersNotIntOrder(),
+  maintainerUsers: parameters => new UserDao(parameters).getAvailableMaintainers(),
+  maintainerInOrderUsers: parameters => new UserDao(parameters).getMaintainersInOrder(),
 };

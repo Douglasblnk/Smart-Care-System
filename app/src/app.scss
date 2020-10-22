@@ -69,6 +69,27 @@ span, p, strong {
   right: 0;
 }
 
+.user-select-none {
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+.card-presentation-icon {
+  margin-top: -30px;
+  background-color: var(--duas-rodas-soft);
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  i {
+    color: white;
+  }
+}
+
 .scale {
   transition: .2s;
   &:hover { transform: scale(1.2) }

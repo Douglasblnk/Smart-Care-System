@@ -1,6 +1,11 @@
 <template>
   <section class="root-web-detail-card">
-    <card full-width>
+    <card
+      full-width
+      advanced-card
+      custom-title="Informações da ordem"
+      icon="fa-info-circle"
+    >
       <div class="detail-container d-flex">
         <div class="col-md-7">
           <div class="order-title">
@@ -130,9 +135,9 @@
                   class="options"
                   @click="toggleShowEpiModal()"
                 >
-                  <i class="fa fa-check-double fa-lg mb-2" />
-                  <i v-if="isLoading.checklist" class="fa fa-spinner fa-spin fa-lg m-3" />
-                  <span v-else>Checklist</span>
+                  <i class="fa fa-user-shield fa-lg mb-2" />
+                  <i v-if="isLoading.epi" class="fa fa-spinner fa-spin fa-lg m-1" />
+                  <span v-else>EPIs</span>
                 </div>
 
                 <div
@@ -216,7 +221,6 @@ export default {
 <style lang="scss" scoped>
 .root-web-detail-card {
   .detail-container {
-    border-radius: 10px;
     .order-title {
       span {
         font-size: 20px;

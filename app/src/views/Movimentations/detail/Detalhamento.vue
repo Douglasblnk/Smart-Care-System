@@ -1,16 +1,20 @@
 <template>
   <div class="root-detalhamento-view">
     <transition name="slide-side" mode="out-in">
-      <div v-if="isLoading.order">
+      <div v-if="isLoading.order" key="loadingOrder">
         <div class="loading-state">
           <i class="fa fa-spinner fa-spin fa-lg mx-3" />
-          <h3>
-            Buscando detalhamento da ordem...
+          <h3 class="user-select-none">
+            Buscando informações da ordem...
           </h3>
         </div>
       </div>
       
-      <div v-if="state.view === 'detail' && !isLoading.order" class="detail-content">
+      <div
+        v-if="!isLoading.order && state.view === 'detail'"
+        key="orderDetail"
+        class="detail-content"
+      >
         <detail-card-wrapper
           :order="order"
           :is-order-assumed="isOrderAssumed"
@@ -24,6 +28,8 @@
           @update:openOrderVerification="openOrderVerification"
           @update:toggleShowEpiModal="toggleShowEpiModal"
         />
+
+        <web-operation-list-card />
       </div>
 
       <div v-if="state.view === 'Verification' && !isLoading.order" key="Verification">
@@ -64,28 +70,6 @@
       @update:resetModal="resetModal"
       @update:addMaintainer="addMaintainer"
     />
-    <!-- <invite-maintainer
-      v-if="showInviteMaintainer"
-      :filter-user="filterUser"
-      :filter="filter"
-      :maintainers="maintainers"
-      :invite-maintainers-table-fields="inviteMaintainersTableFields"
-      :current-page="currentPage"
-      :per-page="perPage"
-      :filter-on="filterOn"
-      :sort-by="sortBy"
-      :sort-desc="sortDesc"
-      :sort-direction="sortDirection"
-      :visible-message="visibleMessage"
-      :show-add-button="showAddButton"
-      :rows="rows"
-      :list-manutentor-in-ordem="listmaintainersInOrder"
-      :rows-manutentor-in-order="rowsManutentorInOrder"
-      @update:onFiltered="onFiltered"
-      @update:addMaintainer="addMaintainer"
-      @update:removeMaintainer="removeMaintainer"
-      @update:resetModal="resetModal"
-    /> -->
   </div>
 </template>
 
@@ -101,6 +85,7 @@ export default {
     EpiVerificationModal: () => import('./components/modal/EpiVerificationModal.vue'),
     OrderNote: () => import('./components/Notes.vue'),
     InviteMaintainer: () => import('./components/modal/InviteMaintainerModal.vue'),
+    WebOperationListCard: () => import('./components/OperationListCardWrapper'),
     DetailCardWrapper,
   },
 
@@ -110,58 +95,31 @@ export default {
 
   data() {
     return {
-      inviteMaintainersTableFields: [
-        { key: 'name', label: 'Nome' },
-        { key: 'actions', label: 'Ações', class: 'modal-th-td-style' },
-      ],
-      teste: false,
-      totalRows: 5,
-      currentPage: 1,
-      perPage: 5,
-      pageOptions: [5, 5, 5],
-      sortBy: '',
-      sortDesc: false,
-      sortDirection: 'asc',
-      filter: null,
-      filterUser: null,
-      filterOn: [],
-      infoModal: {
-        id: 'info-modal',
-        title: '',
-        content: '',
-      },
       state: {
         view: 'detail',
       },
-      visibleMessage: false,
       valuesInput: {
         idOrdemServico: this.order.idOrdemServico,
         idUsuario: '',
         user: this.$store.state.user,
         // excluded: '',
       },
-      showAddButton: true,
       showEpiModal: false,
       showInviteMaintainer: false,
-      opcao: '',
       availableMaintainers: [],
       maintainersInOrder: [],
-      report_requester: [],
       epiList: [],
-      dialogVisible: false,
       modalHasError: false,
       modalErrorMessage: '',
-      search: '',
-      isLoading: {},
+      isLoading: {
+        order: true,
+      },
       selectedEpis: [],
       getPriorityClass,
     };
   },
 
   computed: {
-    rows() {
-      return this.availableMaintainers.length;
-    },
     getOrderMasterMaintainer() {
       const maintainer = this.maintainersInOrder.find(maintainer => maintainer.is_master);
 
@@ -178,7 +136,6 @@ export default {
   },
 
   mounted() {
-    this.$set(this.isLoading, 'order', true);
     this.getOrdersDependencies();
   },
 
@@ -199,32 +156,16 @@ export default {
       }
     },
     async getMaintainersInOrder() {
-      const response = await this.$http.get('ordem-usuarios', {
-        headers: { order_id: this.order.idOrdemServico },
+      const response = await this.$http.get('users', {
+        headers: {
+          type: 'maintainerInOrder',
+          order_id: this.order.idOrdemServico,
+        },
       });
 
       if (response.length === undefined)
         this.maintainersInOrder.push(response);
       else this.maintainersInOrder = [...response];
-    },
-    verifyUserActions() {
-      const user = this.$store.state.user;
-
-      if (user.nivelAcesso === 3) {
-        this.showAddButton = false;
-        return;
-      }
-      this.showAddButton = true;
-    },
-    info(item, index, button) {
-      this.infoModal.title = `Row index: ${index}`;
-      this.infoModal.content = JSON.stringify(item, null, 2);
-      this.$root.$emit('bv::show::modal', this.infoModal.id, button);
-    },
-    onFiltered(filteredItems) {
-      // Trigger pagination to update the number of buttons/pages due to filtering
-      this.totalRows = filteredItems.length;
-      this.currentPage = 1 ;
     },
     resetModal() {
       this.modalHasError = false;
@@ -250,7 +191,7 @@ export default {
         if (this.isLoading.inviteMaintainer) return;
 
         this.$set(this.isLoading, 'inviteMaintainer', true);
-        await this.getAvailableInvitedMaintainers();
+        await this.getAvailableMaintainers();
 
         this.showInviteMaintainer = true;
       } catch (err) {
@@ -265,7 +206,7 @@ export default {
         this.$set(this.isLoading, 'inviteMaintainer', false);
       }
     },
-    async getAvailableInvitedMaintainers() {
+    async getAvailableMaintainers() {
       try {
         const response = await this.$http.get('users', {
           headers: {
@@ -273,8 +214,6 @@ export default {
             ordeR_id: this.valuesInput.idOrdemServico,
           },
         });
-
-        console.log('response :>> ', response);
 
         if (response.length === undefined)
           this.availableMaintainers.push(response);
@@ -510,10 +449,10 @@ export default {
     },
     async getEpis() {
       try {
-        if (this.isLoading.checklist) return;
+        if (this.isLoading.epi) return;
         if (this.epiList.length > 0) return;
 
-        this.$set(this.isLoading, 'checklist', true);
+        this.$set(this.isLoading, 'epi', true);
 
         const response = await this.$http.get('epi', {
           headers: { order_id: this.order.idOrdemServico },
@@ -531,7 +470,7 @@ export default {
           confirmButtonColor: '#F34336',
         });
       } finally {
-        this.$set(this.isLoading, 'checklist', false);
+        this.$set(this.isLoading, 'epi', false);
       }
     },
     excludeOrder() {
