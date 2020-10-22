@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { getErrors } from '../../utils/utils';
+import { getErrors, isObjectEmpty } from '../../utils/utils';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -65,23 +65,76 @@ export default {
   },
 
   mounted() {
-    this.listVerifications();
-    this.setActivity();
     this.$store.commit('addPageName', 'Verificações');
+    
+    this.listVerificationsType();
   },
 
   methods: {
-    setActivity() {
-      this.$http.setActivity(this.$activities.VERIFICATION_CONSULT_OPEN);
+    // setActivity() {
+    //   this.$http.setActivity(this.$activities.VERIFICATION_CONSULT_OPEN);
+    // },
+    async listVerificationsType() {
+      setTimeout(() => {
+        const user = this.$store.state.user;
+
+        if (isObjectEmpty(user))
+          return this.listVerificationsType();
+
+        this.$http.setActivity(this.$activities.VERIFICATION_CONSULT_OPEN);
+        if (user.nivelAcesso === 2)
+          return this.listVerificationsMaintainer(user.nivelAcesso);
+        if (user.nivelAcesso === 1)
+          return this.listVerificationsReport(user.nivelAcesso);
+        return this.listVerificationsRequester(user.nivelAcesso);
+      }, 20);
     },
-    async listVerifications() {
+    async listVerificationsMaintainer(user) {
       try {
-        const response = await this.$http.get('verificacao/listagem');
+        const orders = await this.$http.microserviceAnalisis('analysis/verifications-orders', {
+          headers: { user },
+        });
+        if (orders.length !== undefined)
+          this.dataVerification.verifications_list = [...orders];
+        else this.verifications_list.push(orders);
 
-        if (response.length !== undefined)
-          this.dataVerification.verifications_list = [...response];
-        else this.verifications_list.push(response);
+        this.mobileOptions();
+      } catch (err) {
+        console.log('err :>> ', err.response || err);
+        return this.$swal({
+          type: 'warning',
+          title: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
+    async listVerificationsReport(user) {
+      try {
+        const orders = await this.$http.microserviceAnalisis('analysis/verifications-orders-report', {
+          headers: { user },
+        });
+        if (orders.length !== undefined)
+          this.dataVerification.verifications_list = [...orders];
+        else this.verifications_list.push(orders);
+        this.mobileOptions();
+      } catch (err) {
+        console.log('err :>> ', err.response || err);
 
+        return this.$swal({
+          type: 'warning',
+          html: getErrors(err),
+          confirmButtonColor: '#F34336',
+        });
+      }
+    },
+    async listVerificationsRequester(user) {
+      try {
+        const orders = await this.$http.microserviceAnalisis('analysis/verifications-orders-requester', {
+          headers: { user },
+        });
+        if (orders.length !== undefined)
+          this.dataVerification.verifications_list = [...orders];
+        else this.verifications_list.push(orders);
         this.mobileOptions();
       } catch (err) {
         console.log('err :>> ', err.response || err);

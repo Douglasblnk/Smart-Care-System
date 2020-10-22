@@ -49,12 +49,7 @@ const validateSession = async apiUrl => {
 };
 
 const getErrors = err => {
-  const message = (
-    get(err, 'response.data.msg')
-    || get(err, 'response.data.message')
-    || get(err, 'msg')
-    || get(err, 'message')
-  );
+  const message = (get(err, 'response.data.msg') || get(err, 'response.data.message'));
 
   const status = (
     get(err, 'response.data.status')
@@ -62,56 +57,18 @@ const getErrors = err => {
     || get(err, 'status')
     || get(err, 'statusCode')
   );
-
-  console.log('status :>> ', status);
   
   return `
     <div style="margin: 10px; display: flex; flex-direction: column">
       <span class="text-muted">
         Erro: ${message || 'Não foi possível concluir a operação.'}
       </span>
-      <small>
+      <small class="text-muted">
         StatusCode: ${status || ''} <br>
       </small>
     </div>
   `;
 };
-
-// const getErrors = err => {
-//   let error = 'Ops! Não foi possível concluir a operação, tente novamente mais tarde.';
-
-//   if (!err) return error;
-//   error = err;
-  
-
-//   if (!err.response) return error;
-//   error = err.response;
-  
-
-//   if (err.response.result) error = err.response.result;
-//   else if (err.response.data) error = err.response.data;
-  
-  
-//   if (!err.response.data) return error;
-    
-//   if (err.response.data.err) error = err.response.data.err;
-//   else if (err.response.data.result) error = err.response.data.result;
-//   else if (err.response.data.message || err.response.data.msg)
-//     error = err.response.data.msg || err.response.data.message;
-  
-
-//   if (err.response.data.name === 'TokenExpiredError')
-//     return error.concat(' Sessão expirada.');
-  
-//   if (isObject(error)) {
-//     return `
-//       <h3>Os seguintes erros foram encontrados:</h3>
-//       <p>${Object.values(error).join('; <br>')}</p>
-//     `;
-//   }
-
-//   return error;
-// };
 
 const getAccessLevelName = accessNum => {
   const num = Number.isNaN(accessNum) ? accessNum : String(accessNum);
