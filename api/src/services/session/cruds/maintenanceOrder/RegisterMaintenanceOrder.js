@@ -1,14 +1,19 @@
-const CorrectiveOrderDao = require('../../../dao/cruds/transactions/CorrectiveMaintenanceOrder');
-
-const { MANUTENTOR_ID } = require('../../../../shared/constants/accessLevel');
 const { get } = require('lodash');
+const CorrectiveOrderDao = require('../../../dao/cruds/transactions/CorrectiveMaintenanceOrder');
+const PreventiveOrderDao = require('../../../dao/cruds/transactions/PreventiveMaintenanceOrder');
+// const RouteOrderDao = require('../../../dao/cruds/transactions/RouteMaintenanceOrder');
+// const ListOrderDao = require('../../../dao/cruds/transactions/ListMaintenanceOrder');
+const { MANUTENTOR_ID } = require('../../../../shared/constants/accessLevel');
 const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../shared/constants/HTTPResponse');
 
-module.exports = class RegisterCorrectiveMaintenanceOrder {
-  constructor() {
-    this._queryReturn = {};
-  }
+const {
+  CORRECTIVE,
+  PREVENTIVE,
+  ROUTE,
+  LIST,
+} = require('../../../../shared/constants/orderType');
 
+module.exports = class RegisterMaintenanceOrder {
   getParameters(req) {
     return {
       title: get(req.body, 'title', ''),
@@ -56,8 +61,8 @@ module.exports = class RegisterCorrectiveMaintenanceOrder {
     return {
       ...(!title ? { title: 'Titulo não informado' } : ''),
       ...(!summary ? { summary: 'Resumo não informado' } : ''),
-      ...(!description ? { description: 'Descrição não informada' } : ''),
       ...(!typeMaintenance ? { typeMaintenance: 'Tipo de ordem não informado' } : ''),
+      ...((typeMaintenance === CORRECTIVE && !description) ? { description: 'Descrição não informada' } : ''),
       ...(!stats ? { stats: 'Status não informado' } : ''),
       ...(!sector ? { sector: 'Local de instalação não informado' } : ''),
       ...(!requireStop ? { requireStop: 'Requer parada não informada' } : ''),
@@ -66,7 +71,7 @@ module.exports = class RegisterCorrectiveMaintenanceOrder {
       ...(!priority ? { priority: 'Prioridade não informada' } : ''),
       ...(!plannedStart ? { plannedStart: 'Início planejado não informado' } : ''),
       ...(!plannedEnd ? { plannedEnd: 'Fim planejado não informado' } : ''),
-      ...(!operations ? { operations: 'Operação não informada' } : ''),
+      ...((typeMaintenance !== CORRECTIVE && !operations) ? { operations: 'Operação não informada' } : ''),
       ...(!equipment ? { equipment: 'Equipamento não informado' } : ''),
       ...(!epis ? { epis: 'EPI não informada' } : ''),
       ...(!beginData ? { beginData: 'Emissão não informada' } : ''),
@@ -78,27 +83,38 @@ module.exports = class RegisterCorrectiveMaintenanceOrder {
   async run(req) {
     try {
       const parameters = this.getParameters(req);
-
+      console.log('parameters :>> ', parameters);
       const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
       
       await this.validateGroups(parameters);
 
-      await this.registerCorrectiveMaintenanceOrder(parameters);
+      const response = await this.registerMaintenanceOrder(parameters);
       
-      if (this._queryReturn.status !== 200 && this._queryReturn.msg !== 'OK')
+      console.log('response :>> ', response);
+      if (response.status !== 200 && response.msg !== 'OK')
         throw 'Nenhum registro foi inserido';
 
-      return this._queryReturn;
+      return response;
     } catch (err) {
-      console.log('err RegisterCorrectiveMaintenanceOrder :>> ', err);
+      console.log('err RegisterMaintenanceOrder :>> ', err);
 
       throw err;
     }
   }
   
-  async registerCorrectiveMaintenanceOrder(parameters) {
-    this._queryReturn = await new CorrectiveOrderDao(parameters).registerOrder();
+  async registerMaintenanceOrder(parameters) {
+    if (parameters.typeMaintenance === CORRECTIVE)
+      return new CorrectiveOrderDao(parameters).registerOrder();
+      
+    if (parameters.typeMaintenance === PREVENTIVE)
+      return new PreventiveOrderDao(parameters).registerOrder();
+
+    // if (parameters.orderType === ROUTE)
+    //   return new RouteOrderDao(parameters).registerOrder();
+
+    // if (parameters.orderType === LIST)
+    //   return new ListOrderDao(parameters).registerOrder();
   }
 
   async validateGroups({ authData } = {}) {

@@ -12,10 +12,23 @@
                 <h4>Login</h4>
               </div>
               <div>
-                <advanced-input v-model="inputValues.numeroCracha" label="Crachá:" type="text" />
+                <smart-input-text
+                  id="cracha"
+                  v-model="inputValues.numeroCracha"
+                  name="cracha"
+                  placeholder="Crachá"
+                  label="Crachá"
+                />
               </div>
               <div>
-                <advanced-input v-model="inputValues.senha" label="Senha:" type="password" />
+                <smart-input-text
+                  id="password"
+                  v-model="inputValues.senha"
+                  name="password"
+                  placeholder="Senha"
+                  label="Senha"
+                  type="password"
+                />
               </div>
             </div>
             <div class="d-flex justify-content-center m-3">

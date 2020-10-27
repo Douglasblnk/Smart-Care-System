@@ -1,11 +1,11 @@
+const Router = require('express');
 const errorResponseTreatment = require('../../../shared/utils/utils');
 
-const Router = require('express');
 const router = Router();
 
 const GetMaintenanceOrder = require('../../session/cruds/maintenanceOrder/GetMaintenanceOrder');
 const DeleteMaintenanceOrder = require('../../session/cruds/maintenanceOrder/DeleteMaintenanceOrder');
-const RegisterMaintenanceOrder = require('../../session/cruds/maintenanceOrder/RegisterCorrectiveOrder');
+const RegisterMaintenanceOrder = require('../../session/cruds/maintenanceOrder/RegisterMaintenanceOrder');
 
 /**
  *  ROTA PARA BUSCAR UM RESUMO DE TODAS AS ORDENS DE MANUTENÇÃO
@@ -24,7 +24,7 @@ router.get('/', async (req, res, next) => {
 });
 
 /**
- *  ROTA PARA CADASTRAR UMA 0RDEM DE MANUTENÇÃO DO TIPO CORRETIVA
+ *  ROTA PARA CADASTRAR UMA 0RDEM DE MANUTENÇÃO
  */
 router.post('/', async (req, res, next) => {
   try {
