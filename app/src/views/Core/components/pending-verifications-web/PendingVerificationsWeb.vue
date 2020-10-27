@@ -181,8 +181,8 @@ export default {
       try {
         const order = { idOrdemServico: props.ordemServico_idOrdemServico };
 
-        const { result } = await this.$http.post('ordem-manutencao/detail', {
-          order,
+        const { result } = await this.$http.get('ordem-manutencao', {
+          headers: { order },
         });
 
         this.$set(this.detail, 'order', result);

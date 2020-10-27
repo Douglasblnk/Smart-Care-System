@@ -6,7 +6,7 @@ const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../share
 
 module.exports = class RegisterUpdateEpi {
   constructor() {
-    this._queryReturn = '';
+    this._queryResult = '';
   }
 
   getParameters(req) {
@@ -43,10 +43,10 @@ module.exports = class RegisterUpdateEpi {
 
       await this.registerUpdateEpi(parameters, type);
 
-      if (!this._queryReturn.affectedRows)
+      if (!this._queryResult.affectedRows)
         throw type ? 'Nenhum registro foi alterado' : 'Nenhum registro foi inserido';
 
-      return this._queryReturn;
+      return this._queryResult;
     } catch (err) {
       console.log('err RegisterUpdateEpi :>> ', err);
 
@@ -56,9 +56,9 @@ module.exports = class RegisterUpdateEpi {
 
   async registerUpdateEpi(parameters, type = '') {
     if (type === 'update')
-      this._queryReturn = await new EpiDao(parameters).updateEpi();
+      this._queryResult = await new EpiDao(parameters).updateEpi();
 
-    else this._queryReturn = await new EpiDao(parameters).registerEpi();
+    else this._queryResult = await new EpiDao(parameters).registerEpi();
   }
 
   async validateGroups({ authData }) {

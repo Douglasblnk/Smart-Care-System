@@ -6,7 +6,7 @@ const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../share
 
 module.exports = class RegisterUpdateInstallationLocation {
   constructor() {
-    this._queryReturn = '';
+    this._queryResult = '';
   }
 
   getParameters(req) {
@@ -38,10 +38,10 @@ module.exports = class RegisterUpdateInstallationLocation {
 
       await this.registerUpdateInstallationLocation(parameters, type);
 
-      if (!this._queryReturn.affectedRows)
+      if (!this._queryResult.affectedRows)
         throw type ? 'Nenhum registro foi alterado' : 'Nenhum registro foi inserido';
 
-      return this._queryReturn;
+      return this._queryResult;
     } catch (err) {
       console.log('err RegisterUpdateInstallationLocation :>> ', err);
 
@@ -51,9 +51,9 @@ module.exports = class RegisterUpdateInstallationLocation {
 
   async registerUpdateInstallationLocation(parameters, type = '') {
     if (type === 'update')
-      this._queryReturn = await new InstallationLocationDao(parameters).updateSector();
+      this._queryResult = await new InstallationLocationDao(parameters).updateSector();
 
-    else this._queryReturn = await new InstallationLocationDao(parameters).registerSector();
+    else this._queryResult = await new InstallationLocationDao(parameters).registerSector();
   }
 
   async validateGroups({ authData }) {

@@ -657,7 +657,7 @@ export default {
     async getReporter() {
       try {
         const response = await this.$http.get('users', {
-          headers: { type: 'report' },
+          headers: { type: 'reporter' },
         });
 
         if (response.length === undefined)

@@ -1,6 +1,9 @@
 const GenericDao = require('../GenericDao');
 
-const { TABLE_USUARIO } = require('../../../shared/constants/database');
+const {
+  TABLE_USUARIO,
+  TABLE_ORDEM_SERVICO_HAS_USUARIO,
+} = require('../../../shared/constants/database');
 
 module.exports = class UserDao extends GenericDao {
   constructor({
@@ -11,6 +14,7 @@ module.exports = class UserDao extends GenericDao {
     email,
     nivelAcesso,
     updateId,
+    orderId,
     mysql,
   } = {}) {
     super();
@@ -22,6 +26,7 @@ module.exports = class UserDao extends GenericDao {
     this._email = email;
     this._nivelAcesso = nivelAcesso;
     this._updateId = updateId;
+    this._orderId = orderId;
     this._mysql = mysql;
   }
 
@@ -37,8 +42,7 @@ module.exports = class UserDao extends GenericDao {
       FROM ${TABLE_USUARIO}
       WHERE ${TABLE_USUARIO}.numeroCracha = ?
         AND ${TABLE_USUARIO}.excluded = ?
-      `, [this._numeroCracha, 0],
-    );
+    `, [this._numeroCracha, 0]);
 
     return this.parseSelectResponse(rows);
   }
@@ -100,6 +104,55 @@ module.exports = class UserDao extends GenericDao {
 
     return this.parseSelectResponse(rows);
   }
+
+  /**
+   * getAvailableMaintainers
+   * Busca todos os manutentores disponíveis
+   * @return {Array} parsed array com todos os usuários de nível manutentor
+   */
+  async getAvailableMaintainers() {
+    const [rows] = await this._mysql.query(/* SQL */`
+      SELECT
+        ${TABLE_USUARIO}.idUsuario,
+        ${TABLE_USUARIO}.nome,
+        ${TABLE_USUARIO}.funcao,
+        ${TABLE_USUARIO}.numeroCracha,
+        ${TABLE_USUARIO}.nivel_acesso 
+      FROM ${TABLE_USUARIO}
+      WHERE ${TABLE_USUARIO}.nivel_acesso = ? AND ${TABLE_USUARIO}.excluded = ? AND
+      NOT EXISTS (
+        SELECT
+          *
+        FROM ${TABLE_ORDEM_SERVICO_HAS_USUARIO}
+        WHERE ${TABLE_ORDEM_SERVICO_HAS_USUARIO}.Usuario_idUsuario = ${TABLE_USUARIO}.idUsuario 
+        AND ${TABLE_ORDEM_SERVICO_HAS_USUARIO}.ordemServico_idOrdemServico = ${this._orderId}
+        AND ${TABLE_ORDEM_SERVICO_HAS_USUARIO}.excluded = ?
+      )
+    `, [2, 0, 0]);
+
+    return this.parseSelectResponse(rows);
+  }
+
+  /**
+   * getMaintainersInOrder
+   * Busca todas os manutentores que estão na ordem
+   * @return {Array} parsed array com todas os usuários de uma ordem
+   */
+  async getMaintainersInOrder() {
+    const [rows] = await this._mysql.query(/* SQL */`
+      SELECT
+        ${TABLE_USUARIO}.idUsuario,
+        ${TABLE_USUARIO}.nome,
+        ${TABLE_USUARIO}.funcao,
+        ${TABLE_USUARIO}.numeroCracha,
+        order_has_user.is_master
+      FROM ${TABLE_USUARIO}
+      INNER JOIN ${TABLE_ORDEM_SERVICO_HAS_USUARIO} as order_has_user ON order_has_user.Usuario_idUsuario = ${TABLE_USUARIO}.idUsuario
+      WHERE order_has_user.ordemServico_idOrdemServico = ? AND order_has_user.excluded = ?;
+    `, [this._orderId, 0]);
+    
+    return this.parseSelectResponse(rows);
+  }
   
   /**
    * registerUser
@@ -117,8 +170,7 @@ module.exports = class UserDao extends GenericDao {
     };
     const [rows] = await this._mysql.query(/* SQL */ `
       INSERT INTO ${TABLE_USUARIO} SET ?
-      `, [values],
-    );
+    `, [values]);
 
     console.log('user registered => ', this._nome);
 
@@ -142,8 +194,7 @@ module.exports = class UserDao extends GenericDao {
 
     const [rows] = await this._mysql.query(/* SQL */ `
       UPDATE ${TABLE_USUARIO} SET ? WHERE idUsuario = ?;
-      `, [values, this._updateId],
-    );
+    `, [values, this._updateId]);
 
     console.log('user updated => ', this._nome);
 
@@ -162,8 +213,7 @@ module.exports = class UserDao extends GenericDao {
 
     const [rows] = await this._mysql.query(/* SQL */ `
       UPDATE ${TABLE_USUARIO} SET ? WHERE idUsuario = ?;
-      `, [values, this._updateId],
-    );
+    `, [values, this._updateId]);
 
     console.log('user deleted => ', this._updateId);
 
