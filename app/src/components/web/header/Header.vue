@@ -8,8 +8,8 @@
       </div>
 
       <div class="name-notification">
-        <i class="fas fa-bell" />
-        <div class="pipe" />
+        <!-- <i class="fas fa-bell" /> -->
+        <!-- <div class="pipe" /> -->
 
         <b-dropdown size="lg" right variant="link" toggle-class="text-decoration-none p-0" no-caret>
           <template v-slot:button-content>

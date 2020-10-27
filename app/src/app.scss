@@ -30,6 +30,10 @@ span, p, strong {
   background-color: #F34336 !important;
 }
 
+.smart-modal-footer {
+  margin-top: 20px;
+}
+
 .modal-content {
   border: 0 !important;
   border-radius: 10px !important;
@@ -63,6 +67,33 @@ span, p, strong {
   z-index: 10;
   bottom: 0;
   right: 0;
+}
+
+.user-select-none {
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+.card-presentation-icon {
+  margin-top: -30px;
+  background-color: var(--duas-rodas-soft);
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  i {
+    color: white;
+  }
+}
+
+.scale {
+  transition: .2s;
+  &:hover { transform: scale(1.2) }
+  &:active { transform: scale(1) }
 }
 
 .config-blurred-background {

@@ -20,7 +20,8 @@ module.exports = {
         'no-continue': 'off',
         'no-use-before-define': 'off',
         'no-await-in-loop': 'off',
-        'no-useless-catch': 'off'
+        'no-useless-catch': 'off',
+        'linebreak-style': 'off',
     },
     settings: {
         'import/resolver': 'node',

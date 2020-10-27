@@ -4,7 +4,7 @@ const { get } = require('lodash');
 
 module.exports = class GetEpi {
   constructor() {
-    this._queryReturn = '';
+    this._queryResult = '';
   }
 
   getParameters(req) {
