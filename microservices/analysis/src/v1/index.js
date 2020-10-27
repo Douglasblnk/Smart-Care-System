@@ -4,6 +4,9 @@ const bodyParser = require('body-parser');
 
 const summary = require('./summary/get');
 const lastMonth = require('./orderByMonth/get');
+const verificationsOrder = require('./verificationsOrder/get');
+const verificationsOrderReport = require('./verificationsOrderReport/get');
+const verificationsOrderRequester = require('./verificationsOrderRequester/get');
 
 const app = express();
 
@@ -11,7 +14,6 @@ app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
 
 app.get('/analysis/order-summary', async (req, res) => {
   try {
@@ -26,6 +28,36 @@ app.get('/analysis/order-summary', async (req, res) => {
 app.get('/analysis/last-month', async (req, res) => {
   try {
     const response = await lastMonth.run(req);
+    
+    res.status(200).send(response);
+  } catch (err) {
+    res.status(404).send(err);
+  }
+});
+
+app.get('/analysis/verifications-orders', async (req, res) => {
+  try {
+    const response = await verificationsOrder.run(req);
+    
+    res.status(200).send(response);
+  } catch (err) {
+    res.status(404).send(err);
+  }
+});
+
+app.get('/analysis/verifications-orders-report', async (req, res) => {
+  try {
+    const response = await verificationsOrderReport.run(req);
+    
+    res.status(200).send(response);
+  } catch (err) {
+    res.status(404).send(err);
+  }
+});
+
+app.get('/analysis/verifications-orders-requester', async (req, res) => {
+  try {
+    const response = await verificationsOrderRequester.run(req);
     
     res.status(200).send(response);
   } catch (err) {

@@ -26,8 +26,17 @@
                 <div class="d-flex justify-content-between">
                   <span>Data: {{ moment(row.dataVerificacao).format('DD/MM/YYYY') }}</span>
                 </div>
-                <div class="d-flex ">
-                  <span>{{ resolvedProblem(row.problemaResolvido) }}</span>
+                <div class="d-flex align-items-center">
+                  <span :class="getResolvedProblemClass(row.problemaResolvido)">{{ resolvedProblem(row.problemaResolvido) }}</span>
+                  <!-- <span>{{ resolvedProblem(row.problemaResolvido) }}</span> -->
+                </div>
+                <div class="d-flex justify-content-end">
+                  <smart-button small class="mx-1" @click.native="openOrder(row)">
+                    <span>Detalhar</span>
+                  </smart-button>
+                  <smart-button small @click.native="openModalDetailVerifications(row)">
+                    <span>Resumo</span>
+                  </smart-button>
                 </div>
               </template>
             </v-client-table>
@@ -167,8 +176,6 @@ export default {
   },
 
   mounted() {
-    console.log('teste: ');
-    console.log('verificationsData: ', this.verificationsData);
     this.$store.commit('addPageName', 'Verificações');
   },
 
@@ -178,12 +185,13 @@ export default {
       this.data_modal = [];
     },
     openOrder(props) {
+      console.log('props: ', props);
       this.getOrderDetail(props);
     },
     async getOrderDetail(props) {
       try {
         const order = { idOrdemServico: props.ordemServico_idOrdemServico };
-
+        console.log('order: ', order);
         const { result } = await this.$http.post('ordem-manutencao/detail', {
           order,
         });
@@ -234,6 +242,9 @@ export default {
     resolvedProblem(is_resolved) {
       return is_resolved ? 'Problema: Resolvido' : 'Problema: Pendente';
     },
+    getResolvedProblemClass(is_resolved) {
+      return is_resolved ? 'resolved-problem' : 'not-resolved';
+    },
   },
 };
 </script>
@@ -241,6 +252,14 @@ export default {
 <style lang="scss">
   .root-configuracoes-view {
     .content-verifications {
+      .table-verifications {
+        .resolved-problem {
+          color: #53c46d !important;
+        }
+        .not-resolved {
+          color: var(--duas-rodas) !important;
+        }
+      }
       .user_detail_verification{
         font-size: 20px;
       }

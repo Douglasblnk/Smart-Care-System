@@ -23,10 +23,10 @@
                 <i :class="row.icon_maintainer"></i>
               </span>
               <div slot="actions" slot-scope="props">
-                <a target="_blank" class="fas fa-eye fa-lg mb-2 eye"
+                <a target="_blank" class="fas fa-external-link-alt mb-2 eye"
                    @click="openOrder(props.row)"
                 ></a>
-                <i class="fas fa-edit fa-lg mb-2" @click="openModalDetailVerifications(props.row)"></i>
+                <i class="fas fa-eye fa-lg mb-2" @click="openModalDetailVerifications(props.row)"></i>
               </div>
             </v-client-table>
           </div>
@@ -166,7 +166,6 @@ export default {
   },
 
   mounted() {
-    console.log('verificationsData: ', this.verificationsData);
     this.$store.commit('addPageName', 'Verificações');
   },
 
