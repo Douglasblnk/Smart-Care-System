@@ -1,11 +1,11 @@
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+
 const ConnectionFactory = require('./shared/database/ConnectionFactory');
 const Auth = require('./shared/auth/auth');
 
 require('dotenv').config({ path: '.env' });
-
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
 
 const app = express();
 const connectionFactory = new ConnectionFactory();

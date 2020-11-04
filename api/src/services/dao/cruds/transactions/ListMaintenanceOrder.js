@@ -5,6 +5,7 @@ const {
   TABLE_EQUIPAMENTOS,
   TABLE_ORDEM_SERVICO_HAS_EPI,
   TABLE_LOCAIS,
+  TABLE_OPERACOES,
   TABLE_EQUIPAMENTO_OPERACAO,
 } = require('../../../../shared/constants/database');
 
@@ -15,16 +16,17 @@ module.exports = class CorrectiveMaintenanceOrder extends GenericDao {
     description,
     typeMaintenance,
     stats,
-    sector,
     requireStop,
     requester,
     report,
     priority,
     plannedStart,
     plannedEnd,
-    equipment,
-    epis,
     beginData,
+    epis,
+    equipmentsWithOperations,
+    equipmentsSectors,
+    operations,
     mysql,
   } = {}) {
     super();
@@ -34,33 +36,33 @@ module.exports = class CorrectiveMaintenanceOrder extends GenericDao {
     this._description = description;
     this._typeMaintenance = typeMaintenance;
     this._stats = stats;
-    this._sector = sector;
     this._requireStop = requireStop;
     this._requester = requester;
     this._report = report;
     this._priority = priority;
     this._plannedStart = plannedStart;
     this._plannedEnd = plannedEnd;
-    this._equipment = equipment;
+    this._equipmentsWithOperations = equipmentsWithOperations;
+    this._equipmentsSectors = equipmentsSectors;
+    this._operations = operations;
     this._epis = epis;
     this._beginData = beginData;
     this._mysql = mysql;
 
     /* Variáveis de controle */
     this._insertedOrderId = '';
-    this._insertedEquipmentId = '';
-    this._insertedSectorId = '';
-    this._insertedOperationsId = [];
+    this._equipmentSectorIds = [];
+    this._operationsIds = [];
   }
 
   async registerOrder() {
     try {
       await this._mysql.beginTransaction();
 
-      await this.insertCorrectiveOrder();
+      await this.insertRouteOrder();
       await this.insertOrderHasEpis();
-      await this.insertEquipments();
-      await this.insertSectors();
+      await this.equipmentsQueries();
+      await this.insertOperations();
       await this.insertEquipmentOperations();
 
       await this._mysql.commit();
@@ -74,7 +76,7 @@ module.exports = class CorrectiveMaintenanceOrder extends GenericDao {
     }
   }
 
-  async insertCorrectiveOrder() {
+  async insertRouteOrder() {
     const values = {
       titulo: this._title,
       resumo: this._summary,
@@ -91,13 +93,13 @@ module.exports = class CorrectiveMaintenanceOrder extends GenericDao {
     };
 
     const [rows] = await this._mysql.query(/* SQL */`
-      INSERT INTO ${TABLE_ORDEM_SERVICO} SET ?
+      INSERT INTO ${TABLE_ORDEM_SERVICO} SET ?;
     `, [values]);
 
     const { insertId } = this.parseInsertResponse(rows);
     this._insertedOrderId = insertId;
   }
-  
+
   async insertOrderHasEpis() {
     const promises = this._epis.map(async epi => this._mysql.query(/* SQL */`
       INSERT INTO ${TABLE_ORDEM_SERVICO_HAS_EPI} SET ?;
@@ -106,37 +108,80 @@ module.exports = class CorrectiveMaintenanceOrder extends GenericDao {
     await Promise.all(promises);
   }
 
-  async insertEquipments() {
-    const values = {
-      Equipamento: this._equipment,
-      Ordem_servico: this._insertedOrderId,
-    };
+  async equipmentsQueries() {
+    const promises = this._equipmentsSectors.map(async equipment => ([
+      await this.insertEquipment(equipment),
+      await this.insertSector(equipment),
+    ]));
 
-    const [row] = await this._mysql.query(/* SQL */`
-      INSERT INTO ${TABLE_EQUIPAMENTOS} SET ?;
-    `, [values]);
-
-    this._insertedEquipmentId = this.parseInsertResponse(row).insertId;
+    const response = await Promise.all(promises);
+    
+    this.addEquipmentSectorIds(response);
   }
 
-  async insertSectors() {
-    const values = {
-      Local: this._sector,
-      Ordem_servico: this._insertedOrderId,
-    };
+  async insertOperations() {
+    const promises = this._operations.map(operation => this._mysql.query(/* SQL */ `
+      INSERT INTO ${TABLE_OPERACOES} SET ?;
+    `, [operation]));
 
-    const [row] = await this._mysql.query(/* SQL */`
-      INSERT INTO ${TABLE_LOCAIS} SET ?;
-    `, [values]);
+    const response = await Promise.all(promises);
 
-    this._insertedSectorId = this.parseInsertResponse(row).insertId;
+    this._operationsIds = this.parseMultipleInsertResponse(response).map(i => i.insertId);
   }
 
   async insertEquipmentOperations() {
-    const promises = this._insertedOperationsId.map(async operationsId => this._mysql.query(/* SQL */`
+    for (const operation of this._equipmentSectorIds) await this.insertMultipleOperations(operation);
+  }
+
+  async insertMultipleOperations({ Equipamentos, Locais }) {
+    const values = {
+      Equipamento_FK: Equipamentos,
+      Locais_FK: Locais,
+    };
+
+    const promises = this._operationsIds.map(op => this._mysql.query(/* SQL */`
       INSERT INTO ${TABLE_EQUIPAMENTO_OPERACAO} SET ?;
-    `, [{ Equipamento_FK: this._insertedEquipmentId, Operacao_FK: operationsId, Locais_FK: this._insertedSectorId }]));
+    `, [{ ...values, Operacao_FK: op }]));
 
     await Promise.all(promises);
+  }
+
+  async insertEquipment({ Equipamento }) {
+    const values = {
+      Equipamento,
+      Ordem_servico: this._insertedOrderId,
+    };
+
+    const [rows] = await this._mysql.query(/* SQL */`
+      INSERT INTO ${TABLE_EQUIPAMENTOS} SET ?;
+    `, [values]);
+
+    const { insertId } = this.parseInsertResponse(rows);
+    return insertId;
+  }
+
+  async insertSector({ Local }) {
+    const values = {
+      Local,
+      Ordem_servico: this._insertedOrderId,
+    };
+
+    const [rows] = await this._mysql.query(/* SQL */ `
+      INSERT INTO ${TABLE_LOCAIS} SET ?;
+    `, [values]);
+
+    const { insertId } = this.parseInsertResponse(rows);
+    return insertId;
+  }
+
+  addEquipmentSectorIds(equipmentSectorIds) {
+    equipmentSectorIds.forEach(insertedIds => {
+      const [equipmentId, sectorId] = insertedIds;
+
+      this._equipmentSectorIds.push({
+        Equipamentos: equipmentId,
+        Locais: sectorId,
+      });
+    });
   }
 };

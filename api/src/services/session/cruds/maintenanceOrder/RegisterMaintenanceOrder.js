@@ -1,14 +1,19 @@
-const CorrectiveOrderDao = require('../../../dao/cruds/transactions/CorrectiveMaintenanceOrder');
-
-const { MANUTENTOR_ID } = require('../../../../shared/constants/accessLevel');
 const { get } = require('lodash');
+const CorrectiveOrderDao = require('../../../dao/cruds/transactions/CorrectiveMaintenanceOrder');
+const PreventiveOrderDao = require('../../../dao/cruds/transactions/PreventiveMaintenanceOrder');
+const RouteOrderDao = require('../../../dao/cruds/transactions/RouteMaintenanceOrder');
+const ListOrderDao = require('../../../dao/cruds/transactions/ListMaintenanceOrder');
+const { MANUTENTOR_ID } = require('../../../../shared/constants/accessLevel');
 const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../shared/constants/HTTPResponse');
 
-module.exports = class RegisterCorrectiveMaintenanceOrder {
-  constructor() {
-    this._queryResult = {};
-  }
+const {
+  CORRECTIVE,
+  PREVENTIVE,
+  ROUTE,
+  LIST,
+} = require('../../../../shared/constants/orderType');
 
+module.exports = class RegisterMaintenanceOrder {
   getParameters(req) {
     return {
       title: get(req.body, 'title', ''),
@@ -24,6 +29,8 @@ module.exports = class RegisterCorrectiveMaintenanceOrder {
       plannedStart: get(req.body, 'plannedStart', ''),
       plannedEnd: get(req.body, 'plannedEnd', ''),
       operations: get(req.body, 'operations', ''),
+      equipmentsWithOperations: get(req.body, 'equipments_sectors_operations', ''),
+      equipmentsSectors: get(req.body, 'equipments_sectors', ''),
       equipment: get(req.body, 'equipment', ''),
       epis: get(req.body, 'epis', ''),
       description: get(req.body, 'description', ''),
@@ -47,31 +54,53 @@ module.exports = class RegisterCorrectiveMaintenanceOrder {
     plannedEnd,
     operations,
     equipment,
-    epis,
     description,
     beginData,
+    equipmentsSectors,
+    equipmentsWithOperations,
     mysql,
     authData,
   } = {}) {
     return {
       ...(!title ? { title: 'Titulo não informado' } : ''),
       ...(!summary ? { summary: 'Resumo não informado' } : ''),
-      ...(!description ? { description: 'Descrição não informada' } : ''),
       ...(!typeMaintenance ? { typeMaintenance: 'Tipo de ordem não informado' } : ''),
+      ...((typeMaintenance === CORRECTIVE && !description) ? { description: 'Descrição não informada' } : ''),
       ...(!stats ? { stats: 'Status não informado' } : ''),
-      ...(!sector ? { sector: 'Local de instalação não informado' } : ''),
       ...(!requireStop ? { requireStop: 'Requer parada não informada' } : ''),
       ...(!requester ? { requester: 'Solicitante não informado' } : ''),
       ...(!report ? { report: 'Reporte não informado' } : ''),
       ...(!priority ? { priority: 'Prioridade não informada' } : ''),
       ...(!plannedStart ? { plannedStart: 'Início planejado não informado' } : ''),
       ...(!plannedEnd ? { plannedEnd: 'Fim planejado não informado' } : ''),
-      ...(!operations ? { operations: 'Operação não informada' } : ''),
-      ...(!equipment ? { equipment: 'Equipamento não informado' } : ''),
-      ...(!epis ? { epis: 'EPI não informada' } : ''),
       ...(!beginData ? { beginData: 'Emissão não informada' } : ''),
       ...(!mysql ? { mysql: 'Conexão não estabelecida' } : ''),
       ...(!authData ? { authData: 'Dados de autenticação não encontrados' } : ''),
+      ...(
+        ((typeMaintenance === PREVENTIVE || typeMaintenance === LIST) && !operations)
+          ? { operations: 'Operação não informada' }
+          : ''
+      ),
+      ...(
+        (typeMaintenance !== ROUTE && typeMaintenance !== LIST && !sector)
+          ? { sector: 'Local de instalação não informado' }
+          : ''
+      ),
+      ...(
+        (typeMaintenance !== ROUTE && typeMaintenance !== LIST && !equipment)
+          ? { equipment: 'Equipamento não informado' }
+          : ''
+      ),
+      ...(
+        (typeMaintenance === ROUTE && !equipmentsWithOperations)
+          ? { equipmentOperations: 'Equipamentos e operações não informadas' }
+          : ''
+      ),
+      ...(
+        (typeMaintenance === LIST && !equipmentsSectors)
+          ? { equipmentsSectors: 'Equipamento e setor não informado' }
+          : ''
+      ),
     };
   }
 
@@ -84,21 +113,31 @@ module.exports = class RegisterCorrectiveMaintenanceOrder {
       
       await this.validateGroups(parameters);
 
-      await this.registerCorrectiveMaintenanceOrder(parameters);
+      const response = await this.registerMaintenanceOrder(parameters);
       
-      if (this._queryResult.status !== 200 && this._queryResult.msg !== 'OK')
+      if (response.status !== 200 && response.msg !== 'OK')
         throw 'Nenhum registro foi inserido';
 
-      return this._queryResult;
+      return response;
     } catch (err) {
-      console.log('err RegisterCorrectiveMaintenanceOrder :>> ', err);
+      console.log('err RegisterMaintenanceOrder :>> ', err);
 
       throw err;
     }
   }
   
-  async registerCorrectiveMaintenanceOrder(parameters) {
-    this._queryResult = await new CorrectiveOrderDao(parameters).registerOrder();
+  async registerMaintenanceOrder(parameters) {
+    if (parameters.typeMaintenance === CORRECTIVE)
+      return new CorrectiveOrderDao(parameters).registerOrder();
+      
+    if (parameters.typeMaintenance === PREVENTIVE)
+      return new PreventiveOrderDao(parameters).registerOrder();
+
+    if (parameters.typeMaintenance === ROUTE)
+      return new RouteOrderDao(parameters).registerOrder();
+
+    if (parameters.typeMaintenance === LIST)
+      return new ListOrderDao(parameters).registerOrder();
   }
 
   async validateGroups({ authData } = {}) {

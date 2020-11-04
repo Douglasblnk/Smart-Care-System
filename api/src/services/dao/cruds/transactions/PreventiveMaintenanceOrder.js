@@ -5,10 +5,11 @@ const {
   TABLE_EQUIPAMENTOS,
   TABLE_ORDEM_SERVICO_HAS_EPI,
   TABLE_LOCAIS,
+  TABLE_OPERACOES,
   TABLE_EQUIPAMENTO_OPERACAO,
 } = require('../../../../shared/constants/database');
 
-module.exports = class CorrectiveMaintenanceOrder extends GenericDao {
+module.exports = class PreventiveMaintenanceOrder extends GenericDao {
   constructor({
     title,
     summary,
@@ -24,6 +25,7 @@ module.exports = class CorrectiveMaintenanceOrder extends GenericDao {
     plannedEnd,
     equipment,
     epis,
+    operations,
     beginData,
     mysql,
   } = {}) {
@@ -43,6 +45,7 @@ module.exports = class CorrectiveMaintenanceOrder extends GenericDao {
     this._plannedEnd = plannedEnd;
     this._equipment = equipment;
     this._epis = epis;
+    this._operations = operations;
     this._beginData = beginData;
     this._mysql = mysql;
 
@@ -61,6 +64,7 @@ module.exports = class CorrectiveMaintenanceOrder extends GenericDao {
       await this.insertOrderHasEpis();
       await this.insertEquipments();
       await this.insertSectors();
+      await this.insertOperations();
       await this.insertEquipmentOperations();
 
       await this._mysql.commit();
@@ -130,6 +134,16 @@ module.exports = class CorrectiveMaintenanceOrder extends GenericDao {
     `, [values]);
 
     this._insertedSectorId = this.parseInsertResponse(row).insertId;
+  }
+
+  async insertOperations() {
+    const promises = this._operations.map(async operation => this._mysql.query(/* SQL */`
+      INSERT INTO ${TABLE_OPERACOES} SET ?;
+    `, [operation]));
+
+    const rows = await Promise.all(promises);
+  
+    this._insertedOperationsId = rows.map(([row]) => this.parseInsertResponse(row).insertId);
   }
 
   async insertEquipmentOperations() {
