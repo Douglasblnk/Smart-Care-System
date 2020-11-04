@@ -4,7 +4,7 @@ const { get } = require('lodash');
 
 module.exports = class GetOperation {
   constructor() {
-    this._queryReturn = '';
+    this._queryResult = '';
   }
 
   getParameters(req) {

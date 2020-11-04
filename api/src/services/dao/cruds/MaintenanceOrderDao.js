@@ -94,6 +94,7 @@ module.exports = class MaintenanceOrderDao extends GenericDao {
 
     return this.parseSelectResponse(rows);
   }
+
   /**
    * deleteOrder
    * Deleta uma ordem de manutenção do sistema

@@ -6,7 +6,7 @@ const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../share
 
 module.exports = class DeleteInstallationLocation {
   constructor() {
-    this._queryReturn = '';
+    this._queryResult = '';
   }
 
   getParameters(req) {
@@ -35,10 +35,10 @@ module.exports = class DeleteInstallationLocation {
       await this.validateGroups(parameters);
       await this.deleteSector(parameters);
 
-      if (!this._queryReturn.affectedRows)
+      if (!this._queryResult.affectedRows)
         throw 'Não foi possível deletar o setor';
 
-      return this._queryReturn;
+      return this._queryResult;
     } catch (err) {
       console.log('err DeleteInstallationLocation :>> ', err);
 
@@ -47,7 +47,7 @@ module.exports = class DeleteInstallationLocation {
   }
 
   async deleteSector(parameters) {
-    this._queryReturn = await new InstallationLocationDao(parameters).deleteSector();
+    this._queryResult = await new InstallationLocationDao(parameters).deleteSector();
   }
 
   async validateGroups({ authData }) {

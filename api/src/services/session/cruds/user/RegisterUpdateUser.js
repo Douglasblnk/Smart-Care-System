@@ -7,7 +7,7 @@ const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../share
 
 module.exports = class RegisterUpdateUser {
   constructor() {
-    this._queryReturn = '';
+    this._queryResult = '';
   }
 
   validateEmail(email) {
@@ -68,10 +68,10 @@ module.exports = class RegisterUpdateUser {
       const user = await this.getPasswordHash(parameters);
       await this.registerUpdateUser(user, type);
 
-      if (!this._queryReturn.affectedRows)
+      if (!this._queryResult.affectedRows)
         throw type ? 'Nenhum registro foi alterado' : 'Nenhum registro foi inserido';
 
-      return this._queryReturn;
+      return this._queryResult;
     } catch (err) {
       console.log('err registerUser :>> ', err);
 
@@ -81,9 +81,9 @@ module.exports = class RegisterUpdateUser {
 
   async registerUpdateUser(parameters, type = '') {
     if (type === 'update')
-      this._queryReturn = await new userDao(parameters).updateUser();
+      this._queryResult = await new userDao(parameters).updateUser();
 
-    else this._queryReturn = await new userDao(parameters).registerUser();
+    else this._queryResult = await new userDao(parameters).registerUser();
   }
 
   async getPasswordHash(parameters) {

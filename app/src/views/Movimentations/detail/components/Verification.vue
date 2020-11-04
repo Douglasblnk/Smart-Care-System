@@ -42,7 +42,7 @@
 <script>
 import Vue from 'vue';
 import { ToggleButton } from 'vue-js-toggle-button';
-import { getToken, getErrors } from '../../utils/utils';
+import { getToken, getErrors } from '../../../../utils/utils';
 
 Vue.use(ToggleButton);
 

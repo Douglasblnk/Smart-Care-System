@@ -121,7 +121,7 @@ export default {
         return this.$swal({
           type: 'error',
           title: 'Não foi possível realizar o login',
-          text: getErrors(err),
+          html: getErrors(err),
           confirmButtonColor: '#F34336',
         });
       }
