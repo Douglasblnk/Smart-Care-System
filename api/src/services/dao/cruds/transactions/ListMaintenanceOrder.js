@@ -25,6 +25,8 @@ module.exports = class CorrectiveMaintenanceOrder extends GenericDao {
     beginData,
     epis,
     equipmentsWithOperations,
+    equipmentsSectors,
+    operations,
     mysql,
   } = {}) {
     super();
@@ -41,13 +43,16 @@ module.exports = class CorrectiveMaintenanceOrder extends GenericDao {
     this._plannedStart = plannedStart;
     this._plannedEnd = plannedEnd;
     this._equipmentsWithOperations = equipmentsWithOperations;
+    this._equipmentsSectors = equipmentsSectors;
+    this._operations = operations;
     this._epis = epis;
     this._beginData = beginData;
     this._mysql = mysql;
 
     /* Variáveis de controle */
     this._insertedOrderId = '';
-    this._equipmentSectorOperationsIds = [];
+    this._equipmentSectorIds = [];
+    this._operationsIds = [];
   }
 
   async registerOrder() {
@@ -56,7 +61,8 @@ module.exports = class CorrectiveMaintenanceOrder extends GenericDao {
 
       await this.insertRouteOrder();
       await this.insertOrderHasEpis();
-      await this.equipmentSectorOperationQueries();
+      await this.equipmentsQueries();
+      await this.insertOperations();
       await this.insertEquipmentOperations();
 
       await this._mysql.commit();
@@ -102,29 +108,38 @@ module.exports = class CorrectiveMaintenanceOrder extends GenericDao {
     await Promise.all(promises);
   }
 
-  async equipmentSectorOperationQueries() {
-    const promises = this._equipmentsWithOperations.map(async equipment => ([
+  async equipmentsQueries() {
+    const promises = this._equipmentsSectors.map(async equipment => ([
       await this.insertEquipment(equipment),
       await this.insertSector(equipment),
-      await this.insertOperations(equipment),
     ]));
 
     const response = await Promise.all(promises);
     
-    this.addEquipmentSectorOperationIds(response);
+    this.addEquipmentSectorIds(response);
+  }
+
+  async insertOperations() {
+    const promises = this._operations.map(operation => this._mysql.query(/* SQL */ `
+      INSERT INTO ${TABLE_OPERACOES} SET ?;
+    `, [operation]));
+
+    const response = await Promise.all(promises);
+
+    this._operationsIds = this.parseMultipleInsertResponse(response).map(i => i.insertId);
   }
 
   async insertEquipmentOperations() {
-    for (const operation of this._equipmentSectorOperationsIds) await this.insertMultipleOperations(operation);
+    for (const operation of this._equipmentSectorIds) await this.insertMultipleOperations(operation);
   }
 
-  async insertMultipleOperations({ Equipamentos, Locais, Operacao }) {
+  async insertMultipleOperations({ Equipamentos, Locais }) {
     const values = {
       Equipamento_FK: Equipamentos,
       Locais_FK: Locais,
     };
 
-    const promises = Operacao.map(op => this._mysql.query(/* SQL */`
+    const promises = this._operationsIds.map(op => this._mysql.query(/* SQL */`
       INSERT INTO ${TABLE_EQUIPAMENTO_OPERACAO} SET ?;
     `, [{ ...values, Operacao_FK: op }]));
 
@@ -159,24 +174,13 @@ module.exports = class CorrectiveMaintenanceOrder extends GenericDao {
     return insertId;
   }
 
-  async insertOperations({ operationList }) {
-    const promises = operationList.map(operation => this._mysql.query(/* SQL */ `
-      INSERT INTO ${TABLE_OPERACOES} SET ?;
-    `, [operation]));
+  addEquipmentSectorIds(equipmentSectorIds) {
+    equipmentSectorIds.forEach(insertedIds => {
+      const [equipmentId, sectorId] = insertedIds;
 
-    const response = await Promise.all(promises);
-
-    return this.parseMultipleInsertResponse(response).map(i => i.insertId);
-  }
-
-  addEquipmentSectorOperationIds(equipmentSectorOperationIds) {
-    equipmentSectorOperationIds.forEach(insertedIds => {
-      const [equipmentId, sectorId, operationsId] = insertedIds;
-
-      this._equipmentSectorOperationsIds.push({
+      this._equipmentSectorIds.push({
         Equipamentos: equipmentId,
         Locais: sectorId,
-        Operacao: operationsId,
       });
     });
   }

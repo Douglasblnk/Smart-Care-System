@@ -49,12 +49,23 @@ export function generalDetailFields({
   orderType,
 }) {
   const errors = {
-    ...((orderType === 'corretiva' || orderType === 'preventiva' && !sector) ? { sector: 'Informe um setor para a ordem!' } : ''),
-    ...((orderType === 'corretiva' || orderType === 'preventiva' && !equipment) ? { equipment: 'Informe um equipamento para a ordem!' } : ''),
+    ...(((orderType === 'corretiva' || orderType === 'preventiva') && !sector) ? { sector: 'Informe um setor para a ordem!' } : ''),
+    ...(((orderType === 'corretiva' || orderType === 'preventiva') && !equipment) ? { equipment: 'Informe um equipamento para a ordem!' } : ''),
     ...(!priority ? { priority: 'Informe uma prioridade para a ordem!' } : ''),
-    ...(!requireStop ? { requireStop: 'Informe se a ordem precisa de parada!' } : ''),
+    ...(!String(requireStop) ? { requireStop: 'Informe se a ordem precisa de parada!' } : ''),
     ...(!requester ? { requester: 'Informe o solicitante da ordem!' } : ''),
     ...(!report ? { report: 'Informe o reporte da ordem!' } : ''),
+  };
+
+  return errors;
+}
+
+export function operationsFields({
+  operations,
+  orderType,
+}) {
+  const errors = {
+    ...((orderType !== 'corretiva' && !operations.length) ? { operations: 'Informe pelo menos uma operação para a ordem!' } : ''),
   };
 
   return errors;

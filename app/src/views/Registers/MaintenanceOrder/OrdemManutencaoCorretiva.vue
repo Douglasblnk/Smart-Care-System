@@ -10,7 +10,7 @@
         <span>Carregando informações...</span>
       </div>
 
-      <card v-if="!isLoading" key="orderForm">
+      <card v-if="!isLoading" key="orderForm" class="m-3">
         <form-wizard
           class="step-by-step"
           title="Cadastro de Ordem de serviço"
@@ -183,11 +183,14 @@
           <tab-content
             v-if="orderType === 'preventiva'"
             title="Operações"
-            icon="fa fa-cog"
+            icon="fa fa-list-ol"
+            :before-change="operationsFields"
           >
             <div class="epi-title">
               <span>Selecione as operações para está ordem</span>
             </div>
+
+            
 
             <div class="d-flex justify-content-center">
               <smart-button id="show-btn" primary @click.native="showOperationModal()">
@@ -215,18 +218,27 @@
                 <span>Nenhuma operação selecionada.</span>
               </div>
             </div>
+
+            <transition name="fade">
+              <div v-if="inputFieldsError.operations" class="mt-2 epi-title">
+                <span class="text-danger">{{ inputFieldsError.operations }}</span>
+              </div>
+            </transition>
           </tab-content>
 
           <!--
             Step para definir quais EPIs são necessárias para a ordem
           -->
-          <tab-content title="Epi" icon="fa fa-cog">
+          <tab-content
+            title="Epi"
+            icon="fa fa-hard-hat"
+          >
             <div class="epi-title">
               <span>Selecione as EPIs para está ordem</span>
             </div>
 
             <div class="d-flex justify-content-center">
-              <smart-button id="show-btn" @click.native="showEpiModal()">
+              <smart-button primary @click.native="showEpiModal()">
                 <span>Adicionar EPI</span>
               </smart-button>
             </div>
@@ -378,6 +390,7 @@ import {
   causeFields,
   datesFields,
   generalDetailFields,
+  operationsFields,
 } from './utils/validations';
 
 export default {
@@ -654,6 +667,7 @@ export default {
       const errors = datesFields({
         plannedStart: this.inputValues.plannedStart,
         plannedEnd: this.inputValues.plannedEnd,
+        moment: this.$moment,
       });
 
       return this.checkFields(errors);
@@ -666,6 +680,15 @@ export default {
         requireStop: this.inputValues.requireStop,
         requester: this.inputValues.requester,
         report: this.inputValues.report,
+        orderType: this.orderType,
+      });
+
+      return this.checkFields(errors);
+    },
+    operationsFields() {
+      const errors = operationsFields({
+        operations: this.inputValues.operations,
+        orderType: this.orderType,
       });
 
       return this.checkFields(errors);

@@ -1,8 +1,8 @@
 const { get } = require('lodash');
 const CorrectiveOrderDao = require('../../../dao/cruds/transactions/CorrectiveMaintenanceOrder');
 const PreventiveOrderDao = require('../../../dao/cruds/transactions/PreventiveMaintenanceOrder');
-// const RouteOrderDao = require('../../../dao/cruds/transactions/RouteMaintenanceOrder');
-// const ListOrderDao = require('../../../dao/cruds/transactions/ListMaintenanceOrder');
+const RouteOrderDao = require('../../../dao/cruds/transactions/RouteMaintenanceOrder');
+const ListOrderDao = require('../../../dao/cruds/transactions/ListMaintenanceOrder');
 const { MANUTENTOR_ID } = require('../../../../shared/constants/accessLevel');
 const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../shared/constants/HTTPResponse');
 
@@ -29,6 +29,8 @@ module.exports = class RegisterMaintenanceOrder {
       plannedStart: get(req.body, 'plannedStart', ''),
       plannedEnd: get(req.body, 'plannedEnd', ''),
       operations: get(req.body, 'operations', ''),
+      equipmentsWithOperations: get(req.body, 'equipments_sectors_operations', ''),
+      equipmentsSectors: get(req.body, 'equipments_sectors', ''),
       equipment: get(req.body, 'equipment', ''),
       epis: get(req.body, 'epis', ''),
       description: get(req.body, 'description', ''),
@@ -52,9 +54,10 @@ module.exports = class RegisterMaintenanceOrder {
     plannedEnd,
     operations,
     equipment,
-    epis,
     description,
     beginData,
+    equipmentsSectors,
+    equipmentsWithOperations,
     mysql,
     authData,
   } = {}) {
@@ -64,26 +67,47 @@ module.exports = class RegisterMaintenanceOrder {
       ...(!typeMaintenance ? { typeMaintenance: 'Tipo de ordem não informado' } : ''),
       ...((typeMaintenance === CORRECTIVE && !description) ? { description: 'Descrição não informada' } : ''),
       ...(!stats ? { stats: 'Status não informado' } : ''),
-      ...(!sector ? { sector: 'Local de instalação não informado' } : ''),
       ...(!requireStop ? { requireStop: 'Requer parada não informada' } : ''),
       ...(!requester ? { requester: 'Solicitante não informado' } : ''),
       ...(!report ? { report: 'Reporte não informado' } : ''),
       ...(!priority ? { priority: 'Prioridade não informada' } : ''),
       ...(!plannedStart ? { plannedStart: 'Início planejado não informado' } : ''),
       ...(!plannedEnd ? { plannedEnd: 'Fim planejado não informado' } : ''),
-      ...((typeMaintenance !== CORRECTIVE && !operations) ? { operations: 'Operação não informada' } : ''),
-      ...(!equipment ? { equipment: 'Equipamento não informado' } : ''),
-      ...(!epis ? { epis: 'EPI não informada' } : ''),
       ...(!beginData ? { beginData: 'Emissão não informada' } : ''),
       ...(!mysql ? { mysql: 'Conexão não estabelecida' } : ''),
       ...(!authData ? { authData: 'Dados de autenticação não encontrados' } : ''),
+      ...(
+        ((typeMaintenance === PREVENTIVE || typeMaintenance === LIST) && !operations)
+          ? { operations: 'Operação não informada' }
+          : ''
+      ),
+      ...(
+        (typeMaintenance !== ROUTE && typeMaintenance !== LIST && !sector)
+          ? { sector: 'Local de instalação não informado' }
+          : ''
+      ),
+      ...(
+        (typeMaintenance !== ROUTE && typeMaintenance !== LIST && !equipment)
+          ? { equipment: 'Equipamento não informado' }
+          : ''
+      ),
+      ...(
+        (typeMaintenance === ROUTE && !equipmentsWithOperations)
+          ? { equipmentOperations: 'Equipamentos e operações não informadas' }
+          : ''
+      ),
+      ...(
+        (typeMaintenance === LIST && !equipmentsSectors)
+          ? { equipmentsSectors: 'Equipamento e setor não informado' }
+          : ''
+      ),
     };
   }
 
   async run(req) {
     try {
       const parameters = this.getParameters(req);
-      console.log('parameters :>> ', parameters);
+
       const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
       
@@ -91,7 +115,6 @@ module.exports = class RegisterMaintenanceOrder {
 
       const response = await this.registerMaintenanceOrder(parameters);
       
-      console.log('response :>> ', response);
       if (response.status !== 200 && response.msg !== 'OK')
         throw 'Nenhum registro foi inserido';
 
@@ -110,11 +133,11 @@ module.exports = class RegisterMaintenanceOrder {
     if (parameters.typeMaintenance === PREVENTIVE)
       return new PreventiveOrderDao(parameters).registerOrder();
 
-    // if (parameters.orderType === ROUTE)
-    //   return new RouteOrderDao(parameters).registerOrder();
+    if (parameters.typeMaintenance === ROUTE)
+      return new RouteOrderDao(parameters).registerOrder();
 
-    // if (parameters.orderType === LIST)
-    //   return new ListOrderDao(parameters).registerOrder();
+    if (parameters.typeMaintenance === LIST)
+      return new ListOrderDao(parameters).registerOrder();
   }
 
   async validateGroups({ authData } = {}) {

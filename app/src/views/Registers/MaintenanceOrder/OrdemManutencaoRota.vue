@@ -10,7 +10,7 @@
         <span>Carregando informações...</span>
       </div>
 
-      <card v-if="!isLoading" key="orderForm">
+      <card v-if="!isLoading" key="orderForm" class="m-3">
         <form-wizard
           class="step-by-step"
           title="Cadastro de Ordem de serviço"
@@ -92,7 +92,7 @@
           -->
           <tab-content
             title="Informações Gerais"
-            icon="fas fa-check"
+            icon="fas fa-info-circle"
             :before-change="generalDetailFields"
           >
             <div class="d-flex">
@@ -143,7 +143,11 @@
           <!--
             Step para selecionar os equipamentos
           -->
-          <tab-content  title="Equipamentos" icon="fas fa-check">
+          <tab-content
+            title="Equipamentos e Operações"
+            icon="fas fa-list-ol"
+            :before-change="equipmentsOperationsFields"
+          >
             <div class="w-100 d-flex justify-content-center">
               <span style="font-size: 22px">Selecione o setor e os equipamentos</span>
             </div>
@@ -233,7 +237,10 @@
           <!--
             Step para definir quais EPIs são necessárias para a ordem
           -->
-          <tab-content title="Epi" icon="fa fa-cog">
+          <tab-content
+            title="Epi"
+            icon="fa fa-hard-hat"
+          >
             <div class="d-flex justify-content-center">
               <smart-button primary @click.native="showEpiModal()">
                 <span>Adicionar EPI</span>
@@ -385,12 +392,10 @@ import {
 
 export default {
   name: 'OrdemManutencaoCorretiva',
-
   components: {
     FormWizard,
     TabContent,
   },
-
   data() {
     return {
       inputValues: {
@@ -403,7 +408,7 @@ export default {
         requireStop: '',
         requester: '',
         report: '',
-        typeMaintenance: 3,
+        typeMaintenance: 4,
         priority: '',
         stats: 1,
         plannedTime: '',
@@ -440,7 +445,6 @@ export default {
       isLoading: false,
     };
   },
-
   watch: {
     inputValues: {
       handler() {
@@ -449,12 +453,10 @@ export default {
       deep: true,
     },
   },
-
   created() {
     this.isLoading = true;
     this.getSequencialData();
   },
-
   methods: {
     async getSequencialData() {
       try {
@@ -680,10 +682,10 @@ export default {
     async registerOrderMaintenance() {
       try {
         this.$set(this.inputValues, 'beginData', this.$moment().format('YYYY-MM-DD'));
-        console.log('this.inputValues :>> ', this.inputValues);
-        // await this.$http.post('ordem-manutencao', this.inputValues);
 
-        this.$swal({
+        await this.$http.post('ordem-manutencao', this.inputValues);
+
+        await this.$swal({
           type: 'success',
           text: 'Ordem de Serviço cadastrada com Sucesso',
           confirmButtonColor: '#F34336',
@@ -730,6 +732,21 @@ export default {
       });
 
       return this.checkFields(errors);
+    },
+    equipmentsOperationsFields() {
+      const errors = {
+        ...(!this.inputValues.equipments_sectors_operations.length ? { equipmentOperation: 'Você precisa vincular pelo menos uma operação a um equipamento!' } : '')
+      };
+
+      if (Object.keys(errors).length) {
+        this.$swal({
+          type: 'warning',
+          title: 'Atenção!',
+          text: errors.equipmentOperation,
+        });
+        return false;
+      }
+      return true;
     },
     checkFields(errors) {
       if (Object.keys(errors).length) {

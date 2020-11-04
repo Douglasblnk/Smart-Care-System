@@ -16,4 +16,10 @@ module.exports = class GenericDao {
   parseInsertResponse(resultSet) {
     return JSON.parse(JSON.stringify(resultSet));
   }
+
+  parseMultipleInsertResponse(resultSet) {
+    const parsedResultSet = this.parseInsertResponse(resultSet);
+
+    return parsedResultSet.flat(2).filter(i => i);
+  }
 };
