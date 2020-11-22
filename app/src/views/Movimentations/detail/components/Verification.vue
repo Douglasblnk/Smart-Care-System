@@ -32,7 +32,7 @@
     <form class="formPosition" @submit.prevent="verificationOrder()">
       <div class="d-flex justify-content-center m-3">
         <smart-button>
-          <span>Verificar</span>          
+          <span>Verificar</span>
         </smart-button>
       </div>
     </form>

@@ -1,7 +1,7 @@
+const { get } = require('lodash');
 const VerificationDao = require('../../../dao/movimentations/VerificationDao');
 
 const { ADMINISTRADOR_ID } = require('../../../../shared/constants/accessLevel');
-const { get } = require('lodash');
 const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../shared/constants/HTTPResponse');
 
 module.exports = class RegisterVerification {
@@ -46,7 +46,7 @@ module.exports = class RegisterVerification {
       const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
 
-      await this.validateGroups(parameters);
+      // await this.validateGroups(parameters);
 
       await this.registerVerification(parameters);
 
@@ -63,7 +63,7 @@ module.exports = class RegisterVerification {
 
   async registerVerification(parameters) {
     // todo
-    // this._queryResult = await new VerificationDao(parameters);
+    this._queryResult = await new VerificationDao(parameters).registerVerification();
   }
 
   async validateGroups({ authData }) {
