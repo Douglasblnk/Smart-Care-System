@@ -6,7 +6,7 @@ const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../share
 
 module.exports = class RegisterUpdateSymptom {
   constructor() {
-    this._queryReturn = '';
+    this._queryResult = '';
   }
 
   getParameters(req) {
@@ -43,10 +43,10 @@ module.exports = class RegisterUpdateSymptom {
 
       await this.registerUpdateSymptom(parameters, type);
 
-      if (!this._queryReturn.affectedRows)
+      if (!this._queryResult.affectedRows)
         throw type ? 'Nenhum registro foi alterado' : 'Nenhum registro foi inserido';
 
-      return this._queryReturn;
+      return this._queryResult;
     } catch (err) {
       console.log('err RegisterUpdateSymptom :>> ', err);
 
@@ -56,9 +56,9 @@ module.exports = class RegisterUpdateSymptom {
 
   async registerUpdateSymptom(parameters, type = '') {
     if (type === 'update')
-      this._queryReturn = await new SymptomDao(parameters).updateSymptom();
+      this._queryResult = await new SymptomDao(parameters).updateSymptom();
 
-    else this._queryReturn = await new SymptomDao(parameters).registerSymptom();
+    else this._queryResult = await new SymptomDao(parameters).registerSymptom();
   }
 
   async validateGroups({ authData }) {

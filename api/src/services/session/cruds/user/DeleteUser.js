@@ -6,7 +6,7 @@ const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../share
 
 module.exports = class DeleteUser {
   constructor() {
-    this._queryReturn = '';
+    this._queryResult = '';
   }
 
   getParameters(req) {
@@ -35,10 +35,10 @@ module.exports = class DeleteUser {
       await this.validateGroups(parameters);
       await this.deleteUser(parameters);
 
-      if (!this._queryReturn.affectedRows)
+      if (!this._queryResult.affectedRows)
         throw 'Não foi possível deletar o usuário';
 
-      return this._queryReturn;
+      return this._queryResult;
     } catch (err) {
       console.log('err registerUser :>> ', err);
 
@@ -47,7 +47,7 @@ module.exports = class DeleteUser {
   }
 
   async deleteUser(parameters) {
-    this._queryReturn = await new userDao(parameters).deleteUser();
+    this._queryResult = await new userDao(parameters).deleteUser();
   }
 
   async validateGroups({ authData }) {

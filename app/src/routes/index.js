@@ -7,7 +7,6 @@ import Login from '../views/Core/Login.vue';
 const Dashboard = () => import('../views/Core/Dashboard.vue');
 const Cadastros = () => import('../views/Registers/Cadastros.vue');
 const Configurações = () => import('../views/Core/Configurações.vue');
-const Verificacao = () => import('../views/Movimentations/Verificacao.vue');
 const Consulta = () => import('../views/Movimentations/consult/Consulta.vue');
 const Profile = () => import('../views/Core/Profile.vue');
 const ConsultaVerificacoes = () => import('../views/Analysis/ConsultaVerificacoes');
@@ -122,12 +121,6 @@ const routes = [
     path: '/configuracoes',
     name: 'Configurações',
     component: Configurações,
-    meta: { requireAuth: true },
-  },
-  {
-    path: '/verificacao',
-    name: 'verificacao',
-    component: Verificacao,
     meta: { requireAuth: true },
   },
   {

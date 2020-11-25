@@ -6,6 +6,11 @@
   --button-gray: #ddd;
 }
 
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 body {
   background-color: #f1f1f1 !important;
   box-sizing: border-box;
@@ -26,8 +31,22 @@ span, p, strong {
   src: url("./assets/fonts/Roboto-Light.ttf");
 }
 
+.wizard-btn {
+  border-radius: 100px !important;
+  transition: .2s ease;
+  min-width: auto !important;
+  padding: 6px 20px !important;
+  &:hover { transform: scale(1.1) }
+  &:active { transform: scale(1) }
+}
+
+
 .swal2-styled.swal2-confirm {
   background-color: #F34336 !important;
+}
+
+.smart-modal-footer {
+  margin-top: 20px;
 }
 
 .modal-content {
@@ -63,6 +82,33 @@ span, p, strong {
   z-index: 10;
   bottom: 0;
   right: 0;
+}
+
+.user-select-none {
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+.card-presentation-icon {
+  margin-top: -30px;
+  background-color: var(--duas-rodas-soft);
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  i {
+    color: white;
+  }
+}
+
+.scale {
+  transition: .2s;
+  &:hover { transform: scale(1.2) }
+  &:active { transform: scale(1) }
 }
 
 .config-blurred-background {

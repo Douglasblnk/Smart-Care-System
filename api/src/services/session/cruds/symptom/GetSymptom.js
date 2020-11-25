@@ -4,7 +4,7 @@ const { get } = require('lodash');
 
 module.exports = class GetSymptom {
   constructor() {
-    this._queryReturn = '';
+    this._queryResult = '';
   }
 
   getParameters(req) {

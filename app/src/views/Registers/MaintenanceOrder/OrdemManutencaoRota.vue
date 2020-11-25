@@ -10,7 +10,7 @@
         <span>Carregando informações...</span>
       </div>
 
-      <card v-if="!isLoading" key="orderForm">
+      <card v-if="!isLoading" key="orderForm" class="m-3">
         <form-wizard
           class="step-by-step"
           title="Cadastro de Ordem de serviço"
@@ -23,95 +23,147 @@
           <!--
             Step para informar o titulo, resumo e descrição da ordem
           -->
-          <tab-content title="Causa Manutenção" icon="fas fa-user" class="maintenanceCause">
-            <div class="firstInput">
-              <simple-input v-model="inputValues.title" :label="'Título:'" :type="'text'" />
-            </div>
-
-            <div class="secondInput">
-              <simple-input v-model="inputValues.summary" :label="'Resumo'" :type="'text'" />
-            </div>
-
-            <!-- <div class="inputMaintenance">
-              <div>
-                <label class="text-muted">
-                  Descrição do problema:
-                </label>
+          <tab-content
+            title="Título"
+            icon="fas fa-align-left"
+            :before-change="causeFields"
+          >
+            <div class="d-flex w-100">
+              <div class="mx-1 w-100">
+                <smart-input-text
+                  id="title"
+                  v-model="inputValues.title"
+                  name="title"
+                  placeholder="Título"
+                  label="Título"
+                  :error-label="inputFieldsError.title"
+                />
               </div>
-              <textarea
-                v-model="inputValues.description"
-                class="rounded w-100"
-                rows="3"
-                name="comment"
-                form="usrform"
-              />
-            </div> -->
+
+              <div class="mx-1 w-100">
+                <smart-input-text
+                  id="summary"
+                  v-model="inputValues.summary"
+                  name="summary"
+                  placeholder="Resumo"
+                  label="Resumo"
+                  :error-label="inputFieldsError.summary"
+                />
+              </div>
+            </div>
           </tab-content>
 
           <!--
             Step para informada o inicio planejado e o fim planejado da ordem
           -->
-          <tab-content title="Datas" icon="fa fa-cog" class="maintenanceCause">
-            <div>
-              <simple-input
-                v-model="inputValues.plannedStart"
-                :label="'Inicio Planejado:'"
-                :type="'date'"
-              />
-            </div>
-            <div>
-              <simple-input
-                v-model="inputValues.plannedEnd"
-                :label="'Fim Planejado'"
-                :type="'date'"
-              />
+          <tab-content
+            title="Datas"
+            icon="fa fa-clock"
+            :before-change="datesFields"
+          >
+            <div class="d-flex">
+              <div class="mx-1 w-100">
+                <smart-input-date
+                  id="plannedStart"
+                  v-model="inputValues.plannedStart"
+                  name="plannedStart"
+                  label="Inicio Planejado"
+                  placeholder="Inicio Planejado"
+                  :error-label="inputFieldsError.plannedStart"
+                />
+                <!-- <simple-input
+                /> -->
+              </div>
+              <div class="mx-1 w-100">
+                <smart-input-date
+                  id="plannedEnd"
+                  v-model="inputValues.plannedEnd"
+                  name="plannedEnd"
+                  label="Fim Planejado"
+                  placeholder="Fim Planejado"
+                  :error-label="inputFieldsError.plannedEnd"
+                />
+              </div>
             </div>
           </tab-content>
 
           <!--
             Step para selecionar a prioridade, setor e se querer parada
           -->
-          <tab-content title="Informações Gerais" icon="fas fa-check" class="maintenanceCause">
-            <custom-select
-              v-model="inputValues.priority"
-              label="Prioridade"
-              :options="getPriorityOptions()"
-            />
+          <tab-content
+            title="Informações Gerais"
+            icon="fas fa-info-circle"
+            :before-change="generalDetailFields"
+          >
+            <div class="d-flex">
+              <div class="m-2 w-100">
+                <smart-input-select
+                  id="priority"
+                  v-model="inputValues.priority"
+                  label="Prioridade"
+                  :options="getPriorityOptions()"
+                  :error-label="inputFieldsError.priority"
+                />
+              </div>
 
-            <custom-select
-              v-model="inputValues.requireStop"
-              label="Requer Parada"
-              :options="selectsRequireStopOptions()"
-            />
+              <div class="m-2 w-100">
+                <smart-input-select
+                  id="requireStop"
+                  v-model="inputValues.requireStop"
+                  label="Requer Parada"
+                  :options="selectsRequireStopOptions()"
+                  :error-label="inputFieldsError.requireStop"
+                />
+              </div>
+            </div>
 
-            <custom-select
-              v-model="inputValues.requester"
-              label="Solicitante"
-              :options="selectsRequestersOptions()"
-            />
-            <custom-select
-              v-model="inputValues.report"
-              label="Reporte"
-              :options="selectsReportOptions()"
-            />
+            <div class="d-flex">
+              <div class="m-2 w-100">
+                <smart-input-select
+                  id="requester"
+                  v-model="inputValues.requester"
+                  label="Solicitante"
+                  :options="selectsRequestersOptions()"
+                  :error-label="inputFieldsError.requester"
+                />
+              </div>
+
+              <div class="m-2 w-100">
+                <smart-input-select
+                  id="report"
+                  v-model="inputValues.report"
+                  label="Reporte"
+                  :options="selectsReportOptions()"
+                  :error-label="inputFieldsError.report"
+                />
+              </div>
+            </div>
           </tab-content>
 
           <!--
             Step para selecionar os equipamentos
           -->
-          <tab-content  title="Equipamentos" icon="fas fa-check">
+          <tab-content
+            title="Equipamentos e Operações"
+            icon="fas fa-list-ol"
+            :before-change="equipmentsOperationsFields"
+          >
             <div class="w-100 d-flex justify-content-center">
               <span style="font-size: 22px">Selecione o setor e os equipamentos</span>
             </div>
             <div>
-              <custom-select
+              <smart-input-select
+                id="sector"
                 v-model="selectedSector"
                 label="Setor"
                 :options="getSectorOptions()"
               />
-              <custom-select
+
+              <smart-input-select
+                id="equipment"
                 v-model="equipment"
                 label="Equipamento"
+                :disabled="!selectedSector"
                 :options="getEquipmentOptions()"
               />
               <div>
@@ -124,7 +176,7 @@
                     <span>Adicionar Operação</span>
                   </smart-button>
                 </div>
-
+                
                 <div class="operations-items">
                   <label>Operações selecionadas:</label>
                   <div v-if="inputValues.operations.length > 0" class="d-flex flex-column">
@@ -185,7 +237,10 @@
           <!--
             Step para definir quais EPIs são necessárias para a ordem
           -->
-          <tab-content title="Epi" icon="fa fa-cog">
+          <tab-content
+            title="Epi"
+            icon="fa fa-hard-hat"
+          >
             <div class="d-flex justify-content-center">
               <smart-button primary @click.native="showEpiModal()">
                 <span>Adicionar EPI</span>
@@ -253,12 +308,20 @@
         </div>
       </div>
       <div class="d-flex justify-content-center">
-        <smart-button @click.native="closeEpiModal()">
-          <span>Fechar</span>
-        </smart-button>
-        <smart-button @click.native="addEpi()">
-          <span>Adicionar</span>
-        </smart-button>
+        <div class="mx-1">
+          <smart-button @click.native="closeEpiModal">
+            <span>Fechar</span>
+          </smart-button>
+        </div>
+
+        <div class="mx-1">
+          <smart-button
+            primary
+            @click.native="addEpi"
+          >
+            <span>Adicionar</span>
+          </smart-button>
+        </div>
       </div>
     </b-modal>
 
@@ -297,30 +360,42 @@
         </div>
       </div>
       <div class="d-flex justify-content-center">
-        <smart-button @click.native="closeOperationModal()">
-          <span>Fechar</span>
-        </smart-button>
-        <smart-button @click.native="addOperation()">
-          <span>Adicionar</span>
-        </smart-button>
+        <div class="mx-1">
+          <smart-button @click.native="closeOperationModal">
+            <span>Fechar</span>
+          </smart-button>
+        </div>
+
+        <div class="mx-1">
+          <smart-button
+            primary
+            @click.native="addOperation"
+          >
+            <span>Adicionar</span>
+          </smart-button>
+        </div>
       </div>
     </b-modal>
   </div>
 </template>
 
 <script>
-import { getToken, getErrors } from '../../../utils/utils';
 import { FormWizard, TabContent } from 'vue-form-wizard';
 import 'vue-form-wizard/dist/vue-form-wizard.min.css';
+import { getErrors } from '../../../utils/utils';
+
+import {
+  causeFields,
+  datesFields,
+  generalDetailFields,
+} from './utils/validations';
 
 export default {
   name: 'OrdemManutencaoCorretiva',
-
   components: {
     FormWizard,
     TabContent,
   },
-
   data() {
     return {
       inputValues: {
@@ -333,7 +408,7 @@ export default {
         requireStop: '',
         requester: '',
         report: '',
-        typeMaintenance: 3,
+        typeMaintenance: 4,
         priority: '',
         stats: 1,
         plannedTime: '',
@@ -366,15 +441,22 @@ export default {
       sequenceOperation: 0,
       modalHasError: false,
       modalErrorMessage: '',
+      inputFieldsError: {},
       isLoading: false,
     };
   },
-
+  watch: {
+    inputValues: {
+      handler() {
+        this.inputFieldsError = {};
+      },
+      deep: true,
+    },
+  },
   created() {
     this.isLoading = true;
     this.getSequencialData();
   },
-
   methods: {
     async getSequencialData() {
       try {
@@ -455,7 +537,9 @@ export default {
       return this.operationsList.map(i => ({ text: i.descricao_operacao, value: i.idoperacao }));
     },
     getEquipmentOptions() {
-      return this.workEquipment.map(i => ({ id: String(i.idEquipamento), description: i.descricao }));
+      return this.workEquipment
+        .filter(i => i.Setor_idSetor === Number(this.selectedSector))
+        .map(m => ({ id: String(m.idEquipamento), description: m.descricao }));
     },
     getEpiName(epi) {
       const { descricaoEpi } = this.epiList.find(i => i.idEpi === epi);
@@ -599,9 +683,9 @@ export default {
       try {
         this.$set(this.inputValues, 'beginData', this.$moment().format('YYYY-MM-DD'));
 
-        await this.$http.post('ordem-manutencao/route', this.inputValues);
+        await this.$http.post('ordem-manutencao', this.inputValues);
 
-        this.$swal({
+        await this.$swal({
           type: 'success',
           text: 'Ordem de Serviço cadastrada com Sucesso',
           confirmButtonColor: '#F34336',
@@ -618,10 +702,66 @@ export default {
         });
       }
     },
+    causeFields() {
+      const errors = causeFields({
+        title: this.inputValues.title,
+        summary: this.inputValues.summary,
+        orderType: this.orderType,
+        description: this.inputValues.description,
+      });
+
+      return this.checkFields(errors);
+    },
+    datesFields() {
+      const errors = datesFields({
+        plannedStart: this.inputValues.plannedStart,
+        plannedEnd: this.inputValues.plannedEnd,
+        moment: this.$moment,
+      });
+
+      console.log('errors :>> ', errors);
+      return this.checkFields(errors);
+    },
+    generalDetailFields() {
+      const errors = generalDetailFields({
+        priority: this.inputValues.priority,
+        requireStop: this.inputValues.requireStop,
+        requester: this.inputValues.requester,
+        report: this.inputValues.report,
+        orderType: this.orderType,
+      });
+
+      return this.checkFields(errors);
+    },
+    equipmentsOperationsFields() {
+      const errors = {
+        ...(!this.inputValues.equipments_sectors_operations.length ? { equipmentOperation: 'Você precisa vincular pelo menos uma operação a um equipamento!' } : '')
+      };
+
+      if (Object.keys(errors).length) {
+        this.$swal({
+          type: 'warning',
+          title: 'Atenção!',
+          text: errors.equipmentOperation,
+        });
+        return false;
+      }
+      return true;
+    },
+    checkFields(errors) {
+      if (Object.keys(errors).length) {
+        this.inputFieldsError = { ...errors };
+        return false;
+      }
+
+      return true;
+    },
     async getEquipments() {
       try {
-        const response = await this.$http.get('equipamento');
-
+        const response = await this.$http.get('equipamento', {
+          headers: { sector: this.selectedSector },
+        });
+        console.log('this.workEquipment :>> ', this.workEquipment);
         if (response.length === undefined)
           this.workEquipment.push(response);
         else this.workEquipment = [...response];
@@ -657,7 +797,7 @@ export default {
     async getReporter() {
       try {
         const response = await this.$http.get('users', {
-          headers: { type: 'report' },
+          headers: { type: 'reporter' },
         });
 
         if (response.length === undefined)
@@ -750,25 +890,6 @@ export default {
   justify-content: center;
   .step-by-step {
     width:100%;
-    .maintenanceCause{
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
-      .inputMaintenance{
-        padding: 0.5rem;
-        grid-column-start: 1;
-        grid-column-end: 3;
-      }
-
-      .firstInput{
-        grid-column-start:1;
-        grid-column-end:1;
-      }
-      .secondInput{
-        grid-column-start:2;
-        grid-column-end:2;
-      }
-    }
     .operations-title {
       display: flex;
       justify-content: center;

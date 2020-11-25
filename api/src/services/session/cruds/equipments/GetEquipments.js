@@ -1,15 +1,16 @@
-const EquipmentsDao = require('../../../dao/cruds/EquipmentsDao');
-
 const { get } = require('lodash');
+
+const EquipmentsDao = require('../../../dao/cruds/EquipmentsDao');
 
 module.exports = class GetEquipments {
   constructor() {
-    this._queryReturn = '';
+    this._queryResult = '';
   }
 
   getParameters(req) {
     return {
       mysql: get(req, 'mysql'),
+      sectorId: get(req.headers, 'sector'),
     };
   }
 
@@ -37,6 +38,8 @@ module.exports = class GetEquipments {
   }
 
   async getEquipments(parameters) {
-    this._queryResult = await new EquipmentsDao(parameters).getEquipments();
+    this._queryResult = parameters.sectorId
+      ? await new EquipmentsDao(parameters).getEquipmentsBySector()
+      : await new EquipmentsDao(parameters).getEquipments();
   }
 };

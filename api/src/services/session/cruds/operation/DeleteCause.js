@@ -6,7 +6,7 @@ const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../share
 
 module.exports = class DeleteOperation {
   constructor() {
-    this._queryReturn = '';
+    this._queryResult = '';
   }
 
   getParameters(req) {
@@ -35,10 +35,10 @@ module.exports = class DeleteOperation {
       await this.validateGroups(parameters);
       await this.deleteOperation(parameters);
 
-      if (!this._queryReturn.affectedRows)
+      if (!this._queryResult.affectedRows)
         throw 'Não foi possível deletar a operação';
 
-      return this._queryReturn;
+      return this._queryResult;
     } catch (err) {
       console.log('err DeleteOperation :>> ', err);
 
@@ -47,7 +47,7 @@ module.exports = class DeleteOperation {
   }
 
   async deleteOperation(parameters) {
-    this._queryReturn = await new OperationDao(parameters).deleteOperation();
+    this._queryResult = await new OperationDao(parameters).deleteOperation();
   }
 
   async validateGroups({ authData }) {
