@@ -26,17 +26,57 @@
                 <a target="_blank" class="fas fa-external-link-alt mb-2 eye"
                    @click="openOrder(props.row)"
                 ></a>
-                <i class="fas fa-eye fa-lg mb-2" @click="openModalDetailVerifications(props.row)"></i>
+                <i class="fas fa-eye fa-lg mb-2 "   @click="openModalDetailVerifications(props.row)"></i>
               </div>
             </v-client-table>
           </div>
-          <b-modal ref="my-modal" centered
-                   hide-footer hide-header title="Verificação de EPIs" @hide="resetModal()"
+          <!-- hide-footer -->
+          <b-modal
+            ref="my-modal"
+            centered
+            hide-header
+            title="Verificação de EPIs"
+            @hide="resetModal()"
           >
-            <div class="d-block text">
+            <div>
+              <!-- {{ rowModalOpen }} -->
               <div class="text-center">
                 <h3>Situação de Verificações</h3>
+                <p>{{ modalData }}</p>
               </div>
+              
+              <b-tabs content-class="mt-3">
+                <b-tab title="Administrador" active>
+                  <div v-if="rowModalOpen.ordemServico_idOrdemServico !== undefined">
+                    <div v-for="(item, index) in modalData" :key="`ìtem-${index}`">
+                      <p v-if="item.name_report" style="font-size:1rem">
+                        Nome: {{ item.name_report }}
+                      </p>
+                    </div>
+                  </div>
+                </b-tab>
+                <b-tab title="Solicitante" lazy>
+                  <div v-if="rowModalOpen.ordemServico_idOrdemServico !== undefined">
+                    <div v-for="(item, index) in modalData" :key="`ìtem-${index}`">
+                      <p v-if="item.name_requester" style="font-size:1rem">
+                        Nome: {{ item.name_requester }}
+                      </p>
+                    </div>
+                  </div>
+                </b-tab>
+                <b-tab title="Manutentor" lazy>
+                  <div v-if="rowModalOpen.ordemServico_idOrdemServico !== undefined">
+                    <div v-for="(item, index) in modalData" :key="`ìtem-${index}`">
+                      <p v-if="item.name_maintainer" style="font-size:1rem">
+                        Nome: {{ item.name_maintainer }}
+                      </p>
+                    </div>
+                  </div>
+                </b-tab>
+              </b-tabs>
+            </div>
+
+            <!-- <div class="d-block text">
               <div class="my-3 d-flex flex-column">
                 <div v-if="rowModalOpen.ordemServico_idOrdemServico !== undefined">
                   <div v-for="(item, index) in modalData" :key="`ìtem-${index}`">
@@ -47,6 +87,7 @@
                       <span class="user_detail_verification">
                         <i class="fas fa-calendar-alt"></i>
                         {{ item.dataVerificacao }}
+                        
                       </span>
                       <div>
                         <span class="user_detail_verification">
@@ -73,7 +114,20 @@
                   Fechar
                 </smart-button>
               </div>
-            </div>
+            </div> -->
+            <template #modal-footer>
+              <smart-button
+                class="center"
+                primary
+                @click="() => (show = false)"
+              >
+                <i class="fa fa-external-link-alt fa-fw mr-2" />
+
+                <span>
+                  Acessar Ordem
+                </span>
+              </smart-button>
+            </template>
           </b-modal>
         </card>
       </div>
@@ -151,7 +205,7 @@ export default {
             data_modal[i-1].problemaResolvidoDescricao = 'Não Resolvido';
           else if (data_modal[i-1].problemaResolvido === '1')
             data_modal[i-1].problemaResolvidoDescricao = 'Resolvido';
-          
+         console.log(data_modal[i-1])
           if (i === 1)
             data_modal[i-1].user_description = 'Administrador';
           if (i === 2)
@@ -159,6 +213,7 @@ export default {
           if (i === 3)
             data_modal[i-1].user_description = 'Solicitante';
         }
+        
         return data_modal;
       }
       return false;
@@ -184,7 +239,7 @@ export default {
         const { result } = await this.$http.post('ordem-manutencao/detail', {
           order,
         });
-
+        console.log("vendo o result" + result)
         this.$set(this.detail, 'order', result);
         this.$store.commit('addPageName', `Consultas | ${props.ordemServico_idOrdemServico}`);
 
@@ -204,6 +259,9 @@ export default {
           confirmButtonColor: '#F34336',
         });
       }
+    },
+    formatObjectModal(){
+
     },
     async openModalDetailVerifications(row) {
       this.rowModalOpen = row;
@@ -297,6 +355,7 @@ export default {
             color: #E66E6D;
           }
         }
+
         .eye{
             padding-left: 20px;
             padding-right: 20px;
