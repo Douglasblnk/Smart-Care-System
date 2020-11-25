@@ -6,7 +6,7 @@ const router = Router();
 const GetMaintenanceOrder = require('../../session/cruds/maintenanceOrder/GetMaintenanceOrder');
 const DeleteMaintenanceOrder = require('../../session/cruds/maintenanceOrder/DeleteMaintenanceOrder');
 const RegisterMaintenanceOrder = require('../../session/cruds/maintenanceOrder/RegisterMaintenanceOrder');
-const GetMaintenanceEquipments = require('../../session/cruds/maintenanceOrder/GetMaintenanceEquipments');
+const GetMaintenanceEquipmentsOperations = require('../../session/cruds/maintenanceOrder/GetMaintenanceEquipmentsOperations');
 
 /**
  *  ROTA PARA BUSCAR UM RESUMO DE TODAS AS ORDENS DE MANUTENÇÃO
@@ -61,7 +61,7 @@ router.delete('/:id', async (req, res, next) => {
  */
 router.get('/equipments-operations', async (req, res, next) => {
   try {
-    const response = await new GetMaintenanceEquipments().run(req);
+    const response = await new GetMaintenanceEquipmentsOperations().run(req);
 
     next();
     res.status(200).send(response);

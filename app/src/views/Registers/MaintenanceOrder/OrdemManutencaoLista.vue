@@ -10,7 +10,7 @@
         <span>Carregando informações...</span>
       </div>
 
-      <card v-if="!isLoading" key="orderForm">
+      <card v-if="!isLoading" key="orderForm" class="m-3">
         <form-wizard
           class="step-by-step"
           title="Cadastro de Ordem de serviço"
@@ -23,101 +23,149 @@
           <!--
             Step para informar o titulo, resumo e descrição da ordem
           -->
-          <tab-content title="Causa Manutenção" icon="fas fa-user" class="maintenanceCause">
-            <div class="firstInput">
-              <simple-input v-model="inputValues.title" :label="'Título:'" :type="'text'" />
-            </div>
-
-            <div class="secondInput">
-              <simple-input v-model="inputValues.summary" :label="'Resumo'" :type="'text'" />
-            </div>
-
-            <!-- <div class="inputMaintenance">
-              <div>
-                <label class="text-muted">
-                  Descrição do problema:
-                </label>
+          <tab-content
+            title="Título"
+            icon="fas fa-align-left"
+            :before-change="causeFields"
+          >
+            <div class="d-flex w-100">
+              <div class="mx-1 w-100">
+                <smart-input-text
+                  id="title"
+                  v-model="inputValues.title"
+                  name="title"
+                  placeholder="Título"
+                  label="Título"
+                  :error-label="inputFieldsError.title"
+                />
               </div>
-              <textarea
-                v-model="inputValues.description"
-                class="rounded w-100"
-                rows="3"
-                name="comment"
-                form="usrform"
-              />
-            </div> -->
+
+              <div class="mx-1 w-100">
+                <smart-input-text
+                  id="summary"
+                  v-model="inputValues.summary"
+                  name="summary"
+                  placeholder="Resumo"
+                  label="Resumo"
+                  :error-label="inputFieldsError.summary"
+                />
+              </div>
+            </div>
           </tab-content>
 
           <!--
             Step para informada o inicio planejado e o fim planejado da ordem
           -->
-          <tab-content title="Datas" icon="fa fa-cog" class="maintenanceCause">
-            <div>
-              <simple-input
-                v-model="inputValues.plannedStart"
-                :label="'Inicio Planejado:'"
-                :type="'date'"
-              />
-            </div>
-            <div>
-              <simple-input
-                v-model="inputValues.plannedEnd"
-                :label="'Fim Planejado'"
-                :type="'date'"
-              />
+          <tab-content
+            title="Datas"
+            icon="fa fa-clock"
+            :before-change="datesFields"
+          >
+            <div class="d-flex">
+              <div class="mx-1 w-100">
+                <smart-input-date
+                  id="plannedStart"
+                  v-model="inputValues.plannedStart"
+                  name="plannedStart"
+                  label="Inicio Planejado"
+                  placeholder="Inicio Planejado"
+                  :error-label="inputFieldsError.plannedStart"
+                />
+              </div>
+              <div class="mx-1 w-100">
+                <smart-input-date
+                  id="plannedEnd"
+                  v-model="inputValues.plannedEnd"
+                  name="plannedEnd"
+                  label="Fim Planejado"
+                  placeholder="Fim Planejado"
+                  :error-label="inputFieldsError.plannedEnd"
+                />
+              </div>
             </div>
           </tab-content>
 
           <!--
             Step para selecionar a prioridade, setor e se querer parada
           -->
-          <tab-content title="Informações Gerais" icon="fas fa-check" class="maintenanceCause">
+          <tab-content
+            title="Informações Gerais"
+            icon="fas fa-info-circle"
+            :before-change="generalDetailFields"
+          >
             <div class="d-flex">
-              <custom-select
-                v-model="inputValues.priority"
-                label="Prioridade"
-                :options="getPriorityOptions()"
-              />
+              <div class="m-2 w-100">
+                <smart-input-select
+                  id="priority"
+                  v-model="inputValues.priority"
+                  label="Prioridade"
+                  :options="getPriorityOptions()"
+                  :error-label="inputFieldsError.priority"
+                />
+              </div>
 
-              <custom-select
-                v-model="inputValues.requireStop"
-                label="Requer Parada"
-                :options="selectsRequireStopOptions()"
-              />
+              <div class="m-2 w-100">
+                <smart-input-select
+                  id="requireStop"
+                  v-model="inputValues.requireStop"
+                  label="Requer Parada"
+                  :options="selectsRequireStopOptions()"
+                  :error-label="inputFieldsError.requireStop"
+                />
+              </div>
             </div>
 
             <div class="d-flex">
-              <custom-select
-                v-model="inputValues.requester"
-                label="Solicitante"
-                :options="selectsRequestersOptions()"
-              />
-              <custom-select
-                v-model="inputValues.report"
-                label="Reporte"
-                :options="selectsReportOptions()"
-              />
+              <div class="m-2 w-100">
+                <smart-input-select
+                  id="requester"
+                  v-model="inputValues.requester"
+                  label="Solicitante"
+                  :options="selectsRequestersOptions()"
+                  :error-label="inputFieldsError.requester"
+                />
+              </div>
+
+              <div class="m-2 w-100">
+                <smart-input-select
+                  id="report"
+                  v-model="inputValues.report"
+                  label="Reporte"
+                  :options="selectsReportOptions()"
+                  :error-label="inputFieldsError.report"
+                />
+              </div>
             </div>
           </tab-content>
 
           <!--
             Step para selecionar os equipamentos
           -->
-          <tab-content title="Equipamentos" icon="fas fa-check">
+          <tab-content
+            title="Equipamentos"
+            icon="fas fa-toolbox"
+            :before-change="equipmentsFields"
+          >
             <div class="w-100 d-flex justify-content-center">
               <span style="font-size: 22px">Selecione os equipamentos</span>
             </div>
-            <div class="equipament-items">
-              <custom-select
+
+            <div class="d-flex flex-column">
+              <smart-input-select
+                id="sector"
                 v-model="sector"
                 label="Setor"
                 :options="getSectorOptions()"
               />
-              <custom-select
+
+              <smart-input-select
+                id="equipment"
                 v-model="equipment"
                 label="Equipamento"
+                :disabled="!sector"
                 :options="getEquipmentOptions()"
               />
+
               <div class="d-flex justify-content-center">
                 <smart-button
                   primary
@@ -128,17 +176,91 @@
                 </smart-button>
               </div>
             </div>
+
+            <div v-if="inputValues.equipments_sectors.length">
+              <span>Equipamentos selecionados:</span>
+
+              <div
+                v-for="(equipment, index) in inputValues.equipments_sectors"
+                :key="`equipment-${index}`"
+              >
+                <div class="selected-equipments" style="padding: 15px;">
+                  <div class="d-flex align-items-center">
+                    <i class="fa fa-toolbox text-muted fa-2x" />
+
+                    <div class="d-flex flex-column mx-3">
+                      <strong>{{ getEquipmentName(equipment.Equipamento) }}</strong>
+                      <span>{{ getEquipmentSectorName(equipment.Local) }}</span>
+                    </div>
+                  </div>
+
+                  <div class="cursor-pointer">
+                    <i class="fa fa-trash text-muted scalable-btn" @click="removeEquipment(index)" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <transition name="fade">
+              <div v-if="inputFieldsError.equipmentsSectors" class="text-center mt-4">
+                <span class="text-danger">{{ inputFieldsError.equipmentsSectors }}</span>
+              </div>
+            </transition>
           </tab-content>
 
           <!--
             Step para definir quais as operações que a ordem deve ter
           -->
-          <tab-content title="Operações" icon="fa fa-cog">
+          <tab-content
+            title="Operações"
+            icon="fa fa-list-ol"
+            :before-change="operationsFields"
+          >
             <div class="operations-title">
-              <span class="text-center">Selecione o setor e as operações para os equipamentos</span>
+              <span>Selecione as operações para os equipamentos</span>
+              <small class="text-muted">
+                Todas as operações serão aplicadas para todos os equipamentos previamente selecionados
+              </small>
             </div>
+
+            <div v-if="inputValues.equipments_sectors.length">
+              <span>Equipamentos selecionados: </span>
+
+              <div class="d-flex flex-wrap">
+                <div
+                  v-for="(equipment, index) in inputValues.equipments_sectors"
+                  :key="`equipment-${index}`"
+                  class="m-1"
+                >
+                  <div class="selected-equipments" style="padding: 10px;">
+                    <div class="d-flex align-items-center">
+                      <i class="fa fa-toolbox text-muted fa-lg" />
+
+                      <div class="d-flex flex-column mx-2">
+                        <strong>{{ getEquipmentName(equipment.Equipamento) }}</strong>
+                        <span>{{ getEquipmentSectorName(equipment.Local) }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <span>Operações:</span>
+
+            <div v-if="selectedOperations.length" class="d-flex flex-wrap">
+              <div
+                v-for="(item, index) in selectedOperations"
+                :key="`item-${index}`"
+                class="operation-list"
+              >
+                <small>
+                  {{ getOperationName(item) }}
+                </small>
+              </div>
+            </div>
+
             <div class="operations-items">
-              <label>Equipamentos</label>
               <b-form-checkbox-group
                 id="checkbox-operations"
                 v-model="selectedOperations"
@@ -147,12 +269,19 @@
                 stacked
               />
             </div>
+
+            <div v-if="inputFieldsError.selectedOperations" class="text-center">
+              <span class="text-danger">{{ inputFieldsError.selectedOperations }}</span>
+            </div>
           </tab-content>
 
           <!--
             Step para definir quais EPIs são necessárias para a ordem
           -->
-          <tab-content title="Epi" icon="fa fa-cog">
+          <tab-content
+            title="Epi"
+            icon="fa fa-hard-hat"
+          >
             <div class="d-flex justify-content-center">
               <smart-button primary @click.native="showEpiModal()">
                 <span>Adicionar EPI</span>
@@ -224,18 +353,21 @@
 </template>
 
 <script>
-import { getErrors } from '../../../utils/utils';
 import { FormWizard, TabContent } from 'vue-form-wizard';
 import 'vue-form-wizard/dist/vue-form-wizard.min.css';
+import { getErrors } from '../../../utils/utils';
+import {
+  causeFields,
+  datesFields,
+  generalDetailFields,
+} from './utils/validations';
 
 export default {
   name: 'OrdemManutencaoCorretiva',
-
   components: {
     FormWizard,
     TabContent,
   },
-
   data() {
     return {
       inputValues: {
@@ -281,15 +413,22 @@ export default {
       sequenceOperation: 0,
       modalHasError: false,
       modalErrorMessage: '',
+      inputFieldsError: {},
       isLoading: false,
     };
   },
-
+  watch: {
+    inputValues: {
+      handler() {
+        this.inputFieldsError = {};
+      },
+      deep: true,
+    },
+  },
   created() {
     this.isLoading = true;
     this.getSequencialData();
   },
-
   methods: {
     async getSequencialData() {
       try {
@@ -329,6 +468,12 @@ export default {
         timer: 3000,
         confirmButtonColor: '#F34336',
       });
+
+      this.resetEquipmentFields();
+    },
+    resetEquipmentFields() {
+      this.sector = '';
+      this.equipment = '';
     },
     getEpiOptions() {
       return this.epiList.map(i => ({ text: i.descricaoEpi, value: i.idEpi }));
@@ -337,7 +482,9 @@ export default {
       return this.operationsList.map(i => ({ text: i.descricao_operacao, value: i.idoperacao }));
     },
     getEquipmentOptions() {
-      return this.workEquipment.map(i => ({ id: String(i.idEquipamento), description: i.descricao }));
+      return this.workEquipment
+        .filter(i => i.Setor_idSetor === Number(this.sector))
+        .map(m => ({ id: String(m.idEquipamento), description: m.descricao }));
     },
     getEpiName(epi) {
       const { descricaoEpi } = this.epiList.find(i => i.idEpi === epi);
@@ -346,6 +493,9 @@ export default {
     removeEpi(index) {
       this.inputValues.epis.splice(index, 1);
       this.$set(this.showRemoveEpi, [index], false);
+    },
+    removeEquipment(index) {
+      this.inputValues.equipments_sectors.splice(index, 1);
     },
     async showEpiModal() {
       await this.getEpis();
@@ -393,6 +543,9 @@ export default {
       this.workEquipment = [];
     },
     async addOperation() {
+      if (this.inputValues.operations.length)
+        this.inputValues.operations = [];
+
       for (const option of this.selectedOperations) {
         this.sequenceOperation += 10;
         const incrementOperationZero = this.incrementZero(this.sequenceOperation);
@@ -412,16 +565,17 @@ export default {
     },
     async registerOrderMaintenance() {
       try {
-        await this.addOperation();
         this.$set(this.inputValues, 'beginData', this.$moment().format('YYYY-MM-DD'));
 
-        await this.$http.post('ordem-manutencao/list', this.inputValues);
+        await this.$http.post('ordem-manutencao', this.inputValues);
 
-        this.$swal({
+        await this.$swal({
           type: 'success',
           text: 'Ordem de Serviço cadastrada com Sucesso',
           confirmButtonColor: '#F34336',
         });
+
+        this.$emit('reset:closeOrderMaintenance');
       } catch (err) {
         console.log('err registerOrderMaintenance :>> ', err.response || err);
 
@@ -487,15 +641,6 @@ export default {
         });
       }
     },
-    selectsRequireStopOptions() {
-      return this.selectsRequireStop.map(i => ({ id: String(i.id), description: i.nome }));
-    },
-    selectsRequestersOptions() {
-      return this.selectsRequesterOptions.map(i => ({ id: String(i.idUsuario), description: i.nome }));
-    },
-    selectsReportOptions() {
-      return this.selectsReports.map(i => ({ id: String(i.idUsuario), description: i.nome }));
-    },
     async getSector() {
       try {
         const response = await this.$http.get('local-instalacao');
@@ -512,9 +657,6 @@ export default {
           confirmButtonColor: '#F34336',
         });
       }
-    },
-    getSectorOptions() {
-      return this.selectsSector.map(i => ({ id: String(i.idSetor), description: i.nome }));
     },
     async getPriority() {
       try {
@@ -553,6 +695,83 @@ export default {
     getPriorityOptions() {
       return this.selectsPriority.map(i => ({ id: String(i.idPrioridade), description: i.descricaoPrioridade }));
     },
+    selectsRequireStopOptions() {
+      return this.selectsRequireStop.map(i => ({ id: String(i.id), description: i.nome }));
+    },
+    selectsRequestersOptions() {
+      return this.selectsRequesterOptions.map(i => ({ id: String(i.idUsuario), description: i.nome }));
+    },
+    selectsReportOptions() {
+      return this.selectsReports.map(i => ({ id: String(i.idUsuario), description: i.nome }));
+    },
+    getSectorOptions() {
+      return this.selectsSector.map(i => ({ id: String(i.idSetor), description: i.nome }));
+    },
+    getEquipmentName(equipmentId) {
+      return this.workEquipment.find(i => Number(i.idEquipamento) === Number(equipmentId)).descricao;
+    },
+    getEquipmentSectorName(equipmentSector) {
+      return this.selectsSector.find(i => Number(i.idSetor) === Number(equipmentSector)).nome;
+    },
+    getOperationName(operationId) {
+      return this.operationsList.find(i => Number(i.idoperacao) === Number(operationId)).descricao_operacao;
+    },
+    causeFields() {
+      const errors = causeFields({
+        title: this.inputValues.title,
+        summary: this.inputValues.summary,
+        orderType: this.orderType,
+        description: this.inputValues.description,
+      });
+
+      return this.checkFields(errors);
+    },
+    datesFields() {
+      const errors = datesFields({
+        plannedStart: this.inputValues.plannedStart,
+        plannedEnd: this.inputValues.plannedEnd,
+        moment: this.$moment,
+      });
+
+      return this.checkFields(errors);
+    },
+    generalDetailFields() {
+      const errors = generalDetailFields({
+        priority: this.inputValues.priority,
+        requireStop: this.inputValues.requireStop,
+        requester: this.inputValues.requester,
+        report: this.inputValues.report,
+        orderType: this.orderType,
+      });
+
+      return this.checkFields(errors);
+    },
+    equipmentsFields() {
+      const errors = {
+        ...(!this.inputValues.equipments_sectors.length ? { equipmentsSectors: 'Equipamento não informado!' } : ''),
+      };
+
+      return this.checkFields(errors);
+    },
+    operationsFields() {
+      const errors = {
+        ...(!this.selectedOperations.length ? { selectedOperations: 'Operações não informadas!' } : ''),
+      };
+
+      if (!this.checkFields(errors))
+        return false;
+      
+      this.addOperation();
+      return true;
+    },
+    checkFields(errors) {
+      if (Object.keys(errors).length) {
+        this.inputFieldsError = { ...errors };
+        return false;
+      }
+
+      return true;
+    },
   },
 };
 </script>
@@ -562,77 +781,64 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  .content-wrapper {
-    width: 70%;
-    background-color: #ffffff;
-    border-radius: 10px;
-    padding: 25px;
-    margin: 20px 0;
-    .step-by-step{
-      width:100%;
-      .maintenanceCause{
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: 1fr 1fr;
-        .inputMaintenance{
-          padding: 0.5rem;
-          grid-column-start: 1;
-          grid-column-end: 3;
-        }
-
-        .firstInput{
-          grid-column-start:1;
-          grid-column-end:1;
-        }
-        .secondInput{
-          grid-column-start:2;
-          grid-column-end:2;
-        }
-      }
-      .operations-title {
-        display: flex;
-        justify-content: center;
+  .step-by-step {
+    width:100%;
+    .operations-title {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      span {
         font-size: 22px;
       }
-      .operations-items {
-        overflow: auto;
-        max-height: 300px;
-        margin: 20px;
+    }
+    .operations-items {
+      overflow: auto;
+      max-height: 300px;
+      margin: 10px;
+    }
+    .operation-list {
+      background-color: #eee;
+      border-radius: 50px;
+      padding: 3px 15px;
+      margin: 5px;
+    }
+    .selected-equipments {
+      display: flex;
+      justify-content: space-between;
+      border-radius: 8px;
+      &:hover {
+        background-color: #eee;
       }
-      .equipament-items {
-        //overflow: auto;
-        max-height: 300px;
-        margin: 20px;
+    }
+    .selected-epi-wrapper {
+      min-width: 50px;
+      padding: 5px 20px;
+      margin: 5px;
+      border-radius: 100px;
+      background-color: #eee;
+      user-select: none;
+      position: relative;
+      &:hover {
+        background-color: #ddd;
       }
-      .selected-epi-wrapper {
-        min-width: 50px;
-        padding: 5px 20px;
-        margin: 5px;
+      .selected-epi-remove {
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        right: -10px;
+        top: -10px;
+        width: 30px;
+        height: 30px;
         border-radius: 100px;
         background-color: #eee;
-        user-select: none;
-        position: relative;
+        cursor: pointer;
         &:hover {
-          background-color: #ddd;
+          background-color: var(--duas-rodas-soft);
+          i { color: white; }
         }
-        .selected-epi-remove {
-          position: absolute;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          right: -10px;
-          top: -10px;
-          width: 30px;
-          height: 30px;
-          border-radius: 100px;
-          background-color: #eee;
-          cursor: pointer;
-          &:hover {
-            background-color: var(--duas-rodas-soft);
-            i { color: white; }
-          }
-          i { font-size: 14px; }
-        }
+        i { font-size: 14px; }
       }
     }
   }
