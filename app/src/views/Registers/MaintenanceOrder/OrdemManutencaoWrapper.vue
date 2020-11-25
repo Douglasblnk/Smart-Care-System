@@ -40,7 +40,7 @@
 
     <transition name="slide-side" mode="out-in">
       <template v-if="state.view === 'Corretiva'">
-        <ordem-corretiva
+        <CorrectivePreventiveOrder
           key="corretiva"
           order-type="corretiva"
           @reset:closeOrderMaintenance="resetOrder"
@@ -48,18 +48,25 @@
       </template>
 
       <template v-if="state.view === 'Preventiva'">
-        <ordem-corretiva key="preventiva" order-type="preventiva" />
+        <CorrectivePreventiveOrder
+          key="preventiva"
+          order-type="preventiva"
+          @reset:closeOrderMaintenance="resetOrder"
+        />
       </template>
 
       <template v-if="state.view === 'Rota'">
-        <ordem-rota
+        <RouteOrder
           key="rota"
           @reset:closeOrderMaintenance="resetOrder"
         />
       </template>
 
       <template v-if="state.view === 'Lista'">
-        <ordem-lista key="lista" />
+        <ListOrder
+          key="lista"
+          @reset:closeOrderMaintenance="resetOrder"
+        />
       </template>
     </transition>
   </div>
@@ -70,9 +77,9 @@ export default {
   name: 'OrdemManutencaoWrapper',
 
   components: {
-    ordemLista: () => import('./OrdemManutencaoLista.vue'),
-    ordemRota: () => import('./OrdemManutencaoRota.vue'),
-    ordemCorretiva: () => import('./OrdemManutencaoCorretiva.vue'),
+    ListOrder: () => import('./OrdemManutencaoLista.vue'),
+    RouteOrder: () => import('./OrdemManutencaoRota.vue'),
+    CorrectivePreventiveOrder: () => import('./OrdemManutencaoCorretiva.vue'),
   },
 
   data() {

@@ -15,7 +15,7 @@
         key="orderDetail"
         class="detail-content"
       >
-        <detail-card-wrapper
+        <DetailCardWrapper
           :order="order"
           :is-order-assumed="isOrderAssumed"
           :order-master-maintainer="getOrderMasterMaintainer"
@@ -29,11 +29,14 @@
           @update:toggleShowEpiModal="toggleShowEpiModal"
         />
 
-        <web-operation-list-card />
+        <EquipmentsOperationsCard
+          :equipments-operations="orderEquipmentsOperations"
+          :order-type="order.tipo_manutencao"
+        />
       </div>
 
       <div v-if="state.view === 'Verification' && !isLoading.order" key="Verification">
-        <order-verification
+        <OrderVerification
           :order="order"
           @state-list="changeViewToDetail"
           @change-status="changeOrderVerificationStatus"
@@ -41,7 +44,7 @@
       </div>
 
       <div v-if="state.view === 'Note' && !isLoading.order" key="Note">
-        <order-note
+        <OrderNote
           :order="order"
           @state-list="changeViewToDetail"
         />
@@ -50,7 +53,7 @@
 
     <!-- Modal de Verificação de EPI -->
     <!-- // todo validar abrir modal no iniciar ordem -->
-    <epi-verification-modal
+    <EpiVerificationModal
       v-if="showEpiModal"
       v-model="selectedEpis"
       :epi-list="epiList"
@@ -63,7 +66,7 @@
     />
 
     <!-- modalConvida tecnico -->
-    <invite-maintainer
+    <InviteMaintainer
       v-if="showInviteMaintainer"
       :available-maintainers="availableMaintainers"
       :maintainers-in-order="maintainersInOrder"
@@ -85,7 +88,9 @@ export default {
     EpiVerificationModal: () => import('./components/modal/EpiVerificationModal.vue'),
     OrderNote: () => import('./components/Notes.vue'),
     InviteMaintainer: () => import('./components/modal/InviteMaintainerModal.vue'),
-    WebOperationListCard: () => import('./components/OperationListCardWrapper'),
+    // OperationListCard: () => import('./components/OperationListCardWrapper.vue'),
+    // EquipmentsCard: () => import('./components/EquipmentsCardWrapper.vue'),
+    EquipmentsOperationsCard: () => import('./components/EquipmentsOperationsCardWrapper.vue'),
     DetailCardWrapper,
   },
 
@@ -98,6 +103,8 @@ export default {
       state: {
         view: 'detail',
       },
+      isOperationsChecked: false,
+      orderEquipmentsOperations: {},
       valuesInput: {
         idOrdemServico: this.order.idOrdemServico,
         idUsuario: '',
@@ -143,6 +150,7 @@ export default {
     async getOrdersDependencies() {
       try {
         await this.getMaintainersInOrder();
+        await this.getEquipmentsAndOperations();
       } catch (err) {
         console.log('getOrdersDependencies :>>', err.response || err);
 
@@ -166,6 +174,22 @@ export default {
       if (response.length === undefined)
         this.maintainersInOrder.push(response);
       else this.maintainersInOrder = [...response];
+    },
+    async getEquipmentsAndOperations() {
+      const response = await this.$http.get('ordem-manutencao/equipments-operations', {
+        headers: {
+          order: this.order.idOrdemServico,
+          order_type: this.order.tipo_manutencao,
+        },
+      });
+
+      this.orderEquipmentsOperations = { ...response };
+    },
+    toggleOperationsChecked() {
+      this.isOperationsChecked = true;
+    },
+    toggleOperationsUnchecked() {
+      this.isOperationsChecked = false;
     },
     resetModal() {
       this.modalHasError = false;
@@ -572,7 +596,6 @@ export default {
 v-link {
   color: #555 !important
 }
-// @media (min-width: 576px)
 .filter-mecanic {
   margin-right: 15px !important;
   margin-left: -43px !important;
@@ -585,21 +608,10 @@ v-link {
   min-height: 55px !important;
 }
 .modal-th-td-style {
-  // color: purple;
   display: flex;
   justify-content: flex-end;
-
-  // align-items: center !important;
-  
 }
-// .table-sm th {
-//   text-align: center;
-// }
-// .table thead th  {
-//   text-align: center;
-// }
 .table th {
-   // margin-right: 0.5rem;
    padding-right: 2rem !important;
 }
 

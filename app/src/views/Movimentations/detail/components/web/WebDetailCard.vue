@@ -7,11 +7,14 @@
       icon="fa-info-circle"
     >
       <div class="detail-container d-flex">
-        <div class="col-md-7">
+        <div class="col-md-6">
           <div class="order-title">
             <span>Resumo: {{ order.resumo }}</span>
           </div>
-          <div class="my-3">
+          <div
+            v-if="order.descricao && (order.tipo_manutencao === 'Corretiva' || order.tipo_manutencao === 'Preventiva')"
+            class="my-3"
+          >
             <span>Descrição: {{ order.descricao }}</span>
           </div>
           <div class="my-3">
@@ -34,20 +37,12 @@
               <span>Manutentores convidados: {{ orderInvitedMaintainers.join(', ') }}</span>
             </div>
             <div class="my-3 d-flex align-items-center">
-              <i class="fa fa-map-marker-alt mr-2" />
-              <span>Setor: {{ order.local }}</span>
-            </div>
-            <div class="my-3 d-flex align-items-center">
               <i class="fa fa-ban mr-2" />
               <span>Requer parada: {{ order.requerParada === 1 ? 'Sim' : 'Não' }}</span>
             </div>
             <div class="my-3 d-flex align-items-center">
               <i class="fa fa-exclamation-triangle mr-2" :class="getPriorityClass(order.prioridade)" />
               <span :class="getPriorityClass(order.prioridade)">Prioridade: {{ order.prioridade }}</span>
-            </div>
-            <div class="my-3 d-flex align-items-center">
-              <i class="fa fa-laptop mr-2" />
-              <span>Equipamento: {{ order.equipamento }}</span>
             </div>
             <div class="my-3 d-flex align-items-center">
               <i class="fa fa-tools mr-2" />
@@ -69,7 +64,7 @@
           </div>
         </div>
 
-        <div class="col-md-5 d-flex justify-content-between flex-column">
+        <div class="col-md-6 d-flex justify-content-between flex-column">
           <div>
             <div class="col-md-12 text-center">
               <span style="font-size: 20px">Ações</span>
@@ -128,7 +123,7 @@
                   @click="openOrderNote()"
                 >
                   <i class="fa fa-file-signature fa-lg mb-2" />
-                  <span>Apontamentos</span>
+                  <span>Apontar</span>
                 </div>
 
                 <div
@@ -145,7 +140,7 @@
                   @click="openOrderVerification()"
                 >
                   <i class="fa fa-clipboard-check fa-lg mb-2" />
-                  <span>Verificação</span>
+                  <span>Verificar</span>
                 </div>
               </div>
             </div>
@@ -178,11 +173,6 @@ export default {
     isOrderAssumed: { type: Boolean, default: false },
     orderMasterMaintainer: { type: String, default: '' },
     orderInvitedMaintainers: { type: [String, Array], default: '' },
-  },
-  data() {
-    return {
-
-    };
   },
   computed: {
     verifyOrderStatus() {
@@ -238,7 +228,6 @@ export default {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      max-width: 290px;
       .options {
         cursor: pointer;
         display: flex;
