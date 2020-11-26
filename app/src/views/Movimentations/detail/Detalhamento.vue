@@ -18,7 +18,7 @@
         <DetailCardWrapper
           :order="order"
           :is-order-assumed="isOrderAssumed"
-          :order-master-maintainer="getOrderMasterMaintainer"
+          :order-master-maintainer="getOrderMasterMaintainer.nome"
           :order-invited-maintainers="getOrderInvitedMaintainers"
           :is-loading="isLoading"
           @update:orderMovimentations="orderMovimentations"
@@ -30,6 +30,7 @@
         />
 
         <EquipmentsOperationsCard
+          :master-maintainer="getOrderMasterMaintainer"
           :equipments-operations="orderEquipmentsOperations"
           :order-type="order.tipo_manutencao"
         />
@@ -88,8 +89,6 @@ export default {
     EpiVerificationModal: () => import('./components/modal/EpiVerificationModal.vue'),
     OrderNote: () => import('./components/Notes.vue'),
     InviteMaintainer: () => import('./components/modal/InviteMaintainerModal.vue'),
-    // OperationListCard: () => import('./components/OperationListCardWrapper.vue'),
-    // EquipmentsCard: () => import('./components/EquipmentsCardWrapper.vue'),
     EquipmentsOperationsCard: () => import('./components/EquipmentsOperationsCardWrapper.vue'),
     DetailCardWrapper,
   },
@@ -130,7 +129,7 @@ export default {
     getOrderMasterMaintainer() {
       const maintainer = this.maintainersInOrder.find(maintainer => maintainer.is_master);
 
-      return maintainer ? maintainer.nome : '';
+      return maintainer ? maintainer : {};
     },
     getOrderInvitedMaintainers() {
       const maintainers = this.maintainersInOrder.filter(maintainer => !maintainer.is_master);

@@ -122,6 +122,7 @@ export default {
   name: 'WebEquipmentsOperationCard',
   props: {
     equipmentsOperations: { type: Object, default: () => ({}) },
+    masterMaintainer: { type: Object, default: () => ({}) },
     orderType: { type: String, default: () => '' },
   },
   data() {
@@ -141,12 +142,19 @@ export default {
     },
   },
   methods: {
-    checkOperation({ id_operacoes }, { idEquipamento }) {
-      this.$set(
-        this.checkedOperation,
-        `${idEquipamento}-${id_operacoes}`,
-        !this.checkedOperation[`${idEquipamento}-${id_operacoes}`],
-      );
+    async checkOperation({ id_operacoes }, { idEquipamento }) {
+      try {
+        console.log('poxa', this.masterMaintainer);
+        const response = await this.$http.post('operacoes/check', { operation: id_operacoes });
+        
+        this.$set(
+          this.checkedOperation,
+          `${idEquipamento}-${id_operacoes}`,
+          !this.checkedOperation[`${idEquipamento}-${id_operacoes}`],
+        );
+      } catch (err) {
+        console.log('err checkOperation :>> ', err);
+      }
     },
     toggleOperations(index) {
       if (!this.isOperationsOpen[index])
