@@ -17,6 +17,7 @@ module.exports = class GetVerificationOrderDataRequester {
       this.mysql.query(/* sql */ `
                     SELECT ${TABLE_VERIFICACAO}.tipoVerificacao, ${TABLE_VERIFICACAO}.ordemServico_idOrdemServico,
                     ${TABLE_VERIFICACAO}.dataVerificacao,${TABLE_VERIFICACAO}.problemaResolvido,
+                    ${TABLE_VERIFICACAO}.solucaoRealizada,
                     ${TABLE_ORDEM_SERVICO}.Status_idStatus, ${TABLE_ORDEM_SERVICO}.tipoManutencao_idtipoManutencao,
                     ${TABLE_ORDEM_SERVICO}.reporte,  ${TABLE_ORDEM_SERVICO}.solicitante, ${TABLE_ORDEM_SERVICO_HAS_USUARIO}.Usuario_idUsuario,
                     ${TABLE_ORDEM_SERVICO}.resumo,${TABLE_ORDEM_SERVICO}.descricao,

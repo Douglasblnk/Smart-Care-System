@@ -10,124 +10,110 @@
             <v-client-table
               ref="table_verification"
               v-model="listVerificationsStatus"
-              :columns="verificationsData.columns"
-              :options="verificationsData.options"
+              :columns="tableConfig.columns"
+              :options="tableConfig.options"
             >
               <span slot="Solicitante" slot-scope="{row}" style="font-size: 2em;">
                 <i :class="row.icon_requester"></i>
               </span>
+
               <span slot="Reporte" slot-scope="{row}" style="font-size: 2em;">
                 <i :class="row.icon_report"></i>
               </span>
+
               <span slot="Manutentor" slot-scope="{row}" style="font-size: 2em;">
                 <i :class="row.icon_maintainer"></i>
               </span>
+
               <div slot="actions" slot-scope="props">
-                <a target="_blank" class="fas fa-external-link-alt mb-2 eye"
-                   @click="openOrder(props.row)"
-                ></a>
-                <i class="fas fa-eye fa-lg mb-2 "   @click="openModalDetailVerifications(props.row)"></i>
+                <i
+                  class="fas fa-external-link-alt mb-2 eye"
+                  @click="openOrder(props.row)"
+                />
+                
+                <i
+                  class="fas fa-eye fa-lg mb-2"
+                  @click="openModalDetailVerifications(props.row)"
+                />
               </div>
             </v-client-table>
           </div>
           <!-- hide-footer -->
+          
+          <!-- <code>
+            <pre>
+              <p>{{ modalData }}</p>
+            </pre>
+          </code> -->
+
           <b-modal
-            ref="my-modal"
+            ref="verificationDetail"
             centered
             hide-header
-            title="Verificação de EPIs"
+            hide-footer
             @hide="resetModal()"
           >
             <div>
-              <!-- {{ rowModalOpen }} -->
               <div class="text-center">
-                <h3>Situação de Verificações</h3>
-                <p>{{ modalData }}</p>
+                <h3 style="font-family:'Avenir', Helvetica, Arial, sans-serif; padding:10px">Situação das Verificações</h3>
               </div>
               
               <b-tabs content-class="mt-3">
-                <b-tab title="Administrador" active>
-                  <div v-if="rowModalOpen.ordemServico_idOrdemServico !== undefined">
-                    <div v-for="(item, index) in modalData" :key="`ìtem-${index}`">
-                      <p v-if="item.name_report" style="font-size:1rem">
-                        Nome: {{ item.name_report }}
-                      </p>
+                <b-tab
+                  v-for="(item, index) in modalData"
+                  :key="`item-${index}`"
+                  :title="item.user_description"
+                  active
+                >
+                  <div style="margin: 1em">
+                    <div v-if="getUserName(item)">
+                      <div class="d-flex">
+                        <div style="flex: 1;font-family:'Avenir', Helvetica, Arial, sans-serif">
+                          <strong>Nome:</strong>
+                          <p>{{ getUserName(item) }}</p>
+                        </div>
+
+                        <div style="flex: 1; font-family:'Avenir', Helvetica, Arial, sans-serif">
+                          <strong>Data da verificação:</strong>
+                          <p>{{ $moment(item.dataVerificacao).format('DD/MM/YYYY') }}</p>
+                        </div>
+                      </div>
+
+                      <div class="d-flex">
+                        <div style="flex: 1; font-family:'Avenir', Helvetica, Arial, sans-serif">
+                          <strong>Situação:</strong>
+                          <p :style="`color:${(item.problemaResolvido === '1') ? 'green' : 'red'}`">{{ (item.problemaResolvido === '1') ? 'Resolvido' : 'Não resolvido' }}</p>
+                        </div>
+
+                        <div v-if="item.solucaoRealizada" style="flex: 1;font-family:'Avenir', Helvetica, Arial, sans-serif">
+                          <strong>Observação:</strong>
+                          <p>{{ item.solucaoRealizada }}</p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </b-tab>
-                <b-tab title="Solicitante" lazy>
-                  <div v-if="rowModalOpen.ordemServico_idOrdemServico !== undefined">
-                    <div v-for="(item, index) in modalData" :key="`ìtem-${index}`">
-                      <p v-if="item.name_requester" style="font-size:1rem">
-                        Nome: {{ item.name_requester }}
-                      </p>
-                    </div>
-                  </div>
-                </b-tab>
-                <b-tab title="Manutentor" lazy>
-                  <div v-if="rowModalOpen.ordemServico_idOrdemServico !== undefined">
-                    <div v-for="(item, index) in modalData" :key="`ìtem-${index}`">
-                      <p v-if="item.name_maintainer" style="font-size:1rem">
-                        Nome: {{ item.name_maintainer }}
-                      </p>
-                    </div>
+
+                    <p v-else style="font-size: 1rem; font-family:'Avenir', Helvetica, Arial, sans-serif" class="text-center">
+                      Não há verificações registradas.
+                    </p>
                   </div>
                 </b-tab>
               </b-tabs>
-            </div>
 
-            <!-- <div class="d-block text">
-              <div class="my-3 d-flex flex-column">
-                <div v-if="rowModalOpen.ordemServico_idOrdemServico !== undefined">
-                  <div v-for="(item, index) in modalData" :key="`ìtem-${index}`">
-                    <h3>
-                      {{ item.user_description }}:
-                    </h3>
-                    <div v-if="item.problemaResolvido !== undefined">
-                      <span class="user_detail_verification">
-                        <i class="fas fa-calendar-alt"></i>
-                        {{ item.dataVerificacao }}
-                        
-                      </span>
-                      <div>
-                        <span class="user_detail_verification">
-                          <i class="fas fa-lightbulb"></i>
-                          Problema: {{ item.problemaResolvidoDescricao }}
-                        </span>
-                      </div>
-                    </div>
-                    <div v-if="item.problemaResolvido == undefined" class="user_detail_verification">
-                      <p>Verificação Pendente</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div v-if="modalHasError">
-                <div class="d-flex justify-content-center w-100 p-2 rounded"
-                     style="background-color: #ff4a4a5c; border: 1px solid #ff4a4aa6"
+              <div class="d-flex justify-content-center" style="margin: 10px 0">
+                <smart-button
+                  class="center"
+                  primary
+                  circle
+                  @click.native="openOrder(modalData)"
                 >
-                  <span style="color: black">{{ modalErrorMessage }}</span>
-                </div>
-              </div>
-              <div class="d-flex justify-content-center">
-                <smart-button label="Fechar" @click.native="closeModal()">
-                  Fechar
+                  <i class="fa fa-external-link-alt fa-fw mr-2" />
+
+                  <span>
+                    Acessar Ordem
+                  </span>
                 </smart-button>
               </div>
-            </div> -->
-            <template #modal-footer>
-              <smart-button
-                class="center"
-                primary
-                @click="() => (show = false)"
-              >
-                <i class="fa fa-external-link-alt fa-fw mr-2" />
-
-                <span>
-                  Acessar Ordem
-                </span>
-              </smart-button>
-            </template>
+            </div>
           </b-modal>
         </card>
       </div>
@@ -136,15 +122,12 @@
 </template>
 
 <script>
-import { getErrors, getToken } from '../../../../utils/utils';
+import { getErrors } from '../../../../utils/utils';
 export default {
   name: 'PendingVerificationsWeb',
   props: {
-    verificationsData: {
-      type: Object,
-      required: true,
-      default: () => ({}),
-    },
+    tableConfig: { type: Object, required: true, default: () => ({}) },
+    verifications: { type: Array, required: true, default: () => [] },
   },
   data() {
     return {
@@ -162,28 +145,38 @@ export default {
   },
   computed: {
     listVerificationsStatus() {
-      const orders = this.verificationsData.verifications_list.map(i => ( i.ordemServico_idOrdemServico));
+      const ordersId = this.getOrdersId();
 
-      const orders_exist = [...new Set(orders)];
-
-      const data_table = orders_exist.map(i => this.verificationsData.verifications_list.find(j => j.ordemServico_idOrdemServico === i));
-
-      for (const order of orders_exist) {
+      const data_table = ordersId.map(
+        orderId => this.verifications.find(
+          verification => verification.ordemServico_idOrdemServico === orderId,
+        )
+      );
+    
+      for (const orderId of ordersId) {
         for (const round_order of this.typeVerifications) {
-          const exist = this.verificationsData.verifications_list.find(i => i.ordemServico_idOrdemServico === order &&
-                                                        i.tipoVerificacao === round_order);
-          const order_id = data_table.findIndex(i => i.ordemServico_idOrdemServico === order);
+          const exist = this.verifications.find(
+            i => i.ordemServico_idOrdemServico === orderId
+              && i.tipoVerificacao === round_order
+          );
+
+          const order_id = data_table.findIndex(i => i.ordemServico_idOrdemServico === orderId);
 
           if (exist !== undefined && round_order === 1)
             data_table[order_id].icon_report = 'fas fa-check';
+
           else if (exist === undefined && round_order === 1)
             data_table[order_id].icon_report = 'fas fa-times';
+
           else if (exist !== undefined && round_order === 2)
             data_table[order_id].icon_maintainer = 'fas fa-check';
+
           else if (exist === undefined && round_order === 2)
             data_table[order_id].icon_maintainer = 'fas fa-times';
+
           else if (exist !== undefined && round_order === 3)
             data_table[order_id].icon_requester = 'fas fa-check';
+
           else if (exist === undefined && round_order === 3)
             data_table[order_id].icon_requester = 'fas fa-times';
         }
@@ -192,26 +185,22 @@ export default {
     },
     modalData() {
       const data_modal = [];
+
       if (this.rowModalOpen.ordemServico_idOrdemServico !== undefined) {
         for (const i of this.typeVerifications) {
-          data_modal.push({ ...this.verificationsData.verifications_list.find(
-            j => j.ordemServico_idOrdemServico === this.rowModalOpen.ordemServico_idOrdemServico &&
-                j.tipoVerificacao === i) });
-          if (data_modal[i-1] !== undefined) {
-            data_modal[i-1].dataVerificacao = this.$moment(data_modal[i-1].dataVerificacao)
-              .format('DD-MM-YYYY');
-          }
-          if (data_modal[i-1].problemaResolvido === '0')
-            data_modal[i-1].problemaResolvidoDescricao = 'Não Resolvido';
-          else if (data_modal[i-1].problemaResolvido === '1')
-            data_modal[i-1].problemaResolvidoDescricao = 'Resolvido';
-         console.log(data_modal[i-1])
-          if (i === 1)
-            data_modal[i-1].user_description = 'Administrador';
-          if (i === 2)
-            data_modal[i-1].user_description = 'Manutentor';
-          if (i === 3)
-            data_modal[i-1].user_description = 'Solicitante';
+          const { name_maintainer, name_report, name_requester } = this.rowModalOpen;
+
+          data_modal.push({
+            ...this.verifications.find(
+              j => j.ordemServico_idOrdemServico === this.rowModalOpen.ordemServico_idOrdemServico
+                && j.tipoVerificacao === i
+            ),
+            ...{ name_maintainer, name_report, name_requester },
+          });
+
+          if (i === 1) data_modal[i-1].user_description = 'Administrador';
+          if (i === 2) data_modal[i-1].user_description = 'Manutentor';
+          if (i === 3) data_modal[i-1].user_description = 'Solicitante';
         }
         
         return data_modal;
@@ -219,12 +208,15 @@ export default {
       return false;
     },
   },
-
   mounted() {
     this.$store.commit('addPageName', 'Verificações');
   },
-
   methods: {
+    getOrdersId() {
+      const ordersId = this.verifications.map(i => (i.ordemServico_idOrdemServico));
+  
+      return [...new Set(ordersId)];
+    },
     resetModal() {
       this.modalHasError = false;
       this.data_modal = [];
@@ -239,7 +231,7 @@ export default {
         const { result } = await this.$http.get('ordem-manutencao', {
           headers: { order },
         });
-        console.log("vendo o result" + result)
+
         this.$set(this.detail, 'order', result);
         this.$store.commit('addPageName', `Consultas | ${props.ordemServico_idOrdemServico}`);
 
@@ -260,114 +252,118 @@ export default {
         });
       }
     },
-    formatObjectModal(){
-
-    },
     async openModalDetailVerifications(row) {
       this.rowModalOpen = row;
       this.showVerificationModal();
     },
     async showVerificationModal() {
-      this.$refs['my-modal'].show();
+      this.$refs['verificationDetail'].show();
     },
     closeModal() {
-      this.$refs['my-modal'].hide();
+      this.$refs['verificationDetail'].hide();
     },
     closeDetail() {
       this.$store.commit('addPageName', 'Verificações');
       this.$set(this.state, 'view', 'verifications');
+    },
+    getUserName({
+      name_maintainer,
+      name_report,
+      name_requester,
+      tipoVerificacao,
+    }) {
+      if (tipoVerificacao === 1) return name_report || undefined;
+      if (tipoVerificacao === 2) return name_maintainer || undefined;
+      if (tipoVerificacao === 3) return name_requester || undefined;
     },
   },
 };
 </script>
 
 <style lang="scss">
-  .user_detail_verification{
-    font-size: 20px;
-  }
-  .content-consult-verification{
-    .content-verifications {
-        font-family: "Avenir", Helvetica, Arial, sans-serif;
-        text-align: center;
-        color: #2c3e50;
-        table {
-          border-radius: 8px;
-          thead {
-            th {
-              background-color: var(--duas-rodas-soft);
-              span {
-                cursor: pointer;
-                color: white !important;
-              }
-              border: 0 !important;
-              outline: none;
-            }
+.content-consult-verification {
+  .content-verifications {
+    font-family: "Avenir", Helvetica, Arial, sans-serif;
+    text-align: center;
+    color: #2c3e50;
+    table {
+      border-radius: 8px;
+      thead {
+        th {
+          background-color: var(--duas-rodas-soft);
+          span {
+            cursor: pointer;
+            color: white !important;
           }
-          tbody {
-            tr {
-              td {
-                border: 0 !important;
-                vertical-align: middle;
-                outline: none;
-              }
-            }
+          border: 0 !important;
+          outline: none;
+        }
+      }
+      tbody {
+        tr {
+          td {
+            border: 0 !important;
+            vertical-align: middle;
+            outline: none;
           }
         }
-        .col-md-12 {
-          justify-content: space-between;
-          display: flex !important;
-          .VueTables__search-field {
-            width: 30vw !important;
-            input {
-              width: 100%;
-            }
-          }
+      }
+    }
+    .col-md-12 {
+      justify-content: space-between;
+      display: flex !important;
+      .VueTables__search-field {
+        width: 30vw !important;
+        input {
+          width: 100%;
         }
-        .VuePagination {
-          display: flex;
-          justify-content: center;
-          p {
-            display: flex;
-            justify-content: center;
-          }
-          li {
-            width:50px;
-          }
-        }
-        //.VuePagination__pagination-item page-item
-        .page-item .active {
-          color: white !important;
-          border-color: #ddd !important;
-          background-color: var(--duas-rodas-soft) !important;
-          &:focus {
-            box-shadow: none !important;
-          }
-        }
-        .page-link {
-          color: #555 !important;
-          &:focus {
-            box-shadow: none !important;
-          }
-        }
-        .card-title{
-          h3 {
-            font-family: 'roboto';
-            color: #E66E6D;
-          }
-        }
+      }
+    }
+    .VuePagination {
+      display: flex;
+      justify-content: center;
+      p {
+        display: flex;
+        justify-content: center;
+      }
+      li {
+        width:50px;
+      }
+    }
+    //.VuePagination__pagination-item page-item
+    .page-item .active {
+      color: white !important;
+      border-color: #ddd !important;
+      background-color: var(--duas-rodas-soft) !important;
+      &:focus {
+        box-shadow: none !important;
+      }
+    }
+    .page-link {
+      color: #555 !important;
+      &:focus {
+        box-shadow: none !important;
+      }
+    }
+    .card-title{
+      h3 {
+        font-family: 'roboto';
+        color: #E66E6D;
+      }
+    }
 
-        .eye{
-            padding-left: 20px;
-            padding-right: 20px;
-        }
-        .fa-check {
-          font-size: 20px;
-          color: rgb(174, 214, 183)
-        }
-        .fa-times {
-          font-size: 20px;
-          color: var(--duas-rodas)
-        }
+    .eye {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+    .fa-check {
+      font-size: 20px;
+      color: rgb(174, 214, 183)
+    }
+    .fa-times {
+      font-size: 20px;
+      color: var(--duas-rodas)
     }
   }
+}
 </style>
