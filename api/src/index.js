@@ -54,12 +54,14 @@ app.use('/delega-manutentor', DelegateManutentor);
 
 // MOVIMENTATIONS
 const Verifications = require('./services/routes/movimentations/Verifications');
+const Operations = require('./services/routes/movimentations/Operations');
 // const detalhamento = require('./services/movimentations/routes/Detalhamento/Detalhamento');
 // const initiate = require('./services/movimentations/routes/Iniciar/InitiateOrder');
 // const orderNote = require('./services/movimentations/routes/Apontar/OrderNote');
 
 
 app.use('/verificacao', Verifications);
+app.use('/operacoes', Operations);
 // app.use('/detalhamento', detalhamento);
 // app.use('/initiate', initiate);
 // app.use('/order-note', orderNote);

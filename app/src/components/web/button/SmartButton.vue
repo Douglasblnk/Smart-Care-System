@@ -10,6 +10,7 @@
         'btn-circle': circle && !mobile,
         'btn-transparent': transparent && !mobile,
         'mobile-button': mobile,
+        'no-effect': noEffect,
       }"
       :style="`width: ${getCustomWidth} !important`"
     >
@@ -44,6 +45,7 @@ export default {
     transparent: { type: Boolean, default: false },
     width: { type: String, default: '' },
     mobile: { type: Boolean, default: false },
+    noEffect: { type: Boolean, default: false },
   },
 
   data: () => ({}),
@@ -104,6 +106,10 @@ export default {
   .btn-small {
     padding: 5px 15px !important;
     font-size: 13px !important;
+  }
+  .no-effect {
+    &:hover { transform: none !important }
+    &:active { transform: none !important }
   }
   .primary {
     background-color: var(--duas-rodas-soft) !important;

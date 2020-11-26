@@ -366,8 +366,10 @@ export default {
       return string;
     },
     goBack() {
-      if (this.state.view === 'detail')
+      if (this.state.view === 'detail') {
+        this.$store.commit('addPageName', 'Consultas');
         return this.setStateView('list');
+      }
       this.$router.push('/dashboard');
     },
     setStateView(view) {

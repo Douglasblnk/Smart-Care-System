@@ -14,13 +14,6 @@ const dashboard = [
     web: true,
   },
   {
-    name: 'Verificações',
-    link: '/consulta-verificacoes',
-    icon: 'fas fa-clipboard-list',
-    mobile: true,
-    web: true,
-  },
-  {
     name: 'Consultas',
     link: '/consultas',
     icon: 'fa fa-search',
@@ -28,16 +21,16 @@ const dashboard = [
     web: true,
   },
   {
+    name: 'Verificações',
+    link: '/consulta-verificacoes',
+    icon: 'fas fa-clipboard-list',
+    mobile: true,
+    web: true,
+  },
+  {
     name: 'Apontamentos',
     link: '/consultas',
     icon: 'far fa-list-alt',
-    mobile: true,
-    web: false,
-  },
-  {
-    name: 'Relatórios',
-    link: '/relatorios',
-    icon: 'fa fa-history',
     mobile: true,
     web: true,
   },
