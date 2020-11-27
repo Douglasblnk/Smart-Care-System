@@ -9,7 +9,7 @@
         icon="fa-laptop"
         @collapsed="resetOpenOperations"
       >
-        <div class="d-flex flex-column">
+        <div class="d-flex flex-column" :class="!isOrderAssumed ? 'blocked' : ''">
           <div
             v-for="(equipment, index) in equipmentsOperations.equipments"
             :key="`equipment-${index}`"
@@ -62,7 +62,13 @@
               </div>
               
               <div v-if="equipment.operations" class="d-flex justify-content-end align-items-center col-md-2 no-padding">
-                <smart-button simple circle no-effect @click.native="toggleOperations(index)">
+                <smart-button
+                  simple
+                  circle
+                  no-effect
+                  :disabled="!isOrderAssumed"
+                  @click.native="toggleOperations(index)"
+                >
                   <span>
                     <i class="fa" :class="isOperationsOpen[index] ? 'fa-chevron-down' : 'fa-chevron-up'" />
                     Operações
@@ -123,6 +129,7 @@ export default {
   props: {
     equipmentsOperations: { type: Object, default: () => ({}) },
     masterMaintainer: { type: Object, default: () => ({}) },
+    isOrderAssumed: { type: Boolean, default: false },
     orderType: { type: String, default: () => '' },
   },
   data() {
@@ -157,6 +164,8 @@ export default {
       }
     },
     toggleOperations(index) {
+      if (!this.isOrderAssumed) return;
+
       if (!this.isOperationsOpen[index])
         this.resetOpenOperations();
 
@@ -203,6 +212,9 @@ export default {
         color: #ddd;
         text-decoration: line-through;
       }
+    }
+    .blocked {
+      opacity: 0.4;
     }
   }
 }

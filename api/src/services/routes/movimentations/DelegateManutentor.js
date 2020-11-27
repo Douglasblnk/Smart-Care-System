@@ -2,7 +2,7 @@ const Router = require('express');
 
 const router = Router();
 
-const errorResponseTreatment = require('../../../shared/utils/utils');
+const { errorResponseTreatment } = require('../../../shared/utils/utils');
 const RegisterUpdateDelegateManutentor = require('../../session/movimentations/delegate/RegisterUpdateDelegateManutentor');
 
 router.post('/', async (req, res, next) => {

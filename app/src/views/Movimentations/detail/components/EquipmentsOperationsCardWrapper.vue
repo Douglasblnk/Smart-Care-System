@@ -19,6 +19,8 @@ export default {
   props: {
     equipmentsOperations: { type: Object, default: () => ({}) },
     orderType: { type: String, default: () => '' },
+    masterMaintainer: { type: Object, default: () => ({}) },
+    isOrderAssumed: { type: Boolean, default: false },
   },
   computed: {
     ...mapGetters({
