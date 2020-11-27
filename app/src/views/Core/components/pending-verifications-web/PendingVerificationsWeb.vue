@@ -64,6 +64,7 @@
                   :key="`item-${index}`"
                   :title="item.user_description"
                   active
+                  style="font-family:'Avenir', Helvetica, Arial, sans-serif; padding:10px"
                 >
                   <div style="margin: 1em">
                     <div v-if="getUserName(item)">
