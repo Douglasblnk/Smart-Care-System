@@ -2,7 +2,7 @@ const Router = require('express');
 
 const router = Router();
 
-const errorResponseTreatment = require('../../../shared/utils/utils');
+const { errorResponseTreatment } = require('../../../shared/utils/utils');
 const CheckOperations = require('../../session/movimentations/operations/CheckOperations');
 
 router.post('/check', async (req, res, next) => {

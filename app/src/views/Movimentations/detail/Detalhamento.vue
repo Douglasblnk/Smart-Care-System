@@ -30,6 +30,7 @@
         />
 
         <EquipmentsOperationsCard
+          :is-order-assumed="isOrderAssumed"
           :master-maintainer="getOrderMasterMaintainer"
           :equipments-operations="orderEquipmentsOperations"
           :order-type="order.tipo_manutencao"
@@ -266,7 +267,7 @@ export default {
             confirmButtonColor: '#F34336',
           }),
 
-          this.getOrderMaintainer();
+          this.getMaintainersInOrder();
 
           this.$http.setActivity(this.$activities.INVITE_USER_TO_ORDER, JSON.stringify({ invitedUser: row.nome }));
         } else {
@@ -295,7 +296,7 @@ export default {
         }),
 
         this.maintainersInOrder = [],
-        this.getOrderMaintainer(),
+        this.getMaintainersInOrder(),
 
         this.$http.setActivity(this.$activities.REMOVE_INVITED_USER, JSON.stringify({ removedInvitedUser: row.idUsuario }));
       } catch (err) {
@@ -325,27 +326,28 @@ export default {
       if (this.isLoading.assume || this.isOrderAssumed) return;
       try {
         this.$set(this.isLoading, 'assume', true);
-
-        const { result } = await this.$http.post('initiate/assume', {
-          ...this.$store.state.user,
+      
+        await this.$http.post('movimentacao-etapa/assumir', {
           order: this.order.idOrdemServico,
         });
 
         this.$swal({
           type: 'success',
-          title: result,
+          text: 'Ordem assumida com sucesso!',
         });
 
-        await this.getOrderMaintainer();
         this.$set(this.order, 'status', 'Assumida');
+        await this.getMaintainersInOrder();
       } catch (err) {
         this.$set(this.isLoading, 'assume', false);
 
         return this.$swal({
-          type: 'success',
-          title: 'Ordem iniciada com sucesso!',
+          type: 'warning',
+          html: getErrors(err),
           confirmButtonColor: '#f34336',
         });
+      } finally {
+        this.$set(this.isLoading, 'assume', false);
       }
     },
     async initiateOrder() {
@@ -437,7 +439,7 @@ export default {
     },
     async validateActualManutentor() {
       try {
-        await this.getOrderMaintainer();
+        await this.getMaintainersInOrder();
 
         const user = this.$store.state.user;
         return this.maintainersInOrder.find(i => i.numeroCracha === user.cracha);

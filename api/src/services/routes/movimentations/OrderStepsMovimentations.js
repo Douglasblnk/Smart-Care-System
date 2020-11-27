@@ -1,22 +1,19 @@
-const { errorResponseTreatment } = require('../../../shared/utils/utils');
-
 const Router = require('express');
+
 const router = Router();
 
-const GetStatus = require('../../session/cruds/status/getStatus');
+const { errorResponseTreatment } = require('../../../shared/utils/utils');
+const AssumeOrder = require('../../session/movimentations/steps/AssumeOrder');
 
-/**
- *  ROTA PARA BUSCAR OS STATUS
- */
-router.get('/', async (req, res, next) => {
+router.post('/assumir', async (req, res, next) => {
   try {
-    const response = await new GetStatus().run(req);
+    const response = await new AssumeOrder().run(req);
 
     next();
     res.status(200).send(response);
   } catch (err) {
     const responseError = errorResponseTreatment(err);
-    
+
     res.status(responseError.status).send(responseError);
   }
 });
