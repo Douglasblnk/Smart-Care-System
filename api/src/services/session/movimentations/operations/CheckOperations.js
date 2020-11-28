@@ -1,16 +1,16 @@
-// const VerificationDao = require('../../../dao/movimentations/VerificationDao');
+const { get } = require('lodash');
+
+const UserDao = require('../../../dao/cruds/UserDao');
+const CheckOperationDao = require('../../../dao/movimentations/CheckOperation');
 
 const { MANUTENTOR_ID } = require('../../../../shared/constants/accessLevel');
-const { get } = require('lodash');
 const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../shared/constants/HTTPResponse');
 
 module.exports = class CheckOperations {
-  constructor() {
-    this._queryResult = '';
-  }
-
   getParameters(req) {
     return {
+      orderId: get(req.body, 'order'),
+      equipmentId: get(req.body, 'equipment'),
       operation: get(req.body, 'operation', ''),
       mysql: get(req, 'mysql'),
       authData: get(req, 'authData', ''),
@@ -18,11 +18,15 @@ module.exports = class CheckOperations {
   }
 
   checkParameters({
+    orderId,
     operation,
+    equipmentId,
     mysql,
     authData,
   }) {
     return {
+      ...(!orderId ? { orderId: 'Id da ordem não informada' } : ''),
+      ...(!equipmentId ? { equipmentId: 'Id do equipmento não informado' } : ''),
       ...(!operation ? { operation: 'Operação não informada' } : ''),
       ...(!mysql ? { mysql: 'Conexão não estabelecida' } : ''),
       ...(!authData ? { authData: 'Dados de autenticação não encontrados' } : ''),
@@ -39,12 +43,14 @@ module.exports = class CheckOperations {
       await this.validateGroups(parameters);
       await this.validateMaintainerPermission(parameters);
 
-      // await this.checkOperation(parameters);
+      const checked = await this.getOperationCheckedValue(parameters);
 
-      // if (!this._queryResult.affectedRows)
-      //   throw 'Nenhum registro foi inserido';
+      const response = await this.checkOperation({ ...parameters, checked });
 
-      // return this._queryResult;
+      if (!response.affectedRows)
+        throw 'Nenhum registro foi alterado';
+
+      return response;
     } catch (err) {
       console.log('err CheckOperations :>> ', err);
 
@@ -52,12 +58,39 @@ module.exports = class CheckOperations {
     }
   }
 
-  async checkOperation({ operation }) {
-    // todo
+  async checkOperation(parameters) {
+    return new CheckOperationDao(parameters).checkOperation();
   }
 
-  async validateMaintainerPermission({ authData }) {
-    // todo
+  async getOperationCheckedValue(parameters) {
+    const operation = await new CheckOperationDao(parameters).getOperation();
+
+    if (!operation.execucao) return 1;
+    return 0;
+  }
+
+  async validateMaintainerPermission(parameters) {
+    try {
+      const usersInOrder = await this.getUserInOrderQuery(parameters);
+      
+      const masterMaintainer = this.getMasterMaintainer(usersInOrder);
+
+      if (parameters.authData.numeroCracha !== masterMaintainer.numeroCracha)
+        throw { status: STATUS_UNAUTHORIZED, message: MESSAGE_UNAUTHORIZED };
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  getMasterMaintainer(usersInOrder) {
+    if (Array.isArray(usersInOrder) && usersInOrder.lenght !== undefined)
+      return usersInOrder.find(i => i.is_master);
+    
+    return usersInOrder;
+  }
+
+  async getUserInOrderQuery(parameters) {
+    return new UserDao(parameters).getMaintainersInOrder();
   }
 
   async validateGroups({ authData }) {

@@ -30,6 +30,7 @@
         />
 
         <EquipmentsOperationsCard
+          :order-id="order.idOrdemServico"
           :is-order-assumed="isOrderAssumed"
           :master-maintainer="getOrderMasterMaintainer"
           :equipments-operations="orderEquipmentsOperations"
