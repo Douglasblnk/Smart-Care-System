@@ -124,6 +124,7 @@ module.exports = class MaintenanceOrderDao extends GenericDao {
       SELECT
         ops.id_operacoes,
         ops.sequencia_operacao,
+        eo.execucao,
         (SELECT op.descricao_operacao FROM ${TABLE_OPERACAO} as op WHERE op.idoperacao = ops.Operacao) as descricao_operacao,
         (SELECT op.material FROM ${TABLE_OPERACAO} as op WHERE op.idoperacao = ops.Operacao) as material,
         (SELECT op.quantidade_material FROM ${TABLE_OPERACAO} as op WHERE op.idoperacao = ops.Operacao) as qtd_material,
@@ -141,6 +142,7 @@ module.exports = class MaintenanceOrderDao extends GenericDao {
     const [rows] = await this._mysql.query(/* SQL */`
       SELECT
         e.idEquipamento,
+        Equipamentos.id_equipamentos,
         e.descricao,
         e.equipamento,
         e.equipamentoSuperior,

@@ -3,7 +3,7 @@ const Router = require('express');
 const router = Router();
 
 const { errorResponseTreatment } = require('../../../shared/utils/utils');
-const AssumeOrder = require('../../session/movimentations/steps/AssumeOrder');
+const AssumeOrder = require('../../session/movimentations/orderSteps/AssumeOrder');
 
 router.post('/assumir', async (req, res, next) => {
   try {

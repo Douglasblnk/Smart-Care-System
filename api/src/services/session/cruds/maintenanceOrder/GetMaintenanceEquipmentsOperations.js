@@ -44,9 +44,7 @@ module.exports = class GetMaintenanceEquipmentsOperations {
   }
 
   async getEquipmentsOperations({ mysql, order, orderType }, equipments) {
-    const operations = ([LIST_TEXT, PREVENTIVE_TEXT].includes(orderType))
-      ? await this.getOneEquipmentOperations({ mysql, order }, equipments)
-      : await this.getOperations({ mysql, order }, equipments);
+    const operations = await this.getOperations({ mysql, order }, equipments);
 
     return orderType === CORRECTIVE_TEXT
       ? this.mountEquipmentsResponse(equipments, orderType)
@@ -71,12 +69,12 @@ module.exports = class GetMaintenanceEquipmentsOperations {
     }).getOperations();
   }
 
-  mountOperationsResponse(operations, equipments, orderType) {
+  mountOperationsResponse(operations, equipments) {
     return {
-      equipments: equipments.reduce((acc, value, index) => {
+      equipments: equipments.reduce((acc, equipment, index) => {
         acc.push({
-          ...value,
-          operations: this.getOperationsArray(orderType, operations, index),
+          ...equipment,
+          operations: this.getOperationsArray(operations, equipment, index),
         });
   
         return acc;
@@ -84,12 +82,17 @@ module.exports = class GetMaintenanceEquipmentsOperations {
     };
   }
 
-  getOperationsArray(orderType, operations, index) {
-    if (orderType !== ROUTE_TEXT) return operations;
-    return !operations[index].length ? [operations[index]] : operations[index]
+  getOperationsArray(operations, equipment, index) {
+    const formatedOperations = !operations[index].length ? [operations[index]] : operations[index];
+
+    return this.operationsWithEquipmentId(formatedOperations, equipment);
   }
 
-  mountEquipmentsResponse(equipments, orderType) {
+  operationsWithEquipmentId(formatedOperations, { idEquipamento }) {
+    return formatedOperations.map(i => ({ ...i, idEquipamento }));
+  }
+
+  mountEquipmentsResponse(equipments) {
     return {
       equipments,
     };

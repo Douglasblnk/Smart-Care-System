@@ -9,19 +9,22 @@
         icon="fa-laptop"
         @collapsed="resetOpenOperations"
       >
-        <div class="d-flex flex-column" :class="!isOrderAssumed ? 'blocked' : ''">
+        <div class="d-flex flex-column">
           <div
             v-for="(equipment, index) in equipmentsOperations.equipments"
             :key="`equipment-${index}`"
           >
             <div
               class="equipment-list"
-              :class="isOperationsOpen[index] ? 'selected' : ''"
+              :class="{
+                'selected': isOperationsOpen[index],
+                'checked': isOperationsChecked(equipment)
+              }"
             >
               <div class="d-flex align-items-center col-md-1 no-padding">
-                <strong class="d-flex" :class="isOperationsChecked ? 'checked' : ''">
+                <strong class="d-flex">
                   {{ index + 1 }}
-                  <div v-if="isOperationsChecked" class="mx-2">
+                  <div v-if="isOperationsChecked(equipment)" class="mx-2">
                     <i class="fa fa-check fa-lg text-success" />
                   </div>
                 </strong>
@@ -29,11 +32,11 @@
 
               <div class="col-md-4 no-padding">
                 <div class="d-flex flex-column">
-                  <strong :class="isOperationsChecked ? 'checked' : ''">
+                  <strong>
                     {{ equipment.equipamento }}
                   </strong>
 
-                  <span :class="isOperationsChecked ? 'checked' : ''">
+                  <span>
                     {{ equipment.descricao }}
                   </span>
                 </div>
@@ -41,10 +44,10 @@
 
               <div class="col-md-4 no-padding">
                 <div class="d-flex flex-column">
-                  <strong :class="isOperationsChecked ? 'checked' : ''">
+                  <strong>
                     Equipamento superior:
                   </strong>
-                  <span :class="isOperationsChecked ? 'checked' : ''">
+                  <span>
                     {{ equipment.equipamentoSuperior }}
                   </span>
                 </div>
@@ -52,10 +55,10 @@
 
               <div class="col-md-1 no-padding">
                 <div class="d-flex flex-column">
-                  <strong :class="isOperationsChecked ? 'checked' : ''">
+                  <strong>
                     Setor:
                   </strong>
-                  <span :class="isOperationsChecked ? 'checked' : ''">
+                  <span>
                     {{ equipment.setor }}
                   </span>
                 </div>
@@ -83,6 +86,9 @@
                   v-for="(operation, index) in equipment.operations"
                   :key="`operation-${index}`"
                   class="operation-list"
+                  :class="{
+                    'checked': isOperationsChecked(equipment)
+                  }"
                   @click.prevent="checkOperation(operation, equipment)"
                 >
                   <div class="d-flex col-md-1 no-padding">
@@ -124,13 +130,16 @@
 </template>
 
 <script>
+import { getErrors } from '../../../../../utils/utils';
+
 export default {
   name: 'WebEquipmentsOperationCard',
   props: {
     equipmentsOperations: { type: Object, default: () => ({}) },
     masterMaintainer: { type: Object, default: () => ({}) },
     isOrderAssumed: { type: Boolean, default: false },
-    orderType: { type: String, default: () => '' },
+    orderType: { type: String, default: '' },
+    orderId: { type: Number, default: null },
   },
   data() {
     return {
@@ -139,20 +148,32 @@ export default {
     };
   },
   computed: {
-    isOperationsChecked() {
-      return false;
-    },
     getCustomTitle() {
       if (this.orderType === 'Corretiva')
         return 'Equipamentos';
       return 'Equipamentos e Operações';
     },
   },
+  mounted() {
+    this.validateCheckedOperations();
+  },
   methods: {
-    async checkOperation({ id_operacoes }, { idEquipamento }) {
+    isOperationsChecked(equipment) {
+      const isOperationsChecked = equipment.operations.every(operation => {
+        if (this.checkedOperation[`${equipment.idEquipamento}-${operation.id_operacoes}`])
+          return true;
+        return false;
+      });
+
+      return isOperationsChecked;
+    },
+    async checkOperation({ id_operacoes }, { idEquipamento, id_equipamentos }) {
       try {
-        console.log('poxa', this.masterMaintainer);
-        const response = await this.$http.post('operacoes/check', { operation: id_operacoes });
+        await this.$http.post('operacoes/check', {
+          operation: id_operacoes,
+          equipment: id_equipamentos,
+          order: this.orderId,
+        });
         
         this.$set(
           this.checkedOperation,
@@ -161,7 +182,32 @@ export default {
         );
       } catch (err) {
         console.log('err checkOperation :>> ', err);
+
+        this.$swal({
+          type: 'warning',
+          html: getErrors(err),
+        });
       }
+    },
+    validateCheckedOperations() {
+      const checkedOperations = this.equipmentsOperations.equipments.reduce((acc, equipment) => {
+        acc.push(equipment.operations.map(operation => {
+          return (operation.execucao && operation.idEquipamento === equipment.idEquipamento)
+            ? { ...operation, idEquipamento: equipment.idEquipamento }
+            : undefined;
+        }).filter(i => i));
+        
+        return acc;
+      }, []).flat(2);
+
+
+      checkedOperations.forEach(operation => {
+        this.$set(
+          this.checkedOperation,
+          `${operation.idEquipamento}-${operation.id_operacoes}`,
+          !this.checkedOperation[`${operation.idEquipamento}-${operation.id_operacoes}`],
+        );
+      });
     },
     toggleOperations(index) {
       if (!this.isOrderAssumed) return;
@@ -193,9 +239,12 @@ export default {
       &.selected {
         background-color: #eee;
       }
-      .checked {
-        color: rgb(60, 167, 86);
-        opacity: 0.4;
+      &.checked {
+        opacity: 0.6;
+        span, strong {
+          color: rgb(60, 167, 86);
+
+        }
       }
     }
     .operation-list {
@@ -208,13 +257,11 @@ export default {
       &:hover {
         background-color: #eee;
       }
-      .checked {
-        color: #ddd;
+      &.checked {
+        opacity: 0.6;
+        // color: #ddd;
         text-decoration: line-through;
       }
-    }
-    .blocked {
-      opacity: 0.4;
     }
   }
 }
