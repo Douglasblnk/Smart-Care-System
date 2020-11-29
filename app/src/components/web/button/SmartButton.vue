@@ -125,8 +125,9 @@ export default {
   }
   .btn-disabled {
     cursor: not-allowed;
-    background-color: #c7c7c7 !important;
-    &:hover { transform: none !important }
+    // background-color: #c7c7c7 !important;
+    opacity: 0.4;
+    &:hover { transform: none !important; opacity: 0.4 !important; }
     &:active { transform: none !important }
   }
   .btn-simple {

@@ -99,7 +99,7 @@ export default {
   .card-container {
     .card-title{
       span {
-        font-family: 'roboto';
+        font-family: 'Nunito';
         font-size: 23px;
         color: #E66E6D;
       }

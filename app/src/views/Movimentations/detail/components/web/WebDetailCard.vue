@@ -104,9 +104,10 @@
                   <span v-else>Pausar</span>
                 </div>
 
-                <div class="options">
+                <div class="options" @click="delegateOrder()">
                   <i class="fa fa-hand-point-right fa-lg mb-2" />
-                  <span>Delegar</span>
+                  <i v-if="isLoading.chooseMaintainer" class="fa fa-spinner fa-spin fa-lg m-3" />
+                  <span v-else>Delegar</span>
                 </div>
 
                 <div
@@ -191,6 +192,9 @@ export default {
     },
     excludeOrder() {
       this.$emit('update:excludeOrder');
+    },
+    delegateOrder() {
+      this.$emit('update:delegateOrder');
     },
     openIntiveTechnician() {
       this.$emit('update:openIntiveTechnician');
