@@ -121,7 +121,7 @@ export default {
     justify-content: center;
     align-items: center;
     span {
-      font-family: 'roboto';
+      font-family: 'Nunito';
       font-size: 22px;
       color: var(--duas-rodas-soft)
     }

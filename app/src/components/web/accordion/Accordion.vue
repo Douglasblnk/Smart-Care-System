@@ -77,7 +77,7 @@ export default {
   justify-content: space-between;
   p {
     margin: 0px;
-    font-family: 'roboto';
+    font-family: 'Nunito';
     color: #505050;
     letter-spacing: 0.5px;
   }
