@@ -72,7 +72,10 @@ module.exports = class DelegateMaintainer {
     if (!masterMaintainer) throw error;
     else if (Array.isArray(masterMaintainer) && !masterMaintainer.length) throw error;
 
-    if (parameters.authData.numeroCracha !== masterMaintainer.numeroCracha)
+    if (
+      parameters.authData.nivel_acesso !== ADMINISTRADOR_ID
+      && (parameters.authData.numeroCracha !== masterMaintainer.numeroCracha)
+    )
       throw 'Somente o manutentor que assumiu a ordem pode delegar!';
   }
 
