@@ -37,6 +37,24 @@ module.exports = class EquipmentsDao extends GenericDao {
   }
 
   /**
+   * getEquipmentsBySector
+   * Busca todos os Equipamentos das ordens de manutenções
+   * @return {Array} parsed array com todos os Equipamentos
+   */
+  async getEquipmentsBySector() {
+    console.log('this._sectorId :>> ', this._sectorId);
+    const [rows] = await this._mysql.query(/* SQL */`
+      SELECT 
+        * 
+      FROM ${TABLE_EQUIPAMENTO}
+      WHERE ${TABLE_EQUIPAMENTO}.excluded = ?
+      AND ${TABLE_EQUIPAMENTO}.Setor_idSetor = ?;
+    `, [0, this._sectorId]);
+
+    return this.parseSelectResponse(rows);
+  }
+
+  /**
    * registerEquipment
    * Registra um equipamento no sistema
    * @return {Array} parsed array com dados da inserção

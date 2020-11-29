@@ -5,7 +5,6 @@ const {
   TABLE_EQUIPAMENTOS,
   TABLE_ORDEM_SERVICO_HAS_EPI,
   TABLE_LOCAIS,
-  TABLE_OPERACOES,
   TABLE_EQUIPAMENTO_OPERACAO,
 } = require('../../../../shared/constants/database');
 
@@ -23,7 +22,6 @@ module.exports = class CorrectiveMaintenanceOrder extends GenericDao {
     priority,
     plannedStart,
     plannedEnd,
-    operations,
     equipment,
     epis,
     beginData,
@@ -43,7 +41,6 @@ module.exports = class CorrectiveMaintenanceOrder extends GenericDao {
     this._priority = priority;
     this._plannedStart = plannedStart;
     this._plannedEnd = plannedEnd;
-    this._operations = operations;
     this._equipment = equipment;
     this._epis = epis;
     this._beginData = beginData;
@@ -64,7 +61,6 @@ module.exports = class CorrectiveMaintenanceOrder extends GenericDao {
       await this.insertOrderHasEpis();
       await this.insertEquipments();
       await this.insertSectors();
-      await this.insertOperations();
       await this.insertEquipmentOperations();
 
       await this._mysql.commit();
@@ -103,11 +99,9 @@ module.exports = class CorrectiveMaintenanceOrder extends GenericDao {
   }
   
   async insertOrderHasEpis() {
-    const promises = this._epis.map(async epi => {
-      return await this._mysql.query(/* SQL */`
-        INSERT INTO ${TABLE_ORDEM_SERVICO_HAS_EPI} SET ?;
-      `, [{ ...epi, ordemServico_idOrdemServico: this._insertedOrderId }]);
-    });
+    const promises = this._epis.map(async epi => this._mysql.query(/* SQL */`
+      INSERT INTO ${TABLE_ORDEM_SERVICO_HAS_EPI} SET ?;
+    `, [{ ...epi, ordemServico_idOrdemServico: this._insertedOrderId }]));
 
     await Promise.all(promises);
   }
@@ -118,7 +112,7 @@ module.exports = class CorrectiveMaintenanceOrder extends GenericDao {
       Ordem_servico: this._insertedOrderId,
     };
 
-    const [row] =await this._mysql.query(/* SQL */`
+    const [row] = await this._mysql.query(/* SQL */`
       INSERT INTO ${TABLE_EQUIPAMENTOS} SET ?;
     `, [values]);
 
@@ -138,30 +132,10 @@ module.exports = class CorrectiveMaintenanceOrder extends GenericDao {
     this._insertedSectorId = this.parseInsertResponse(row).insertId;
   }
 
-  async insertOperations() {
-    const promises = this._operations.map(async operation => {
-      return await this._mysql.query(/* SQL */`
-        INSERT INTO ${TABLE_OPERACOES} SET ?;
-      `, [operation]);
-    });
-
-    const rows = await Promise.all(promises);
-  
-    this._insertedOperationsId = rows.map(([row]) => this.parseInsertResponse(row).insertId);
-  }
-
   async insertEquipmentOperations() {
-    const promises = this._insertedOperationsId.map(async operationsId => {
-      return await this._mysql.query(/* SQL */`
-        INSERT INTO ${TABLE_EQUIPAMENTO_OPERACAO} SET ?;
-      `, [
-        {
-          Equipamento_FK: this._insertedEquipmentId,
-          Operacao_FK: operationsId,
-          Locais_FK: this._insertedSectorId,
-        },
-      ]);
-    });
+    const promises = this._insertedOperationsId.map(async operationsId => this._mysql.query(/* SQL */`
+      INSERT INTO ${TABLE_EQUIPAMENTO_OPERACAO} SET ?;
+    `, [{ Equipamento_FK: this._insertedEquipmentId, Operacao_FK: operationsId, Locais_FK: this._insertedSectorId }]));
 
     await Promise.all(promises);
   }

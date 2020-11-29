@@ -15,10 +15,10 @@
         key="orderDetail"
         class="detail-content"
       >
-        <detail-card-wrapper
+        <DetailCardWrapper
           :order="order"
           :is-order-assumed="isOrderAssumed"
-          :order-master-maintainer="getOrderMasterMaintainer"
+          :order-master-maintainer="getOrderMasterMaintainer.nome"
           :order-invited-maintainers="getOrderInvitedMaintainers"
           :is-loading="isLoading"
           @update:orderMovimentations="orderMovimentations"
@@ -29,11 +29,17 @@
           @update:toggleShowEpiModal="toggleShowEpiModal"
         />
 
-        <web-operation-list-card />
+        <EquipmentsOperationsCard
+          :order-id="order.idOrdemServico"
+          :is-order-assumed="isOrderAssumed"
+          :master-maintainer="getOrderMasterMaintainer"
+          :equipments-operations="orderEquipmentsOperations"
+          :order-type="order.tipo_manutencao"
+        />
       </div>
 
       <div v-if="state.view === 'Verification' && !isLoading.order" key="Verification">
-        <order-verification
+        <OrderVerification
           :order="order"
           @state-list="changeViewToDetail"
           @change-status="changeOrderVerificationStatus"
@@ -41,7 +47,7 @@
       </div>
 
       <div v-if="state.view === 'Note' && !isLoading.order" key="Note">
-        <order-note
+        <OrderNote
           :order="order"
           @state-list="changeViewToDetail"
         />
@@ -50,7 +56,7 @@
 
     <!-- Modal de Verificação de EPI -->
     <!-- // todo validar abrir modal no iniciar ordem -->
-    <epi-verification-modal
+    <EpiVerificationModal
       v-if="showEpiModal"
       v-model="selectedEpis"
       :epi-list="epiList"
@@ -63,7 +69,7 @@
     />
 
     <!-- modalConvida tecnico -->
-    <invite-maintainer
+    <InviteMaintainer
       v-if="showInviteMaintainer"
       :available-maintainers="availableMaintainers"
       :maintainers-in-order="maintainersInOrder"
@@ -85,7 +91,7 @@ export default {
     EpiVerificationModal: () => import('./components/modal/EpiVerificationModal.vue'),
     OrderNote: () => import('./components/Notes.vue'),
     InviteMaintainer: () => import('./components/modal/InviteMaintainerModal.vue'),
-    WebOperationListCard: () => import('./components/OperationListCardWrapper'),
+    EquipmentsOperationsCard: () => import('./components/EquipmentsOperationsCardWrapper.vue'),
     DetailCardWrapper,
   },
 
@@ -98,6 +104,8 @@ export default {
       state: {
         view: 'detail',
       },
+      isOperationsChecked: false,
+      orderEquipmentsOperations: {},
       valuesInput: {
         idOrdemServico: this.order.idOrdemServico,
         idUsuario: '',
@@ -123,7 +131,7 @@ export default {
     getOrderMasterMaintainer() {
       const maintainer = this.maintainersInOrder.find(maintainer => maintainer.is_master);
 
-      return maintainer ? maintainer.nome : '';
+      return maintainer ? maintainer : {};
     },
     getOrderInvitedMaintainers() {
       const maintainers = this.maintainersInOrder.filter(maintainer => !maintainer.is_master);
@@ -143,6 +151,7 @@ export default {
     async getOrdersDependencies() {
       try {
         await this.getMaintainersInOrder();
+        await this.getEquipmentsAndOperations();
       } catch (err) {
         console.log('getOrdersDependencies :>>', err.response || err);
 
@@ -166,6 +175,22 @@ export default {
       if (response.length === undefined)
         this.maintainersInOrder.push(response);
       else this.maintainersInOrder = [...response];
+    },
+    async getEquipmentsAndOperations() {
+      const response = await this.$http.get('ordem-manutencao/equipments-operations', {
+        headers: {
+          order: this.order.idOrdemServico,
+          order_type: this.order.tipo_manutencao,
+        },
+      });
+
+      this.orderEquipmentsOperations = { ...response };
+    },
+    toggleOperationsChecked() {
+      this.isOperationsChecked = true;
+    },
+    toggleOperationsUnchecked() {
+      this.isOperationsChecked = false;
     },
     resetModal() {
       this.modalHasError = false;
@@ -243,7 +268,7 @@ export default {
             confirmButtonColor: '#F34336',
           }),
 
-          this.getOrderMaintainer();
+          this.getMaintainersInOrder();
 
           this.$http.setActivity(this.$activities.INVITE_USER_TO_ORDER, JSON.stringify({ invitedUser: row.nome }));
         } else {
@@ -272,7 +297,7 @@ export default {
         }),
 
         this.maintainersInOrder = [],
-        this.getOrderMaintainer(),
+        this.getMaintainersInOrder(),
 
         this.$http.setActivity(this.$activities.REMOVE_INVITED_USER, JSON.stringify({ removedInvitedUser: row.idUsuario }));
       } catch (err) {
@@ -302,27 +327,28 @@ export default {
       if (this.isLoading.assume || this.isOrderAssumed) return;
       try {
         this.$set(this.isLoading, 'assume', true);
-
-        const { result } = await this.$http.post('initiate/assume', {
-          ...this.$store.state.user,
+      
+        await this.$http.post('movimentacao-etapa/assumir', {
           order: this.order.idOrdemServico,
         });
 
         this.$swal({
           type: 'success',
-          title: result,
+          text: 'Ordem assumida com sucesso!',
         });
 
-        await this.getOrderMaintainer();
         this.$set(this.order, 'status', 'Assumida');
+        await this.getMaintainersInOrder();
       } catch (err) {
         this.$set(this.isLoading, 'assume', false);
 
         return this.$swal({
-          type: 'success',
-          title: 'Ordem iniciada com sucesso!',
+          type: 'warning',
+          html: getErrors(err),
           confirmButtonColor: '#f34336',
         });
+      } finally {
+        this.$set(this.isLoading, 'assume', false);
       }
     },
     async initiateOrder() {
@@ -414,7 +440,7 @@ export default {
     },
     async validateActualManutentor() {
       try {
-        await this.getOrderMaintainer();
+        await this.getMaintainersInOrder();
 
         const user = this.$store.state.user;
         return this.maintainersInOrder.find(i => i.numeroCracha === user.cracha);
@@ -572,7 +598,6 @@ export default {
 v-link {
   color: #555 !important
 }
-// @media (min-width: 576px)
 .filter-mecanic {
   margin-right: 15px !important;
   margin-left: -43px !important;
@@ -585,21 +610,10 @@ v-link {
   min-height: 55px !important;
 }
 .modal-th-td-style {
-  // color: purple;
   display: flex;
   justify-content: flex-end;
-
-  // align-items: center !important;
-  
 }
-// .table-sm th {
-//   text-align: center;
-// }
-// .table thead th  {
-//   text-align: center;
-// }
 .table th {
-   // margin-right: 0.5rem;
    padding-right: 2rem !important;
 }
 

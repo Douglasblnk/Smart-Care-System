@@ -6,6 +6,11 @@
   --button-gray: #ddd;
 }
 
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 body {
   background-color: #f1f1f1 !important;
   box-sizing: border-box;
@@ -25,6 +30,16 @@ span, p, strong {
   font-family: "roboto-thin";
   src: url("./assets/fonts/Roboto-Light.ttf");
 }
+
+.wizard-btn {
+  border-radius: 100px !important;
+  transition: .2s ease;
+  min-width: auto !important;
+  padding: 6px 20px !important;
+  &:hover { transform: scale(1.1) }
+  &:active { transform: scale(1) }
+}
+
 
 .swal2-styled.swal2-confirm {
   background-color: #F34336 !important;

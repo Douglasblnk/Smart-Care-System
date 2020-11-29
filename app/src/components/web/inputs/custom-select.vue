@@ -4,7 +4,7 @@
       <label class="text-muted">
         {{ label }}
       </label>
-      <select :id="label" v-model="model" class="custom-input p-2 rounded" required>
+      <select :id="label" v-model="model" class="custom-input p-2 rounded" required :disabled="disabled">
         <option value="" selected disabled>Selecione uma opção</option>
         <option
           v-for="(option, index) in options"
@@ -24,6 +24,7 @@ export default {
     label: { type: String, default: '' },
     options: { type: Array, default: () => [] },
     value: { type: String, default: '' },
+    disabled: { type: Boolean, default: false },
   },
 
   data() {

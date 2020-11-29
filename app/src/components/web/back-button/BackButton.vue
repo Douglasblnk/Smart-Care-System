@@ -36,6 +36,7 @@ export default {
     color: var(--duas-rodas-soft);
     font-size: 18px;
     padding: 0 10px;
+    margin-bottom: 20px;
     border-radius: 5px;
     user-select: none;
     cursor: pointer;

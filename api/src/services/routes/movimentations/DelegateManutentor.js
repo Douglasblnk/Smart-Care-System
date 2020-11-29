@@ -1,8 +1,8 @@
 const Router = require('express');
-const errorResponseTreatment = require('../../../shared/utils/utils');
 
 const router = Router();
 
+const { errorResponseTreatment } = require('../../../shared/utils/utils');
 const RegisterUpdateDelegateManutentor = require('../../session/movimentations/delegate/RegisterUpdateDelegateManutentor');
 
 router.post('/', async (req, res, next) => {
@@ -26,5 +26,5 @@ router.put('/:id', async (req, res, next) => {
     res.status(responseError.status).send(responseError);
   }
 });
-  
+
 module.exports = router;

@@ -9,7 +9,7 @@
     <div ref="customCard" class="custom-card" :style="`width: ${getCustomWidth} !important`">
       <div
         v-if="advancedCard"
-        class="d-flex justify-content-between align-items-center mb-4 cursor-pointer"
+        class="d-flex justify-content-between align-items-center cursor-pointer"
         @click="collapseCard()"
       >
         <div class="d-flex">
@@ -27,7 +27,11 @@
       </div>
 
       <transition name="slide-down" mode="out-in">
-        <div v-if="collapsed">
+        <div
+          v-if="collapsed"
+          :class="advancedCard ? 'mt-4' : ''"
+          :style="advancedCard ? 'overflow: auto' : ''"
+        >
           <slot />
         </div>
       </transition>
@@ -60,6 +64,7 @@ export default {
   },
   mounted() {
     if (!this.advancedCard) this.$refs.customCard.style.maxHeight = '100%';
+    if (this.advancedCard) this.$refs.customCard.style.minHeight = '62px';
     if (!this.open) this.$refs.customCard.style.maxHeight = '62px';
   },
   methods: {
@@ -69,9 +74,10 @@ export default {
         : this.$refs.customCard.style.maxHeight = '900px';
       
       this.collapsed = !this.collapsed;
+      this.emit();
     },
-    toggleCollapsedCard() {
-      if (!this.collapsed) return this.collapseCard();
+    emit() {
+      this.$emit('collapsed', this.collapsed);
     },
   },
 };
@@ -81,14 +87,19 @@ export default {
 .root-card-component {
   width: 70%;
   .custom-card {
+    display: flex;
+    flex-direction: column;
     background: #fff;
-    min-height: 62px;
     max-height: 900px;
     padding: 15px 20px;
     border-radius: 10px;
     box-shadow: 1px 2px 4px 0px #d4d4d4;
-    transition: .3s ease;
+    transition: .4s ease;
   }
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: #f1f1f1 }
+  ::-webkit-scrollbar-thumb { background: rgb(172, 172, 172); border-radius: 100px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgb(116, 116, 116) }
 }
 @media screen and (max-width: 1366px) {
   .root-card-component {

@@ -7,7 +7,7 @@
     </div>
     <div class="verification-content p-3 d-flex">
       <div class="verification-title">
-        <h3>Verificação </h3>
+        <h3>Verificar</h3>
       </div>
       <div class="verification-separetor">
       </div>

@@ -24,7 +24,7 @@ export default class Http {
     }
   }
 
-  async post(endpoint, data) {
+  async post(endpoint, data, { headers = {} } = {}) {
     try {
       const response = await Axios({
         method: 'post',
@@ -32,6 +32,7 @@ export default class Http {
         data,
         headers: {
           'authorization': `Bearer ${getToken()}`,
+          ...headers,
         },
       });
 
