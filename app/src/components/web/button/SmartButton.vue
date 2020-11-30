@@ -7,7 +7,6 @@
         'primary': primary,
         'btn-simple': simple && !mobile,
         'btn-small': small,
-        'btn-circle': circle && !mobile,
         'btn-transparent': transparent && !mobile,
         'mobile-button': mobile,
         'no-effect': noEffect,
@@ -66,10 +65,10 @@ export default {
   }
   .btn-default {
     display: flex;
-    padding: 10px 20px;
+    padding: 7px 20px;
     background-color: var(--shadow-gray);
     border: none;
-    border-radius: 7px;
+    border-radius: 100px;
     transition: .1s;
     color: white;
     span, p, small, strong {
@@ -114,14 +113,6 @@ export default {
   .primary {
     background-color: var(--duas-rodas-soft) !important;
     span, small, p, h3 { color: white !important ;}
-  }
-  .btn-circle {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-width: 40px !important;
-    min-height: 40px !important;
-    border-radius: 100px;
   }
   .btn-disabled {
     cursor: not-allowed;

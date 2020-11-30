@@ -1,6 +1,6 @@
 <template>
   <div class="root-card-option-component">
-    <div class="card-option shadow cursor-pointer" :class="size ? 'small' : ''" @click="$router.push(route)">
+    <div class="card-option shadow-sm cursor-pointer" :class="size ? 'small' : ''" @click="$router.push(route)">
       <div class="card-wrapper">
         <div class="icon-card">
           <i :class="icon" class="fa-2x"></i>
@@ -33,11 +33,12 @@ export default {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		border-radius: 6px;
+		border-radius: 25px;
 		margin: 30px;
 		transition: 0.2s;
 		&:hover {
 			transform: scale(1.09);
+			box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 		}
 		.card-wrapper {
 			display: flex;

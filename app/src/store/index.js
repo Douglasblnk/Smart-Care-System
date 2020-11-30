@@ -10,6 +10,7 @@ export default new Vuex.Store({
     isMobile: false,
     mainIcon: '',
     showConsultFilter: false,
+    isSidebarHided: false,
   },
 
   mutations: {
@@ -27,6 +28,9 @@ export default new Vuex.Store({
     },
     setShowConsultFilter(state, value) {
       state.showConsultFilter = value;
+    },
+    setIsSidebarHided(state, value) {
+      state.isSidebarHided = value;
     },
   },
 
@@ -46,11 +50,17 @@ export default new Vuex.Store({
     getShowConsultFilter(state) {
       return state.showConsultFilter;
     },
+    isSidebarHided(state) {
+      return state.isSidebarHided;
+    },
   },
 
   actions: {
     setIsMobile({ commit }, value) {
       commit('setIsMobile', value);
+    },
+    hideSidebar({ commit }, value) {
+      commit('setIsSidebarHided', value);
     },
   },
 });
