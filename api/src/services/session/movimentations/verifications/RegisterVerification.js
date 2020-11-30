@@ -91,12 +91,12 @@ module.exports = class RegisterVerification {
   async validateCheckSequence(parameters) {
     try {
       if (parameters.authData.nivel_acesso === SOLICITANTE_ID) {
-        const verificationsData = await this.getCheckSequence(parameters, 2);
+        const verificationsData = await this.getCheckSequence(parameters, MANUTENTOR_ID);
 
         if (verificationsData.length < 1 && verificationsData.length !== undefined)
           throw 'A verificação do Manutentor deve ser realizada anteriormente!';
       } else if (parameters.authData.nivel_acesso === ADMINISTRADOR_ID) {
-        const verificationsData = await this.getCheckSequence(parameters, 3);
+        const verificationsData = await this.getCheckSequence(parameters, SOLICITANTE_ID);
 
         if (verificationsData.length < 1 && verificationsData.length !== undefined)
           throw 'A verificação do Solicitante deve ser realizada anteriormente!';
