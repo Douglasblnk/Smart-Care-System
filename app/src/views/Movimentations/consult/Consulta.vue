@@ -10,7 +10,7 @@
     
     <transition name="slide-side" mode="out-in">
       <div v-if="state.view === 'list'" key="list" :class="isMobile ? '' : 'p-3'">
-        <consult-filters
+        <ConsultFilters
           :filters="filters"
           :option="option"
           :show-options="showOptions"
@@ -20,14 +20,14 @@
           @update:closeFilterOptions="closeFilterOptions"
         />
 
-        <filter-settled
+        <FilterSettled
           v-if="maintenainceOrders.length > 0"
           :filters="filters"
           :is-filter-settled="isFilterSettled"
           @update:clearFilters="clearFilters"
         />
 
-        <orders-table
+        <OrdersTable
           :maintenaince-orders="maintenainceOrders"
           :is-loading="isLoading"
           :get-filtered-orders="getFilteredOrders"
@@ -38,7 +38,7 @@
       </div>
 
       <div v-if="state.view === 'detail'" key="detail">
-        <detalhamento
+        <Detalhamento
           :order="detail.order"
           @state-list="closeDetail"
         />
