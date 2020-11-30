@@ -58,7 +58,7 @@
     <!-- Modal de Verificação de EPI -->
     <!-- // todo validar abrir modal no iniciar ordem -->
     <EpiVerificationModal
-      v-if="showEpiModal"
+      v-if="showEpiVerificationModal"
       v-model="selectedEpis"
       :epi-list="epiList"
       :modal-has-error="modalHasError"
@@ -86,6 +86,12 @@
       @update:closeModal="closeModal"
       @update:chooseMaintainer="chooseMaintainersToDelegate"
     />
+
+    <ShowEpisModal
+      v-if="showEpisModal"
+      :epi-list="epiList"
+      @update:closeModal="closeModal"
+    />
   </div>
 </template>
 
@@ -99,6 +105,7 @@ export default {
   components: {
     OrderVerification: () => import('./components/Verification.vue'),
     EpiVerificationModal: () => import('./components/modal/EpiVerificationModal.vue'),
+    ShowEpisModal: () => import('./components/modal/ShowEpisModal.vue'),
     OrderNote: () => import('./components/Notes.vue'),
     InviteMaintainer: () => import('./components/modal/InviteMaintainerModal.vue'),
     EquipmentsOperationsCard: () => import('./components/EquipmentsOperationsCardWrapper.vue'),
@@ -123,7 +130,8 @@ export default {
         user: this.$store.state.user,
         // excluded: '',
       },
-      showEpiModal: false,
+      showEpiVerificationModal: false,
+      showEpisModal: false,
       showInviteMaintainer: false,
       showChooseMaintainers: false,
       availableMaintainers: [],
@@ -330,7 +338,7 @@ export default {
 
         this.showChooseMaintainers = true;
       } catch (err) {
-        console.log('err openChooseMaintainerModal :>> ', err);
+        console.log('err openChooseMaintainerModal :>> ', err.response || err);
 
         return this.$swal({
           type: 'warning',
@@ -355,7 +363,7 @@ export default {
 
         this.$emit('state-list');
       } catch (err) {
-        console.log('err chooseMaintainersToDelegate :>> ', err);
+        console.log('err chooseMaintainersToDelegate :>> ', err.response || err);
 
         this.closeModal();
 
@@ -417,9 +425,9 @@ export default {
         const manutentor = await this.validateActualManutentor();
 
 
-        this.toggleShowEpiModal();
+        this.toggleShowEpiVerificationModal();
       } catch (err) {
-        console.log('initiateOrder :>> ', err);
+        console.log('initiateOrder :>> ', err.response || err);
         this.$set(this.isLoading, 'init', false);
 
         this.$swal({
@@ -458,6 +466,7 @@ export default {
     },
     async confirmEpi() {
       try {
+        console.log('poxa');
         const listEpiCheck = await this.listEpiCheck();
 
         if (listEpiCheck.length === this.epiList.length) {
@@ -511,16 +520,22 @@ export default {
       // if (this.inputValues.epis.length > 0)
       //   this.selectedEpis = [...this.inputValues.epis];
     },
+    async toggleShowEpiVerificationModal() {
+      await this.getEpis();
+
+      this.showEpiVerificationModal = true;
+    },
     async toggleShowEpiModal() {
       await this.getEpis();
 
-      this.showEpiModal = true;
+      this.showEpisModal = true;
     },
     closeModal() {
       setTimeout(() => {
-        this.showEpiModal = false;
+        this.showEpiVerificationModal = false;
         this.showInviteMaintainer = false;
         this.showChooseMaintainers = false;
+        this.showEpisModal = false;
       }, 120);
     },
     withoutEPIs() {

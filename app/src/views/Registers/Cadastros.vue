@@ -105,7 +105,7 @@ export default {
       }
     }
     .card-wrapper {
-      width: 80%;
+      width: 90%;
     }
 
     @media screen and (max-width: 1660px) {

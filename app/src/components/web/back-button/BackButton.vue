@@ -37,7 +37,7 @@ export default {
     font-size: 18px;
     padding: 0 10px;
     margin-bottom: 20px;
-    border-radius: 5px;
+    border-radius: 50px;
     user-select: none;
     cursor: pointer;
     i { margin-right: 10px }
