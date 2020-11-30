@@ -31,12 +31,6 @@ module.exports = class VerificationDao extends GenericDao {
    * @return {Array} parsed array com o resultado da inserção
    */
   async registerVerification() {
-    console.log('this._solutionDescription: ', this._solutionDescription);
-    console.log('this._resolved: ', this._resolved);
-    console.log('this._dateVerification: ', this._dateVerification);
-    console.log('this._order: ', this._order);
-    console.log('this._typeVerification: ', this._typeVerification);
-
     const values = {
       solucaoRealizada: this._solutionDescription,
       problemaResolvido: this._resolved,

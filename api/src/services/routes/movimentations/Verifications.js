@@ -1,5 +1,5 @@
 const Router = require('express');
-const errorResponseTreatment = require('../../../shared/utils/utils');
+const { errorResponseTreatment } = require('../../../shared/utils/utils');
 
 // const Router = require('express');
 const router = Router();
