@@ -7,10 +7,10 @@ const { MANUTENTOR_ID } = require('../../../../shared/constants/accessLevel');
 const { STATUS_UNAUTHORIZED, MESSAGE_UNAUTHORIZED } = require('../../../../shared/constants/HTTPResponse');
 
 const {
-  CORRECTIVE,
-  PREVENTIVE,
-  ROUTE,
-  LIST,
+  CORRECTIVE_ID,
+  PREVENTIVE_ID,
+  ROUTE_ID,
+  LIST_ID,
 } = require('../../../../shared/constants/orderType');
 
 module.exports = class RegisterMaintenanceOrder {
@@ -65,7 +65,7 @@ module.exports = class RegisterMaintenanceOrder {
       ...(!title ? { title: 'Titulo não informado' } : ''),
       ...(!summary ? { summary: 'Resumo não informado' } : ''),
       ...(!typeMaintenance ? { typeMaintenance: 'Tipo de ordem não informado' } : ''),
-      ...((typeMaintenance === CORRECTIVE && !description) ? { description: 'Descrição não informada' } : ''),
+      ...((typeMaintenance === CORRECTIVE_ID && !description) ? { description: 'Descrição não informada' } : ''),
       ...(!stats ? { stats: 'Status não informado' } : ''),
       ...(!requireStop ? { requireStop: 'Requer parada não informada' } : ''),
       ...(!requester ? { requester: 'Solicitante não informado' } : ''),
@@ -77,27 +77,27 @@ module.exports = class RegisterMaintenanceOrder {
       ...(!mysql ? { mysql: 'Conexão não estabelecida' } : ''),
       ...(!authData ? { authData: 'Dados de autenticação não encontrados' } : ''),
       ...(
-        ((typeMaintenance === PREVENTIVE || typeMaintenance === LIST) && !operations)
+        ((typeMaintenance === PREVENTIVE_ID || typeMaintenance === LIST_ID) && !operations)
           ? { operations: 'Operação não informada' }
           : ''
       ),
       ...(
-        (typeMaintenance !== ROUTE && typeMaintenance !== LIST && !sector)
+        (typeMaintenance !== ROUTE_ID && typeMaintenance !== LIST_ID && !sector)
           ? { sector: 'Local de instalação não informado' }
           : ''
       ),
       ...(
-        (typeMaintenance !== ROUTE && typeMaintenance !== LIST && !equipment)
+        (typeMaintenance !== ROUTE_ID && typeMaintenance !== LIST_ID && !equipment)
           ? { equipment: 'Equipamento não informado' }
           : ''
       ),
       ...(
-        (typeMaintenance === ROUTE && !equipmentsWithOperations)
+        (typeMaintenance === ROUTE_ID && !equipmentsWithOperations)
           ? { equipmentOperations: 'Equipamentos e operações não informadas' }
           : ''
       ),
       ...(
-        (typeMaintenance === LIST && !equipmentsSectors)
+        (typeMaintenance === LIST_ID && !equipmentsSectors)
           ? { equipmentsSectors: 'Equipamento e setor não informado' }
           : ''
       ),
@@ -114,7 +114,7 @@ module.exports = class RegisterMaintenanceOrder {
       await this.validateGroups(parameters);
 
       const response = await this.registerMaintenanceOrder(parameters);
-      
+      console.log('response :>> ', response);
       if (response.status !== 200 && response.msg !== 'OK')
         throw 'Nenhum registro foi inserido';
 
@@ -127,16 +127,17 @@ module.exports = class RegisterMaintenanceOrder {
   }
   
   async registerMaintenanceOrder(parameters) {
-    if (parameters.typeMaintenance === CORRECTIVE)
+    console.log('parameters.typeMaintenance :>> ', parameters.typeMaintenance);
+    if (parameters.typeMaintenance === CORRECTIVE_ID)
       return new CorrectiveOrderDao(parameters).registerOrder();
       
-    if (parameters.typeMaintenance === PREVENTIVE)
+    if (parameters.typeMaintenance === PREVENTIVE_ID)
       return new PreventiveOrderDao(parameters).registerOrder();
 
-    if (parameters.typeMaintenance === ROUTE)
+    if (parameters.typeMaintenance === ROUTE_ID)
       return new RouteOrderDao(parameters).registerOrder();
 
-    if (parameters.typeMaintenance === LIST)
+    if (parameters.typeMaintenance === LIST_ID)
       return new ListOrderDao(parameters).registerOrder();
   }
 
