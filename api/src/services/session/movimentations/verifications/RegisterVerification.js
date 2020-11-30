@@ -1,6 +1,6 @@
 const { get } = require('lodash');
 const VerificationDao = require('../../../dao/movimentations/VerificationDao');
-const VerificationValidate = require('../../../dao/movimentations/validate/VerificationValidate');
+const VerificationValidate = require('../../../dao/movimentations/validations/VerificationValidate');
 
 const { MANUTENTOR_ID, SOLICITANTE_ID, ADMINISTRADOR_ID } = require('../../../../shared/constants/accessLevel');
 
@@ -80,7 +80,7 @@ module.exports = class RegisterVerification {
   async validateExistVerification(parameters) {
     try {
       const verificationsData = await this.getVerificationType(parameters);
-      
+
       if (verificationsData.length > 0 || verificationsData.length === undefined)
         throw 'Esta verificação já foi realizada!';
     } catch (err) {
