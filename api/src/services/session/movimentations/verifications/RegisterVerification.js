@@ -2,10 +2,7 @@ const { get } = require('lodash');
 const VerificationDao = require('../../../dao/movimentations/VerificationDao');
 const VerificationValidate = require('../../../dao/movimentations/validate/VerificationValidate');
 
-const { ADMINISTRADOR_ID } = require('../../../../shared/constants/accessLevel');
-const { MANUTENTOR_ID } = require('../../../../shared/constants/accessLevel');
-const { STATUS_UNAUTHORIZED } = require('../../../../shared/constants/HTTPResponse');
-const { MESSAGE_UNAUTHORIZED } = require('../../../../shared/constants/HTTPResponse');
+const { MANUTENTOR_ID, SOLICITANTE_ID, ADMINISTRADOR_ID } = require('../../../../shared/constants/accessLevel');
 
 module.exports = class RegisterVerification {
   constructor() {
@@ -52,9 +49,12 @@ module.exports = class RegisterVerification {
       const errors = this.checkParameters(parameters);
       if (Object.values(errors).length > 0) throw errors;
       
+      await this.validateExistVerification(parameters);
+      await this.validateCheckSequence(parameters);
+
       if (parameters.authData.nivel_acesso === MANUTENTOR_ID) {
         const maintainerMaster = await this.getMaintainerMaster(parameters);
-        console.log('maintainerMaster.length: ', maintainerMaster.length);
+
         if (maintainerMaster.length < 1)
           throw 'Este manutentor não é responsável pela ordem!';
       }
@@ -77,17 +77,48 @@ module.exports = class RegisterVerification {
     this._queryResult = await new VerificationDao(parameters).registerVerification();
   }
 
-  async validateGroups(parameters) {
-    // if (authData.nivel_acesso !== ADMINISTRADOR_ID)
-    //   throw { status: STATUS_UNAUTHORIZED, message: MESSAGE_UNAUTHORIZED };
+  async validateExistVerification(parameters) {
+    try {
+      const verificationsData = await this.getVerificationType(parameters);
+      
+      if (verificationsData.length > 0 || verificationsData.length === undefined)
+        throw 'Esta verificação já foi realizada!';
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async validateCheckSequence(parameters) {
+    try {
+      if (parameters.authData.nivel_acesso === SOLICITANTE_ID) {
+        const verificationsData = await this.getCheckSequence(parameters, 2);
+
+        if (verificationsData.length < 1 && verificationsData.length !== undefined)
+          throw 'A verificação do Manutentor deve ser realizada anteriormente!';
+      } else if (parameters.authData.nivel_acesso === ADMINISTRADOR_ID) {
+        const verificationsData = await this.getCheckSequence(parameters, 3);
+
+        if (verificationsData.length < 1 && verificationsData.length !== undefined)
+          throw 'A verificação do Solicitante deve ser realizada anteriormente!';
+      }
+    } catch (err) {
+      throw err;
+    }
   }
 
   async getMaintainerMaster(parameters) {
     try {
-      console.log('VerificationValidate: ', new VerificationValidate(parameters).validateVerification());
       return new VerificationValidate(parameters).validateVerification();
     } catch (err) {
       throw err;
     }
+  }
+
+  async getVerificationType(parameters) {
+    return new VerificationValidate(parameters).validateRegisterExist();
+  }
+  
+  async getCheckSequence(parameters, typeVerification) {
+    return new VerificationValidate(parameters).validateCheckPreviousSequence(typeVerification);
   }
 };
