@@ -23,6 +23,7 @@
           :is-loading="isLoading"
           @update:orderMovimentations="orderMovimentations"
           @update:excludeOrder="excludeOrder"
+          @update:delegateOrder="openChooseMaintainerModal"
           @update:openIntiveTechnician="openIntiveTechnician"
           @update:openOrderNote="openOrderNote"
           @update:openOrderVerification="openOrderVerification"
@@ -76,6 +77,15 @@
       @update:resetModal="resetModal"
       @update:addMaintainer="addMaintainer"
     />
+
+    <ChooseMaintainerToDelegateModal
+      v-if="showChooseMaintainers"
+      :available-maintainers="availableMaintainers"
+      :maintainers-in-order="maintainersInOrder"
+      @update:resetModal="resetModal"
+      @update:closeModal="closeModal"
+      @update:chooseMaintainer="chooseMaintainersToDelegate"
+    />
   </div>
 </template>
 
@@ -92,6 +102,7 @@ export default {
     OrderNote: () => import('./components/Notes.vue'),
     InviteMaintainer: () => import('./components/modal/InviteMaintainerModal.vue'),
     EquipmentsOperationsCard: () => import('./components/EquipmentsOperationsCardWrapper.vue'),
+    ChooseMaintainerToDelegateModal: () => import('./components/modal/ChooseMaintainerToDelegateModal.vue'),
     DetailCardWrapper,
   },
 
@@ -114,6 +125,7 @@ export default {
       },
       showEpiModal: false,
       showInviteMaintainer: false,
+      showChooseMaintainers: false,
       availableMaintainers: [],
       maintainersInOrder: [],
       epiList: [],
@@ -236,7 +248,7 @@ export default {
         const response = await this.$http.get('users', {
           headers: {
             type: 'maintainer',
-            ordeR_id: this.valuesInput.idOrdemServico,
+            order_id: this.valuesInput.idOrdemServico,
           },
         });
 
@@ -301,6 +313,52 @@ export default {
 
         this.$http.setActivity(this.$activities.REMOVE_INVITED_USER, JSON.stringify({ removedInvitedUser: row.idUsuario }));
       } catch (err) {
+        return this.$swal({
+          type: 'warning',
+          html: getErrors(err),
+          confirmButtonColor: '#f34336',
+        });
+      }
+    },
+    async openChooseMaintainerModal() {
+      try {
+        if (this.isLoading.chooseMaintainer) return;
+
+        this.$set(this.isLoading, 'chooseMaintainer', true);
+        
+        await this.getAvailableMaintainers();
+
+        this.showChooseMaintainers = true;
+      } catch (err) {
+        console.log('err openChooseMaintainerModal :>> ', err);
+
+        return this.$swal({
+          type: 'warning',
+          html: getErrors(err),
+          confirmButtonColor: '#f34336',
+        });
+      } finally {
+        this.$set(this.isLoading, 'chooseMaintainer', false);
+      }
+    },
+    async chooseMaintainersToDelegate({ nome, numeroCracha }) {
+      try {
+        await this.$http.post('delegar-manutentor', { nome, numeroCracha, orderId: this.order.idOrdemServico }),
+
+        this.closeModal();
+
+        await this.$swal({
+          type: 'success',
+          title: 'Ordem delegada com sucesso',
+          html: `<p class="smart">O manutentor <strong>${nome}</strong> agora está assumindo esta a ordem</p>`,
+        });
+
+        this.$emit('state-list');
+      } catch (err) {
+        console.log('err chooseMaintainersToDelegate :>> ', err);
+
+        this.closeModal();
+
         return this.$swal({
           type: 'warning',
           html: getErrors(err),
@@ -462,6 +520,7 @@ export default {
       setTimeout(() => {
         this.showEpiModal = false;
         this.showInviteMaintainer = false;
+        this.showChooseMaintainers = false;
       }, 120);
     },
     withoutEPIs() {

@@ -1,14 +1,30 @@
+@font-face {
+  font-family: "Nunito";
+  src: url("./assets/fonts/Nunito-Regular.ttf") format("truetype");
+  font-weight: normal;
+}
+
 :root {
   --duas-rodas: #F34336;
   --duas-rodas-soft: #E66E6D;
   --shadow-gray: rgb(160, 160, 160);
   --gray: rgb(92, 92, 92);
+  --gray-0: #ddd;
+  --gray-10: #ccc;
+  --gray-20: #aaa;
+  --gray-40: #888;
+  --gray-60: #555;
+  --gray-80: #333;
+  --gray-90: #222;
   --button-gray: #ddd;
 }
 
 * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  span, p, strong, small, h1, h2, h3, h4, h5 {
+    font-family: 'Nunito';
+  }
 }
 
 body {
@@ -18,17 +34,6 @@ body {
 
 span, p, strong {
   color: var(--gray)
-}
-
-@font-face {
-  font-family: "roboto";
-  src: url("./assets/fonts/Roboto-Light.ttf");
-  src: url("./assets/fonts/Roboto-Regular.ttf");
-}
-
-@font-face {
-  font-family: "roboto-thin";
-  src: url("./assets/fonts/Roboto-Light.ttf");
 }
 
 .wizard-btn {
@@ -44,6 +49,24 @@ span, p, strong {
 .swal2-styled.swal2-confirm {
   background-color: #F34336 !important;
 }
+
+h3.smart {
+  font-size: 24px;
+  margin: 0;
+  font-weight: 800;
+  color: var(--gray)
+} 
+
+p.smart {
+  font-weight: normal;
+  margin: 0;
+  color: var(--gray)
+} 
+
+small.smart {
+  font-weight: normal;
+  color: var(--gray-40);
+} 
 
 .smart-modal-footer {
   margin-top: 20px;

@@ -58,7 +58,7 @@ export default {
       justify-items: center;
       span {
         font-size: 20px;
-        font-family: 'roboto';
+        font-family: 'Nunito';
         color: #ffffff
       }
       i {

@@ -331,7 +331,7 @@ export default {
     }
     .label-text {
       span {
-        font-family: 'roboto';
+        font-family: 'Nunito';
         font-size: 20px;
       }
     }

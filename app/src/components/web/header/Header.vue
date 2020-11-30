@@ -91,7 +91,7 @@ export default {
       margin: 0 10px;
       span {
         font-size: 20px;
-        font-family: 'roboto';
+        font-family: 'Nunito';
         color: #979797
       }
       .small-text {
@@ -109,7 +109,7 @@ export default {
         display: flex;
         flex-direction: column;
         span, small {
-          font-family: 'roboto';
+          font-family: 'Nunito';
           line-height: 1;
         }
       }

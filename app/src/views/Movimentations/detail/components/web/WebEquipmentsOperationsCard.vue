@@ -159,6 +159,8 @@ export default {
   },
   methods: {
     isOperationsChecked(equipment) {
+      if (this.orderType === 'Corretiva') return false;
+      
       const isOperationsChecked = equipment.operations.every(operation => {
         if (this.checkedOperation[`${equipment.idEquipamento}-${operation.id_operacoes}`])
           return true;
@@ -190,6 +192,8 @@ export default {
       }
     },
     validateCheckedOperations() {
+      if (this.orderType === 'Corretiva') return;
+
       const checkedOperations = this.equipmentsOperations.equipments.reduce((acc, equipment) => {
         acc.push(equipment.operations.map(operation => {
           return (operation.execucao && operation.idEquipamento === equipment.idEquipamento)
