@@ -27,6 +27,12 @@
   }
 }
 
+.swal2-popup, .modal-content {
+  border: 0 !important;
+  border-radius: 40px !important;
+  padding: 20px !important
+}
+
 body {
   background-color: #f1f1f1 !important;
   box-sizing: border-box;
@@ -70,11 +76,6 @@ small.smart {
 
 .smart-modal-footer {
   margin-top: 20px;
-}
-
-.modal-content {
-  border: 0 !important;
-  border-radius: 10px !important;
 }
 
 .no-margin {
@@ -207,17 +208,21 @@ small.smart {
     }
   }
   .sidebar-content {
-    overflow: auto;
+    display: flex;
+    justify-content: center;
+    overflow-y: auto;
+    overflow-x: hidden;
     max-width: 20rem;
+    min-width: 20rem;
     background-color: white;
-    height: 100%;
-  }
-  
-}
+    border-radius: 20px;
+    margin: 20px 0px;
+    transition: .3s;
 
-@media screen and (max-width: 1366px) {
-  .content > .sidebar-content {
-    min-width: 16rem;
+    &.hided-sidebar {
+      min-width: 5rem !important;
+      max-width: 5rem !important;
+    }
   }
 }
 
