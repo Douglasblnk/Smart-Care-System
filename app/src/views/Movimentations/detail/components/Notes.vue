@@ -72,12 +72,12 @@ export default {
         
         this.$swal({
           type: 'success',
-          title: response.result,
+          text: 'Apontamento registrado com sucesso!',
           confirmButtonColor: '#F34336',
         });
       } catch (err) {
         console.log('NoteOrder =>', err);
-
+    
         return this.$swal({
           type: 'error',
           title: getErrors(err),

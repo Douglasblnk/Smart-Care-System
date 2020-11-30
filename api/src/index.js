@@ -57,7 +57,7 @@ const OrderStepsMovimentations = require('./services/routes/movimentations/Order
 const DelegateMaintainer = require('./services/routes/movimentations/DelegateMaintainer');
 
 // const detalhamento = require('./services/movimentations/routes/Detalhamento/Detalhamento');
-// const orderNote = require('./services/movimentations/routes/Apontar/OrderNote');
+const orderNote = require('./services/routes/movimentations/Appointments');
 
 
 app.use('/verificacao', Verifications);
@@ -65,7 +65,7 @@ app.use('/operacoes', Operations);
 app.use('/movimentacao-etapa', OrderStepsMovimentations);
 app.use('/delegar-manutentor', DelegateMaintainer);
 // app.use('/detalhamento', detalhamento);
-// app.use('/order-note', orderNote);
+app.use('/order-note', orderNote);
 
 app.use(connectionFactory.closeConnection);
 
