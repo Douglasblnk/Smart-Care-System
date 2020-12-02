@@ -27,7 +27,7 @@ export default {
 <style lang="scss" scoped>
 .root-card-option-component {
 	.card-option {
-		background-color: #f8f9fa;
+		background-color: white;
 		width: 250px;
 		height: 200px;
 		display: flex;

@@ -19,8 +19,8 @@ import { mapGetters } from 'vuex';
 
 export default {
   components: {
-    pendingVerificationsWeb: () => import('../Core/components/pending-verifications-web/PendingVerificationsWeb.vue'),
-    pendingVerificationsMobile: () => import('../Core/components/pending-verifications-mobile/PendingVerificationsMobile.vue'),
+    pendingVerificationsWeb: () => import('./components/pending-verifications-web/PendingVerificationsWeb.vue'),
+    pendingVerificationsMobile: () => import('./components/pending-verifications-mobile/PendingVerificationsMobile.vue'),
   },
   data() {
     return {

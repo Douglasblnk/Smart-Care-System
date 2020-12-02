@@ -61,13 +61,20 @@ const getErrors = err => {
   return `
     <div style="margin: 10px; display: flex; flex-direction: column">
       <span class="text-muted">
-        Erro: ${message || 'Não foi possível concluir a operação.'}
+        ${mountError(message)}
       </span>
-      <small class="text-muted">
+      <small class="smart">
         StatusCode: ${status || ''} <br>
       </small>
     </div>
   `;
+};
+
+const mountError = message => {
+  if (message && message.constructor === Object && Object.keys(message).length)
+    return Object.values(message).map(i => `<div class="m-2"><p class="smart">${i}</p></div>`).join('');
+  
+  return `Error: ${message || 'Não foi possível concluir a operação.'}`;
 };
 
 const getAccessLevelName = accessNum => {

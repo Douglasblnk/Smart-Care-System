@@ -27,7 +27,7 @@ export default {
   name: 'dashboardItems',
 
   components: {
-    dashboardSummary: () => import('../components/dashboard-summary-mobile/DashboardSummaryMobile.vue'),
+    dashboardSummary: () => import('./components/dashboard-summary-mobile/DashboardSummaryMobile.vue'),
   },
   props: {
     orders: { type: Object, default: () => ({}) },
