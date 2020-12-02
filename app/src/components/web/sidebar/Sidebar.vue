@@ -78,7 +78,6 @@ export default {
         this.$router.push(link);
     },
     toggleHideSidebar() {
-      console.log('object');
       this.hideSidebar(!this.isSidebarHided);
     },
   },

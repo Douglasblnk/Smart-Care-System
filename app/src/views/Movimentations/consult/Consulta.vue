@@ -196,7 +196,7 @@ export default {
             .no-margin { margin: 0 !important; }
           </style>
           <div>
-            <h3>${order.resumo}</h3>
+            <h3 class="smart">${order.resumo}</h3>
             <span>${this.$moment(order.dataEmissao).fromNow()}</span>
           </div>
           <div class="mt-5 mx-3" style="text-align: start">
@@ -254,11 +254,15 @@ export default {
     },
     openOrder(order) {
       this.$store.commit('addPageName', `Consultas | ${order.idOrdemServico}`);
+      this.$store.commit('isDetailRoute', true);
+
 
       this.getOrderDetail(order);
     },
     closeDetail() {
       this.$store.commit('addPageName', 'Consultas');
+      this.$store.commit('isDetailRoute', false);
+
       this.setStateView('list');
     },
     async getOrderDetail(order) {
@@ -367,7 +371,7 @@ export default {
     },
     goBack() {
       if (this.state.view === 'detail') {
-        this.$store.commit('addPageName', 'Consultas');
+        this.closeDetail();
         return this.setStateView('list');
       }
       this.$router.push('/dashboard');

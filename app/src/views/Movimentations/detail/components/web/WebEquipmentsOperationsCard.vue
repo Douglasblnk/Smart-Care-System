@@ -73,7 +73,7 @@
                   @click.native="toggleOperations(index)"
                 >
                   <span>
-                    <i class="fa" :class="isOperationsOpen[index] ? 'fa-chevron-down' : 'fa-chevron-up'" />
+                    <i class="fa" :class="isOperationsOpen[index] ? 'fa-chevron-up' : 'fa-chevron-down'" />
                     Operações
                   </span>
                 </smart-button>
