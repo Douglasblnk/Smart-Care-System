@@ -95,11 +95,8 @@ import { getErrors, getToken } from '../../../../utils/utils';
 export default {
   name: 'PendingVerificationsWeb',
   props: {
-    verificationsData: {
-      type: Object,
-      required: true,
-      default: () => ({}),
-    },
+    tableConfig: { type: Object, required: true, default: () => ({}) },
+    verifications: { type: Object, required: true, default: () => [] },
   },
   data() {
     return {
