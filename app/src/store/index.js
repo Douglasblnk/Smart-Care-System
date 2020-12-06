@@ -11,6 +11,7 @@ export default new Vuex.Store({
     mainIcon: '',
     showConsultFilter: false,
     isSidebarHided: false,
+    isDetailRoute: false,
   },
 
   mutations: {
@@ -19,6 +20,9 @@ export default new Vuex.Store({
     },
     addPageName(state, name) {
       state.page = name;
+    },
+    isDetailRoute(state, value) {
+      state.isDetailRoute = value;
     },
     setIsMobile(state, isMobile) {
       state.isMobile = isMobile;
@@ -53,6 +57,9 @@ export default new Vuex.Store({
     isSidebarHided(state) {
       return state.isSidebarHided;
     },
+    isDetailRoute(state) {
+      return state.isDetailRoute;
+    }
   },
 
   actions: {

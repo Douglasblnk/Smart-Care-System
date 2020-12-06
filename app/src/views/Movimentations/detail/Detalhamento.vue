@@ -609,12 +609,12 @@ export default {
 
 <style lang="scss" scoped>
 .root-detalhamento-view {
-  margin: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
   .loading-state {
     display: flex;
+    justify-content: center;
     align-items: center;
     height: 60vh;
     h3, i {

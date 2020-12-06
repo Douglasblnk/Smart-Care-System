@@ -88,13 +88,16 @@ export default {
     ...mapGetters({
       showConsultFilter: 'getShowConsultFilter',
       isSidebarHided: 'isSidebarHided',
+      isDetailRoute: 'isDetailRoute',
     }),
     isLoginScreen() {
       if (this.$route.name === 'login') return true;
       return false;
     },
     validateVisibility() {
-      return !this.state.isMobile ? false : true;
+      if (!this.state.isMobile) return false;
+      if (this.isDetailRoute) return false;
+      return true;
     },
   },
   mounted() {

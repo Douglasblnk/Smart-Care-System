@@ -1,33 +1,44 @@
 <template>
-  <div class="content-consult-verification">
+  <div class="root-configuracoes-view">
     <transition name="slide-side" mode="out-in">
       <div v-if="state.view === 'verifications'" key="verifications" class="content-verifications">
         <div class="card-title d-flex justify-content-center align-items-center">
           <h3>Análise de Verificações</h3>
         </div>
-        <card full-width>
+        <card fullWidth>
           <div class="table-verifications">
             <v-client-table
               ref="table_verification"
               v-model="listVerificationsStatus"
-              :columns="verificationsData.columns"
+              :columns="verificationsData.columnsMobile"
               :options="verificationsData.options"
             >
-              <span slot="Solicitante" slot-scope="{row}" style="font-size: 2em;">
-                <i :class="row.icon_requester"></i>
-              </span>
-              <span slot="Reporte" slot-scope="{row}" style="font-size: 2em;">
-                <i :class="row.icon_report"></i>
-              </span>
-              <span slot="Manutentor" slot-scope="{row}" style="font-size: 2em;">
-                <i :class="row.icon_maintainer"></i>
-              </span>
-              <div slot="actions" slot-scope="props">
-                <a target="_blank" class="fas fa-external-link-alt mb-2 eye"
-                   @click="openOrder(props.row)"
-                ></a>
-                <i class="fas fa-eye fa-lg mb-2" @click="openModalDetailVerifications(props.row)"></i>
-              </div>
+              <template slot="ordemServico_idOrdemServico" slot-scope="{ row }">
+                <strong>{{ row.resumo }}</strong>
+                <div class="d-flex">
+                  <span>
+                    {{ typeVerification(row.tipoManutencao_idtipoManutencao) }}
+                  </span>
+                </div>
+                <div class="d-flex ">
+                  <span>Ordem: {{ row.ordemServico_idOrdemServico }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span>Data: {{ moment(row.dataVerificacao).format('DD/MM/YYYY') }}</span>
+                </div>
+                <div class="d-flex align-items-center">
+                  <span :class="getResolvedProblemClass(row.problemaResolvido)">{{ resolvedProblem(row.problemaResolvido) }}</span>
+                  <!-- <span>{{ resolvedProblem(row.problemaResolvido) }}</span> -->
+                </div>
+                <div class="d-flex justify-content-end">
+                  <smart-button small class="mx-1" @click.native="openOrder(row)">
+                    <span>Detalhar</span>
+                  </smart-button>
+                  <smart-button small @click.native="openModalDetailVerifications(row)">
+                    <span>Resumo</span>
+                  </smart-button>
+                </div>
+              </template>
             </v-client-table>
           </div>
           <b-modal ref="my-modal" centered
@@ -69,9 +80,7 @@
                 </div>
               </div>
               <div class="d-flex justify-content-center">
-                <smart-button label="Fechar" @click.native="closeModal()">
-                  Fechar
-                </smart-button>
+                <cancel-button label="Fechar" @click.native="closeModal()" />
               </div>
             </div>
           </b-modal>
@@ -86,14 +95,12 @@ import { getErrors, getToken } from '../../../../utils/utils';
 export default {
   name: 'PendingVerificationsWeb',
   props: {
-    verificationsData: {
-      type: Object,
-      required: true,
-      default: () => ({}),
-    },
+    tableConfig: { type: Object, required: true, default: () => ({}) },
+    verifications: { type: Object, required: true, default: () => [] },
   },
   data() {
     return {
+      moment: this.$moment,
       state: {
         view: 'verifications',
       },
@@ -175,14 +182,15 @@ export default {
       this.data_modal = [];
     },
     openOrder(props) {
+      console.log('props: ', props);
       this.getOrderDetail(props);
     },
     async getOrderDetail(props) {
       try {
         const order = { idOrdemServico: props.ordemServico_idOrdemServico };
-
-        const { result } = await this.$http.get('ordem-manutencao', {
-          headers: { order },
+        console.log('order: ', order);
+        const { result } = await this.$http.post('ordem-manutencao/detail', {
+          order,
         });
 
         this.$set(this.detail, 'order', result);
@@ -219,96 +227,137 @@ export default {
       this.$store.commit('addPageName', 'Verificações');
       this.$set(this.state, 'view', 'verifications');
     },
+    typeVerification(type) {
+      if (type === 1)
+        return 'Administrador';
+      else if (type === 2)
+        return 'Manutentor';
+      else if (type === 3)
+        return 'Solicitante';
+      return '';
+    },
+    resolvedProblem(is_resolved) {
+      return is_resolved ? 'Problema: Resolvido' : 'Problema: Pendente';
+    },
+    getResolvedProblemClass(is_resolved) {
+      return is_resolved ? 'resolved-problem' : 'not-resolved';
+    },
   },
 };
 </script>
 
 <style lang="scss">
-  .user_detail_verification{
-    font-size: 20px;
-  }
-  .content-consult-verification{
+  .root-configuracoes-view {
     .content-verifications {
-        font-family: "Avenir", Helvetica, Arial, sans-serif;
-        text-align: center;
-        color: #2c3e50;
-        table {
-          border-radius: 8px;
-          thead {
-            th {
-              background-color: var(--duas-rodas-soft);
-              span {
-                cursor: pointer;
-                color: white !important;
-              }
+      .table-verifications {
+        .resolved-problem {
+          color: #53c46d !important;
+        }
+        .not-resolved {
+          color: var(--duas-rodas) !important;
+        }
+      }
+      .user_detail_verification{
+        font-size: 20px;
+      }
+      font-family: "Avenir", Helvetica, Arial, sans-serif;
+      text-align: center;
+      color: #2c3e50;
+      table {
+        border-radius: 8px;
+        thead {
+          th {
+            background-color: var(--duas-rodas-soft);
+            span {
+              cursor: pointer;
+              color: white !important;
+            }
+            border: 0 !important;
+            outline: none;
+          }
+        }
+        tbody {
+          tr {
+            td {
               border: 0 !important;
+              vertical-align: middle;
               outline: none;
             }
           }
-          tbody {
-            tr {
-              td {
-                border: 0 !important;
-                vertical-align: middle;
-                outline: none;
-              }
-            }
-          }
         }
-        .col-md-12 {
-          justify-content: space-between;
-          display: flex !important;
+      }
+      .col-md-12 {
+        justify-content: space-between;
+        display: flex !important;
+        .VueTables__search {
+          width: 100% !important;
           .VueTables__search-field {
-            width: 30vw !important;
-            input {
-              width: 100%;
+            width: 100% !important;
+            label {
+              display: block !important;
             }
           }
         }
-        .VuePagination {
+      }
+      .VuePagination {
+        display: flex;
+        justify-content: center;
+        p {
           display: flex;
           justify-content: center;
-          p {
-            display: flex;
-            justify-content: center;
-          }
-          li {
-            width:50px;
-          }
         }
-        //.VuePagination__pagination-item page-item
-        .page-item .active {
-          color: white !important;
-          border-color: #ddd !important;
-          background-color: var(--duas-rodas-soft) !important;
-          &:focus {
-            box-shadow: none !important;
-          }
+        li {
+          width:50px;
         }
-        .page-link {
-          color: #555 !important;
-          &:focus {
-            box-shadow: none !important;
-          }
+      }
+      //.VuePagination__pagination-item page-item
+      .page-item .active {
+        color: white !important;
+        border-color: #ddd !important;
+        background-color: var(--duas-rodas-soft) !important;
+        &:focus {
+          box-shadow: none !important;
         }
-        .card-title{
-          h3 {
-            font-family: 'Nunito';
-            color: #E66E6D;
-          }
+      }
+      .page-link {
+        color: #555 !important;
+        &:focus {
+          box-shadow: none !important;
         }
-        .eye{
-            padding-left: 20px;
-            padding-right: 20px;
+      }
+      .card-title{
+        h3 {
+          font-family: 'Nunito';
+          color: #E66E6D;
         }
-        .fa-check {
-          font-size: 20px;
-          color: rgb(174, 214, 183)
+      }
+      .eye{
+          padding-left: 20px;
+          padding-right: 20px;
+      }
+      .fa-check {
+        font-size: 20px;
+        color: rgb(174, 214, 183)
+      }
+      .fa-times {
+        font-size: 20px;
+        color: var(--duas-rodas)
+      }
+      .VuePagination {
+        display: flex;
+        justify-content: center;
+        p {
+          display: flex;
+          justify-content: center;
         }
-        .fa-times {
-          font-size: 20px;
-          color: var(--duas-rodas)
+        &.row {
+          margin: 0 !important;
         }
+      }
+      .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
     }
   }
 </style>

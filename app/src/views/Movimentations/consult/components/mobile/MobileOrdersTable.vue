@@ -26,24 +26,39 @@
           <template slot="idOrdemServico" slot-scope="{ row }">
             <div class="d-flex flex-column" @click.self="openOrder(row)">
               <strong>{{ row.resumo }}</strong>
+
               <div class="d-flex justify-content-between">
                 <span>GRT12131DA{{ row.idOrdemServico }}</span>
+
                 <small class="order-type">{{ row.tipo_manutencao }}</small>
               </div>
+
               <div class="my-2 d-flex flex-column">
                 <div class="d-flex justify-content-between">
                   <span>Status: {{ row.status }}</span>
+
                   <span>{{ moment(row.dataEmissao).format('DD/MM/YYYY') }}</span>
                 </div>
+
                 <div class="d-flex align-items-center">
                   <span :class="getPriorityClass(row)">Prioridade: {{ row.prioridade }}</span>
                 </div>
               </div>
+
               <div class="d-flex justify-content-end">
-                <smart-button small class="mx-1" @click.native="openOrder(row)">
+                <smart-button
+                  primary
+                  small
+                  class="mx-1"
+                  @click.native="openOrder(row)"
+                >
                   <span>Detalhar</span>
                 </smart-button>
-                <smart-button small @click.native="openSummary(row)">
+
+                <smart-button
+                  small
+                  @click.native="openSummary(row)"
+                >
                   <span>Resumo</span>
                 </smart-button>
               </div>
