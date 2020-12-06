@@ -5,6 +5,7 @@
       v-bind="$props"
       @update:orderMovimentations="type => $emit('update:orderMovimentations', type)"
       @update:excludeOrder="$emit('update:excludeOrder')"
+      @update:delegateOrder="$emit('update:delegateOrder')"
       @update:openIntiveTechnician="$emit('update:openIntiveTechnician')"
       @update:openOrderNote="$emit('update:openOrderNote')"
       @update:openOrderVerification="$emit('update:openOrderVerification')"

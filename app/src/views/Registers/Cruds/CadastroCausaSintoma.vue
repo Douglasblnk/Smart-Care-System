@@ -522,7 +522,7 @@ export default {
     span {
       font-size: 24px;
       color: var(--duas-rodas-soft);
-      font-family: 'roboto'
+      font-family: 'Nunito'
     }
   }
   .options-wrapper {

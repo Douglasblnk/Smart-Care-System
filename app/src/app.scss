@@ -1,14 +1,36 @@
+@font-face {
+  font-family: "Nunito";
+  src: url("./assets/fonts/Nunito-Regular.ttf") format("truetype");
+  font-weight: normal;
+}
+
 :root {
   --duas-rodas: #F34336;
   --duas-rodas-soft: #E66E6D;
   --shadow-gray: rgb(160, 160, 160);
   --gray: rgb(92, 92, 92);
+  --gray-0: #ddd;
+  --gray-10: #ccc;
+  --gray-20: #aaa;
+  --gray-40: #888;
+  --gray-60: #555;
+  --gray-80: #333;
+  --gray-90: #222;
   --button-gray: #ddd;
 }
 
 * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  span, p, strong, small, h1, h2, h3, h4, h5 {
+    font-family: 'Nunito';
+  }
+}
+
+.swal2-popup, .modal-content {
+  border: 0 !important;
+  border-radius: 40px !important;
+  padding: 20px !important
 }
 
 body {
@@ -18,17 +40,6 @@ body {
 
 span, p, strong {
   color: var(--gray)
-}
-
-@font-face {
-  font-family: "roboto";
-  src: url("./assets/fonts/Roboto-Light.ttf");
-  src: url("./assets/fonts/Roboto-Regular.ttf");
-}
-
-@font-face {
-  font-family: "roboto-thin";
-  src: url("./assets/fonts/Roboto-Light.ttf");
 }
 
 .wizard-btn {
@@ -45,13 +56,32 @@ span, p, strong {
   background-color: #F34336 !important;
 }
 
-.smart-modal-footer {
-  margin-top: 20px;
+h3.smart {
+  font-size: 24px;
+  margin: 0;
+  font-weight: 800;
+  color: var(--gray)
+} 
+h4.smart {
+  font-size: 20px;
+  margin: 0;
+  font-weight: 800;
+  color: var(--gray)
+} 
+
+p.smart {
+  font-weight: normal;
+  margin: 0;
+  color: var(--gray)
 }
 
-.modal-content {
-  border: 0 !important;
-  border-radius: 10px !important;
+small.smart {
+  font-weight: normal;
+  color: var(--gray-40);
+} 
+
+.smart-modal-footer {
+  margin-top: 20px;
 }
 
 .no-margin {
@@ -184,17 +214,21 @@ span, p, strong {
     }
   }
   .sidebar-content {
-    overflow: auto;
+    display: flex;
+    justify-content: center;
+    overflow-y: auto;
+    overflow-x: hidden;
     max-width: 20rem;
+    min-width: 20rem;
     background-color: white;
-    height: 100%;
-  }
-  
-}
+    border-radius: 20px;
+    margin: 20px 0px;
+    transition: .3s;
 
-@media screen and (max-width: 1366px) {
-  .content > .sidebar-content {
-    min-width: 16rem;
+    &.hided-sidebar {
+      min-width: 5rem !important;
+      max-width: 5rem !important;
+    }
   }
 }
 

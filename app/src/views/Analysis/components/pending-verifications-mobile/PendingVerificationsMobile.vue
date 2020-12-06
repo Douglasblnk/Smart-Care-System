@@ -327,7 +327,7 @@ export default {
       }
       .card-title{
         h3 {
-          font-family: 'roboto';
+          font-family: 'Nunito';
           color: #E66E6D;
         }
       }

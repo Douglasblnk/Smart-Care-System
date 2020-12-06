@@ -1,5 +1,5 @@
 <template>
-  <section v-if="!isMobile" class="root-back-button">
+  <section class="root-back-button">
     <div class="d-flex align-items-center">
       <div class="back-button" @click="goBack">
         <i
@@ -36,7 +36,8 @@ export default {
     color: var(--duas-rodas-soft);
     font-size: 18px;
     padding: 0 10px;
-    border-radius: 5px;
+    margin-bottom: 20px;
+    border-radius: 50px;
     user-select: none;
     cursor: pointer;
     i { margin-right: 10px }

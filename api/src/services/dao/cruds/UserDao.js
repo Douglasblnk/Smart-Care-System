@@ -64,6 +64,23 @@ module.exports = class UserDao extends GenericDao {
   }
 
   /**
+   * getUserByCracha
+   * Busca um usuário pelo cracha
+   * @return {Array} parsed array com o usuário do cracha
+   */
+  async getUserByCracha() {
+    const [rows] = await this._mysql.query(/* SQL */`
+      SELECT
+        *
+      FROM ${TABLE_USUARIO}
+        WHERE ${TABLE_USUARIO}.excluded = ?
+        AND ${TABLE_USUARIO}.numeroCracha = ?
+    `, [0, this._numeroCracha]);
+
+    return this.parseSelectResponse(rows);
+  }
+
+  /**
    * getReporterUser
    * Busca todos os usuários de nível solicitante
    * @return {Array} parsed array com todos os usuários de nível solicitante

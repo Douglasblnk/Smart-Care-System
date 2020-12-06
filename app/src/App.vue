@@ -9,7 +9,11 @@
         @after-leave="afterLeaveSidebar()"
         @before-enter="beforeEnterSidebar()"
       >
-        <div v-if="!state.isMobile && !isLoginScreen" class="sidebar-content shadow">
+        <div
+          v-if="!state.isMobile && !isLoginScreen"
+          class="sidebar-content shadow"
+          :class="isSidebarHided ? 'hided-sidebar' : ''"
+        >
           <sidebar />
         </div>
       </transition>
@@ -83,13 +87,17 @@ export default {
   computed: {
     ...mapGetters({
       showConsultFilter: 'getShowConsultFilter',
+      isSidebarHided: 'isSidebarHided',
+      isDetailRoute: 'isDetailRoute',
     }),
     isLoginScreen() {
       if (this.$route.name === 'login') return true;
       return false;
     },
     validateVisibility() {
-      return !this.state.isMobile ? false : true;
+      if (!this.state.isMobile) return false;
+      if (this.isDetailRoute) return false;
+      return true;
     },
   },
   mounted() {

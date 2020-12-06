@@ -25,26 +25,37 @@
                 <i :class="row.icon_maintainer"></i>
               </span>
 
-              <div slot="actions" slot-scope="props">
-                <i
-                  class="fas fa-external-link-alt mb-2 eye"
-                  @click="openOrder(props.row)"
-                />
-                
-                <i
-                  class="fas fa-eye fa-lg mb-2"
-                  @click="openModalDetailVerifications(props.row)"
-                />
+              <div slot="actions" slot-scope="{row}" class="d-flex justify-content-center">
+                <div class="d-flex flex-column">
+                  <smart-button
+                    primary
+                    small
+                    :loading="isLoading"
+                    class="my-1"
+                    @click.native="openOrder(row)"
+                  >
+                    <i class="fas fa-external-link-alt mx-1" />
+
+                    <p class="smart">
+                      Acessar
+                    </p>
+                  </smart-button>
+
+                  <smart-button
+                    small
+                    class="my-1"
+                    @click.native="openModalDetailVerifications(row)"
+                  >
+                    <i class="fas fa-eye mx-1" />
+                    
+                    <p class="smart">
+                      Detalhar
+                    </p>
+                  </smart-button>
+                </div>
               </div>
             </v-client-table>
           </div>
-          <!-- hide-footer -->
-          
-          <!-- <code>
-            <pre>
-              <p>{{ modalData }}</p>
-            </pre>
-          </code> -->
 
           <b-modal
             ref="verificationDetail"
@@ -83,7 +94,11 @@
                       <div class="d-flex">
                         <div style="flex: 1; font-family:'Avenir', Helvetica, Arial, sans-serif">
                           <strong>Situação:</strong>
-                          <p :style="`color:${(item.problemaResolvido === '1') ? 'green' : 'red'}`">{{ (item.problemaResolvido === '1') ? 'Resolvido' : 'Não resolvido' }}</p>
+                          <p
+                            :style="`color: ${(item.problemaResolvido === '1') ? 'green' : 'red'}`"
+                          >
+                            {{ (item.problemaResolvido === '1') ? 'Resolvido' : 'Não resolvido' }}
+                          </p>
                         </div>
 
                         <div v-if="item.solucaoRealizada" style="flex: 1;font-family:'Avenir', Helvetica, Arial, sans-serif">
@@ -102,9 +117,20 @@
 
               <div class="d-flex justify-content-center" style="margin: 10px 0">
                 <smart-button
-                  class="center"
+                  class="mx-1"
+                  circle
+                  @click.native="closeModal()"
+                >
+                  <span>
+                    Fechar
+                  </span>
+                </smart-button>
+
+                <smart-button
                   primary
                   circle
+                  :loading="isLoading"
+                  class="mx-1"
                   @click.native="openOrder(modalData)"
                 >
                   <i class="fa fa-external-link-alt fa-fw mr-2" />
@@ -124,6 +150,7 @@
 
 <script>
 import { getErrors } from '../../../../utils/utils';
+
 export default {
   name: 'PendingVerificationsWeb',
   props: {
@@ -135,13 +162,11 @@ export default {
       state: {
         view: 'verifications',
       },
-      detail: {
-        order: {},
-      },
       data_modal: [],
       rowModalOpen: {},
       typeVerifications: [1, 2, 3],
       modalHasError: false,
+      isLoading: false,
     };
   },
   computed: {
@@ -222,36 +247,48 @@ export default {
       this.modalHasError = false;
       this.data_modal = [];
     },
-    openOrder(props) {
-      this.getOrderDetail(props);
-    },
-    async getOrderDetail(props) {
+    async openOrder(order) {
       try {
-        const order = { idOrdemServico: props.ordemServico_idOrdemServico };
+        if (this.isLoading) return;
+        this.isLoading = true;
 
-        const { result } = await this.$http.get('ordem-manutencao', {
-          headers: { order },
-        });
+        const { ordemServico_idOrdemServico } = this.getOrderId(order);
+  
+        const response = await this.getOrderDetail(ordemServico_idOrdemServico);
 
-        this.$set(this.detail, 'order', result);
-        this.$store.commit('addPageName', `Consultas | ${props.ordemServico_idOrdemServico}`);
-
+        this.$store.commit('addPageName', `Consultas | ${ordemServico_idOrdemServico}`);
+  
         this.$router.push({
           name: 'Consultas',
           params: {
             type_route: 'verification',
-            order_verification: result,
+            order_verification: response,
           },
         });
       } catch (err) {
-        console.log('err getOrderDetail :>> ', err.response || err);
+        console.log('err openOrder :>> ', err.response || err);
 
         this.$swal({
           type: 'warning',
           text: getErrors(err),
           confirmButtonColor: '#F34336',
         });
+      } finally {
+        this.isLoading = false;
       }
+    },
+    getOrderId(order) {
+      if (Array.isArray(order) && order.length !== undefined)
+        return order.find(i => i.ordemServico_idOrdemServico);
+      
+      return order;
+    },
+    async getOrderDetail(ordemServico_idOrdemServico) {
+      const response = await this.$http.get('ordem-manutencao', {
+        headers: { order: ordemServico_idOrdemServico },
+      });
+
+      return response;
     },
     async openModalDetailVerifications(row) {
       this.rowModalOpen = row;
@@ -348,7 +385,7 @@ export default {
     }
     .card-title{
       h3 {
-        font-family: 'roboto';
+        font-family: 'Nunito';
         color: #E66E6D;
       }
     }

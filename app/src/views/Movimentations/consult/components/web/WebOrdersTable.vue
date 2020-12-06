@@ -43,7 +43,8 @@
 
           <template slot="actions" slot-scope="{ row }">
             <smart-button
-              simple
+              small
+              primary
               class="mb-2"
               :loading="isLoadingOrder[String(row.idOrdemServico)]"
               @click.native="openOrder(row)"
@@ -53,7 +54,7 @@
             </smart-button>
 
             <smart-button
-              simple
+              small
               @click.native="openSummary(row)"
             >
               <i class="fa fa-eye mr-2" />

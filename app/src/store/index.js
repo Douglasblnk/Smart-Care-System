@@ -10,6 +10,8 @@ export default new Vuex.Store({
     isMobile: false,
     mainIcon: '',
     showConsultFilter: false,
+    isSidebarHided: false,
+    isDetailRoute: false,
   },
 
   mutations: {
@@ -19,6 +21,9 @@ export default new Vuex.Store({
     addPageName(state, name) {
       state.page = name;
     },
+    isDetailRoute(state, value) {
+      state.isDetailRoute = value;
+    },
     setIsMobile(state, isMobile) {
       state.isMobile = isMobile;
     },
@@ -27,6 +32,9 @@ export default new Vuex.Store({
     },
     setShowConsultFilter(state, value) {
       state.showConsultFilter = value;
+    },
+    setIsSidebarHided(state, value) {
+      state.isSidebarHided = value;
     },
   },
 
@@ -46,11 +54,20 @@ export default new Vuex.Store({
     getShowConsultFilter(state) {
       return state.showConsultFilter;
     },
+    isSidebarHided(state) {
+      return state.isSidebarHided;
+    },
+    isDetailRoute(state) {
+      return state.isDetailRoute;
+    }
   },
 
   actions: {
     setIsMobile({ commit }, value) {
       commit('setIsMobile', value);
+    },
+    hideSidebar({ commit }, value) {
+      commit('setIsSidebarHided', value);
     },
   },
 });

@@ -1,22 +1,30 @@
 <template>
-  <div class="root-smart-button" :class="mobile ? 'd-flex justify-content-center' : ''">
+  <div
+    class="root-smart-button"
+    :class="{
+      'd-flex justify-content-center': mobile,
+      'w-100': fullWidth
+    }"
+  >
     <button
       :class="{
-        'btn-default': !mobile,
+        'btn-default': true,
         'btn-disabled': disabled,
         'primary': primary,
         'btn-simple': simple && !mobile,
         'btn-small': small,
-        'btn-circle': circle && !mobile,
         'btn-transparent': transparent && !mobile,
-        'mobile-button': mobile,
+        'no-effect': noEffect,
+        'full-width': fullWidth,
       }"
-      :style="`width: ${getCustomWidth} !important`"
     >
       <div
         v-if="!loading"
         class="w-100 d-flex align-items-center"
-        :class="mobile ? 'loading-mobile-button' : ''"
+        :class="{
+          'loading-mobile-button': mobile,
+          'justify-content-center': fullWidth,
+        }"
       >
         <slot />
       </div>
@@ -42,17 +50,9 @@ export default {
     disabled: { type: Boolean, default: false },
     circle: { type: Boolean, default: false },
     transparent: { type: Boolean, default: false },
-    width: { type: String, default: '' },
+    fullWidth: { type: Boolean, default: false },
     mobile: { type: Boolean, default: false },
-  },
-
-  data: () => ({}),
-  
-  computed: {
-    getCustomWidth() {
-      if (this.width.includes('px')) return this.width;
-      return `${this.width}px`;
-    },
+    noEffect: { type: Boolean, default: false },
   },
 };
 </script>
@@ -64,10 +64,10 @@ export default {
   }
   .btn-default {
     display: flex;
-    padding: 10px 20px;
+    padding: 7px 20px;
     background-color: var(--shadow-gray);
     border: none;
-    border-radius: 7px;
+    border-radius: 100px;
     transition: .1s;
     color: white;
     span, p, small, strong {
@@ -105,22 +105,19 @@ export default {
     padding: 5px 15px !important;
     font-size: 13px !important;
   }
+  .no-effect {
+    &:hover { transform: none !important }
+    &:active { transform: none !important }
+  }
   .primary {
     background-color: var(--duas-rodas-soft) !important;
     span, small, p, h3 { color: white !important ;}
   }
-  .btn-circle {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-width: 40px !important;
-    min-height: 40px !important;
-    border-radius: 100px;
-  }
   .btn-disabled {
     cursor: not-allowed;
-    background-color: #c7c7c7 !important;
-    &:hover { transform: none !important }
+    // background-color: #c7c7c7 !important;
+    opacity: 0.4;
+    &:hover { transform: none !important; opacity: 0.4 !important; }
     &:active { transform: none !important }
   }
   .btn-simple {
@@ -139,6 +136,10 @@ export default {
     &:hover {
       background-color: #ddd !important;
     }
+  }
+  .full-width {
+    width: 100% !important;
+    text-align: center !important;
   }
 }
 </style>

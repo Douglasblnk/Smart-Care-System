@@ -99,13 +99,13 @@ export default {
   .card-container {
     .card-title{
       span {
-        font-family: 'roboto';
+        font-family: 'Nunito';
         font-size: 23px;
         color: #E66E6D;
       }
     }
     .card-wrapper {
-      width: 80%;
+      width: 90%;
     }
 
     @media screen and (max-width: 1660px) {

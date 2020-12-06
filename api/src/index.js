@@ -33,7 +33,6 @@ const Priority = require('./services/routes/cruds/Priority');
 const WorkCenter = require('./services/routes/cruds/WorkCenter');
 const Operation = require('./services/routes/cruds/Operation');
 const Component = require('./services/routes/cruds/Component');
-const DelegateManutentor = require('./services/routes/movimentations/DelegateManutentor');
 
 app.use('/users', User);
 app.use('/status', Status);
@@ -49,19 +48,23 @@ app.use('/tipo-ordem', OrderType);
 app.use('/prioridade', Priority);
 app.use('/centro-trabalho', WorkCenter);
 app.use('/operacoes', Operation);
-app.use('/delega-manutentor', DelegateManutentor);
 
 
 // MOVIMENTATIONS
 const Verifications = require('./services/routes/movimentations/Verifications');
+const Operations = require('./services/routes/movimentations/Operations');
+const OrderStepsMovimentations = require('./services/routes/movimentations/OrderStepsMovimentations');
+const DelegateMaintainer = require('./services/routes/movimentations/DelegateMaintainer');
+
 // const detalhamento = require('./services/movimentations/routes/Detalhamento/Detalhamento');
-// const initiate = require('./services/movimentations/routes/Iniciar/InitiateOrder');
 // const orderNote = require('./services/movimentations/routes/Apontar/OrderNote');
 
 
 app.use('/verificacao', Verifications);
+app.use('/operacoes', Operations);
+app.use('/movimentacao-etapa', OrderStepsMovimentations);
+app.use('/delegar-manutentor', DelegateMaintainer);
 // app.use('/detalhamento', detalhamento);
-// app.use('/initiate', initiate);
 // app.use('/order-note', orderNote);
 
 app.use(connectionFactory.closeConnection);

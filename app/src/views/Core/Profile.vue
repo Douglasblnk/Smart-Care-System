@@ -82,7 +82,7 @@ export default {
     background-color: #ffffff;
     padding: 25px;
     border-radius: 10px;
-    font-family: 'roboto';
+    font-family: 'Nunito';
     font-size: 23px;
     i {
       color: #878787;
@@ -93,7 +93,7 @@ export default {
 
   .nome1 {
     color: #878787;
-    font-family: 'roboto';
+    font-family: 'Nunito';
     font-size: 14px;
     margin-bottom: 0px;
 
@@ -101,14 +101,14 @@ export default {
 
   .nome2 {
     color: #565656;
-    font-family: 'roboto';
+    font-family: 'Nunito';
     font-size: 18px;
 
   }
 
   .email1 {
     color: #878787;
-    font-family: 'roboto';
+    font-family: 'Nunito';
     font-size: 14px;
     margin-bottom: 0px;
     white-space: nowrap;
@@ -116,46 +116,46 @@ export default {
 
   .email2 {
     color: #565656;
-    font-family: 'roboto';
+    font-family: 'Nunito';
     font-size: 18px;
   }
 
   .funcao1 {
     color: #878787;
-    font-family: 'roboto';
+    font-family: 'Nunito';
     font-size: 14px;
     margin-bottom: 0px;
   }
 
   .funcao2 {
     color: #565656;
-    font-family: 'roboto';
+    font-family: 'Nunito';
     font-size: 18px;
   }
 
   .cracha1 {
     color: #878787;
-    font-family: 'roboto';
+    font-family: 'Nunito';
     font-size: 14px;
     margin-bottom: 0px;
   }
 
   .cracha2 {
     color: #565656;
-    font-family: 'roboto';
+    font-family: 'Nunito';
     font-size: 18px;
   }
 
   .nivel1 {
     color: #878787;
-    font-family: 'roboto';
+    font-family: 'Nunito';
     font-size: 14px;
     margin-bottom: 0px;
   }
 
   .nivel2 {
     color: #565656;
-    font-family: 'roboto';
+    font-family: 'Nunito';
     font-size: 18px;
   }
 }

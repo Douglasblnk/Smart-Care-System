@@ -10,7 +10,7 @@
     
     <transition name="slide-side" mode="out-in">
       <div v-if="state.view === 'list'" key="list" :class="isMobile ? '' : 'p-3'">
-        <consult-filters
+        <ConsultFilters
           :filters="filters"
           :option="option"
           :show-options="showOptions"
@@ -20,14 +20,14 @@
           @update:closeFilterOptions="closeFilterOptions"
         />
 
-        <filter-settled
+        <FilterSettled
           v-if="maintenainceOrders.length > 0"
           :filters="filters"
           :is-filter-settled="isFilterSettled"
           @update:clearFilters="clearFilters"
         />
 
-        <orders-table
+        <OrdersTable
           :maintenaince-orders="maintenainceOrders"
           :is-loading="isLoading"
           :get-filtered-orders="getFilteredOrders"
@@ -38,7 +38,7 @@
       </div>
 
       <div v-if="state.view === 'detail'" key="detail">
-        <detalhamento
+        <Detalhamento
           :order="detail.order"
           @state-list="closeDetail"
         />
@@ -196,7 +196,7 @@ export default {
             .no-margin { margin: 0 !important; }
           </style>
           <div>
-            <h3>${order.resumo}</h3>
+            <h3 class="smart">${order.resumo}</h3>
             <span>${this.$moment(order.dataEmissao).fromNow()}</span>
           </div>
           <div class="mt-5 mx-3" style="text-align: start">
@@ -254,11 +254,15 @@ export default {
     },
     openOrder(order) {
       this.$store.commit('addPageName', `Consultas | ${order.idOrdemServico}`);
+      this.$store.commit('isDetailRoute', true);
+
 
       this.getOrderDetail(order);
     },
     closeDetail() {
       this.$store.commit('addPageName', 'Consultas');
+      this.$store.commit('isDetailRoute', false);
+
       this.setStateView('list');
     },
     async getOrderDetail(order) {
@@ -366,8 +370,10 @@ export default {
       return string;
     },
     goBack() {
-      if (this.state.view === 'detail')
+      if (this.state.view === 'detail') {
+        this.closeDetail();
         return this.setStateView('list');
+      }
       this.$router.push('/dashboard');
     },
     setStateView(view) {

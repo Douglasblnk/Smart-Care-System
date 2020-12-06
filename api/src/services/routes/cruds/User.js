@@ -1,4 +1,4 @@
-const errorResponseTreatment = require('../../../shared/utils/utils');
+const { errorResponseTreatment } = require('../../../shared/utils/utils');
 
 const RateLimit = require('express-rate-limit');
 

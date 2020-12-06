@@ -106,12 +106,6 @@ const routes = [
     props: true,
   },
   {
-    path: '/relatorios',
-    name: 'Relatórios',
-    component: Dashboard,
-    meta: { requireAuth: true },
-  },
-  {
     path: '/consulta-verificacoes',
     name: 'Verificações',
     component: ConsultaVerificacoes,

@@ -7,7 +7,7 @@
     </div>
     <div class="note-content p-3 d-flex">
       <div class="note-title">
-        <h3>Apontamentos </h3>
+        <h3>Apontar</h3>
       </div>
       <div class="note-separetor">
       </div>
