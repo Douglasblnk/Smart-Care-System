@@ -1,6 +1,5 @@
 const { get } = require('lodash');
 const VerificationDao = require('../../../dao/movimentations/VerificationDao');
-const VerificationValidate = require('../../../dao/movimentations/validations/VerificationValidate');
 
 const { MANUTENTOR_ID, SOLICITANTE_ID, ADMINISTRADOR_ID } = require('../../../../shared/constants/accessLevel');
 
@@ -108,17 +107,17 @@ module.exports = class RegisterVerification {
 
   async getMaintainerMaster(parameters) {
     try {
-      return new VerificationValidate(parameters).validateVerification();
+      return new VerificationDao(parameters).validateVerification();
     } catch (err) {
       throw err;
     }
   }
 
   async getVerificationType(parameters) {
-    return new VerificationValidate(parameters).validateRegisterExist();
+    return new VerificationDao(parameters).validateRegisterExist();
   }
   
   async getCheckSequence(parameters, typeVerification) {
-    return new VerificationValidate(parameters).validateCheckPreviousSequence(typeVerification);
+    return new VerificationDao(parameters).validateCheckPreviousSequence(typeVerification);
   }
 };
