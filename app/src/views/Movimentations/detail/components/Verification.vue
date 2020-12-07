@@ -32,7 +32,7 @@
     <form class="formPosition" @submit.prevent="verificationOrder()">
       <div class="d-flex justify-content-center m-3">
         <smart-button>
-          <span>Verificar</span>          
+          <span>Verificar</span>
         </smart-button>
       </div>
     </form>
@@ -76,11 +76,11 @@ export default {
         this.inputValues.typeVerification = this.$store.state.user.nivelAcesso;
         this.inputValues.cracha = this.$store.state.user.cracha;
 
-        const response = await this.$http.post('verificacao', this.inputValues);
+        await this.$http.post('verificacao', this.inputValues);
 
         this.$swal({
           type: 'success',
-          title: `${response.result}`,
+          text: 'Verificação registrada com sucesso!',
           confirmButtonColor: '#F34336',
         }).then(() =>{
           if (this.inputValues.typeVerification === 2)
