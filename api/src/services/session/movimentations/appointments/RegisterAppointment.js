@@ -2,10 +2,6 @@ const { get } = require('lodash');
 const AppointmentsDao = require('../../../dao/movimentations/AppointmentsDao');
 
 module.exports = class RegisterAppointment {
-  constructor() {
-    this._queryResult = '';
-  }
-
   getParameters(req) {
     return {
       user: get(req.body, 'user', ''),
@@ -47,12 +43,12 @@ module.exports = class RegisterAppointment {
 
       await this.validateUser(parameters);
 
-      await this.RegisterAppointment(parameters);
+      const response = await this.registerAppointment(parameters);
 
-      if (!this._queryResult.affectedRows)
+      if (!response.affectedRows)
         throw 'Nenhum registro foi inserido';
 
-      return this._queryResult;
+      return response;
     } catch (err) {
       console.log('err RegisterAppointments :>> ', err);
 
@@ -60,8 +56,8 @@ module.exports = class RegisterAppointment {
     }
   }
 
-  async RegisterAppointment(parameters) {
-    this._queryResult = await new AppointmentsDao(parameters).registerAppointment();
+  async registerAppointment(parameters) {
+    return new AppointmentsDao(parameters).registerAppointment();
   }
 
   async validateUser(parameters) {

@@ -4,10 +4,6 @@ const VerificationDao = require('../../../dao/movimentations/VerificationDao');
 const { MANUTENTOR_ID, SOLICITANTE_ID, ADMINISTRADOR_ID } = require('../../../../shared/constants/accessLevel');
 
 module.exports = class RegisterVerification {
-  constructor() {
-    this._queryResult = '';
-  }
-
   getParameters(req) {
     return {
       solutionDescription: get(req.body, 'solutionDescription', ''),
@@ -58,12 +54,12 @@ module.exports = class RegisterVerification {
           throw 'Este manutentor não é responsável pela ordem!';
       }
 
-      await this.registerVerification(parameters);
+      const response = await this.registerVerification(parameters);
 
-      if (!this._queryResult.affectedRows)
+      if (!response.affectedRows)
         throw 'Nenhum registro foi inserido';
 
-      return this._queryResult;
+      return response;
     } catch (err) {
       console.log('err RegisterVerification :>> ', err);
 
@@ -72,8 +68,7 @@ module.exports = class RegisterVerification {
   }
 
   async registerVerification(parameters) {
-    // todo
-    this._queryResult = await new VerificationDao(parameters).registerVerification();
+    return new VerificationDao(parameters).registerVerification();
   }
 
   async validateExistVerification(parameters) {
