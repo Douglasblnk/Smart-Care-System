@@ -1,13 +1,15 @@
 <template>
-  <div v-if="dataVerification.verifications_list.length">
+  <div v-if="verifications.length">
     <div v-if="!isMobile">
       <pending-verifications-web
-        :verifications-data="dataVerification"
+        :verifications="verifications"
+        :table-config="tableConfig"
       />
     </div>
     <div v-if="isMobile">
       <pending-verifications-mobile
-        :verifications-data="dataVerification"
+        :verifications="verifications"
+        :table-config="tableConfig"
       />
     </div>
   </div>
@@ -19,15 +21,16 @@ import { mapGetters } from 'vuex';
 
 export default {
   components: {
-    pendingVerificationsWeb: () => import('../Core/components/pending-verifications-web/PendingVerificationsWeb.vue'),
-    pendingVerificationsMobile: () => import('../Core/components/pending-verifications-mobile/PendingVerificationsMobile.vue'),
+    pendingVerificationsWeb: () => import('./components/pending-verifications-web/PendingVerificationsWeb.vue'),
+    pendingVerificationsMobile: () => import('./components/pending-verifications-mobile/PendingVerificationsMobile.vue'),
   },
   data() {
     return {
       state: {
         view: 'verifications',
       },
-      dataVerification: {
+      verifications: [],
+      tableConfig: {
         columns: ['ordemServico_idOrdemServico', 'Solicitante', 'Reporte', 'Manutentor', 'actions'],
         columnsMobile: ['ordemServico_idOrdemServico'],
         options: {
@@ -53,7 +56,6 @@ export default {
           perPageValues: [],
           sortable: ['ordemServico_idOrdemServico'],
         },
-        verifications_list: [],
       },
     };
   },
@@ -71,9 +73,6 @@ export default {
   },
 
   methods: {
-    // setActivity() {
-    //   this.$http.setActivity(this.$activities.VERIFICATION_CONSULT_OPEN);
-    // },
     async listVerificationsType() {
       setTimeout(() => {
         const user = this.$store.state.user;
@@ -82,10 +81,13 @@ export default {
           return this.listVerificationsType();
 
         this.$http.setActivity(this.$activities.VERIFICATION_CONSULT_OPEN);
+
         if (user.nivelAcesso === 2)
           return this.listVerificationsMaintainer(user.nivelAcesso);
+
         if (user.nivelAcesso === 1)
           return this.listVerificationsReport(user.nivelAcesso);
+
         return this.listVerificationsRequester(user.nivelAcesso);
       }, 20);
     },
@@ -95,8 +97,8 @@ export default {
           headers: { user },
         });
         if (orders.length !== undefined)
-          this.dataVerification.verifications_list = [...orders];
-        else this.verifications_list.push(orders);
+          this.verifications = [...orders];
+        else this.verifications.push(orders);
 
         this.mobileOptions();
       } catch (err) {
@@ -114,8 +116,8 @@ export default {
           headers: { user },
         });
         if (orders.length !== undefined)
-          this.dataVerification.verifications_list = [...orders];
-        else this.verifications_list.push(orders);
+          this.verifications = [...orders];
+        else this.verifications.push(orders);
         this.mobileOptions();
       } catch (err) {
         console.log('err :>> ', err.response || err);
@@ -133,8 +135,8 @@ export default {
           headers: { user },
         });
         if (orders.length !== undefined)
-          this.dataVerification.verifications_list = [...orders];
-        else this.verifications_list.push(orders);
+          this.verifications = [...orders];
+        else this.verifications.push(orders);
         this.mobileOptions();
       } catch (err) {
         console.log('err :>> ', err.response || err);
@@ -158,6 +160,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss">
-</style>

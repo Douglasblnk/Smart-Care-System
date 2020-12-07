@@ -1,22 +1,30 @@
 <template>
-  <div class="root-smart-button" :class="mobile ? 'd-flex justify-content-center' : ''">
+  <div
+    class="root-smart-button"
+    :class="{
+      'd-flex justify-content-center': mobile,
+      'w-100': fullWidth
+    }"
+  >
     <button
       :class="{
-        'btn-default': !mobile,
+        'btn-default': true,
         'btn-disabled': disabled,
         'primary': primary,
         'btn-simple': simple && !mobile,
         'btn-small': small,
         'btn-transparent': transparent && !mobile,
-        'mobile-button': mobile,
         'no-effect': noEffect,
+        'full-width': fullWidth,
       }"
-      :style="`width: ${getCustomWidth} !important`"
     >
       <div
         v-if="!loading"
         class="w-100 d-flex align-items-center"
-        :class="mobile ? 'loading-mobile-button' : ''"
+        :class="{
+          'loading-mobile-button': mobile,
+          'justify-content-center': fullWidth,
+        }"
       >
         <slot />
       </div>
@@ -42,18 +50,9 @@ export default {
     disabled: { type: Boolean, default: false },
     circle: { type: Boolean, default: false },
     transparent: { type: Boolean, default: false },
-    width: { type: String, default: '' },
+    fullWidth: { type: Boolean, default: false },
     mobile: { type: Boolean, default: false },
     noEffect: { type: Boolean, default: false },
-  },
-
-  data: () => ({}),
-  
-  computed: {
-    getCustomWidth() {
-      if (this.width.includes('px')) return this.width;
-      return `${this.width}px`;
-    },
   },
 };
 </script>
@@ -137,6 +136,10 @@ export default {
     &:hover {
       background-color: #ddd !important;
     }
+  }
+  .full-width {
+    width: 100% !important;
+    text-align: center !important;
   }
 }
 </style>

@@ -28,7 +28,7 @@ import LineChart from '../../../components/web/chart/ChartLine.vue';
 export default {
   name: 'DashboardWeb',
   components: {
-    dashboardSummary: () => import('../components/dashboard-summary/DashboardSummary.vue'),
+    dashboardSummary: () => import('./components/dashboard-summary/DashboardSummary.vue'),
     LineChart,
   },
   props: {

@@ -50,7 +50,7 @@ export default {
       width: 200px;
       height: 180px;
       background-color: white;
-      border-radius: 8px;
+      border-radius: 25px;
       box-shadow: 1px 1px 5px -4px black;
     }
   }

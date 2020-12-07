@@ -20,6 +20,7 @@ module.exports = class GetVerificationOrderData {
           ${TABLE_VERIFICACAO}.ordemServico_idOrdemServico, 
           ${TABLE_VERIFICACAO}.dataVerificacao,
           ${TABLE_VERIFICACAO}.problemaResolvido, 
+          ${TABLE_VERIFICACAO}.solucaoRealizada,
           ${TABLE_ORDEM_SERVICO}.Status_idStatus,
           ${TABLE_ORDEM_SERVICO}.tipoManutencao_idtipoManutencao, 
           ${TABLE_ORDEM_SERVICO}.reporte,
@@ -32,14 +33,14 @@ module.exports = class GetVerificationOrderData {
           user_requester.nome AS name_requester,
           user_maintainer.nome AS name_maintainer
         FROM ${TABLE_VERIFICACAO}
-        INNER JOIN ${TABLE_ORDEM_SERVICO} ON ${TABLE_ORDEM_SERVICO}.idOrdemServico = ${TABLE_VERIFICACAO}.ordemServico_idOrdemServico 
-        INNER JOIN ${TABLE_ORDEM_SERVICO_HAS_USUARIO} ON ${TABLE_ORDEM_SERVICO_HAS_USUARIO}.ordemServico_idOrdemServico = ${TABLE_VERIFICACAO}.ordemServico_idOrdemServico
-        INNER JOIN ${TABLE_USUARIO} AS user_report ON user_report.idUsuario = ${TABLE_ORDEM_SERVICO}.reporte
-        INNER JOIN ${TABLE_USUARIO} AS user_requester ON user_requester.idUsuario = ${TABLE_ORDEM_SERVICO}.solicitante
-        INNER JOIN ${TABLE_USUARIO} AS user_maintainer ON user_maintainer.idUsuario =  ${TABLE_ORDEM_SERVICO_HAS_USUARIO}.Usuario_idUsuario 
+          INNER JOIN ${TABLE_ORDEM_SERVICO} ON ${TABLE_ORDEM_SERVICO}.idOrdemServico = ${TABLE_VERIFICACAO}.ordemServico_idOrdemServico 
+          INNER JOIN ${TABLE_ORDEM_SERVICO_HAS_USUARIO} ON ${TABLE_ORDEM_SERVICO_HAS_USUARIO}.ordemServico_idOrdemServico = ${TABLE_VERIFICACAO}.ordemServico_idOrdemServico
+          INNER JOIN ${TABLE_USUARIO} AS user_report ON user_report.idUsuario = ${TABLE_ORDEM_SERVICO}.reporte
+          INNER JOIN ${TABLE_USUARIO} AS user_requester ON user_requester.idUsuario = ${TABLE_ORDEM_SERVICO}.solicitante
+          INNER JOIN ${TABLE_USUARIO} AS user_maintainer ON user_maintainer.idUsuario =  ${TABLE_ORDEM_SERVICO_HAS_USUARIO}.Usuario_idUsuario 
         WHERE user_maintainer.idUsuario = ?
           AND ${TABLE_ORDEM_SERVICO}.Status_idStatus = ?
-          AND ${TABLE_ORDEM_SERVICO_HAS_USUARIO}.is_master = ?
+          AND ${TABLE_ORDEM_SERVICO_HAS_USUARIO}.is_master = ?;
     `, [user, 6, 1], (err, res) => {
         if (err) return reject(err);
         return resolve(res);

@@ -1,5 +1,5 @@
 <template>
-  <section v-if="!isMobile" class="root-back-button">
+  <section class="root-back-button">
     <div class="d-flex align-items-center">
       <div class="back-button" @click="goBack">
         <i
