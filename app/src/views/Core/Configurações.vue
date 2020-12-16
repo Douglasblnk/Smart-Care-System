@@ -134,6 +134,10 @@
         </div>
       </div>
     </div>
+
+    <div class="easter-egg" @click="openEasterEgg">
+      <i class="fa fa-info-circle" />
+    </div>
   </div>
 </template>
 
@@ -310,6 +314,41 @@ export default {
     goBack() {
       this.$router.push('/dashboard');
     },
+    openEasterEgg() {
+      this.$swal({
+        showConfirmButton: false,
+        showCloseButton: true,
+        html: `
+          <div class="p-4">
+            <h3 class="smart mb-5">Este software foi desenvolvimento por: </h3>
+
+            <div class="d-flex flex-column align-items-center" style="text-align:start">
+              <div>
+                <div class="mb-4">
+                  <p class="smart">Douglas Penna Bastos Blank</p>
+                  <small class="smart">douglasblank1@gmail.com - (47) 9 8864-8565</small>
+                </div>
+
+                <div class="mb-4">
+                  <p class="smart">Fernando Marques Candido</p>
+                  <small class="smart">fernandocm121@gmail.com - (47) 9 9705-2416</small>
+                </div>
+
+                <div class="mb-4">
+                  <p class="smart">Gustavo Giese</p>
+                  <small class="smart">gustavogiese97@gmail.com - (47) 9 9122-0205</small>
+                </div>
+                
+                <div class="mb-4">
+                  <p class="smart">Ronei Roteski</p>
+                  <small class="smart">ronei.roteski@gmail.com - (47) 9 8436-7230</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        `,
+      });
+    },
   },
 };
 </script>
@@ -317,6 +356,18 @@ export default {
 <style lang="scss" scoped>
 .root-configuracoes-view {
   width: 100%;
+
+  .easter-egg {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    cursor: pointer;
+    i {
+      font-size: 30px;
+      color: rgb(187, 187, 187);
+    }
+  }
+
   .content-wrapper {
     display: flex;
     justify-content: center;
