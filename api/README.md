@@ -5,6 +5,7 @@ A API, desenvolvida pelo grupo Smart Solution da faculdade de tecnologia SENAI J
 
 ### Estrutura da API
 
+```
 src/                          |
   services/                   | Todos os serviços e funcionalidades exclusivas da api
     dao/                      | Comunicação e manipulação do banco de dados
@@ -23,3 +24,4 @@ src/                          |
     guard/                    | Criptografia dos usuários
     utils/                    | Tem funções uteis para diversas partes do sistema
   index.js                    | Ponto inicial do sistema
+```
