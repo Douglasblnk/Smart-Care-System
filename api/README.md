@@ -12,7 +12,7 @@ src/                          |
       cruds/                  | Todos os cruds que o sistema possui
       movimentations/         | Todas as movimentações no sistema
     session/                  | Classes, validações e regras de negócio do sistema
-	  cruds/                  | Todos os cruds que o sistema possui
+	    cruds/                  | Todos os cruds que o sistema possui
       movimentations/         | Todas as movimentações no sistema 
     routes/                   | Rotas de endpoints express
       cruds/                  | Todos os cruds que o sistema possui
