@@ -21,7 +21,7 @@ jobs:
 
       - name: Build App
         run: npm run build
-        working-directory: app
+        working-directory: ./app
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
